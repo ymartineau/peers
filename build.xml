@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<project name="Peers" default="dist">
+    
+    <property name="build.dir" value="build"/>
+    <property name="classes.dir" value="${build.dir}/classes"/>
+    <property name="lib.dir" value="lib"/>
+    <property name="src.dir" value="src"/>
+
+    <description>
+        This program tries to make peers communicate from behind
+        a Port Restricted Cone NAT.
+    </description>
+
+	<target name="init">
+        <mkdir dir="${build.dir}"/>
+        <mkdir dir="${classes.dir}"/>
+    </target>
+
+    <target name="clean">
+        <delete dir="${build.dir}"/>
+    </target>
+    
+    <target name="compile" depends="init">
+        <javac destdir="${classes.dir}" srcdir="${src.dir}">
+            <classpath>
+                <fileset dir="${lib.dir}">
+                    <include name="**/*.jar"/>
+                </fileset>
+            </classpath>
+        </javac>
+    </target>
+
+    <target name="dist" depends="compile">
+        <jar destfile="${build.dir}/${ant.project.name}.jar"
+            basedir="${classes.dir}"/>
+    </target>
+
+</project>
