@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<project name="Peers" default="dist">
+<project name="peers" default="dist">
     
     <property name="build.dir" value="build"/>
     <property name="classes.dir" value="${build.dir}/classes"/>
@@ -21,7 +21,8 @@
     </target>
     
     <target name="compile" depends="init">
-        <javac destdir="${classes.dir}" srcdir="${src.dir}">
+        <javac destdir="${classes.dir}"
+	       srcdir="${src.dir}">
             <classpath>
                 <fileset dir="${lib.dir}">
                     <include name="**/*.jar"/>

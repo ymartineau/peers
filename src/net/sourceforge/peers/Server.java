@@ -35,7 +35,7 @@ import org.dom4j.io.SAXReader;
 
 public class Server {
 
-    public static final String SERVER_HOST = "yohann.martineau.free.fr";
+    public static final String SERVER_HOST = "peers.sourceforge.net";
     public static final String PREFIX = "/peers";
     //public static final int SOCKET_TIMEOUT = 30000;//millis
     
