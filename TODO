@@ -1,0 +1,20 @@
+NAT simulation:
+
+The following classes can be created to emulate a real NAT on
+only one host to ease tests:
+
+ - IPNode: contains one or more NetworkInterfaces
+ - NetworkInterface: IPAddress + ports, send & receive methods,
+     references an EthernetLink
+(- Port: number + boolean (open/closed), references a NetworkInterface)
+ - NAT: general type for NATs, contains two NetworkInterfaces (and
+     a collection of Glues between its NetworkInterfaces)
+ - Glue: association between a NetworkInterface + input port and a
+     NetworkInterface + output port, a Glue only lives 30s (with UDP
+     implementation)
+ - PortRestrictedConeNAT: NAT that accept all incoming packets from
+     its input and rejects all packets coming from outside, except
+     when a packet has already been sent to the specified address
+ - Simulator: NAT simulation manager which creates network nodes and
+     their interfaces, addresses, and the links between these nodes.
+ - EthernetLink: contains a list of IPNodes.
