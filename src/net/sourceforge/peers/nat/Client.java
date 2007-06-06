@@ -28,11 +28,11 @@ import org.dom4j.Document;
 public class Client {
 
     private Server server;
-    private String email;
+    //private String email;
     private PeerManager peerManager;
     
     public Client(String email, String localInetAddress, int localPort) {
-        this.email = email;
+        //this.email = email;
         // TODO automatic global access interface discovery
         try {
             InetAddress localAddress = InetAddress.getByName(localInetAddress);

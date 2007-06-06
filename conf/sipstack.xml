@@ -1,0 +1,12 @@
+<?xml version="1.0"?>
+
+<ym:sipstack xmlns:ym="http://yohann.martineau.free.fr"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://yohann.martineau.free.fr sipstack.xsd">
+  <ym:ua>
+    <ym:profiles>
+      <ym:profile name="sip:alice@atlanta.com"/>
+      <ym:profile name="sip:bob@biloxi.com"/>
+    </ym:profiles>
+  </ym:ua>
+</ym:sipstack>

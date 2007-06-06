@@ -39,8 +39,8 @@ public class Server {
     public static final String PREFIX = "/peers";
     //public static final int SOCKET_TIMEOUT = 30000;//millis
     
-    private InetAddress localAddress;
-    private int localPort;
+    //private InetAddress localAddress;
+    //private int localPort;
     private InetAddress remoteAddress;
     private int remotePort;
     
@@ -49,8 +49,8 @@ public class Server {
     //TODO constructor without parameters
     public Server(InetAddress localAddress, int localPort) throws IOException {
         super();
-        this.localAddress = localAddress;
-        this.localPort = localPort;
+        //this.localAddress = localAddress;
+        //this.localPort = localPort;
         this.remoteAddress = InetAddress.getByName(SERVER_HOST);
         this.remotePort = 80;
         socket = new Socket(remoteAddress, remotePort, localAddress, localPort);
