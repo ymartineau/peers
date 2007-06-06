@@ -1,12 +1,12 @@
 /*
     This file is part of Peers.
 
-    Foobar is free software; you can redistribute it and/or modify
+    Peers is free software; you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
     the Free Software Foundation; either version 2 of the License, or
     (at your option) any later version.
 
-    Foobar is distributed in the hope that it will be useful,
+    Peers is distributed in the hope that it will be useful,
     but WITHOUT ANY WARRANTY; without even the implied warranty of
     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
     GNU General Public License for more details.
@@ -18,7 +18,7 @@
     Copyright 2007 Yohann Martineau 
 */
 
-package net.sourceforge.peers;
+package net.sourceforge.peers.nat;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
