@@ -260,7 +260,7 @@ public class TransportManager {
             throws IOException {
         MessageSender messageSender = null;
         Object socket = null;
-        if (RFC3261.TRANSPORT_UDP.equals(conn.getRemoteTransport())) {
+        if (RFC3261.TRANSPORT_UDP.equalsIgnoreCase(conn.getRemoteTransport())) {
             //TODO use Utils.getMyAddress to create socket on appropriate NIC
             DatagramSocket datagramSocket = datagramSockets.get(conn);
             if (datagramSocket == null) {
@@ -292,7 +292,7 @@ public class TransportManager {
     private MessageReceiver createMessageReceiver(SipTransportConnection conn,
             Object socket) throws IOException {
         MessageReceiver messageReceiver = null;
-        if (RFC3261.TRANSPORT_UDP.equals(conn.getRemoteTransport())) {
+        if (RFC3261.TRANSPORT_UDP.equalsIgnoreCase(conn.getRemoteTransport())) {
             DatagramSocket datagramSocket = (DatagramSocket)socket;
             messageReceiver = new UdpMessageReceiver(datagramSocket);
         }

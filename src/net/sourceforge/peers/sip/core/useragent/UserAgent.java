@@ -23,6 +23,7 @@ package net.sourceforge.peers.sip.core.useragent;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sourceforge.peers.media.CaptureRtpSender;
 import net.sourceforge.peers.sip.transactionuser.Dialog;
 
 
@@ -39,6 +40,8 @@ public class UserAgent {
     
     private List<String> peers;
     private List<Dialog> dialogs;
+    
+    private CaptureRtpSender captureRtpSender;
 
     private UserAgent() {
         peers = new ArrayList<String>();
@@ -64,13 +67,15 @@ public class UserAgent {
         }
         return null;
     }
-    
-    /**
-     * @param args
-     */
-    public static void main(String[] args) {
-        // TODO Auto-generated method stub
 
+    public CaptureRtpSender getCaptureRtpSender() {
+        return captureRtpSender;
     }
+
+    public void setCaptureRtpSender(CaptureRtpSender captureRtpSender) {
+        this.captureRtpSender = captureRtpSender;
+    }
+    
+    
 
 }
