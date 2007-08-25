@@ -62,6 +62,7 @@ public class UAC {
                     dialog, RFC3261.METHOD_BYE);
             
         }
+        UserAgent.getInstance().getCaptureRtpSender().stop();
     }
     
     public String getProfileUri() {

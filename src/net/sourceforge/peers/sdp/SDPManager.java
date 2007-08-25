@@ -20,29 +20,83 @@
 
 package net.sourceforge.peers.sdp;
 
+import java.io.IOException;
+
+import net.sourceforge.peers.media.CaptureRtpSender;
+import net.sourceforge.peers.sip.Utils;
+import net.sourceforge.peers.sip.core.useragent.UserAgent;
+
+//TODO ekiga -d 4 > ekiga-debug.txt 2>&1
 public class SDPManager {
 
     public static String SUCCESS_MODEL =
-        "v=0\n" +
-        "o=user1 53655765 2353687637 IN IP4 192.168.2.2\n" +
-        "s=-\n" +
-        "c=IN IP4 192.168.2.2\n" +
-        "t=0 0\n" +
-        "m=audio 6000 RTP/AVP 0\n" +
-        "a=rtpmap:0 PCMU/8000\n";
+        "v=0\r\n" +
+        "o=user1 53655765 2353687637 IN IP4 192.168.2.2\r\n" +
+        "s=-\r\n" +
+        "c=IN IP4 192.168.2.2\r\n" +
+        "t=0 0\r\n" +
+        "m=audio 6000 RTP/AVP 0\r\n" +
+        "a=rtpmap:0 PCMU/8000\r\n";
 
     public static String FAILURE_MODEL =
-        "v=0\n" +
-        "o=user1 53655765 2353687637 IN IP4 192.168.2.2\n" +
-        "s=-\n" +
-        "c=IN IP4 192.168.2.2\n" +
-        "t=0 0\n" +
-        "a=inactive\n" +
-        "m=audio 6000 RTP/AVP 0\n" +
-        "a=rtpmap:0 PCMU/8000\n";
-        
-    public String handleOffer(String offer) throws NoCodecException {
+        "v=0\r\n" +
+        "o=user1 53655765 2353687637 IN IP4 192.168.2.2\r\n" +
+        "s=-\r\n" +
+        "c=IN IP4 192.168.2.2\r\n" +
+        "t=0 0\r\n" +
+        "a=inactive\r\n" +
+        "m=audio 6000 RTP/AVP 0\r\n" +
+        "a=rtpmap:0 PCMU/8000\r\n";
+    
+    private SdpParser sdpParser;
+    
+    public SDPManager() {
+        sdpParser = new SdpParser();
+    }
+    
+    public SessionDescription handleAnswer(byte[] answer) {
+        try {
+            return sdpParser.parse(answer);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+    
+    public String handleOffer(byte[] offer) throws NoCodecException {
         // TODO generate dynamic content
+        SessionDescription sessionDescription;
+        try {
+            sessionDescription = sdpParser.parse(offer);
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+            return null;
+        }
+        String destAddress = sessionDescription.getIpAddress().getHostAddress();
+        int destPort = sessionDescription.getMedias().get(0).getPort();
+        
+        CaptureRtpSender sender;
+        try {
+            sender = new CaptureRtpSender(
+                    Utils.getInstance().getMyAddress().getHostAddress(),
+                    6000, // TODO make it configurable
+                    destAddress, destPort);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+        UserAgent.getInstance().setCaptureRtpSender(sender);
+        try {
+            sender.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+//        try {
+//            Thread.sleep(10000);
+//        } catch (InterruptedException e) {
+//        }
+//        sender.stop();
         return SUCCESS_MODEL;
     }
     
@@ -52,6 +106,6 @@ public class SDPManager {
     }
     
     public String generateOffer() {
-        return null;
+        return SUCCESS_MODEL;
     }
 }

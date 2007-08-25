@@ -22,7 +22,7 @@ package net.sourceforge.peers.sdp;
 
 public class RFC4566 {
 
-    public static final String VERSION = "0";
+    public static final char VERSION = '0';
     
     public static final char TYPE_VERSION    = 'v';
     public static final char TYPE_ORIGIN     = 'o';
@@ -40,5 +40,6 @@ public class RFC4566 {
     public static final char TYPE_ATTRIBUTE  = 'a';
     public static final char TYPE_MEDIA      = 'm';
     
-    public static char SEPARATOR = '=';
+    public static final char SEPARATOR = '=';
+    public static final char ATTR_SEPARATOR = ':';
 }

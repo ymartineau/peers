@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<peers>
+  <network>
+    <interfaces>
+      <interface id="">
+        <name></name>
+        <address></address>
+      </interface>
+    </interfaces>
+  </network>
+  <devices>
+    <audio>
+    </audio>
+    <video>
+    </video>
+  </devices>
+  <sip>
+    <profile>
+      <userpart></userpart>
+      <domain></domain>
+      <outboundProxy>
+        <address></address>
+        <port></port>
+      </outboundProxy>
+      <interface ref=""/>
+      <port></port>
+    </profile>
+  </sip>
+  <codecs>
+    <codec>
+      <type>audio|video|other</type>
+      <name></name>
+      <payloadType>int</payloadType>
+    </codec>
+  </codecs>
+  <rtp>
+    <port></port>
+  </rtp>
+</peers>

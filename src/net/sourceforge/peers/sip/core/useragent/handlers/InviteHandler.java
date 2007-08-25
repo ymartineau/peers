@@ -24,8 +24,10 @@ import java.io.IOException;
 import java.util.Hashtable;
 import java.util.List;
 
+import net.sourceforge.peers.media.CaptureRtpSender;
 import net.sourceforge.peers.sdp.NoCodecException;
 import net.sourceforge.peers.sdp.SDPManager;
+import net.sourceforge.peers.sdp.SessionDescription;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.core.useragent.UserAgent;
@@ -50,6 +52,7 @@ import net.sourceforge.peers.sip.transport.TransportManager;
 public class InviteHandler extends DialogMethodHandler
         implements ServerTransactionUser, ClientTransactionUser {
 
+    //TODO move sdp manager, this should probably be in UserAgent
     private SDPManager sdpManager;
     
     public InviteHandler() {
@@ -104,7 +107,7 @@ public class InviteHandler extends DialogMethodHandler
                 && RFC3261.CONTENT_TYPE_SDP.equals(contentType.getValue())) {
             // create response in 200
             try {
-                body = sdpManager.handleOffer(new String(sipRequest.getBody()));
+                body = sdpManager.handleOffer(sipRequest.getBody());
             } catch (NoCodecException e) {
                 body = sdpManager.generateErrorResponse();
             }
@@ -176,6 +179,7 @@ public class InviteHandler extends DialogMethodHandler
         ClientTransaction clientTransaction = TransactionManager.getInstance()
             .createClientTransaction(sipRequest, requestUri.getHost(),
                     port, transport, this);
+        sipRequest.setBody(sdpManager.generateOffer().getBytes());
         return clientTransaction;
     }
     
@@ -238,6 +242,28 @@ public class InviteHandler extends DialogMethodHandler
         
         UserAgent.getInstance().getDialogs().add(dialog);
         System.out.println("added dialog " + dialog.getId());
+        
+        //added for media
+        SessionDescription sessionDescription =
+            sdpManager.handleAnswer(sipResponse.getBody());
+        String remoteAddress = sessionDescription.getIpAddress().getHostAddress();
+        int remotePort = sessionDescription.getMedias().get(0).getPort();
+        String localAddress = Utils.getInstance().getMyAddress().getHostAddress();
+        CaptureRtpSender captureRtpSender;
+        try {
+            captureRtpSender = new CaptureRtpSender(localAddress, 6000,
+                    remoteAddress, remotePort);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
+        UserAgent.getInstance().setCaptureRtpSender(captureRtpSender);
+        try {
+            captureRtpSender.start();
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        }
+        /////////////////
         
         //switch to confirmed state
         dialog.receivedOrSent2xx();

@@ -66,6 +66,7 @@ public class ByeHandler extends DialogMethodHandler
         UserAgent.getInstance().getPeers().remove(addrSpec);
         UserAgent.getInstance().getDialogs().remove(dialog);
         System.out.println("removed dialog " + dialog.getId());
+        UserAgent.getInstance().getCaptureRtpSender().stop();
         
         SipResponse sipResponse =
             MidDialogRequestManager.generateMidDialogResponse(
