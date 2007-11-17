@@ -80,4 +80,9 @@ public class CaptureRtpSender {
         sender.stop();
     }
 
+    public synchronized RtpSession getRtpSession() {
+        return rtpSession;
+    }
+
+    
 }

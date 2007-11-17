@@ -20,11 +20,14 @@
 
 package net.sourceforge.peers.sip.core.useragent.handlers;
 
+import gov.nist.jrtp.RtpException;
+
 import java.io.IOException;
 import java.util.Hashtable;
 import java.util.List;
 
 import net.sourceforge.peers.media.CaptureRtpSender;
+import net.sourceforge.peers.media.IncomingRtpReader;
 import net.sourceforge.peers.sdp.NoCodecException;
 import net.sourceforge.peers.sdp.SDPManager;
 import net.sourceforge.peers.sdp.SessionDescription;
@@ -116,6 +119,10 @@ public class InviteHandler extends DialogMethodHandler
             body = sdpManager.generateOffer();
         }
         sipResponse.setBody(body.getBytes());
+        SipHeaders respHeaders = sipResponse.getSipHeaders();
+        respHeaders.add(new SipHeaderFieldName(RFC3261.HDR_CONTENT_TYPE),
+                new SipHeaderFieldValue(RFC3261.CONTENT_TYPE_SDP));
+        
         
         // TODO determine port and transport for server transaction>transport
         // from initial invite
@@ -180,6 +187,9 @@ public class InviteHandler extends DialogMethodHandler
             .createClientTransaction(sipRequest, requestUri.getHost(),
                     port, transport, this);
         sipRequest.setBody(sdpManager.generateOffer().getBytes());
+        SipHeaders respHeaders = sipRequest.getSipHeaders();
+        respHeaders.add(new SipHeaderFieldName(RFC3261.HDR_CONTENT_TYPE),
+                new SipHeaderFieldValue(RFC3261.CONTENT_TYPE_SDP));
         return clientTransaction;
     }
     
@@ -263,6 +273,28 @@ public class InviteHandler extends DialogMethodHandler
         } catch (IOException e1) {
             e1.printStackTrace();
         }
+        
+        //TODO start playing incoming traffic
+        IncomingRtpReader incomingRtpReader;
+        try {
+            //TODO retrieve port from SDP offer
+//            incomingRtpReader = new IncomingRtpReader(localAddress, 6000,
+//                    remoteAddress, remotePort);
+            incomingRtpReader = new IncomingRtpReader(captureRtpSender.getRtpSession());
+        } catch (IOException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+            return;
+        }
+        //TODO UserAgent.getInstance().setIncomingRtpReader(incomingRtpReader);
+        try {
+            incomingRtpReader.start();
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        } catch (RtpException e1) {
+            e1.printStackTrace();
+        }
+        
         /////////////////
         
         //switch to confirmed state
