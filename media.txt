@@ -1,0 +1,33 @@
+peers
+=====
+
+outgoing sound:
+--------------
+
+line retrieved from info created with arbitrary format
+
+while sending media active {
+    raw data read from line into a buffer
+    
+    another buffer with half size of the first is filled with ulaw encoded data
+    
+    if this ulaw buffer is bigger than the max ulaw payload size {
+        split ulaw buffer in chunks of max ulaw payload size
+        
+        send a rtp packet for each chunk
+    }
+}
+
+
+incoming sound:
+--------------
+
+line retrieved from info created with arbitrary format
+
+while receiving media active {
+    ulaw data read from rtp packet payload
+    
+    convert this ulaw buffer to a raw buffer
+    
+    write this raw buffer to the opened line
+}

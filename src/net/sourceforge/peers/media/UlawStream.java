@@ -97,7 +97,7 @@ public class UlawStream implements Runnable {
 //            AudioFormat format = new AudioFormat(AudioFormat.Encoding.ULAW, 8000, 16, 1,
 //                    16, 8000, true);
             
-            
+            //TODO code cleaning: targetEncoding is only employed to display info...
             AudioFormat.Encoding targetEncoding = AudioFormat.Encoding.ULAW;
             
             
@@ -259,6 +259,7 @@ public class UlawStream implements Runnable {
                 
             } 
             
+            //TODO close cleanly (target data) line
             
             
 //            AudioInputStream ais = AudioSystem.getAudioInputStream(file);

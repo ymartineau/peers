@@ -92,6 +92,9 @@ public class SDPManager {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        
+        //TODO start playing incoming traffic
+        
 //        try {
 //            Thread.sleep(10000);
 //        } catch (InterruptedException e) {
