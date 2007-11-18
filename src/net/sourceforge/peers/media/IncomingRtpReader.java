@@ -47,6 +47,7 @@ public class IncomingRtpReader implements RtpListener {
     
     public void stop() {
         rtpSession.stopRtpPacketReceiver();
+        rtpSession.shutDown();
         line.drain();
         line.stop();
         line.close();

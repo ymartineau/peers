@@ -49,6 +49,7 @@ public class CaptureRtpSender {
 
     public void stop() {
         ulawStream.setStopped(true);
+        rtpSession.shutDown();
     }
     
     /**
