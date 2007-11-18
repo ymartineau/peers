@@ -20,9 +20,12 @@
 
 package net.sourceforge.peers.sdp;
 
+import gov.nist.jrtp.RtpException;
+
 import java.io.IOException;
 
 import net.sourceforge.peers.media.CaptureRtpSender;
+import net.sourceforge.peers.media.IncomingRtpReader;
 import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.core.useragent.UserAgent;
 
@@ -78,9 +81,10 @@ public class SDPManager {
         String destAddress = sessionDescription.getIpAddress().getHostAddress();
         int destPort = sessionDescription.getMedias().get(0).getPort();
         
-        CaptureRtpSender sender;
+        //FIXME move this to InviteHandler
+        CaptureRtpSender captureRtpSender;
         try {
-            sender = new CaptureRtpSender(
+            captureRtpSender = new CaptureRtpSender(
                     Utils.getInstance().getMyAddress().getHostAddress(),
                     6000, // TODO make it configurable
                     destAddress, destPort);
@@ -88,20 +92,33 @@ public class SDPManager {
             e.printStackTrace();
             return null;
         }
-        UserAgent.getInstance().setCaptureRtpSender(sender);
+        UserAgent.getInstance().setCaptureRtpSender(captureRtpSender);
         try {
-            sender.start();
+            captureRtpSender.start();
         } catch (IOException e) {
             e.printStackTrace();
         }
         
-        //TODO start playing incoming traffic
+        IncomingRtpReader incomingRtpReader;
+        try {
+            //TODO retrieve port from SDP offer
+//            incomingRtpReader = new IncomingRtpReader(localAddress, 6000,
+//                    remoteAddress, remotePort);
+            //FIXME RTP sessions can be different !
+            incomingRtpReader = new IncomingRtpReader(captureRtpSender.getRtpSession());
+        } catch (IOException e1) {
+            e1.printStackTrace();
+            return null;
+        }
+        UserAgent.getInstance().setIncomingRtpReader(incomingRtpReader);
+        try {
+            incomingRtpReader.start();
+        } catch (IOException e1) {
+            e1.printStackTrace();
+        } catch (RtpException e1) {
+            e1.printStackTrace();
+        }
         
-//        try {
-//            Thread.sleep(10000);
-//        } catch (InterruptedException e) {
-//        }
-//        sender.stop();
         return SUCCESS_MODEL;
     }
     

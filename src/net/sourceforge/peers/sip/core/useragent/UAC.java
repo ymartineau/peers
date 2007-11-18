@@ -63,6 +63,7 @@ public class UAC {
             
         }
         UserAgent.getInstance().getCaptureRtpSender().stop();
+        UserAgent.getInstance().getIncomingRtpReader().stop();
     }
     
     public String getProfileUri() {

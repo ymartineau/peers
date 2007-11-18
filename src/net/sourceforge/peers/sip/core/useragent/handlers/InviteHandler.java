@@ -274,7 +274,6 @@ public class InviteHandler extends DialogMethodHandler
             e1.printStackTrace();
         }
         
-        //TODO start playing incoming traffic
         IncomingRtpReader incomingRtpReader;
         try {
             //TODO retrieve port from SDP offer
@@ -286,7 +285,7 @@ public class InviteHandler extends DialogMethodHandler
             e1.printStackTrace();
             return;
         }
-        //TODO UserAgent.getInstance().setIncomingRtpReader(incomingRtpReader);
+        UserAgent.getInstance().setIncomingRtpReader(incomingRtpReader);
         try {
             incomingRtpReader.start();
         } catch (IOException e1) {
