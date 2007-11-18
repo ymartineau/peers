@@ -27,6 +27,7 @@ import java.net.InetAddress;
 import java.net.SocketException;
 
 import net.sourceforge.peers.sip.RFC3261;
+import net.sourceforge.peers.sip.Utils;
 
 
 public class UdpMessageSender extends MessageSender {
@@ -40,7 +41,8 @@ public class UdpMessageSender extends MessageSender {
 
         this.datagramSocket = datagramSocket;
         StringBuffer buf = new StringBuffer();
-        buf.append(datagramSocket.getLocalAddress().getHostAddress());
+        //buf.append(datagramSocket.getLocalAddress().getHostAddress());
+        buf.append(Utils.getInstance().getMyAddress().getHostAddress());
         buf.append(RFC3261.TRANSPORT_PORT_SEP);
         buf.append(datagramSocket.getLocalPort());
         buf.append(RFC3261.PARAM_SEPARATOR);
