@@ -93,7 +93,7 @@ public class UAS implements SipServerTransportUser {
         
         SipHeaders headers = sipRequest.getSipHeaders();
         
-        //TODO find wether the request is within an existing dialog or not
+        //TODO find whether the request is within an existing dialog or not
         SipHeaderFieldValue to =
             headers.get(new SipHeaderFieldName(RFC3261.HDR_TO));
         String toTag = to.getParam(new SipHeaderParamName(RFC3261.PARAM_TAG));

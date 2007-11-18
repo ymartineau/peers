@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.sourceforge.peers.media.CaptureRtpSender;
+import net.sourceforge.peers.media.IncomingRtpReader;
 import net.sourceforge.peers.sip.transactionuser.Dialog;
 
 
@@ -42,6 +43,7 @@ public class UserAgent {
     private List<Dialog> dialogs;
     
     private CaptureRtpSender captureRtpSender;
+    private IncomingRtpReader incomingRtpReader;
 
     private UserAgent() {
         peers = new ArrayList<String>();
@@ -75,7 +77,13 @@ public class UserAgent {
     public void setCaptureRtpSender(CaptureRtpSender captureRtpSender) {
         this.captureRtpSender = captureRtpSender;
     }
-    
-    
 
+    public IncomingRtpReader getIncomingRtpReader() {
+        return incomingRtpReader;
+    }
+
+    public void setIncomingRtpReader(IncomingRtpReader incomingRtpReader) {
+        this.incomingRtpReader = incomingRtpReader;
+    }
+    
 }
