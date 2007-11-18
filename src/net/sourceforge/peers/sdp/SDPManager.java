@@ -31,18 +31,20 @@ public class SDPManager {
 
     public static String SUCCESS_MODEL =
         "v=0\r\n" +
-        "o=user1 53655765 2353687637 IN IP4 192.168.2.2\r\n" +
+        "o=user1 53655765 2353687637 IN IP4 "
+            + Utils.getInstance().getMyAddress().getHostAddress() + "\r\n" +
         "s=-\r\n" +
-        "c=IN IP4 192.168.2.2\r\n" +
+        "c=IN IP4 " + Utils.getInstance().getMyAddress().getHostAddress() + "\r\n" +
         "t=0 0\r\n" +
         "m=audio 6000 RTP/AVP 0\r\n" +
         "a=rtpmap:0 PCMU/8000\r\n";
 
     public static String FAILURE_MODEL =
         "v=0\r\n" +
-        "o=user1 53655765 2353687637 IN IP4 192.168.2.2\r\n" +
+        "o=user1 53655765 2353687637 IN IP4 "
+            + Utils.getInstance().getMyAddress().getHostAddress() + "\r\n" +
         "s=-\r\n" +
-        "c=IN IP4 192.168.2.2\r\n" +
+        "c=IN IP4 " + Utils.getInstance().getMyAddress().getHostAddress() + "\r\n" +
         "t=0 0\r\n" +
         "a=inactive\r\n" +
         "m=audio 6000 RTP/AVP 0\r\n" +
