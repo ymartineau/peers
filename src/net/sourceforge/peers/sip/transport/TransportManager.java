@@ -43,8 +43,10 @@ import java.util.Hashtable;
 
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.Utils;
+import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldName;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldValue;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderParamName;
+import net.sourceforge.peers.sip.syntaxencoding.SipHeaders;
 import net.sourceforge.peers.sip.syntaxencoding.SipParser;
 
 
@@ -249,6 +251,16 @@ public class TransportManager {
             if (messageSender == null) {
                 messageSender = createMessageSender(connection);
             }
+            //add contact header
+            SipHeaderFieldName contactName = new SipHeaderFieldName(RFC3261.HDR_CONTACT);
+            SipHeaders respHeaders = sipResponse.getSipHeaders();
+            StringBuffer contactBuf = new StringBuffer();
+            contactBuf.append(RFC3261.LEFT_ANGLE_BRACKET);
+            contactBuf.append(RFC3261.SIP_SCHEME);
+            contactBuf.append(RFC3261.SCHEME_SEPARATOR);
+            contactBuf.append(messageSender.getContact());
+            contactBuf.append(RFC3261.RIGHT_ANGLE_BRACKET);
+            respHeaders.add(contactName, new SipHeaderFieldValue(contactBuf.toString()));
             messageSender.sendMessage(sipResponse);
 
         }
