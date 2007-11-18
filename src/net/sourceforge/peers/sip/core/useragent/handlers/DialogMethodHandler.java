@@ -59,9 +59,15 @@ public abstract class DialogMethodHandler extends MethodHandler {
         
         SipHeaders reqHeaders = sipRequest.getSipHeaders();
         SipHeaders respHeaders = sipResponse.getSipHeaders();
+        
+          //copy record-route
         SipHeaderFieldName recordRouteName =
             new SipHeaderFieldName(RFC3261.HDR_RECORD_ROUTE);
-        respHeaders.add(recordRouteName, reqHeaders.get(recordRouteName));
+        SipHeaderFieldValue reqRecRoute = reqHeaders.get(recordRouteName);
+        if (reqRecRoute != null) {
+        	respHeaders.add(recordRouteName, reqRecRoute);
+        }
+        
         SipHeaderFieldName contactName = new SipHeaderFieldName(RFC3261.HDR_CONTACT);
         
         Dialog dialog = DialogManager.getInstance().createDialog(sipResponse);
