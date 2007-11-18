@@ -111,7 +111,7 @@ public class TransportManager {
         int localPort = RFC3261.TRANSPORT_DEFAULT_PORT;
         
         
-        buf.append(localAddress.getHostName());
+        buf.append(localAddress.getHostAddress()); //TODO use getHostName if real DNS
         buf.append(TRANSPORT_PORT_SEP);
         
 
