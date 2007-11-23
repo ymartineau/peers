@@ -55,12 +55,11 @@ public class InviteServerTransaction extends InviteTransaction
         super(branchId);
         
         INIT = new InviteServerTransactionStateInit(getId(), this);
+        state = INIT;
         PROCEEDING = new InviteServerTransactionStateProceeding(getId(), this);
         COMPLETED = new InviteServerTransactionStateCompleted(getId(), this);
         CONFIRMED = new InviteServerTransactionStateConfirmed(getId(), this);
         TERMINATED = new InviteServerTransactionStateTerminated(getId(), this);
-        
-        state = INIT;
         
         this.port = port;
         this.transport = transport;

@@ -65,11 +65,10 @@ public class Dialog {
         this.remoteTag = remoteTag;
         
         INIT = new DialogStateInit(getId(), this);
+        state = INIT;
         EARLY = new DialogStateEarly(getId(), this);
         CONFIRMED = new DialogStateConfirmed(getId(), this);
         TERMINATED = new DialogStateTerminated(getId(), this);
-        
-        state = INIT;
         
         localCSeq = EMPTY_CSEQ;
         remoteCSeq = EMPTY_CSEQ;
