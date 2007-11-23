@@ -51,11 +51,10 @@ public class NonInviteServerTransaction extends Transaction
         super(branchId, method);
         
         TRYING = new NonInviteServerTransactionStateTrying(getId(), this);
+        state = TRYING;
         PROCEEDING = new NonInviteServerTransactionStateProceeding(getId(), this);
         COMPLETED = new NonInviteServerTransactionStateCompleted(getId(), this);
         TERMINATED = new NonInviteServerTransactionStateTerminated(getId(), this);
-        
-        state = TRYING;
         
         //this.port = port;
         this.transport = transport;

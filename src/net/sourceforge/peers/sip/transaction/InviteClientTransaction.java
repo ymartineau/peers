@@ -72,14 +72,12 @@ public class InviteClientTransaction extends InviteTransaction
         nbRetrans = 0;
         
         INIT = new InviteClientTransactionStateInit(getId(), this);
+        state = INIT;
         CALLING = new InviteClientTransactionStateCalling(getId(), this);
         PROCEEDING = new InviteClientTransactionStateProceeding(getId(), this);
         COMPLETED = new InviteClientTransactionStateCompleted(getId(), this);
         TERMINATED = new InviteClientTransactionStateTerminated(getId(), this);
 
-        state = INIT;
-        //state = CALLING;
-        
         //17.1.1.2
         
         request = sipRequest;
