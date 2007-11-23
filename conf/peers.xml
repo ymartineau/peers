@@ -1,39 +1,48 @@
 <?xml version="1.0"?>
-<peers>
+
+<peers xmlns="http://peers.sourceforge.net"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://peers.sourceforge.net peers.xsd">
   <network>
     <interfaces>
-      <interface id="">
-        <name></name>
-        <address></address>
+      <interface id="eth1">
+        <name>Ethernet network interface</name>
+        <address>192.168.1.20</address>
       </interface>
     </interfaces>
   </network>
   <devices>
-    <audio>
-    </audio>
-    <video>
-    </video>
+    <audio></audio>
+    <video></video>
   </devices>
   <sip>
     <profile>
-      <userpart></userpart>
-      <domain></domain>
+      <userpart>alice</userpart>
+      <domain>atlanta.com</domain>
+      <!--
       <outboundProxy>
-        <address></address>
-        <port></port>
+        <address>192.168.1.10</address>
+        <port>5060</port>
       </outboundProxy>
-      <interface ref=""/>
-      <port></port>
+      -->
+      <interface ref="eth1"/>
+      <port>5060</port>
     </profile>
   </sip>
   <codecs>
     <codec>
-      <type>audio|video|other</type>
-      <name></name>
-      <payloadType>int</payloadType>
+      <family>audio</family>
+      <name>PCMU</name>
+      <payloadType>0</payloadType>
+      <!--
+      <attributes>
+        <attribute name="ptime" value="20"/>
+      </attributes>
+      -->
     </codec>
   </codecs>
   <rtp>
-    <port></port>
+    <interface ref="eth1"/>
+    <port>6002</port>
   </rtp>
 </peers>

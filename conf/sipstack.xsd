@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-           targetNamespace="http://yohann.martineau.free.fr"
-           xmlns="http://yohann.martineau.free.fr"
+           targetNamespace="http://peers.sourceforge.net"
+           xmlns="http://peers.sourceforge.net"
            elementFormDefault="qualified">
 
   <!-- Simple Types -->
