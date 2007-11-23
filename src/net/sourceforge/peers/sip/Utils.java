@@ -25,11 +25,15 @@ import static net.sourceforge.peers.sip.RFC3261.HDR_VIA;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import net.sourceforge.peers.sip.core.Config;
+import net.sourceforge.peers.sip.core.useragent.UserAgent;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldMultiValue;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldName;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldValue;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaders;
 import net.sourceforge.peers.sip.transport.SipMessage;
+
+import org.dom4j.Node;
 
 
 public class Utils {
@@ -44,15 +48,17 @@ public class Utils {
     }
     
     private InetAddress myAddress;
+    private int sipPort;
+    private int rtpPort;
     private int cseqCounter;
 
     private Utils() {
         super();
         
-
+        Config config = UserAgent.getInstance().getConfig();
+        Node node = config.selectSingleNode("//peers:address");
         try {
-            //TODO make it configurable
-            myAddress = InetAddress.getByName("192.168.2.2");
+            myAddress = InetAddress.getByName(node.getText());
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
@@ -74,6 +80,10 @@ public class Utils {
 //        } catch (SocketException e) {
 //            e.printStackTrace();
 //        }
+        node = config.selectSingleNode("//peers:sip/peers:profile/peers:port");
+        sipPort = Integer.parseInt(node.getText());
+        node = config.selectSingleNode("//peers:rtp/peers:port");
+        rtpPort = Integer.parseInt(node.getText());
         cseqCounter = 0;
     }
 
@@ -81,6 +91,14 @@ public class Utils {
         return myAddress;
     }
     
+    public int getSipPort() {
+        return sipPort;
+    }
+
+    public int getRtpPort() {
+        return rtpPort;
+    }
+
     public SipHeaderFieldValue getTopVia(SipMessage sipMessage) {
         SipHeaders sipHeaders = sipMessage.getSipHeaders();
         SipHeaderFieldName viaName = new SipHeaderFieldName(HDR_VIA);

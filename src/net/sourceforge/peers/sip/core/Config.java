@@ -54,7 +54,7 @@ public class Config {
     public Node selectSingleNode(String xpath) {
         DefaultXPath xpathObj = new DefaultXPath(xpath);
         SimpleNamespaceContext snc = new SimpleNamespaceContext();
-        snc.addNamespace("ym", "http://yohann.martineau.free.fr");
+        snc.addNamespace("peers", "http://peers.sourceforge.net");
         xpathObj.setNamespaceContext(snc);
         return (Node)xpathObj.selectSingleNode(document);
 //        try {
@@ -70,7 +70,7 @@ public class Config {
     public List selectNodes(String xpath) {
         DefaultXPath xpathObj = new DefaultXPath(xpath);
         SimpleNamespaceContext snc = new SimpleNamespaceContext();
-        snc.addNamespace("ym", "http://yohann.martineau.free.fr");
+        snc.addNamespace("peers", "http://peers.sourceforge.net");
         xpathObj.setNamespaceContext(snc);
         return xpathObj.selectNodes(document);
 //        try {

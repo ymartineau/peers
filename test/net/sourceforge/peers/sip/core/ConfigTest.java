@@ -55,9 +55,9 @@ public class ConfigTest extends TestCase {
             return;
         }
         
-        List list = config.selectNodes("//ym:profile/@name");
+        List list = config.selectNodes("//peers:profile/@name");
         if (list == null) {
-            fail("no node found for xpath: //ym:profile/@name");
+            fail("no node found for xpath: //peers:profile/@name");
         }
         for (Iterator it = list.iterator(); it.hasNext(); ) {
             Attribute name = (Attribute)it.next();

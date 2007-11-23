@@ -261,7 +261,8 @@ public class InviteHandler extends DialogMethodHandler
         String localAddress = Utils.getInstance().getMyAddress().getHostAddress();
         CaptureRtpSender captureRtpSender;
         try {
-            captureRtpSender = new CaptureRtpSender(localAddress, 6000,
+            captureRtpSender = new CaptureRtpSender(localAddress,
+                    Utils.getInstance().getRtpPort(),
                     remoteAddress, remotePort);
         } catch (IOException e) {
             e.printStackTrace();
@@ -277,7 +278,8 @@ public class InviteHandler extends DialogMethodHandler
         IncomingRtpReader incomingRtpReader;
         try {
             //TODO retrieve port from SDP offer
-//            incomingRtpReader = new IncomingRtpReader(localAddress, 6000,
+//            incomingRtpReader = new IncomingRtpReader(localAddress,
+//                    Utils.getInstance().getRtpPort(),
 //                    remoteAddress, remotePort);
             incomingRtpReader = new IncomingRtpReader(captureRtpSender.getRtpSession());
         } catch (IOException e1) {

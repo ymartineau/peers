@@ -39,7 +39,7 @@ public class SDPManager {
         "s=-\r\n" +
         "c=IN IP4 " + Utils.getInstance().getMyAddress().getHostAddress() + "\r\n" +
         "t=0 0\r\n" +
-        "m=audio 6000 RTP/AVP 0\r\n" +
+        "m=audio " + Utils.getInstance().getRtpPort() + " RTP/AVP 0\r\n" +
         "a=rtpmap:0 PCMU/8000\r\n";
 
     public static String FAILURE_MODEL =
@@ -50,7 +50,7 @@ public class SDPManager {
         "c=IN IP4 " + Utils.getInstance().getMyAddress().getHostAddress() + "\r\n" +
         "t=0 0\r\n" +
         "a=inactive\r\n" +
-        "m=audio 6000 RTP/AVP 0\r\n" +
+        "m=audio " + Utils.getInstance().getRtpPort() + " RTP/AVP 0\r\n" +
         "a=rtpmap:0 PCMU/8000\r\n";
     
     private SdpParser sdpParser;
@@ -86,7 +86,7 @@ public class SDPManager {
         try {
             captureRtpSender = new CaptureRtpSender(
                     Utils.getInstance().getMyAddress().getHostAddress(),
-                    6000, // TODO make it configurable
+                    Utils.getInstance().getRtpPort(),
                     destAddress, destPort);
         } catch (IOException e) {
             e.printStackTrace();
@@ -102,7 +102,8 @@ public class SDPManager {
         IncomingRtpReader incomingRtpReader;
         try {
             //TODO retrieve port from SDP offer
-//            incomingRtpReader = new IncomingRtpReader(localAddress, 6000,
+//            incomingRtpReader = new IncomingRtpReader(localAddress,
+//                    Utils.getInstance().getRtpPort(),
 //                    remoteAddress, remotePort);
             //FIXME RTP sessions can be different !
             incomingRtpReader = new IncomingRtpReader(captureRtpSender.getRtpSession());

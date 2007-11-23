@@ -20,16 +20,23 @@
 
 package net.sourceforge.peers.sip.core.useragent;
 
+import java.io.File;
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.List;
 
 import net.sourceforge.peers.media.CaptureRtpSender;
 import net.sourceforge.peers.media.IncomingRtpReader;
+import net.sourceforge.peers.sip.core.Config;
 import net.sourceforge.peers.sip.transactionuser.Dialog;
+
+import org.dom4j.DocumentException;
 
 
 public class UserAgent {
 
+    public final static String CONFIG_FILE = "conf/peers.xml";
+    
     private static UserAgent INSTANCE;
     
     public static UserAgent getInstance() {
@@ -38,6 +45,8 @@ public class UserAgent {
         }
         return INSTANCE;
     }
+    
+    private Config config;
     
     private List<String> peers;
     private List<Dialog> dialogs;
@@ -48,6 +57,18 @@ public class UserAgent {
     private UserAgent() {
         peers = new ArrayList<String>();
         dialogs = new ArrayList<Dialog>();
+        File configFile = new File(CONFIG_FILE);
+        if (!configFile.exists()) {
+            System.err.println("configuration file not found: " + CONFIG_FILE);
+            System.exit(-1);
+        }
+        try {
+            config = new Config(configFile.toURI().toURL());
+        } catch (DocumentException e) {
+            e.printStackTrace();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        }
     }
     
     public List<Dialog> getDialogs() {
@@ -84,6 +105,10 @@ public class UserAgent {
 
     public void setIncomingRtpReader(IncomingRtpReader incomingRtpReader) {
         this.incomingRtpReader = incomingRtpReader;
+    }
+
+    public synchronized Config getConfig() {
+        return config;
     }
     
 }
