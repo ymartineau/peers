@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import net.sourceforge.peers.sip.RFC3261;
+import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldName;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldValue;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderParamName;
@@ -62,11 +63,11 @@ public class UAS implements SipServerTransportUser {
         initialRequestManager = new InitialRequestManager();
         midDialogRequestManager = new MidDialogRequestManager();
 //        SipTransportFactory.getInstance().createServerTransport(this,
-//                RFC3261.TRANSPORT_DEFAULT_PORT, RFC3261.TRANSPORT_UDP);
+//                Utils.getInstance().getSipPort(), RFC3261.TRANSPORT_UDP);
         //TODO make it configurable
         try {
             TransportManager.getInstance().createServerTransport(
-                    RFC3261.TRANSPORT_UDP, RFC3261.TRANSPORT_DEFAULT_PORT);
+                    RFC3261.TRANSPORT_UDP, Utils.getInstance().getSipPort());
         } catch (IOException e) {
             e.printStackTrace();
         }

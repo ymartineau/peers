@@ -108,9 +108,9 @@ public class TransportManager {
         //TODO user server connection
         
 
-        //TODO make local address and local port configurable (range for local port)
+        //TODO make local address and local port configurable
         InetAddress localAddress = Utils.getInstance().getMyAddress();
-        int localPort = RFC3261.TRANSPORT_DEFAULT_PORT;
+        int localPort = Utils.getInstance().getSipPort();
         
         
         buf.append(localAddress.getHostAddress()); //TODO use getHostName if real DNS

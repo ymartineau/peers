@@ -21,6 +21,7 @@
 package net.sourceforge.peers.sip.core.useragent.handlers;
 
 import net.sourceforge.peers.sip.RFC3261;
+import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.core.useragent.MidDialogRequestManager;
 import net.sourceforge.peers.sip.core.useragent.UserAgent;
 import net.sourceforge.peers.sip.transaction.ServerTransaction;
@@ -81,7 +82,7 @@ public class ByeHandler extends DialogMethodHandler
         ServerTransaction serverTransaction =
             TransactionManager.getInstance().createServerTransaction(
                     sipResponse,
-                    RFC3261.TRANSPORT_DEFAULT_PORT,
+                    Utils.getInstance().getSipPort(),
                     RFC3261.TRANSPORT_UDP,
                     this,
                     sipRequest);
