@@ -129,7 +129,7 @@ public class InviteHandler extends DialogMethodHandler
         // FIXME determine port and transport for server transaction>transport
         ServerTransaction serverTransaction =
             TransactionManager.getInstance().createServerTransaction(sipResponse,
-                    RFC3261.TRANSPORT_DEFAULT_PORT, RFC3261.TRANSPORT_UDP, this,
+                    Utils.getInstance().getSipPort(), RFC3261.TRANSPORT_UDP, this,
                     sipRequest);
         
         serverTransaction.start();
