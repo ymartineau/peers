@@ -2,6 +2,8 @@ package net.sourceforge.peers.gui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -26,6 +28,12 @@ public class CallFrame implements ActionListener, Observer {
     public CallFrame(String peer) {
         this.peer = peer;
         frame = new JFrame(peer);
+        frame.addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent we) {
+                actionPerformed(null);
+            }
+        });
         mainPanel = new JPanel();
         text = new JLabel("Session with: " + peer);
         hangupButton = new JButton("Hang up");
@@ -44,11 +52,10 @@ public class CallFrame implements ActionListener, Observer {
     }
 
     public void actionPerformed(ActionEvent e) {
-        String peer = e.getActionCommand();
-        Thread hangupThread = new Thread(peer) {
+        Thread hangupThread = new Thread() {
             @Override
             public void run() {
-                Dialog dialog = UserAgent.getInstance().getDialog(getName());
+                Dialog dialog = UserAgent.getInstance().getDialog(peer);
                 UAC.getInstance().terminate(dialog);
             }
         };
@@ -63,8 +70,10 @@ public class CallFrame implements ActionListener, Observer {
     }
     
     private void closeFrame() {
-        frame.dispose();
-        frame = null;
+        if (frame != null) {
+            frame.dispose();
+            frame = null;
+        }
         mainPanel = null;
         text = null;
         hangupButton = null;

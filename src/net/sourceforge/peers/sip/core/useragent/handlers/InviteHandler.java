@@ -261,21 +261,18 @@ public class InviteHandler extends DialogMethodHandler
         String remoteAddress = sessionDescription.getIpAddress().getHostAddress();
         int remotePort = sessionDescription.getMedias().get(0).getPort();
         String localAddress = Utils.getInstance().getMyAddress().getHostAddress();
-        CaptureRtpSender captureRtpSender =
-            UserAgent.getInstance().getCaptureRtpSender();
+        CaptureRtpSender captureRtpSender;
         //TODO this could be optimized, create captureRtpSender at stack init
         //     and just retrieve it here
-        if (captureRtpSender == null) {
-            try {
-                captureRtpSender = new CaptureRtpSender(localAddress,
-                        Utils.getInstance().getRtpPort(),
-                        remoteAddress, remotePort);
-            } catch (IOException e) {
-                e.printStackTrace();
-                return;
-            }
-            UserAgent.getInstance().setCaptureRtpSender(captureRtpSender);
+        try {
+            captureRtpSender = new CaptureRtpSender(localAddress,
+                    Utils.getInstance().getRtpPort(),
+                    remoteAddress, remotePort);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
         }
+        UserAgent.getInstance().setCaptureRtpSender(captureRtpSender);
 
         try {
             captureRtpSender.start();
@@ -283,22 +280,19 @@ public class InviteHandler extends DialogMethodHandler
             e1.printStackTrace();
         }
         
-        IncomingRtpReader incomingRtpReader =
-            UserAgent.getInstance().getIncomingRtpReader();
-        if (incomingRtpReader == null) {
-            try {
-                //TODO retrieve port from SDP offer
+        IncomingRtpReader incomingRtpReader;
+        try {
+            //TODO retrieve port from SDP offer
 //                incomingRtpReader = new IncomingRtpReader(localAddress,
 //                        Utils.getInstance().getRtpPort(),
 //                        remoteAddress, remotePort);
-                incomingRtpReader = new IncomingRtpReader(captureRtpSender.getRtpSession());
-            } catch (IOException e1) {
-                // TODO Auto-generated catch block
-                e1.printStackTrace();
-                return;
-            }
-            UserAgent.getInstance().setIncomingRtpReader(incomingRtpReader);
+            incomingRtpReader = new IncomingRtpReader(captureRtpSender.getRtpSession());
+        } catch (IOException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+            return;
         }
+        UserAgent.getInstance().setIncomingRtpReader(incomingRtpReader);
 
         try {
             incomingRtpReader.start();

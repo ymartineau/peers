@@ -1,39 +1,54 @@
 <?xml version="1.0"?>
 <project name="peers" default="dist">
-    
-    <property name="build.dir" value="build"/>
-    <property name="classes.dir" value="${build.dir}/classes"/>
-    <property name="lib.dir" value="lib"/>
-    <property name="src.dir" value="src"/>
 
-    <description>
-        This program tries to make peers communicate from behind
-        a Port Restricted Cone NAT.
-    </description>
+  <property name="build.dir" value="build"/>
+  <property name="classes.dir" value="${build.dir}/classes"/>
+  <property name="lib.dir" value="lib"/>
+  <property name="src.dir" value="src"/>
+  <property name="conf.dir" value="conf"/>
+  <property name="resources.dir" value="resources"/>
 
-	<target name="init">
-        <mkdir dir="${build.dir}"/>
-        <mkdir dir="${classes.dir}"/>
-    </target>
+  <description>
+    This application is a very basic and minimalist SIP User-Agent.
+    You can call a peer using its IP address.
+    The partially implemented RFC is RFC3261.
+  </description>
+	
+  <target name="init">
+    <mkdir dir="${build.dir}"/>
+    <mkdir dir="${classes.dir}"/>
+  </target>
 
-    <target name="clean">
-        <delete dir="${build.dir}"/>
-    </target>
-    
-    <target name="compile" depends="init">
-        <javac destdir="${classes.dir}"
-	       srcdir="${src.dir}">
-            <classpath>
-                <fileset dir="${lib.dir}">
-                    <include name="**/*.jar"/>
-                </fileset>
-            </classpath>
-        </javac>
-    </target>
+  <target name="clean">
+    <delete dir="${build.dir}"/>
+  </target>
 
-    <target name="dist" depends="compile">
-        <jar destfile="${build.dir}/${ant.project.name}.jar"
-            basedir="${classes.dir}"/>
-    </target>
+  <target name="compile" depends="init">
+    <javac destdir="${classes.dir}"
+        srcdir="${src.dir}">
+      <classpath>
+        <fileset dir="${lib.dir}">
+          <include name="**/*.jar"/>
+        </fileset>
+      </classpath>
+    </javac>
+  </target>
 
+  <target name="jar" depends="compile">
+    <jar destfile="${build.dir}/${ant.project.name}.jar"
+         basedir="${classes.dir}"/>
+  </target>
+
+  <target name="dist" depends="jar">
+    <zip destfile="${build.dir}/${ant.project.name}.zip">
+      <zipfileset prefix="${ant.project.name}/lib" dir="${lib.dir}"/>
+      <zipfileset prefix="${ant.project.name}"
+                  file="${build.dir}/${ant.project.name}.jar"/>
+      <zipfileset prefix="${ant.project.name}/conf" dir="${conf.dir}"/>
+      <zipfileset prefix="${ant.project.name}" file="${resources.dir}/peers.sh"
+                  filemode="755"/>
+      <zipfileset prefix="${ant.project.name}"
+                  file="${resources.dir}/peers.bat"/>
+    </zip>
+  </target>
 </project>

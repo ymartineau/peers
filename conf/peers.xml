@@ -7,7 +7,9 @@
     <interfaces>
       <interface id="eth1">
         <name>Ethernet network interface</name>
+        <!-- you can specify the ip address you want
         <address>192.168.1.20</address>
+        -->
       </interface>
     </interfaces>
   </network>
@@ -19,14 +21,16 @@
     <profile>
       <userpart>alice</userpart>
       <domain>atlanta.com</domain>
-      <!--
+      <!-- not implemented
       <outboundProxy>
         <address>192.168.1.10</address>
         <port>5060</port>
       </outboundProxy>
       -->
       <interface ref="eth1"/>
-      <port>5060</port>
+      <!-- you can specify the sip listening port you want
+      <port>6060</port>
+      -->
     </profile>
   </sip>
   <codecs>

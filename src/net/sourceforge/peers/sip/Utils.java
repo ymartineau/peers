@@ -23,7 +23,10 @@ package net.sourceforge.peers.sip;
 import static net.sourceforge.peers.sip.RFC3261.HDR_VIA;
 
 import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.Enumeration;
 
 import net.sourceforge.peers.sip.core.Config;
 import net.sourceforge.peers.sip.core.useragent.UserAgent;
@@ -57,31 +60,42 @@ public class Utils {
         
         Config config = UserAgent.getInstance().getConfig();
         Node node = config.selectSingleNode("//peers:address");
-        try {
-            myAddress = InetAddress.getByName(node.getText());
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
+        if (node == null) {
+          try {
+                boolean found = false;
+                Enumeration<NetworkInterface> e = NetworkInterface
+                        .getNetworkInterfaces();
+                while (e.hasMoreElements() && !found) {
+                    NetworkInterface networkInterface = e.nextElement();
+                    // System.out.println(networkInterface.getDisplayName());
+                    Enumeration<InetAddress> f = networkInterface
+                            .getInetAddresses();
+                    while (f.hasMoreElements() && !found) {
+                        InetAddress inetAddress = f.nextElement();
+                        if (inetAddress.isSiteLocalAddress()) {
+                            this.myAddress = inetAddress;
+                            found = true;
+                        }
+                    }
+                }
+            } catch (SocketException e) {
+                e.printStackTrace();
+            }
+        } else {
+            try {
+                myAddress = InetAddress.getByName(node.getText());
+            } catch (UnknownHostException e) {
+                e.printStackTrace();
+            }
         }
-//        try {
-//            boolean found = false;
-//            Enumeration<NetworkInterface> e = NetworkInterface.getNetworkInterfaces();
-//            while (e.hasMoreElements() && !found) {
-//                NetworkInterface networkInterface = e.nextElement();
-//                // System.out.println(networkInterface.getDisplayName());
-//                Enumeration<InetAddress> f = networkInterface.getInetAddresses();
-//                while (f.hasMoreElements() && !found) {
-//                    InetAddress inetAddress = f.nextElement();
-//                    if (inetAddress.isSiteLocalAddress()) {
-//                        this.myAddress = inetAddress;
-//                        found = true;
-//                    }
-//                }
-//            }
-//        } catch (SocketException e) {
-//            e.printStackTrace();
-//        }
+
         node = config.selectSingleNode("//peers:sip/peers:profile/peers:port");
-        sipPort = Integer.parseInt(node.getText());
+        if (node == null) {
+            sipPort = RFC3261.TRANSPORT_DEFAULT_PORT;
+        } else {
+            sipPort = Integer.parseInt(node.getText());
+        }
+        
         node = config.selectSingleNode("//peers:rtp/peers:port");
         rtpPort = Integer.parseInt(node.getText());
         cseqCounter = 0;
