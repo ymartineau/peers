@@ -33,7 +33,13 @@ public class SipHeaderFieldValue {
     private HashMap<SipHeaderParamName, String> params;
     
     public SipHeaderFieldValue(String value) {
-        int pos = value.indexOf(RFC3261.PARAM_SEPARATOR);
+        int startPos = value.indexOf(RFC3261.RIGHT_ANGLE_BRACKET);
+        int pos;
+        if (startPos > -1) {
+            pos = value.indexOf(RFC3261.PARAM_SEPARATOR, startPos);
+        } else {
+            pos = value.indexOf(RFC3261.PARAM_SEPARATOR);
+        }
         this.value = (pos == -1)?value:value.substring(0,pos);
         params = new HashMap<SipHeaderParamName, String>();
         if (value.contains(RFC3261.PARAM_SEPARATOR)) {

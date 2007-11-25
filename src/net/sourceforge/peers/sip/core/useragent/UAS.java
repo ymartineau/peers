@@ -114,4 +114,9 @@ public class UAS implements SipServerTransportUser {
             
         }
     }
+
+    public InitialRequestManager getInitialRequestManager() {
+        return initialRequestManager;
+    }
+    
 }

@@ -260,6 +260,10 @@ public class UlawStream implements Runnable {
             } 
             
             //TODO close cleanly (target data) line
+            line.drain();
+            line.stop();
+            line.close();
+            line = null;
             
             
 //            AudioInputStream ais = AudioSystem.getAudioInputStream(file);

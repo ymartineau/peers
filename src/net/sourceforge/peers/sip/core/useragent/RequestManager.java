@@ -44,4 +44,9 @@ public abstract class RequestManager {
         optionsHandler = new OptionsHandler();
         registerHandler = new RegisterHandler();
     }
+
+    public InviteHandler getInviteHandler() {
+        return inviteHandler;
+    }
+    
 }

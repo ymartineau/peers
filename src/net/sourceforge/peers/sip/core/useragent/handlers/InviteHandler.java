@@ -87,7 +87,7 @@ public class InviteHandler extends DialogMethodHandler
         }
         
 
-        //TODO externalize static values 200 and "OK"
+        //TODO if mode autoanswer just send 200 without asking any question
         SipResponse sipResponse = buildGenericResponse(sipRequest,
                 RFC3261.CODE_200_OK, RFC3261.REASON_200_OK);
 
@@ -155,6 +155,8 @@ public class InviteHandler extends DialogMethodHandler
         if (!peers.contains(responseTo)) {
             peers.add(responseTo);
         }
+        setChanged();
+        notifyObservers(dialog.getRemoteUri());
     }
     
     public void handleReInvite(SipRequest sipRequest) {
@@ -259,35 +261,45 @@ public class InviteHandler extends DialogMethodHandler
         String remoteAddress = sessionDescription.getIpAddress().getHostAddress();
         int remotePort = sessionDescription.getMedias().get(0).getPort();
         String localAddress = Utils.getInstance().getMyAddress().getHostAddress();
-        CaptureRtpSender captureRtpSender;
-        try {
-            captureRtpSender = new CaptureRtpSender(localAddress,
-                    Utils.getInstance().getRtpPort(),
-                    remoteAddress, remotePort);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return;
+        CaptureRtpSender captureRtpSender =
+            UserAgent.getInstance().getCaptureRtpSender();
+        //TODO this could be optimized, create captureRtpSender at stack init
+        //     and just retrieve it here
+        if (captureRtpSender == null) {
+            try {
+                captureRtpSender = new CaptureRtpSender(localAddress,
+                        Utils.getInstance().getRtpPort(),
+                        remoteAddress, remotePort);
+            } catch (IOException e) {
+                e.printStackTrace();
+                return;
+            }
+            UserAgent.getInstance().setCaptureRtpSender(captureRtpSender);
         }
-        UserAgent.getInstance().setCaptureRtpSender(captureRtpSender);
+
         try {
             captureRtpSender.start();
         } catch (IOException e1) {
             e1.printStackTrace();
         }
         
-        IncomingRtpReader incomingRtpReader;
-        try {
-            //TODO retrieve port from SDP offer
-//            incomingRtpReader = new IncomingRtpReader(localAddress,
-//                    Utils.getInstance().getRtpPort(),
-//                    remoteAddress, remotePort);
-            incomingRtpReader = new IncomingRtpReader(captureRtpSender.getRtpSession());
-        } catch (IOException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-            return;
+        IncomingRtpReader incomingRtpReader =
+            UserAgent.getInstance().getIncomingRtpReader();
+        if (incomingRtpReader == null) {
+            try {
+                //TODO retrieve port from SDP offer
+//                incomingRtpReader = new IncomingRtpReader(localAddress,
+//                        Utils.getInstance().getRtpPort(),
+//                        remoteAddress, remotePort);
+                incomingRtpReader = new IncomingRtpReader(captureRtpSender.getRtpSession());
+            } catch (IOException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+                return;
+            }
+            UserAgent.getInstance().setIncomingRtpReader(incomingRtpReader);
         }
-        UserAgent.getInstance().setIncomingRtpReader(incomingRtpReader);
+
         try {
             incomingRtpReader.start();
         } catch (IOException e1) {

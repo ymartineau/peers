@@ -93,9 +93,11 @@ public abstract class DialogMethodHandler extends MethodHandler {
         
           //remote target
         SipHeaderFieldValue reqContact = reqHeaders.get(contactName);
-        // TODO contact can be a name address, so extract uri from name address
-        // and then set the remote target with this extracted uri
-        dialog.setRemoteTarget(reqContact.getValue());
+        String remoteTarget = reqContact.getValue();
+        if (remoteTarget.indexOf(RFC3261.LEFT_ANGLE_BRACKET) > -1) {
+            remoteTarget = NameAddress.nameAddressToUri(remoteTarget);
+        }
+        dialog.setRemoteTarget(remoteTarget);
         
           //remote cseq
         SipHeaderFieldName cseqName = new SipHeaderFieldName(RFC3261.HDR_CSEQ);
@@ -121,9 +123,21 @@ public abstract class DialogMethodHandler extends MethodHandler {
         String fromTag = from.getParam(tagName);
         dialog.setRemoteTag(fromTag);
         
-          //remote target
-        // TODO extract URI from name address if from contains a name address
-        dialog.setRemoteUri(from.getValue());
+          //remote uri
+        
+        String remoteUri = from.getValue();
+        if (remoteUri.indexOf(RFC3261.LEFT_ANGLE_BRACKET) > -1) {
+            remoteUri = NameAddress.nameAddressToUri(remoteUri);
+        }
+        dialog.setRemoteUri(remoteUri);
+        
+          //local uri
+        
+        String localUri = to.getValue();
+        if (localUri.indexOf(RFC3261.LEFT_ANGLE_BRACKET) > -1) {
+            localUri = NameAddress.nameAddressToUri(localUri);
+        }
+        dialog.setLocalUri(localUri);
         
         return dialog;
     }
