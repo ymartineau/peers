@@ -37,7 +37,7 @@
   <xs:complexType name="interfaceType">
     <xs:sequence>
       <xs:element name="name" type="xs:string"/>
-      <xs:element name="address" type="addressType"/>
+      <xs:element name="address" type="addressType" minOccurs="0"/>
     </xs:sequence>
     <xs:attribute name="id" type="xs:ID"/>
   </xs:complexType>
@@ -87,7 +87,7 @@
       <xs:element name="domain" type="xs:string"/>
       <xs:element name="outboundProxy" type="outboundProxyType" minOccurs="0"/>
       <xs:element name="interface" type="interfaceRefType"/>
-      <xs:element name="port" type="portType"/>
+      <xs:element name="port" type="portType" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
 
