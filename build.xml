@@ -52,6 +52,7 @@
       <zipfileset prefix="${ant.project.name}" dir=".">
         <include name="license-*.txt"/>
         <include name="gpl.txt"/>
+        <include name="README.txt"/>
       </zipfileset>
     </zip>
   </target>
