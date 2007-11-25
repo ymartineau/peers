@@ -1,0 +1,53 @@
+============================================================
+                Peers: SIP related experiments
+                 http://peers.sourceforge.net
+============================================================
+
+LICENSE
+
+This software is released under GPL License version 3 or
+any later version. Please read this license in gpl.txt if
+not already done.
+
+SPECIFICATION
+
+Peers is a SIP User-Agent compatible with RFC3261, you can
+retrieve this specification here:
+  http://www.ietf.org/rfc/rfc3261.txt
+
+PREREQUISITES
+
+This software has been developed using Sun Java Development Kit
+version 6. You should install the latest Java Runtime Environment
+on your computer if you just want to run the application. If you
+want to compile the sources yourself, you should use the JDK. In
+both cases, you can download the installation files here:
+  http://java.sun.com/javase/downloads/index.jsp
+
+CONFIGURATION
+
+You can manually configure the IP address of your computer in file
+conf/peers.xml. You can also configure your SIP listening port and
+your RTP port. This configuration file is ruled by a grammar file:
+peers.xsd. Thus to modify this file, you can use jEdit with the
+XML plugin. You can download jEdit here:
+  http://www.jedit.org/index.php?page=download
+Remember that this configuration step is optional, the default
+configuration should be enough.
+
+RUNNING
+
+If you are a Windows user you can use the .bat batch script, if you
+use any Unix compatible sytem, you can use the .sh script. You can
+then call any IP address using SIP protocol, if the remote host
+does not listen on the default SIP port (5060), you can use the
+following example URI:
+  sip:192.168.1.2:6060
+
+HISTORY
+
+2007-11-25 First release 0.1 minimalist UAC and UAS.
+
+AUTHOR
+
+Yohann Martineau yohann.martineau@gmail.com
