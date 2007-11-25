@@ -49,6 +49,10 @@
                   filemode="755"/>
       <zipfileset prefix="${ant.project.name}"
                   file="${resources.dir}/peers.bat"/>
+      <zipfileset prefix="${ant.project.name}" dir=".">
+        <include name="license-*.txt"/>
+        <include name="gpl.txt"/>
+      </zipfileset>
     </zip>
   </target>
 </project>
