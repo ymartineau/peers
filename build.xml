@@ -45,9 +45,10 @@
       <zipfileset prefix="${ant.project.name}"
                   file="${build.dir}/${ant.project.name}.jar"/>
       <zipfileset prefix="${ant.project.name}/conf" dir="${conf.dir}"/>
-      <zipfileset prefix="${ant.project.name}" file="${resources.dir}/peers.sh"
+      <zipfileset prefix="${ant.project.name}/bin"
+                  file="${resources.dir}/peers.sh"
                   filemode="755"/>
-      <zipfileset prefix="${ant.project.name}"
+      <zipfileset prefix="${ant.project.name}/bin"
                   file="${resources.dir}/peers.bat"/>
       <zipfileset prefix="${ant.project.name}" dir=".">
         <include name="license-*.txt"/>
@@ -56,4 +57,25 @@
       </zipfileset>
     </zip>
   </target>
+
+  <target name="dist-src" depends="jar">
+    <zip destfile="${build.dir}/${ant.project.name}-src.zip">
+      <zipfileset prefix="${ant.project.name}/src" dir="${src.dir}"/>
+      <zipfileset prefix="${ant.project.name}/lib" dir="${lib.dir}"/>
+      <zipfileset prefix="${ant.project.name}"
+                  file="${build.dir}/${ant.project.name}.jar"/>
+      <zipfileset prefix="${ant.project.name}/conf" dir="${conf.dir}"/>
+      <zipfileset prefix="${ant.project.name}/bin"
+                  file="${resources.dir}/peers.sh"
+                  filemode="755"/>
+      <zipfileset prefix="${ant.project.name}/bin"
+                  file="${resources.dir}/peers.bat"/>
+      <zipfileset prefix="${ant.project.name}" dir=".">
+        <include name="license-*.txt"/>
+        <include name="gpl.txt"/>
+        <include name="README.txt"/>
+      </zipfileset>
+    </zip>
+  </target>
+
 </project>
