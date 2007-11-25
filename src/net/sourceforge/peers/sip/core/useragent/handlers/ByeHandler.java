@@ -62,6 +62,7 @@ public class ByeHandler extends DialogMethodHandler
     
     public void handleBye(SipRequest sipRequest, Dialog dialog) {
         dialog.receivedOrSentBye();
+        String remoteUri = dialog.getRemoteUri();
 
         String addrSpec = sipRequest.getRequestUri().toString();
         UserAgent.getInstance().getPeers().remove(addrSpec);
@@ -93,6 +94,8 @@ public class ByeHandler extends DialogMethodHandler
         
         serverTransaction.sendReponse(sipResponse);
         
+        setChanged();
+        notifyObservers(remoteUri);
     }
 
     ///////////////////////////////////////

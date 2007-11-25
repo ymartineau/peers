@@ -193,13 +193,21 @@ public abstract class DialogMethodHandler extends MethodHandler {
         
         dialog.setRemoteTag(toTag);
         
-        //remote uri
+          //remote uri
         
-        dialog.setRemoteUri(to.getValue());
+        String remoteUri = to.getValue();
+        if (remoteUri.indexOf(RFC3261.LEFT_ANGLE_BRACKET) > -1) {
+            remoteUri = NameAddress.nameAddressToUri(remoteUri);
+        }
+        dialog.setRemoteUri(remoteUri);
         
-        //local uri
+          //local uri
         
-        dialog.setLocalUri(requestFrom.getValue());
+        String localUri = requestFrom.getValue();
+        if (localUri.indexOf(RFC3261.LEFT_ANGLE_BRACKET) > -1) {
+            localUri = NameAddress.nameAddressToUri(localUri);
+        }
+        dialog.setLocalUri(localUri);
         
         return dialog;
     }

@@ -48,5 +48,9 @@ public abstract class RequestManager {
     public InviteHandler getInviteHandler() {
         return inviteHandler;
     }
+
+    public ByeHandler getByeHandler() {
+        return byeHandler;
+    }
     
 }
