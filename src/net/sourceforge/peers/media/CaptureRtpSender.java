@@ -44,6 +44,7 @@ public class CaptureRtpSender {
     }
 
     public void start() throws IOException {
+        ulawStream.setStopped(false);
         new Thread(ulawStream).start();
     }
 

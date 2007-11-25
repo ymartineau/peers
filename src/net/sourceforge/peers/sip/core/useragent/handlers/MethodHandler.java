@@ -20,6 +20,8 @@
 
 package net.sourceforge.peers.sip.core.useragent.handlers;
 
+import java.util.Observable;
+
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldName;
@@ -29,7 +31,7 @@ import net.sourceforge.peers.sip.syntaxencoding.SipHeaders;
 import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.SipResponse;
 
-public abstract class MethodHandler {
+public abstract class MethodHandler extends Observable {
 
     protected SipResponse buildGenericResponse(SipRequest sipRequest,
             int statusCode, String reasonPhrase) {
