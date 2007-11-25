@@ -37,11 +37,11 @@ configuration should be enough.
 
 RUNNING
 
-If you are a Windows user you can use the .bat batch script, if you
-use any Unix compatible sytem, you can use the .sh script. You can
-then call any IP address using SIP protocol, if the remote host
-does not listen on the default SIP port (5060), you can use the
-following example URI:
+If you are a Windows user you can use the .bat batch script in bin
+directory, if you use any Unix compatible sytem, you can use the
+.sh script. You can then call any IP address using SIP protocol,
+if the remote host does not listen on the default SIP port (5060),
+you can use the following example URI:
   sip:192.168.1.2:6060
 
 HISTORY
