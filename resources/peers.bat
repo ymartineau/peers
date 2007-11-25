@@ -1,1 +1,1 @@
-java -classpath peers.jar:lib/* net.sourceforge.peers.gui.BasicGUI
+java -classpath peers.jar;lib/* net.sourceforge.peers.gui.BasicGUI
