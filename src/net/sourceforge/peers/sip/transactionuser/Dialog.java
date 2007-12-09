@@ -24,6 +24,7 @@ import java.util.ArrayList;
 
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.Utils;
+import net.sourceforge.peers.sip.syntaxencoding.NameAddress;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldMultiValue;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldName;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldValue;
@@ -108,7 +109,8 @@ public class Dialog {
         
         //To
         
-        SipHeaderFieldValue to = new SipHeaderFieldValue(remoteUri);
+        SipHeaderFieldValue to = new SipHeaderFieldValue(
+                new NameAddress(remoteUri).toString());
         if (remoteTag != null) {
             to.addParam(new SipHeaderParamName(RFC3261.PARAM_TAG), remoteTag);
         }
@@ -116,7 +118,8 @@ public class Dialog {
         
         //From
         
-        SipHeaderFieldValue from = new SipHeaderFieldValue(localUri);
+        SipHeaderFieldValue from = new SipHeaderFieldValue(
+                new NameAddress(localUri).toString());
         if (localTag != null) {
             from.addParam(new SipHeaderParamName(RFC3261.PARAM_TAG), localTag);
         }

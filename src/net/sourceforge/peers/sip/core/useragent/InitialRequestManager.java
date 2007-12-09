@@ -127,10 +127,13 @@ public class InitialRequestManager extends RequestManager {
         
         SipHeaderFieldValue contentType =
             headers.get(new SipHeaderFieldName(RFC3261.HDR_CONTENT_TYPE));
-        if (!RFC3261.CONTENT_TYPE_SDP.equals(contentType.getValue())) {
-            //TODO generate 415 with a Accept header listing supported content types
-            //8.2.3
+        if (contentType != null) {
+            if (!RFC3261.CONTENT_TYPE_SDP.equals(contentType.getValue())) {
+                //TODO generate 415 with a Accept header listing supported content types
+                //8.2.3
+            }
         }
+
         
         //etc.
         
