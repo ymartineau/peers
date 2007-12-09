@@ -40,9 +40,16 @@ public class SipHeaderFieldValue {
         } else {
             pos = value.indexOf(RFC3261.PARAM_SEPARATOR);
         }
-        this.value = (pos == -1)?value:value.substring(0,pos);
+        String paramsString;
+        if (pos > -1) {
+            this.value = value.substring(0,pos);
+            paramsString = value.substring(pos);
+        } else {
+            this.value = value;
+            paramsString = "";
+        }
         params = new HashMap<SipHeaderParamName, String>();
-        if (value.contains(RFC3261.PARAM_SEPARATOR)) {
+        if (paramsString.contains(RFC3261.PARAM_SEPARATOR)) {
             String[] arr = value.split(RFC3261.PARAM_SEPARATOR);
             if (arr.length > 1) {
                 for (int i = 0; i < arr.length - 1; ++i) {

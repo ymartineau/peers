@@ -5,6 +5,7 @@
   <property name="classes.dir" value="${build.dir}/classes"/>
   <property name="lib.dir" value="lib"/>
   <property name="src.dir" value="src"/>
+  <property name="test.dir" value="test"/>
   <property name="conf.dir" value="conf"/>
   <property name="resources.dir" value="resources"/>
 
@@ -25,7 +26,15 @@
 
   <target name="compile" depends="init">
     <javac destdir="${classes.dir}"
-        srcdir="${src.dir}">
+        srcdir="${src.dir}" debug="true">
+      <classpath>
+        <fileset dir="${lib.dir}">
+          <include name="**/*.jar"/>
+        </fileset>
+      </classpath>
+    </javac>
+    <javac destdir="${classes.dir}"
+        srcdir="${test.dir}">
       <classpath>
         <fileset dir="${lib.dir}">
           <include name="**/*.jar"/>
@@ -45,10 +54,10 @@
       <zipfileset prefix="${ant.project.name}"
                   file="${build.dir}/${ant.project.name}.jar"/>
       <zipfileset prefix="${ant.project.name}/conf" dir="${conf.dir}"/>
-      <zipfileset prefix="${ant.project.name}/bin"
+      <zipfileset prefix="${ant.project.name}"
                   file="${resources.dir}/peers.sh"
                   filemode="755"/>
-      <zipfileset prefix="${ant.project.name}/bin"
+      <zipfileset prefix="${ant.project.name}"
                   file="${resources.dir}/peers.bat"/>
       <zipfileset prefix="${ant.project.name}" dir=".">
         <include name="license-*.txt"/>
@@ -65,10 +74,10 @@
       <zipfileset prefix="${ant.project.name}"
                   file="${build.dir}/${ant.project.name}.jar"/>
       <zipfileset prefix="${ant.project.name}/conf" dir="${conf.dir}"/>
-      <zipfileset prefix="${ant.project.name}/bin"
+      <zipfileset prefix="${ant.project.name}"
                   file="${resources.dir}/peers.sh"
                   filemode="755"/>
-      <zipfileset prefix="${ant.project.name}/bin"
+      <zipfileset prefix="${ant.project.name}"
                   file="${resources.dir}/peers.bat"/>
       <zipfileset prefix="${ant.project.name}" dir=".">
         <include name="license-*.txt"/>
