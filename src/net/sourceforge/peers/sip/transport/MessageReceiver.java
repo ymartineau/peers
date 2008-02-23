@@ -37,7 +37,7 @@ import net.sourceforge.peers.sip.transaction.TransactionManager;
 
 public abstract class MessageReceiver implements Runnable {
 
-    public static final int BUFFER_SIZE = 1024;
+    public static final int BUFFER_SIZE = 2048;//FIXME should correspond to MTU 1024;
     public static final String CHARACTER_ENCODING = "US-ASCII";
     
     protected int port;
