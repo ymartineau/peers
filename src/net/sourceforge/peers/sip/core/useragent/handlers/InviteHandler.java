@@ -42,6 +42,7 @@ import net.sourceforge.peers.sip.syntaxencoding.SipHeaders;
 import net.sourceforge.peers.sip.syntaxencoding.SipURI;
 import net.sourceforge.peers.sip.transaction.ClientTransaction;
 import net.sourceforge.peers.sip.transaction.ClientTransactionUser;
+import net.sourceforge.peers.sip.transaction.InviteClientTransaction;
 import net.sourceforge.peers.sip.transaction.ServerTransaction;
 import net.sourceforge.peers.sip.transaction.ServerTransactionUser;
 import net.sourceforge.peers.sip.transaction.Transaction;
@@ -143,8 +144,6 @@ public class InviteHandler extends DialogMethodHandler
         Dialog dialog = DialogManager.getInstance().getDialog(remoteUri);
         
         //TODO if mode autoanswer just send 200 without asking any question
-        //FIXME do not use generic response, because it uses a different
-        //to tag
         SipResponse sipResponse =
             MidDialogRequestManager.generateMidDialogResponse(
                     sipRequest,
@@ -155,8 +154,6 @@ public class InviteHandler extends DialogMethodHandler
         // TODO 13.3 dialog invite-specific processing
         
         // TODO timer if there is an Expires header in INVITE
-        
-        // TODO 1xx
         
         // TODO 3xx
         
@@ -185,9 +182,7 @@ public class InviteHandler extends DialogMethodHandler
         // from initial invite
         // FIXME determine port and transport for server transaction>transport
         ServerTransaction serverTransaction =
-            TransactionManager.getInstance().createServerTransaction(sipResponse,
-                    Utils.getInstance().getSipPort(), RFC3261.TRANSPORT_UDP, this,
-                    sipRequest);
+            TransactionManager.getInstance().getServerTransaction(sipRequest);
         
         serverTransaction.start();
         
@@ -200,18 +195,45 @@ public class InviteHandler extends DialogMethodHandler
         
         dialog.receivedOrSent2xx();
         
-//        List<Dialog> dialogs = UserAgent.getInstance().getDialogs();
-//        if (!dialogs.contains(dialog)) {
-//            dialogs.add(dialog);
-//            System.out.println("added dialog " + dialog.getId());
-//        }
-        
         setChanged();
         notifyObservers(sipRequest);
     }
     
     public void rejectCall(SipRequest sipRequest) {
         //TODO generate 486, etc.
+        SipHeaders reqHeaders = sipRequest.getSipHeaders();
+        SipHeaderFieldValue to = reqHeaders.get(
+                new SipHeaderFieldName(RFC3261.HDR_FROM));
+        String remoteUri = to.getValue();
+        if (remoteUri.indexOf(RFC3261.LEFT_ANGLE_BRACKET) > -1) {
+            remoteUri = NameAddress.nameAddressToUri(remoteUri);
+        }
+        Dialog dialog = DialogManager.getInstance().getDialog(remoteUri);
+        
+        //TODO manage auto reject Do not disturb (DND)
+        SipResponse sipResponse =
+            MidDialogRequestManager.generateMidDialogResponse(
+                    sipRequest,
+                    dialog,
+                    RFC3261.CODE_486_BUSYHERE,
+                    RFC3261.REASON_486_BUSYHERE);
+        
+        // TODO determine port and transport for server transaction>transport
+        // from initial invite
+        // FIXME determine port and transport for server transaction>transport
+        ServerTransaction serverTransaction =
+            TransactionManager.getInstance().getServerTransaction(sipRequest);
+        
+        serverTransaction.start();
+        
+        serverTransaction.receivedRequest(sipRequest);
+        
+        serverTransaction.sendReponse(sipResponse);
+        
+        dialog.receivedOrSent300To699();
+        
+        setChanged();
+        notifyObservers(sipRequest);
     }
     
     //////////////////////////////////////////////////////////
@@ -254,8 +276,12 @@ public class InviteHandler extends DialogMethodHandler
     //////////////////////////////////////////////////////////
 
     public void errResponseReceived(SipResponse sipResponse) {
-        // TODO Auto-generated method stub
+        // FIXME notify call frame that an error occured
+        InviteClientTransaction inviteClientTransaction = (InviteClientTransaction)
+            TransactionManager.getInstance().getClientTransaction(sipResponse);
         
+        setChanged();
+        notifyObservers(inviteClientTransaction.getRequest());
     }
 
     public void provResponseReceived(SipResponse sipResponse, Transaction transaction) {

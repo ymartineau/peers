@@ -82,7 +82,15 @@ public class InviteServerTransaction extends InviteTransaction
     }
     
     public void receivedRequest(SipRequest sipRequest) {
-        state.receivedInvite();
+        String method = sipRequest.getMethod();
+        if (RFC3261.METHOD_INVITE.equals(method)) {
+            state.receivedInvite();
+        } else {
+            // if not INVITE, we consider that a ACK is received
+            // in the case the call was not successful
+            state.receivedAck();
+        }
+        
     }
 
     public void sendReponse(SipResponse sipResponse) {
