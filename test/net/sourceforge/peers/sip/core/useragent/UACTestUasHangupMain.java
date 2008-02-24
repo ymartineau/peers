@@ -21,32 +21,17 @@ package net.sourceforge.peers.sip.core.useragent;
 
 import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
-import net.sourceforge.peers.sip.transactionuser.Dialog;
-import net.sourceforge.peers.sip.transactionuser.DialogManager;
 
-public class UACTestMain {
+public class UACTestUasHangupMain {
 
     public static void main(String[] args) {
-        String requestUri = "sip:bob@" + Utils.getInstance()
-            .getMyAddress().getHostAddress() + ":6060";
+        String requestUri = "sip:bob@"
+                + Utils.getInstance().getMyAddress().getHostAddress() + ":6060";
         try {
             UAS.getInstance();
             UAC.getInstance().invite(requestUri);
         } catch (SipUriSyntaxException e) {
             e.printStackTrace();
-        }
-        
-        try {
-            Thread.sleep(20000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        
-        Dialog dialog = DialogManager.getInstance().getDialog(requestUri);
-        if (dialog != null) {
-            UAC.getInstance().terminate(dialog);
-        } else {
-            System.err.println("dialog not found");
         }
     }
 }

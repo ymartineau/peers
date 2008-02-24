@@ -121,13 +121,13 @@ public class MidDialogRequestManager extends RequestManager
         responseHeaders.add(viaName, requestHeaders.get(viaName));//TODO check ordering
         SipHeaderFieldName toName = new SipHeaderFieldName(RFC3261.HDR_TO);
         SipHeaderFieldValue toValue = requestHeaders.get(toName);
-        String toTag = toValue.getParam(new SipHeaderParamName(RFC3261.PARAM_TAG));
+        SipHeaderParamName toTagParamName = new SipHeaderParamName(RFC3261.PARAM_TAG);
+        String toTag = toValue.getParam(toTagParamName);
         if (toTag == null) {
-            //TODO generate To tag
-            
-        } else {
-            responseHeaders.add(toName, toValue);
+            toTag = dialog.getLocalTag();
+            toValue.addParam(toTagParamName, toTag);
         }
+        responseHeaders.add(toName, toValue);
         return sipResponse;
     }
 

@@ -32,7 +32,9 @@ import net.sourceforge.peers.sdp.SDPManager;
 import net.sourceforge.peers.sdp.SessionDescription;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.Utils;
+import net.sourceforge.peers.sip.core.useragent.MidDialogRequestManager;
 import net.sourceforge.peers.sip.core.useragent.UserAgent;
+import net.sourceforge.peers.sip.syntaxencoding.NameAddress;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldName;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldValue;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderParamName;
@@ -67,6 +69,49 @@ public class InviteHandler extends DialogMethodHandler
     //////////////////////////////////////////////////////////
 
     public void handleInitialInvite(SipRequest sipRequest) {
+        
+//        setChanged();
+//        ArrayList args = new ArrayList();
+//        args.add(Event.incomingCall);
+//        args.add(sipRequest);
+//        
+//        notifyObservers(args);
+        
+        //generate 180 Ringing
+        SipResponse sipResponse = buildGenericResponse(sipRequest,
+                RFC3261.CODE_180_RINGING, RFC3261.REASON_180_RINGING);
+        Dialog dialog = buildDialogForUas(sipResponse, sipRequest);
+        //here dialog is already stored in dialogs in DialogManager
+        
+        ServerTransaction serverTransaction =
+            TransactionManager.getInstance().createServerTransaction(sipResponse,
+                    Utils.getInstance().getSipPort(), RFC3261.TRANSPORT_UDP, this,
+                    sipRequest);
+        
+        serverTransaction.start();
+        
+        serverTransaction.receivedRequest(sipRequest);
+        
+        serverTransaction.sendReponse(sipResponse);
+        
+        dialog.receivedOrSent1xx();
+        
+        List<String> peers = UserAgent.getInstance().getPeers();
+        String responseTo = sipRequest.getSipHeaders().get(
+                new SipHeaderFieldName(RFC3261.HDR_FROM)).getValue();
+        if (!peers.contains(responseTo)) {
+            peers.add(responseTo);
+        }
+        
+        setChanged();
+        notifyObservers(sipRequest);
+    }
+    
+    public void handleReInvite(SipRequest sipRequest) {
+        
+    }
+    
+    public void acceptCall(SipRequest sipRequest) {
         SipHeaders reqHeaders = sipRequest.getSipHeaders();
         SipHeaderFieldValue contentType =
             reqHeaders.get(new SipHeaderFieldName(RFC3261.HDR_CONTENT_TYPE));
@@ -86,13 +131,26 @@ public class InviteHandler extends DialogMethodHandler
         }
         
 
-        //TODO if mode autoanswer just send 200 without asking any question
-        SipResponse sipResponse = buildGenericResponse(sipRequest,
-                RFC3261.CODE_200_OK, RFC3261.REASON_200_OK);
+
 
         
-
-        Dialog dialog = buildDialogForUas(sipResponse, sipRequest);
+        SipHeaderFieldValue to = reqHeaders.get(
+                new SipHeaderFieldName(RFC3261.HDR_FROM));
+        String remoteUri = to.getValue();
+        if (remoteUri.indexOf(RFC3261.LEFT_ANGLE_BRACKET) > -1) {
+            remoteUri = NameAddress.nameAddressToUri(remoteUri);
+        }
+        Dialog dialog = DialogManager.getInstance().getDialog(remoteUri);
+        
+        //TODO if mode autoanswer just send 200 without asking any question
+        //FIXME do not use generic response, because it uses a different
+        //to tag
+        SipResponse sipResponse =
+            MidDialogRequestManager.generateMidDialogResponse(
+                    sipRequest,
+                    dialog,
+                    RFC3261.CODE_200_OK,
+                    RFC3261.REASON_200_OK);
         
         // TODO 13.3 dialog invite-specific processing
         
@@ -142,26 +200,19 @@ public class InviteHandler extends DialogMethodHandler
         
         dialog.receivedOrSent2xx();
         
-        List<Dialog> dialogs = UserAgent.getInstance().getDialogs();
-        if (!dialogs.contains(dialog)) {
-            dialogs.add(dialog);
-            System.out.println("added dialog " + dialog.getId());
-        }
+//        List<Dialog> dialogs = UserAgent.getInstance().getDialogs();
+//        if (!dialogs.contains(dialog)) {
+//            dialogs.add(dialog);
+//            System.out.println("added dialog " + dialog.getId());
+//        }
         
-        List<String> peers = UserAgent.getInstance().getPeers();
-        String responseTo = reqHeaders.get(
-                new SipHeaderFieldName(RFC3261.HDR_FROM)).getValue();
-        if (!peers.contains(responseTo)) {
-            peers.add(responseTo);
-        }
         setChanged();
-        notifyObservers(dialog.getRemoteUri());
+        notifyObservers(sipRequest);
     }
     
-    public void handleReInvite(SipRequest sipRequest) {
-        
+    public void rejectCall(SipRequest sipRequest) {
+        //TODO generate 486, etc.
     }
-    
     
     //////////////////////////////////////////////////////////
     // UAC methods
@@ -251,8 +302,8 @@ public class InviteHandler extends DialogMethodHandler
             dialog = buildDialogForUac(sipResponse, transaction);
         }
         
-        UserAgent.getInstance().getDialogs().add(dialog);
-        System.out.println("added dialog " + dialog.getId());
+//        UserAgent.getInstance().getDialogs().add(dialog);
+//        System.out.println("added dialog " + dialog.getId());
         
         //added for media
         SessionDescription sessionDescription =
