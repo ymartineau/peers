@@ -127,7 +127,12 @@ public class InviteServerTransaction extends InviteTransaction
         }
     }
     
-//    void stopSipServerTransport() {
+    // TODO send provional response
+    /*
+     * maybe the 200 response mechanism could be retrieved for 1xx responses.
+     */
+
+// void stopSipServerTransport() {
 //        sipServerTransport.stop();
 //    }
     

@@ -19,6 +19,7 @@
 
 package net.sourceforge.peers.sip.transactionuser;
 
+import java.util.Collection;
 import java.util.Hashtable;
 
 import net.sourceforge.peers.sip.RFC3261;
@@ -69,6 +70,10 @@ public class DialogManager {
         return dialog;
     }
     
+    public void removeDialog(String dialogId) {
+        dialogs.remove(dialogId);
+    }
+
     public Dialog getDialog(SipMessage sipMessage) {
         SipHeaders sipHeaders = sipMessage.getSipHeaders();
         String callID = sipHeaders.get(
@@ -86,6 +91,18 @@ public class DialogManager {
         return dialogs.get(getDialogId(callID, toTag, fromTag));
     }
     
+    public Dialog getDialog(String peer) {
+        for (Dialog dialog : dialogs.values()) {
+            String remoteUri = dialog.getRemoteUri();
+            if (remoteUri != null) {
+                if (remoteUri.contains(peer)) {
+                    return dialog;
+                }
+            }
+        }
+        return null;
+    }
+    
     private String getDialogId(String callID, String localTag, String remoteTag) {
         StringBuffer buf = new StringBuffer();
         buf.append(callID);
@@ -94,5 +111,9 @@ public class DialogManager {
         buf.append(Dialog.ID_SEPARATOR);
         buf.append(remoteTag);
         return buf.toString();
+    }
+    
+    public Collection<Dialog> getDialogCollection() {
+        return dialogs.values();
     }
 }

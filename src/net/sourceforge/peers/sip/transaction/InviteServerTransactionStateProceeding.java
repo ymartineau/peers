@@ -34,6 +34,8 @@ public class InviteServerTransactionStateProceeding extends
         InviteServerTransactionState nextState = inviteServerTransaction.PROCEEDING;
         inviteServerTransaction.setState(nextState);
         log(nextState);
+        //TODO inviteServerTransaction.sendProvisionalResponse();
+        inviteServerTransaction.sendLastResponse();
     }
     
     @Override

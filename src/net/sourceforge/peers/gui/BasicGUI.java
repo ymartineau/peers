@@ -31,9 +31,18 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
+import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.core.useragent.UAC;
 import net.sourceforge.peers.sip.core.useragent.UAS;
+import net.sourceforge.peers.sip.core.useragent.handlers.InviteHandler;
+import net.sourceforge.peers.sip.syntaxencoding.NameAddress;
+import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldName;
+import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldValue;
 import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
+import net.sourceforge.peers.sip.transactionuser.Dialog;
+import net.sourceforge.peers.sip.transactionuser.DialogManager;
+import net.sourceforge.peers.sip.transactionuser.DialogStateEarly;
+import net.sourceforge.peers.sip.transport.SipRequest;
 
 public class BasicGUI implements ActionListener, Observer {
 
@@ -99,6 +108,17 @@ public class BasicGUI implements ActionListener, Observer {
     }
 
     public void update(Observable o, Object arg) {
-        new CallFrame(arg.toString());
+        SipRequest sipRequest = (SipRequest) arg;
+        
+        SipHeaderFieldValue to = sipRequest.getSipHeaders().get(
+                new SipHeaderFieldName(RFC3261.HDR_FROM));
+        String remoteUri = to.getValue();
+        if (remoteUri.indexOf(RFC3261.LEFT_ANGLE_BRACKET) > -1) {
+            remoteUri = NameAddress.nameAddressToUri(remoteUri);
+        }
+        Dialog dialog = DialogManager.getInstance().getDialog(remoteUri);
+        if (dialog.getState() instanceof DialogStateEarly) {
+            new CallFrame((InviteHandler) o, sipRequest);
+        }
     }
 }

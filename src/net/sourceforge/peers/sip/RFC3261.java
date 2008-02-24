@@ -87,15 +87,17 @@ public final class RFC3261 {
     public final static char RIGHT_ANGLE_BRACKET    = '>';
     
       //STATUS CODES
-    public final static int CODE_MIN_PROV        = 100;
-    public final static int CODE_MIN_SUCCESS     = 200;
-    public final static int CODE_MIN_REDIR       = 300;
-    public final static int CODE_MAX             = 699;
-    
-    public final static int CODE_200_OK          = 200;
+    public final static int CODE_MIN_PROV         = 100;
+    public final static int CODE_MIN_SUCCESS      = 200;
+    public final static int CODE_MIN_REDIR        = 300;
+    public final static int CODE_MAX              = 699;
+
+    public final static int CODE_180_RINGING      = 180;
+    public final static int CODE_200_OK           = 200;
     
       //REASON PHRASES
-    public final static String REASON_200_OK     = "OK";
+    public final static String REASON_180_RINGING = "Ringing";
+    public final static String REASON_200_OK      = "OK";
     
     //TRANSPORT
     

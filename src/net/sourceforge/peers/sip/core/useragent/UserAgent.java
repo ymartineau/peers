@@ -27,7 +27,6 @@ import java.util.List;
 import net.sourceforge.peers.media.CaptureRtpSender;
 import net.sourceforge.peers.media.IncomingRtpReader;
 import net.sourceforge.peers.sip.core.Config;
-import net.sourceforge.peers.sip.transactionuser.Dialog;
 
 import org.dom4j.DocumentException;
 
@@ -48,14 +47,14 @@ public class UserAgent {
     private Config config;
     
     private List<String> peers;
-    private List<Dialog> dialogs;
+    //private List<Dialog> dialogs;
     
     private CaptureRtpSender captureRtpSender;
     private IncomingRtpReader incomingRtpReader;
 
     private UserAgent() {
         peers = new ArrayList<String>();
-        dialogs = new ArrayList<Dialog>();
+        //dialogs = new ArrayList<Dialog>();
         File configFile = new File(CONFIG_FILE);
         if (!configFile.exists()) {
             System.err.println("configuration file not found: " + CONFIG_FILE);
@@ -70,25 +69,25 @@ public class UserAgent {
         }
     }
     
-    public List<Dialog> getDialogs() {
-        return dialogs;
-    }
+//    public List<Dialog> getDialogs() {
+//        return dialogs;
+//    }
 
     public List<String> getPeers() {
         return peers;
     }
 
-    public Dialog getDialog(String peer) {
-        for (Dialog dialog : dialogs) {
-            String remoteUri = dialog.getRemoteUri();
-            if (remoteUri != null) {
-                if (remoteUri.contains(peer)) {
-                    return dialog;
-                }
-            }
-        }
-        return null;
-    }
+//    public Dialog getDialog(String peer) {
+//        for (Dialog dialog : dialogs) {
+//            String remoteUri = dialog.getRemoteUri();
+//            if (remoteUri != null) {
+//                if (remoteUri.contains(peer)) {
+//                    return dialog;
+//                }
+//            }
+//        }
+//        return null;
+//    }
 
     public CaptureRtpSender getCaptureRtpSender() {
         return captureRtpSender;

@@ -20,12 +20,11 @@
 package net.sourceforge.peers.sip.core.useragent.handlers;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import net.sourceforge.peers.sip.RFC3261;
-import net.sourceforge.peers.sip.core.useragent.UserAgent;
 import net.sourceforge.peers.sip.syntaxencoding.NameAddress;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldMultiValue;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldName;
@@ -66,7 +65,9 @@ public abstract class DialogMethodHandler extends MethodHandler {
         if (reqRecRoute != null) {
         	respHeaders.add(recordRouteName, reqRecRoute);
         }
-        
+
+        //FIXME Contact header should probably added in response here.
+
         SipHeaderFieldName contactName = new SipHeaderFieldName(RFC3261.HDR_CONTACT);
         
         Dialog dialog = DialogManager.getInstance().createDialog(sipResponse);
@@ -243,7 +244,7 @@ public abstract class DialogMethodHandler extends MethodHandler {
         @Override
         public void run() {
             ArrayList<Dialog> purgedDialogs = new ArrayList<Dialog>();
-            List<Dialog> dialogs = UserAgent.getInstance().getDialogs();
+            Collection<Dialog> dialogs = DialogManager.getInstance().getDialogCollection();
             for (Dialog dialog : dialogs) {
                 String remoteUri = dialog.getRemoteUri();
                 if (remoteUri.equals(toUri) &&

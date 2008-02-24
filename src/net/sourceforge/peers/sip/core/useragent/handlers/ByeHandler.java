@@ -27,6 +27,7 @@ import net.sourceforge.peers.sip.transaction.ServerTransaction;
 import net.sourceforge.peers.sip.transaction.ServerTransactionUser;
 import net.sourceforge.peers.sip.transaction.TransactionManager;
 import net.sourceforge.peers.sip.transactionuser.Dialog;
+import net.sourceforge.peers.sip.transactionuser.DialogManager;
 import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.SipResponse;
 
@@ -46,7 +47,7 @@ public class ByeHandler extends DialogMethodHandler
         
         dialog.receivedOrSentBye();
         
-        UserAgent.getInstance().getDialogs().remove(dialog);
+        DialogManager.getInstance().removeDialog(dialog.getId());
         System.out.println("removed dialog " + dialog.getId());
     }
     
@@ -61,11 +62,11 @@ public class ByeHandler extends DialogMethodHandler
     
     public void handleBye(SipRequest sipRequest, Dialog dialog) {
         dialog.receivedOrSentBye();
-        String remoteUri = dialog.getRemoteUri();
+        //String remoteUri = dialog.getRemoteUri();
 
         String addrSpec = sipRequest.getRequestUri().toString();
         UserAgent.getInstance().getPeers().remove(addrSpec);
-        UserAgent.getInstance().getDialogs().remove(dialog);
+        DialogManager.getInstance().removeDialog(dialog.getId());
         System.out.println("removed dialog " + dialog.getId());
         UserAgent.getInstance().getCaptureRtpSender().stop();
         UserAgent.getInstance().setCaptureRtpSender(null);
@@ -95,7 +96,7 @@ public class ByeHandler extends DialogMethodHandler
         serverTransaction.sendReponse(sipResponse);
         
         setChanged();
-        notifyObservers(remoteUri);
+        notifyObservers(sipRequest);
     }
 
     ///////////////////////////////////////
