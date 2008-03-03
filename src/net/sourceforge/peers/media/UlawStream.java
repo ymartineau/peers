@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007 Yohann Martineau 
+    Copyright 2007, 2008 Yohann Martineau 
 */
 
 package net.sourceforge.peers.media;
@@ -32,6 +32,8 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.TargetDataLine;
+
+import net.sourceforge.peers.Logger;
 
 
 /**
@@ -99,12 +101,11 @@ public class UlawStream implements Runnable {
             //TODO code cleaning: targetEncoding is only employed to display info...
             AudioFormat.Encoding targetEncoding = AudioFormat.Encoding.ULAW;
             
-            
-            System.out.println("target encodings for " + format.getEncoding());
+            Logger.getInstance().debug("target encodings for " + format.getEncoding());
             AudioFormat.Encoding[] encodings =
                 AudioSystem.getTargetEncodings(format.getEncoding());
             for (AudioFormat.Encoding encoding : encodings) {
-                System.out.println(encoding);
+                Logger.getInstance().debug(encoding);
             }
             
             
@@ -123,18 +124,18 @@ public class UlawStream implements Runnable {
 //            AudioInputStream ulawAIS = AudioSystem.getAudioInputStream(targetFormat,
 //                    sourceStream);
             
-            System.out.println("target formats");
+            Logger.getInstance().debug("target formats");
             for (AudioFormat audioFormat : formats) {
-                System.out.println(audioFormat);
+                Logger.getInstance().debug(audioFormat);
             }
             
             
             
 //            if (AudioSystem.isConversionSupported(AudioFormat.Encoding.ULAW,
 //                    new AudioFormat((float)8000, 16, 1, true, false))) {
-//                System.out.println("conversion ok");
+//                logger.debug("conversion ok");
 //            } else {
-//                System.out.println("conversion unavailable");
+//                logger.debug("conversion unavailable");
 //            }
             
             
@@ -163,9 +164,10 @@ public class UlawStream implements Runnable {
                 line.open(format);
                 
                 
-            } catch (LineUnavailableException ex) {
-                // Handle the error ... 
-                ex.printStackTrace();
+            } catch (LineUnavailableException e) {
+                // Handle the error ...
+                Logger.getInstance().error(e);
+                e.printStackTrace();
                 return;
             }
             line.start();
@@ -330,7 +332,7 @@ public class UlawStream implements Runnable {
 //            
 //            fileInputStream.close();
             
-            System.out.println("done");
+            Logger.getInstance().debug("streaming finished");
 
         } catch (FileNotFoundException fnfe) {
 

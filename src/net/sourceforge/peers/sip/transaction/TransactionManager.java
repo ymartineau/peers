@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007 Yohann Martineau 
+    Copyright 2007, 2008 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip.transaction;
@@ -28,6 +28,7 @@ import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldName;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldValue;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderParamName;
+import net.sourceforge.peers.sip.transport.SipMessage;
 import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.SipResponse;
 
@@ -86,7 +87,7 @@ public class TransactionManager {
         // TODO create server transport user and pass it to server transaction
         if (RFC3261.METHOD_INVITE.equals(method)) {
             serverTransaction = new InviteServerTransaction(branchId, port,
-                    transport, sipResponse, serverTransactionUser);
+                    transport, sipResponse, serverTransactionUser, sipRequest);
             // serverTransaction = new InviteServerTransaction(branchId);
         } else {
             serverTransaction = new NonInviteServerTransaction(branchId, port,
@@ -97,21 +98,28 @@ public class TransactionManager {
         return serverTransaction;
     }
 
-    public ClientTransaction getClientTransaction(SipResponse sipResponse) {
-        SipHeaderFieldValue via = Utils.getInstance().getTopVia(sipResponse);
+    public ClientTransaction getClientTransaction(SipMessage sipMessage) {
+        SipHeaderFieldValue via = Utils.getInstance().getTopVia(sipMessage);
         String branchId = via.getParam(new SipHeaderParamName(
                 RFC3261.PARAM_BRANCH));
-        String cseq = sipResponse.getSipHeaders().get(
+        String cseq = sipMessage.getSipHeaders().get(
                 new SipHeaderFieldName(RFC3261.HDR_CSEQ)).toString();
         String method = cseq.substring(cseq.lastIndexOf(' ') + 1);
         return clientTransactions.get(getTransactionId(branchId, method));
     }
 
-    public ServerTransaction getServerTransaction(SipRequest sipRequest) {
-        SipHeaderFieldValue via = Utils.getInstance().getTopVia(sipRequest);
+    public ServerTransaction getServerTransaction(SipMessage sipMessage) {
+        SipHeaderFieldValue via = Utils.getInstance().getTopVia(sipMessage);
         String branchId = via.getParam(new SipHeaderParamName(
                 RFC3261.PARAM_BRANCH));
-        String method = sipRequest.getMethod();
+        String method;
+        if (sipMessage instanceof SipRequest) {
+            method = ((SipRequest)sipMessage).getMethod();
+        } else {
+            String cseq = sipMessage.getSipHeaders().get(
+                    new SipHeaderFieldName(RFC3261.HDR_CSEQ)).toString();
+            method = cseq.substring(cseq.lastIndexOf(' ') + 1);
+        }
         if (RFC3261.METHOD_ACK.equals(method)) {
             method = RFC3261.METHOD_INVITE;
             // TODO if positive response, ACK does not belong to transaction

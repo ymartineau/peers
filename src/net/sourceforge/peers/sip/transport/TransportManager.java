@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007 Yohann Martineau 
+    Copyright 2007, 2008 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip.transport;
@@ -40,6 +40,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Hashtable;
 
+import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldName;
@@ -277,7 +278,7 @@ public class TransportManager {
             if (datagramSocket == null) {
                 datagramSocket = new DatagramSocket();
                 datagramSockets.put(conn, datagramSocket);
-                System.out.println("added datagram socket " + conn);
+                Logger.getInstance().info("added datagram socket " + conn);
             }
             socket = datagramSocket;
             messageSender = new UdpMessageSender(conn.getRemoteInetAddress(),
@@ -314,14 +315,14 @@ public class TransportManager {
     private MessageReceiver createMessageReceiver(SipTransportConnection conn)
             throws IOException {
         MessageReceiver messageReceiver = null;
-        System.out.println("adding " + conn + ": " + messageReceiver
-                + " to message receivers");
+        Logger.getInstance().info("adding " + conn + ": " + messageReceiver
+                    + " to message receivers");
         if (RFC3261.TRANSPORT_UDP.equals(conn.getRemoteTransport())) {
             DatagramSocket datagramSocket = datagramSockets.get(conn);
             if (datagramSocket == null) {
                 datagramSocket = new DatagramSocket(conn.getRemotePort());
                 datagramSockets.put(conn, datagramSocket);
-                System.out.println("added datagram socket " + conn);
+                Logger.getInstance().info("added datagram socket " + conn);
             }
             messageReceiver = new UdpMessageReceiver(datagramSocket);
             //TODO create also tcp receiver using a recursive call

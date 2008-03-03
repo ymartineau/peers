@@ -17,28 +17,32 @@
     Copyright 2007, 2008 Yohann Martineau 
 */
 
-package net.sourceforge.peers.sip.transaction;
+package net.sourceforge.peers.sip.core.useragent;
 
-import net.sourceforge.peers.sip.AbstractState;
+import net.sourceforge.peers.sip.transport.SipMessage;
 
+public class SipEvent {
 
-public abstract class InviteClientTransactionState extends AbstractState {
-
-    protected InviteClientTransaction inviteClientTransaction;
-    
-    public InviteClientTransactionState(String id,
-            InviteClientTransaction inviteClientTransaction) {
-        super(id);
-        this.inviteClientTransaction = inviteClientTransaction;
+    public enum EventType {
+        ERROR, RINGING, INCOMING_CALL, CALLEE_PICKUP;
     }
     
-    public void start() {}
-    public void timerAFires() {}
-    public void timerBFires() {}
-    public void received2xx() {}
-    public void received1xx() {}
-    public void received300To699() {}
-    public void transportError() {}
-    public void timerDFires() {}
+    private static final long serialVersionUID = 1L;
     
+    private EventType eventType;
+    private SipMessage sipMessage;
+
+    public SipEvent(EventType type, SipMessage sipMessage) {
+        this.eventType = type;
+        this.sipMessage = sipMessage;
+    }
+
+    public SipMessage getSipMessage() {
+        return sipMessage;
+    }
+
+    public EventType getEventType() {
+        return eventType;
+    }
+
 }

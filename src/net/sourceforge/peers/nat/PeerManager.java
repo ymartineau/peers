@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007 Yohann Martineau 
+    Copyright 2007, 2008 Yohann Martineau 
 */
 
 package net.sourceforge.peers.nat;
@@ -25,6 +25,8 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.util.Iterator;
+
+import net.sourceforge.peers.Logger;
 
 import org.dom4j.Document;
 import org.dom4j.Element;
@@ -81,7 +83,7 @@ public class PeerManager extends Thread {
                 DatagramPacket datagramPacket =
                     new DatagramPacket(buf, buf.length, remoteAddress, remotePort);
                 datagramSocket.send(datagramPacket);
-                System.out.println("> sent:\n" + message);
+                Logger.getInstance().debug("> sent:\n" + message);
                 try {
                     Thread.sleep(5000);
                 } catch (InterruptedException e) {

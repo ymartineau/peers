@@ -14,10 +14,12 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007 Yohann Martineau 
+    Copyright 2007, 2008 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip;
+
+import net.sourceforge.peers.Logger;
 
 public abstract class AbstractState {
     
@@ -34,7 +36,7 @@ public abstract class AbstractState {
         buf.append(JavaUtils.getShortClassName(this.getClass())).append(" -> ");
         buf.append(JavaUtils.getShortClassName(state.getClass())).append("] ");
         buf.append(new Exception().getStackTrace()[1].getMethodName());
-        System.out.println(buf.toString());
+        Logger.getInstance().debug(buf.toString());
     }
     
 }

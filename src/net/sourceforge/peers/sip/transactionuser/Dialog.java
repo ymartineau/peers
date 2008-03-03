@@ -14,12 +14,13 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007 Yohann Martineau 
+    Copyright 2007, 2008 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip.transactionuser;
 
 import java.util.ArrayList;
+import java.util.Observable;
 
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.Utils;
@@ -34,7 +35,7 @@ import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
 import net.sourceforge.peers.sip.transport.SipRequest;
 
 
-public class Dialog {
+public class Dialog extends Observable {
 
     public static final char ID_SEPARATOR = '|';
     public static final int EMPTY_CSEQ = -1;
@@ -91,6 +92,8 @@ public class Dialog {
     }
     
     public void setState(DialogState state) {
+        setChanged();
+        notifyObservers(state);
         this.state = state;
     }
     

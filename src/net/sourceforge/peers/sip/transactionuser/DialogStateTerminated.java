@@ -14,10 +14,12 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007 Yohann Martineau 
+    Copyright 2007, 2008 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip.transactionuser;
+
+import net.sourceforge.peers.Logger;
 
 public class DialogStateTerminated extends DialogState {
 
@@ -25,4 +27,23 @@ public class DialogStateTerminated extends DialogState {
         super(id, dialog);
     }
 
+    @Override
+    public void receivedOrSent101To199() {
+        Logger.getInstance().error(id + " invalid transition");
+    }
+    
+    @Override
+    public void receivedOrSent2xx() {
+        Logger.getInstance().error(id + " invalid transition");
+    }
+    
+    @Override
+    public void receivedOrSent300To699() {
+        Logger.getInstance().error(id + " invalid transition");
+    }
+    
+    @Override
+    public void receivedOrSentBye() {
+        Logger.getInstance().error(id + " invalid transition");
+    }
 }

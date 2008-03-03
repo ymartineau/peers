@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007 Yohann Martineau 
+    Copyright 2007, 2008 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip.core.useragent.handlers;
@@ -33,7 +33,9 @@ import net.sourceforge.peers.sdp.SessionDescription;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.core.useragent.MidDialogRequestManager;
+import net.sourceforge.peers.sip.core.useragent.SipEvent;
 import net.sourceforge.peers.sip.core.useragent.UserAgent;
+import net.sourceforge.peers.sip.core.useragent.SipEvent.EventType;
 import net.sourceforge.peers.sip.syntaxencoding.NameAddress;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldName;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldValue;
@@ -42,7 +44,7 @@ import net.sourceforge.peers.sip.syntaxencoding.SipHeaders;
 import net.sourceforge.peers.sip.syntaxencoding.SipURI;
 import net.sourceforge.peers.sip.transaction.ClientTransaction;
 import net.sourceforge.peers.sip.transaction.ClientTransactionUser;
-import net.sourceforge.peers.sip.transaction.InviteClientTransaction;
+import net.sourceforge.peers.sip.transaction.InviteServerTransaction;
 import net.sourceforge.peers.sip.transaction.ServerTransaction;
 import net.sourceforge.peers.sip.transaction.ServerTransactionUser;
 import net.sourceforge.peers.sip.transaction.Transaction;
@@ -84,19 +86,22 @@ public class InviteHandler extends DialogMethodHandler
         Dialog dialog = buildDialogForUas(sipResponse, sipRequest);
         //here dialog is already stored in dialogs in DialogManager
         
-        ServerTransaction serverTransaction =
+        InviteServerTransaction inviteServerTransaction = (InviteServerTransaction)
             TransactionManager.getInstance().createServerTransaction(sipResponse,
                     Utils.getInstance().getSipPort(), RFC3261.TRANSPORT_UDP, this,
                     sipRequest);
         
-        serverTransaction.start();
+        inviteServerTransaction.start();
         
-        serverTransaction.receivedRequest(sipRequest);
+        inviteServerTransaction.receivedRequest(sipRequest);
         
-        serverTransaction.sendReponse(sipResponse);
-        
+        inviteServerTransaction.sendReponse(sipResponse);
+
+        setChanged();
+        notifyObservers(new SipEvent(EventType.INCOMING_CALL, sipResponse));
+
         dialog.receivedOrSent1xx();
-        
+
         List<String> peers = UserAgent.getInstance().getPeers();
         String responseTo = sipRequest.getSipHeaders().get(
                 new SipHeaderFieldName(RFC3261.HDR_FROM)).getValue();
@@ -104,15 +109,13 @@ public class InviteHandler extends DialogMethodHandler
             peers.add(responseTo);
         }
         
-        setChanged();
-        notifyObservers(sipRequest);
     }
     
     public void handleReInvite(SipRequest sipRequest) {
         
     }
     
-    public void acceptCall(SipRequest sipRequest) {
+    public void acceptCall(SipRequest sipRequest, Dialog dialog) {
         SipHeaders reqHeaders = sipRequest.getSipHeaders();
         SipHeaderFieldValue contentType =
             reqHeaders.get(new SipHeaderFieldName(RFC3261.HDR_CONTENT_TYPE));
@@ -130,19 +133,8 @@ public class InviteHandler extends DialogMethodHandler
         } else {
             // TODO manage empty bodies and non-application/sdp content type
         }
-        
 
 
-
-        
-        SipHeaderFieldValue to = reqHeaders.get(
-                new SipHeaderFieldName(RFC3261.HDR_FROM));
-        String remoteUri = to.getValue();
-        if (remoteUri.indexOf(RFC3261.LEFT_ANGLE_BRACKET) > -1) {
-            remoteUri = NameAddress.nameAddressToUri(remoteUri);
-        }
-        Dialog dialog = DialogManager.getInstance().getDialog(remoteUri);
-        
         //TODO if mode autoanswer just send 200 without asking any question
         SipResponse sipResponse =
             MidDialogRequestManager.generateMidDialogResponse(
@@ -192,11 +184,16 @@ public class InviteHandler extends DialogMethodHandler
         // TODO manage retransmission of the response (send to the transport)
         // until ACK arrives, if no ACK is received within 64*T1, confirm dialog
         // and terminate it with a BYE
+
+//        Logger.getInstance().debug("before dialog.receivedOrSent2xx();");
+//        Logger.getInstance().debug("dialog state: " + dialog.getState());
         
         dialog.receivedOrSent2xx();
+//        Logger.getInstance().debug("dialog state: " + dialog.getState());
+//        Logger.getInstance().debug("after dialog.receivedOrSent2xx();");
         
-        setChanged();
-        notifyObservers(sipRequest);
+//        setChanged();
+//        notifyObservers(sipRequest);
     }
     
     public void rejectCall(SipRequest sipRequest) {
@@ -232,8 +229,8 @@ public class InviteHandler extends DialogMethodHandler
         
         dialog.receivedOrSent300To699();
         
-        setChanged();
-        notifyObservers(sipRequest);
+//        setChanged();
+//        notifyObservers(sipRequest);
     }
     
     //////////////////////////////////////////////////////////
@@ -241,6 +238,7 @@ public class InviteHandler extends DialogMethodHandler
     //////////////////////////////////////////////////////////
     
     public ClientTransaction preProcessInvite(SipRequest sipRequest) {
+        
         //8.1.2
         SipURI requestUri = sipRequest.getRequestUri();
 
@@ -276,17 +274,26 @@ public class InviteHandler extends DialogMethodHandler
     //////////////////////////////////////////////////////////
 
     public void errResponseReceived(SipResponse sipResponse) {
-        // FIXME notify call frame that an error occured
-        InviteClientTransaction inviteClientTransaction = (InviteClientTransaction)
-            TransactionManager.getInstance().getClientTransaction(sipResponse);
-        
+        Dialog dialog = DialogManager.getInstance().getDialog(sipResponse);
+        dialog.receivedOrSent300To699();
         setChanged();
-        notifyObservers(inviteClientTransaction.getRequest());
+        notifyObservers(new SipEvent(EventType.ERROR, sipResponse));
     }
 
     public void provResponseReceived(SipResponse sipResponse, Transaction transaction) {
-        // TODO Auto-generated method stub
-        
+        // dialog may have already been created if a previous 1xx has
+        // already been received
+        Dialog dialog = DialogManager.getInstance().getDialog(sipResponse);
+        boolean isFirstProvResp = false;
+        if (dialog == null) {
+            isFirstProvResp = true;
+            dialog = buildDialogForUac(sipResponse, transaction);
+        }
+        if (isFirstProvResp) {
+            setChanged();
+            notifyObservers(new SipEvent(EventType.RINGING, sipResponse));
+        }
+        dialog.receivedOrSent1xx();
     }
 
     public void successResponseReceived(SipResponse sipResponse, Transaction transaction) {
@@ -328,8 +335,8 @@ public class InviteHandler extends DialogMethodHandler
             dialog = buildDialogForUac(sipResponse, transaction);
         }
         
-//        UserAgent.getInstance().getDialogs().add(dialog);
-//        System.out.println("added dialog " + dialog.getId());
+        setChanged();
+        notifyObservers(new SipEvent(EventType.CALLEE_PICKUP, sipResponse));
         
         //added for media
         SessionDescription sessionDescription =

@@ -14,12 +14,13 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007 Yohann Martineau 
+    Copyright 2007, 2008 Yohann Martineau 
 */
 
 package net.sourceforge.peers.nat.test;
 
 import junit.framework.TestCase;
+import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.nat.api.DataReceiver;
 import net.sourceforge.peers.nat.api.PeersClient;
 import net.sourceforge.peers.nat.api.TCPTransport;
@@ -34,8 +35,8 @@ public class PeersClientTest extends TestCase {
         super.setUp();
         peersClient = new MockPeersClient("alice@atlanta.com", new DataReceiver(){
             public void dataReceived(byte[] data, String peerId) {
-                System.out.println("received bytes from " + peerId +
-                        ": " + new String(data));
+                Logger.getInstance().debug("received bytes from " + peerId + ": "
+                                        + new String(data));
             }
         });
     }
@@ -48,6 +49,6 @@ public class PeersClientTest extends TestCase {
     public void testCreateTCPTransport() {
         TCPTransport transport = peersClient.createTCPTransport("bob@biloxi.com");
         transport.sendData("hello world".getBytes());
-        }
+    }
 
 }

@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007 Yohann Martineau 
+    Copyright 2007, 2008 Yohann Martineau 
 */
 
 package net.sourceforge.peers.nat;
@@ -27,6 +27,8 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLEncoder;
+
+import net.sourceforge.peers.Logger;
 
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
@@ -96,7 +98,7 @@ public class Server {
             e.printStackTrace();
             return null;
         }
-        System.out.println("retrieved peers");
+        Logger.getInstance().debug("retrieved peers");
         SAXReader saxReader = new SAXReader();
         Document doc;
         try {
@@ -126,7 +128,7 @@ public class Server {
             e.printStackTrace();
             return null;
         }
-        System.out.println("> sent:\n" + get.toString());
+        Logger.getInstance().debug("> sent:\n" + get.toString());
         
         StringBuffer result = new StringBuffer();
         try {
@@ -138,13 +140,13 @@ public class Server {
                 result.append(new String(exactBuf));
             }
         } catch (SocketTimeoutException e) {
-            System.out.println("socket timeout");
+            Logger.getInstance().debug("socket timeout");
             return null;
         } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
-        System.out.println("< received:\n" + result.toString());
+        Logger.getInstance().debug("< received:\n" + result.toString());
         return result.toString();
     }
     

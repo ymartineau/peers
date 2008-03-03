@@ -14,13 +14,15 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007 Yohann Martineau 
+    Copyright 2007, 2008 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip.transactionuser;
 
-public class DialogStateEarly extends DialogState {
+import net.sourceforge.peers.Logger;
 
+public class DialogStateEarly extends DialogState {
+    
     public DialogStateEarly(String id, Dialog dialog) {
         super(id, dialog);
     }
@@ -46,5 +48,8 @@ public class DialogStateEarly extends DialogState {
         log(nextState);
     }
     
-    
+    @Override
+    public void receivedOrSentBye() {
+        Logger.getInstance().error(id + " invalid transition");
+    }
 }
