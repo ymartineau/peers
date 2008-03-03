@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007 Yohann Martineau 
+    Copyright 2007, 2008 Yohann Martineau 
 */
 
 package net.sourceforge.peers.gui;
@@ -30,19 +30,16 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
+import javax.swing.SwingWorker;
 
-import net.sourceforge.peers.sip.RFC3261;
+import net.sourceforge.peers.sip.Utils;
+import net.sourceforge.peers.sip.core.useragent.SipEvent;
 import net.sourceforge.peers.sip.core.useragent.UAC;
 import net.sourceforge.peers.sip.core.useragent.UAS;
-import net.sourceforge.peers.sip.core.useragent.handlers.InviteHandler;
-import net.sourceforge.peers.sip.syntaxencoding.NameAddress;
-import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldName;
-import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldValue;
+import net.sourceforge.peers.sip.core.useragent.SipEvent.EventType;
 import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
-import net.sourceforge.peers.sip.transactionuser.Dialog;
-import net.sourceforge.peers.sip.transactionuser.DialogManager;
-import net.sourceforge.peers.sip.transactionuser.DialogStateEarly;
-import net.sourceforge.peers.sip.transport.SipRequest;
+import net.sourceforge.peers.sip.transport.SipMessage;
+import net.sourceforge.peers.sip.transport.SipResponse;
 
 public class BasicGUI implements ActionListener, Observer {
 
@@ -91,34 +88,52 @@ public class BasicGUI implements ActionListener, Observer {
     }
 
     public void actionPerformed(ActionEvent e) {
-        String sipUri = uri.getText();
-        Thread callThread = new Thread(sipUri) {
+        final String sipUri = uri.getText();
+        final String callId = Utils.getInstance().generateCallID();
+        SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
             @Override
-            public void run() {
+            protected Void doInBackground() throws Exception {
                 try {
-                    UAC.getInstance().invite(getName());
+                    UAC.getInstance().invite(sipUri, callId);
                 } catch (SipUriSyntaxException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
                 }
+                return null;
             }
         };
-        callThread.start();
-        new CallFrame(sipUri);
+        swingWorker.execute();
+        
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                new CallFrame(sipUri, callId);
+            }
+        });
+        
+//        Thread callThread = new Thread() {
+//            @Override
+//            public void run() {
+//                try {
+//                    UAC.getInstance().invite(sipUri, callId);
+//                } catch (SipUriSyntaxException e) {
+//                    // TODO Auto-generated catch block
+//                    e.printStackTrace();
+//                }
+//            }
+//        };
+//        callThread.start();
+//        new CallFrame(sipUri, callId);
     }
 
     public void update(Observable o, Object arg) {
-        SipRequest sipRequest = (SipRequest) arg;
-        
-        SipHeaderFieldValue to = sipRequest.getSipHeaders().get(
-                new SipHeaderFieldName(RFC3261.HDR_FROM));
-        String remoteUri = to.getValue();
-        if (remoteUri.indexOf(RFC3261.LEFT_ANGLE_BRACKET) > -1) {
-            remoteUri = NameAddress.nameAddressToUri(remoteUri);
-        }
-        Dialog dialog = DialogManager.getInstance().getDialog(remoteUri);
-        if (dialog.getState() instanceof DialogStateEarly) {
-            new CallFrame((InviteHandler) o, sipRequest);
+        if (arg instanceof SipEvent) {
+            SipEvent sipEvent = (SipEvent) arg;
+            if (sipEvent.getEventType() == EventType.INCOMING_CALL) {
+                SipMessage sipMessage = sipEvent.getSipMessage();
+                if (sipMessage instanceof SipResponse) {
+                    new CallFrame((SipResponse)sipMessage);
+                }
+            }
         }
     }
 }

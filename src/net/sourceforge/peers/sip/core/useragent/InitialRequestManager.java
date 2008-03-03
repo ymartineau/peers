@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007 Yohann Martineau 
+    Copyright 2007, 2008 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip.core.useragent;
@@ -93,11 +93,15 @@ public class InitialRequestManager extends RequestManager {
         return request;
     }
  
-
     public void createInitialRequest(String requestUri, String method,
-            String profileUri) throws SipUriSyntaxException {
+            String profileUri, String callId) throws SipUriSyntaxException {
         SipRequest sipRequest = getGenericRequest(requestUri, method,
                 profileUri);
+        if (callId != null) {
+            SipHeaderFieldValue callIdValue = sipRequest.getSipHeaders().get(
+                    new SipHeaderFieldName(RFC3261.HDR_CALLID));
+            callIdValue.setValue(callId);
+        }
         ClientTransaction clientTransaction = null;
         if (RFC3261.METHOD_INVITE.equals(method)) {
             clientTransaction = inviteHandler.preProcessInvite(sipRequest);
@@ -110,6 +114,11 @@ public class InitialRequestManager extends RequestManager {
         } else {
             System.err.println("method not supported");
         }
+    }
+    
+    public void createInitialRequest(String requestUri, String method,
+            String profileUri) throws SipUriSyntaxException {
+        createInitialRequest(requestUri, method, profileUri, null);
     }
 
     public void manageInitialRequest(SipRequest sipRequest) {

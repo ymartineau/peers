@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007 Yohann Martineau 
+    Copyright 2007, 2008 Yohann Martineau 
 */
 
 package net.sourceforge.peers.nat;
@@ -22,6 +22,8 @@ package net.sourceforge.peers.nat;
 import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+
+import net.sourceforge.peers.Logger;
 
 public class UDPReceiver extends Thread {
 
@@ -39,7 +41,7 @@ public class UDPReceiver extends Thread {
                 byte[] buf = new byte[1024];
                 DatagramPacket packet = new DatagramPacket(buf, buf.length);
                 datagramSocket.receive(packet);
-                System.out.println("< received:\n" + new String(packet.getData()));
+                Logger.getInstance().debug("< received:\n" + new String(packet.getData()));
             }
         } catch (IOException e) {
             e.printStackTrace();

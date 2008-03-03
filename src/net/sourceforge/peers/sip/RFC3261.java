@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007 Yohann Martineau 
+    Copyright 2007, 2008 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip;
@@ -83,8 +83,8 @@ public final class RFC3261 {
     public final static String IPV4_TTL             = "1";
     public final static char   AT                   = '@';
     public final static String LOOSE_ROUTING        = "lr";
-    public final static char LEFT_ANGLE_BRACKET     = '<';
-    public final static char RIGHT_ANGLE_BRACKET    = '>';
+    public final static char   LEFT_ANGLE_BRACKET   = '<';
+    public final static char   RIGHT_ANGLE_BRACKET  = '>';
     
       //STATUS CODES
     public final static int CODE_MIN_PROV          = 100;

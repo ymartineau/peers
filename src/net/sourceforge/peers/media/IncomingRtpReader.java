@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007 Yohann Martineau 
+    Copyright 2007, 2008 Yohann Martineau 
 */
 
 package net.sourceforge.peers.media;
@@ -35,6 +35,8 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
+
+import net.sourceforge.peers.Logger;
 
 public class IncomingRtpReader implements RtpListener {
 
@@ -75,7 +77,7 @@ public class IncomingRtpReader implements RtpListener {
 
     public void handleRtpErrorEvent(RtpErrorEvent arg0) {
         // TODO Auto-generated method stub
-        System.out.println("IncomingRtpReader.handleRtpErrorEvent()");
+        Logger.getInstance().debug("IncomingRtpReader.handleRtpErrorEvent()");
     }
 
     public void handleRtpPacketEvent(RtpPacketEvent rtpEvent) {
@@ -99,11 +101,11 @@ public class IncomingRtpReader implements RtpListener {
 
     public void handleRtpStatusEvent(RtpStatusEvent arg0) {
         // TODO Auto-generated method stub
-        System.out.println("IncomingRtpReader.handleRtpStatusEvent()");
+        Logger.getInstance().debug("IncomingRtpReader.handleRtpStatusEvent()");
     }
 
     public void handleRtpTimeoutEvent(RtpTimeoutEvent arg0) {
         // TODO Auto-generated method stub
-        System.out.println("IncomingRtpReader.handleRtpTimeoutEvent()");
+        Logger.getInstance().debug("IncomingRtpReader.handleRtpTimeoutEvent()");
     }
 }

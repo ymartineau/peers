@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007 Yohann Martineau 
+    Copyright 2007, 2008 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip.transaction;
@@ -51,7 +51,7 @@ public abstract class Transaction {
         return buf.toString();
     }
 
-    protected SipResponse getLastResponse() {
+    public SipResponse getLastResponse() {
         return responses.get(responses.size() - 1);
     }
 

@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007 Yohann Martineau 
+    Copyright 2007, 2008 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip.transport;
@@ -33,7 +33,6 @@ import net.sourceforge.peers.sip.syntaxencoding.SipParserException;
 import net.sourceforge.peers.sip.transaction.ClientTransaction;
 import net.sourceforge.peers.sip.transaction.ServerTransaction;
 import net.sourceforge.peers.sip.transaction.TransactionManager;
-
 
 public abstract class MessageReceiver implements Runnable {
 
@@ -77,7 +76,6 @@ public abstract class MessageReceiver implements Runnable {
     
     protected void processMessage(byte[] message, InetAddress sourceIp)
             throws IOException {
-        System.out.println("MessageReceiver.processMessage()");
         SipMessage sipMessage = null;
         try {
             sipMessage = TransportManager.getInstance().sipParser

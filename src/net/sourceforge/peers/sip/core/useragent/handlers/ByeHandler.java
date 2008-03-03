@@ -14,11 +14,12 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007 Yohann Martineau 
+    Copyright 2007, 2008 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip.core.useragent.handlers;
 
+import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.core.useragent.MidDialogRequestManager;
@@ -48,7 +49,7 @@ public class ByeHandler extends DialogMethodHandler
         dialog.receivedOrSentBye();
         
         DialogManager.getInstance().removeDialog(dialog.getId());
-        System.out.println("removed dialog " + dialog.getId());
+        Logger.getInstance().debug("removed dialog " + dialog.getId());
     }
     
     
@@ -67,7 +68,7 @@ public class ByeHandler extends DialogMethodHandler
         String addrSpec = sipRequest.getRequestUri().toString();
         UserAgent.getInstance().getPeers().remove(addrSpec);
         DialogManager.getInstance().removeDialog(dialog.getId());
-        System.out.println("removed dialog " + dialog.getId());
+        Logger.getInstance().debug("removed dialog " + dialog.getId());
         UserAgent.getInstance().getCaptureRtpSender().stop();
         UserAgent.getInstance().setCaptureRtpSender(null);
         
@@ -95,8 +96,10 @@ public class ByeHandler extends DialogMethodHandler
         
         serverTransaction.sendReponse(sipResponse);
         
-        setChanged();
-        notifyObservers(sipRequest);
+        DialogManager.getInstance().removeDialog(dialog.getId());
+        
+//        setChanged();
+//        notifyObservers(sipRequest);
     }
 
     ///////////////////////////////////////

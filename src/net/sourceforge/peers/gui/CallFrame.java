@@ -14,15 +14,13 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007 Yohann Martineau 
+    Copyright 2007, 2008 Yohann Martineau 
 */
 
 package net.sourceforge.peers.gui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -30,188 +28,283 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingWorker;
 
-import net.sourceforge.peers.sip.RFC3261;
+import net.sourceforge.peers.Logger;
+import net.sourceforge.peers.sip.JavaUtils;
+import net.sourceforge.peers.sip.Utils;
+import net.sourceforge.peers.sip.core.useragent.SipEvent;
 import net.sourceforge.peers.sip.core.useragent.UAC;
 import net.sourceforge.peers.sip.core.useragent.UAS;
+import net.sourceforge.peers.sip.core.useragent.SipEvent.EventType;
 import net.sourceforge.peers.sip.core.useragent.handlers.InviteHandler;
-import net.sourceforge.peers.sip.syntaxencoding.NameAddress;
-import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldName;
-import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldValue;
 import net.sourceforge.peers.sip.transactionuser.Dialog;
 import net.sourceforge.peers.sip.transactionuser.DialogManager;
+import net.sourceforge.peers.sip.transactionuser.DialogState;
+import net.sourceforge.peers.sip.transactionuser.DialogStateConfirmed;
+import net.sourceforge.peers.sip.transactionuser.DialogStateEarly;
+import net.sourceforge.peers.sip.transactionuser.DialogStateTerminated;
+import net.sourceforge.peers.sip.transport.SipMessage;
 import net.sourceforge.peers.sip.transport.SipRequest;
+import net.sourceforge.peers.sip.transport.SipResponse;
 
 public class CallFrame implements ActionListener, Observer {
 
-    public final static String ACCEPT_ACTION = "Accept";
-    public final static String REJECT_ACTION = "Reject";
-    public final static String HANGUP_ACTION = "Hangup";
+    public static final String ACCEPT_ACTION = "Accept";
+    public static final String BYE_ACTION    = "Bye";
+    public static final String CANCEL_ACTION = "Cancel";
+    public static final String CLOSE_ACTION  = "Close";
+    public static final String REJECT_ACTION = "Reject";
     
-    private InviteHandler inviteHandler;
+    private String callId;
+    private boolean isUac;
+    private Dialog dialog;
     private SipRequest sipRequest;
+    private InviteHandler inviteHandler;
     
-    private String peer;
     private JFrame frame;
     private JPanel mainPanel;
     private JLabel text;
     private JButton acceptButton;
+    private JButton byeButton;
+    private JButton cancelButton;
+    private JButton closeButton;
     private JButton rejectButton;
-    private JButton hangupButton;
-
-    //used by uac
-    public CallFrame(String peer) {
-        commonInit(peer);
-
-        hangupButton = new JButton(HANGUP_ACTION);
-        hangupButton.setActionCommand(HANGUP_ACTION);
-        hangupButton.addActionListener(this);
-
-        mainPanel.add(text);
-        mainPanel.add(hangupButton);
-        
-        commonPack();
-    }
     
-    //if used by uas
-    public CallFrame(InviteHandler inviteHandler, SipRequest sipRequest) {
-        this.inviteHandler = inviteHandler;
-        this.sipRequest = sipRequest;
+    //for uac
+    public CallFrame(String requestUri, String callId) {
+        isUac = true;
+        this.callId = callId;
+        inviteHandler = UAC.getInstance().getInitialRequestManager()
+            .getInviteHandler();
         
-        SipHeaderFieldValue from = sipRequest.getSipHeaders().get(
-                new SipHeaderFieldName(RFC3261.HDR_FROM));
-        
-        String remoteUri;
-        if (from.toString().indexOf(RFC3261.LEFT_ANGLE_BRACKET) > -1) {
-            remoteUri = NameAddress.nameAddressToUri(from.toString());
-        } else {
-            int separatorPos = from.toString().indexOf(RFC3261.PARAM_SEPARATOR);
-            remoteUri = from.toString().substring(0, separatorPos);
-        }
-
-        commonInit(remoteUri);
-        
-        acceptButton = new JButton(ACCEPT_ACTION);
-        acceptButton.setActionCommand(ACCEPT_ACTION);
-        acceptButton.addActionListener(this);
-        
-        rejectButton = new JButton(REJECT_ACTION);
-        rejectButton.setActionCommand(REJECT_ACTION);
-        rejectButton.addActionListener(this);
-        
-
-        
-        mainPanel.add(text);
-        mainPanel.add(acceptButton);
-        mainPanel.add(rejectButton);
-        
-        commonPack();
-    }
-
-    private void commonInit(String peer) {
-        this.peer = peer;
-        frame = new JFrame(peer);
-        frame.addWindowListener(new WindowAdapter() {
-            @Override
-            public void windowClosing(WindowEvent we) {
-                if (acceptButton == null) {
-                    hangup();
-                } else {
-                    rejectCall();
-                }
-            }
-        });
+        frame = new JFrame(requestUri);
+        //TODO window listener
+//        frame.addWindowListener(new WindowAdapter() {
+//            @Override
+//            public void windowClosing(WindowEvent we) {
+//                closeFrame();
+//            }
+//        });
         mainPanel = new JPanel();
-        text = new JLabel("Session with: " + peer);
-    }
-    
-    private void commonPack() {
+        text = new JLabel("Calling " + requestUri);
+        closeButton = new JButton(CLOSE_ACTION);
+        closeButton.setActionCommand(CLOSE_ACTION);
+        closeButton.addActionListener(this);
+        
+        mainPanel.add(text);
+        mainPanel.add(closeButton);
+        
         frame.getContentPane().add(mainPanel);
         
         frame.pack();
         frame.setVisible(true);
         
-        UAS.getInstance().getMidDialogRequestManager().getByeHandler().addObserver(this);
+        inviteHandler.addObserver(this);
     }
     
+    //for uas
+    public CallFrame(SipResponse sipResponse) {
+        isUac = false;
+        this.sipRequest = Utils.getInstance().getSipRequest(sipResponse);
+        dialog = DialogManager.getInstance().getDialog(sipResponse);
+        dialog.addObserver(this);
+        callId = dialog.getCallId();
+        inviteHandler = UAS.getInstance().getInitialRequestManager()
+                .getInviteHandler();
+    }
+
     private void acceptCall() {
         
-        //SIP core
-        Thread thread = new Thread() {
+        SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
             @Override
-            public void run() {
-                inviteHandler.acceptCall(sipRequest);
+            protected Void doInBackground() throws Exception {
+                inviteHandler.acceptCall(sipRequest, dialog);
+                return null;
             }
         };
-        thread.start();
+        swingWorker.execute();
+//        Thread thread = new Thread() {
+//            @Override
+//            public void run() {
+//                inviteHandler.acceptCall(sipRequest);
+//            }
+//        };
+//        thread.start();
         
-        //GUI
-        hangupButton = new JButton(HANGUP_ACTION);
-        hangupButton.setActionCommand(HANGUP_ACTION);
-        hangupButton.addActionListener(this);
-        mainPanel.remove(acceptButton);
-        mainPanel.remove(rejectButton);
-        acceptButton = null;
-        rejectButton = null;
-        mainPanel.add(hangupButton);
-        frame.pack();
-        UAS.getInstance().getMidDialogRequestManager().getByeHandler().addObserver(this);
     }
     
     private void rejectCall() {
         
-        //SIP core
-        Thread thread = new Thread() {
+        SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
             @Override
-            public void run() {
+            protected Void doInBackground() throws Exception {
                 inviteHandler.rejectCall(sipRequest);
+                return null;
             }
         };
-        thread.start();
+        swingWorker.execute();
+//        Thread thread = new Thread() {
+//            @Override
+//            public void run() {
+//                inviteHandler.rejectCall(sipRequest);
+//            }
+//        };
+//        thread.start();
         
-        //GUI
-        closeFrame();
     }
     
     private void hangup() {
         
-        //SIP core
-        Thread thread = new Thread() {
+        SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
             @Override
-            public void run() {
-                Dialog dialog = DialogManager.getInstance().getDialog(peer);
+            protected Void doInBackground() throws Exception {
                 UAC.getInstance().terminate(dialog);
+                return null;
             }
         };
-        thread.start();
+        swingWorker.execute();
+//        Thread thread = new Thread() {
+//            @Override
+//            public void run() {
+//                UAC.getInstance().terminate(dialog);
+//            }
+//        };
+//        thread.start();
         
-        //GUI
-        closeFrame();
     }
     
     public void actionPerformed(ActionEvent e) {
-        final String actionCommand = e.getActionCommand();
-        if (ACCEPT_ACTION.equals(actionCommand)) {
+        String actionCommand = e.getActionCommand();
+        Logger.getInstance().debug(callId + " action performed: " + actionCommand);
+        if (CLOSE_ACTION.equals(actionCommand)) {
+            hangup();
+        } else if (CANCEL_ACTION.equals(actionCommand)) {
+            //TODO cancel
+        } else if (ACCEPT_ACTION.equals(actionCommand)) {
             acceptCall();
         } else if (REJECT_ACTION.equals(actionCommand)) {
             rejectCall();
-        } else if (HANGUP_ACTION.equals(actionCommand)) {
+            closeFrame();
+        } else if (BYE_ACTION.equals(actionCommand)) {
             hangup();
+            closeFrame();
         }
     }
 
     public void update(Observable o, Object arg) {
-        SipRequest sipRequest = (SipRequest) arg;
-        
-        SipHeaderFieldValue to = sipRequest.getSipHeaders().get(
-                new SipHeaderFieldName(RFC3261.HDR_FROM));
-        String remoteUri = to.getValue();
-        if (remoteUri.indexOf(RFC3261.LEFT_ANGLE_BRACKET) > -1) {
-            remoteUri = NameAddress.nameAddressToUri(remoteUri);
+        Logger.getInstance().debug("update with observable " + o + " arg = " + arg);
+        if (o.equals(inviteHandler)) {
+            if (arg instanceof SipEvent) {
+                SipEvent sipEvent = (SipEvent) arg;
+                SipMessage sipMessage = sipEvent.getSipMessage();
+                if (Utils.getInstance().getMessageCallId(sipMessage).equals(callId)) {
+                    manageInviteHandlerEvent(sipEvent);
+                }
+                //if event is not for this frame (conversation) simply discard it
+            } else {
+                System.err.println("invite handler notification unknown");
+            }
+        } else if (o instanceof Dialog) {
+            if (dialog == null) {
+                dialog = (Dialog) o;
+            }
+            if (arg instanceof DialogState) {
+                DialogState dialogState = (DialogState) arg;
+                updateGui(dialogState);
+            } else {
+                System.err.println("dialog notification unknown");
+            }
         }
-        if (peer.equals(remoteUri)) {
+    }
+    
+    private void manageInviteHandlerEvent(SipEvent sipEvent) {
+        EventType eventType = sipEvent.getEventType();
+        switch (eventType) {
+        
+        case RINGING:
+            dialog = DialogManager.getInstance().getDialog(sipEvent.getSipMessage());
+            dialog.addObserver(this);
+            break;
+            
+        case CALLEE_PICKUP:
+            dialog = DialogManager.getInstance().getDialog(sipEvent.getSipMessage());
+            dialog.addObserver(this);
+            break;
+            
+        case ERROR:
+            closeFrame();
+            break;
+
+        default:
+            System.err.println("unknown sip event: " + sipEvent);
+            break;
+        }
+    }
+    
+    private void updateGui(DialogState dialogState) {
+        //TODO use a real state machine
+        //state.setText(JavaUtils.getShortClassName(dialogState.getClass()));
+        StringBuffer buf = new StringBuffer();
+        buf.append("updateGui ");
+        buf.append(dialog.getId());
+        buf.append(" [");
+        buf.append(JavaUtils.getShortClassName(dialog.getState().getClass()));
+        buf.append(" -> ");
+        buf.append(JavaUtils.getShortClassName(dialogState.getClass()));
+        buf.append("]");
+        Logger.getInstance().debug(buf.toString());
+        if (dialogState instanceof DialogStateEarly) {
+            if (isUac) {
+                //TODO implement cancel in core
+                text.setText("Ringing " + dialog.getRemoteTarget());
+                cancelButton = new JButton(CANCEL_ACTION);
+                cancelButton.setActionCommand(CANCEL_ACTION);
+                cancelButton.addActionListener(this);
+                mainPanel.remove(closeButton);
+                mainPanel.add(cancelButton);
+                frame.pack();
+            } else {
+                frame = new JFrame(dialog.getRemoteTarget());
+                mainPanel = new JPanel();
+                text = new JLabel("Incoming call from " + dialog.getRemoteTarget());
+                acceptButton = new JButton(ACCEPT_ACTION);
+                acceptButton.setActionCommand(ACCEPT_ACTION);
+                acceptButton.addActionListener(this);
+                rejectButton = new JButton(REJECT_ACTION);
+                rejectButton.setActionCommand(REJECT_ACTION);
+                rejectButton.addActionListener(this);
+                mainPanel.add(text);
+                mainPanel.add(acceptButton);
+                mainPanel.add(rejectButton);
+                frame.getContentPane().add(mainPanel);
+                frame.pack();
+                frame.setVisible(true);
+            }
+        } else if (dialogState instanceof DialogStateConfirmed) {
+            //TODO create hangup button and remove previous buttons for both uac and uas
+            text.setText("Talk to " + dialog.getRemoteTarget());
+            byeButton = new JButton(BYE_ACTION);
+            byeButton.setActionCommand(BYE_ACTION);
+            byeButton.addActionListener(this);
+            if (isUac) {
+                mainPanel.remove(closeButton);
+                closeButton = null;
+                mainPanel.remove(cancelButton);
+                cancelButton = null;
+            } else {
+                mainPanel.remove(acceptButton);
+                acceptButton = null;
+                mainPanel.remove(rejectButton);
+                rejectButton = null;
+            }
+            mainPanel.add(byeButton);
+            frame.pack();
+        } else if (dialogState instanceof DialogStateTerminated) {
+            //TODO close frame for both uac and uas
             closeFrame();
         }
+
     }
     
     private void closeFrame() {
@@ -221,8 +314,10 @@ public class CallFrame implements ActionListener, Observer {
         }
         mainPanel = null;
         text = null;
-        hangupButton = null;
-        acceptButton = null;
         rejectButton = null;
+        acceptButton = null;
+        closeButton = null;
+        cancelButton = null;
+        byeButton = null;
     }
 }

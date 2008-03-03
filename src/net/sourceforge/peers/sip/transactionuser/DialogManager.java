@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007 Yohann Martineau 
+    Copyright 2007, 2008 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip.transactionuser;
@@ -48,7 +48,7 @@ public class DialogManager {
         dialogs = new Hashtable<String, Dialog>();
     }
 
-    public Dialog createDialog(SipResponse sipResponse) {
+    public synchronized Dialog createDialog(SipResponse sipResponse) {
         SipHeaders sipHeaders = sipResponse.getSipHeaders();
         String callID = sipHeaders.get(
                 new SipHeaderFieldName(RFC3261.HDR_CALLID)).toString();
@@ -74,7 +74,7 @@ public class DialogManager {
         dialogs.remove(dialogId);
     }
 
-    public Dialog getDialog(SipMessage sipMessage) {
+    public synchronized Dialog getDialog(SipMessage sipMessage) {
         SipHeaders sipHeaders = sipMessage.getSipHeaders();
         String callID = sipHeaders.get(
                 new SipHeaderFieldName(RFC3261.HDR_CALLID)).toString();
@@ -82,8 +82,9 @@ public class DialogManager {
                 new SipHeaderFieldName(RFC3261.HDR_FROM));
         SipHeaderFieldValue to = sipHeaders.get(
                 new SipHeaderFieldName(RFC3261.HDR_TO));
-        String fromTag = from.getParam(new SipHeaderParamName(RFC3261.PARAM_TAG));
-        String toTag = to.getParam(new SipHeaderParamName(RFC3261.PARAM_TAG));
+        SipHeaderParamName tagName = new SipHeaderParamName(RFC3261.PARAM_TAG);
+        String fromTag = from.getParam(tagName);
+        String toTag = to.getParam(tagName);
         Dialog dialog = dialogs.get(getDialogId(callID, fromTag, toTag));
         if (dialog != null) {
             return dialog;
@@ -91,7 +92,7 @@ public class DialogManager {
         return dialogs.get(getDialogId(callID, toTag, fromTag));
     }
     
-    public Dialog getDialog(String peer) {
+    public synchronized Dialog getDialog(String peer) {
         for (Dialog dialog : dialogs.values()) {
             String remoteUri = dialog.getRemoteUri();
             if (remoteUri != null) {

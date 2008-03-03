@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007 Yohann Martineau 
+    Copyright 2007, 2008 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip.transaction;
@@ -50,7 +50,8 @@ public class InviteServerTransaction extends InviteTransaction
     private int port;
     
     InviteServerTransaction(String branchId, int port, String transport,
-            SipResponse sipResponse, ServerTransactionUser serverTransactionUser) {
+            SipResponse sipResponse, ServerTransactionUser serverTransactionUser,
+            SipRequest sipRequest) {
         super(branchId);
         
         INIT = new InviteServerTransactionStateInit(getId(), this);
@@ -60,6 +61,7 @@ public class InviteServerTransaction extends InviteTransaction
         CONFIRMED = new InviteServerTransactionStateConfirmed(getId(), this);
         TERMINATED = new InviteServerTransactionStateTerminated(getId(), this);
         
+        this.request = sipRequest;
         this.port = port;
         this.transport = transport;
         responses.add(sipResponse);
@@ -133,6 +135,14 @@ public class InviteServerTransaction extends InviteTransaction
                 e.printStackTrace();
             }
         }
+    }
+    
+    public SipResponse getLastResponse() {
+        int nbOfResponses = responses.size();
+        if (nbOfResponses > 0) {
+            return responses.get(nbOfResponses - 1);
+        }
+        return null;
     }
     
     // TODO send provional response
