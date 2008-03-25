@@ -27,6 +27,7 @@ import net.sourceforge.peers.sip.transactionuser.Dialog;
 import net.sourceforge.peers.sip.transactionuser.DialogManager;
 import net.sourceforge.peers.sip.transactionuser.DialogStateConfirmed;
 import net.sourceforge.peers.sip.transactionuser.DialogStateEarly;
+import net.sourceforge.peers.sip.transport.SipRequest;
 
 public class UAC {
 
@@ -57,9 +58,14 @@ public class UAC {
     }
 
     public void terminate(Dialog dialog) {
+        terminate(dialog, null);
+    }
+    
+    public void terminate(Dialog dialog, SipRequest sipRequest) {
         if (dialog != null) {
             if (dialog.getState() instanceof DialogStateEarly) {
                 //TODO generate cancel
+                initialRequestManager.createCancel(sipRequest);
             } else if (dialog.getState() instanceof DialogStateConfirmed) {
                 midDialogRequestManager.generateMidDialogRequest(
                         dialog, RFC3261.METHOD_BYE);

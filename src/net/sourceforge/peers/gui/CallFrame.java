@@ -115,7 +115,6 @@ public class CallFrame implements ActionListener, Observer {
     }
 
     private void acceptCall() {
-        
         SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
@@ -124,18 +123,9 @@ public class CallFrame implements ActionListener, Observer {
             }
         };
         swingWorker.execute();
-//        Thread thread = new Thread() {
-//            @Override
-//            public void run() {
-//                inviteHandler.acceptCall(sipRequest);
-//            }
-//        };
-//        thread.start();
-        
     }
     
     private void rejectCall() {
-        
         SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
@@ -144,18 +134,21 @@ public class CallFrame implements ActionListener, Observer {
             }
         };
         swingWorker.execute();
-//        Thread thread = new Thread() {
-//            @Override
-//            public void run() {
-//                inviteHandler.rejectCall(sipRequest);
-//            }
-//        };
-//        thread.start();
-        
+    }
+    
+    private void cancel() {
+        SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
+            @Override
+            protected Void doInBackground() throws Exception {
+                UAC.getInstance().getInitialRequestManager()
+                        .createCancel(sipRequest);
+                return null;
+            }
+        };
+        swingWorker.execute();
     }
     
     private void hangup() {
-        
         SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
@@ -164,14 +157,6 @@ public class CallFrame implements ActionListener, Observer {
             }
         };
         swingWorker.execute();
-//        Thread thread = new Thread() {
-//            @Override
-//            public void run() {
-//                UAC.getInstance().terminate(dialog);
-//            }
-//        };
-//        thread.start();
-        
     }
     
     public void actionPerformed(ActionEvent e) {
@@ -180,7 +165,7 @@ public class CallFrame implements ActionListener, Observer {
         if (CLOSE_ACTION.equals(actionCommand)) {
             hangup();
         } else if (CANCEL_ACTION.equals(actionCommand)) {
-            //TODO cancel
+            cancel();
         } else if (ACCEPT_ACTION.equals(actionCommand)) {
             acceptCall();
         } else if (REJECT_ACTION.equals(actionCommand)) {
@@ -224,6 +209,7 @@ public class CallFrame implements ActionListener, Observer {
         
         case RINGING:
             dialog = DialogManager.getInstance().getDialog(sipEvent.getSipMessage());
+            sipRequest = Utils.getInstance().getSipRequest(sipEvent.getSipMessage());
             dialog.addObserver(this);
             break;
             
@@ -255,7 +241,7 @@ public class CallFrame implements ActionListener, Observer {
         buf.append("]");
         Logger.getInstance().debug(buf.toString());
         if (dialogState instanceof DialogStateEarly) {
-            if (isUac) {
+            if (isUac && cancelButton == null) {
                 //TODO implement cancel in core
                 text.setText("Ringing " + dialog.getRemoteTarget());
                 cancelButton = new JButton(CANCEL_ACTION);

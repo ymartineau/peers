@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 
+import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.core.useragent.UAS;
@@ -121,6 +122,7 @@ public abstract class MessageReceiver implements Runnable {
             SipResponse sipResponse = (SipResponse)sipMessage;
             ClientTransaction clientTransaction =
                 transactionManager.getClientTransaction(sipResponse);
+            Logger.getInstance().debug("ClientTransaction = " + clientTransaction);
             if (clientTransaction == null) {
                 UAS.getInstance().messageReceived(sipMessage);
             } else {

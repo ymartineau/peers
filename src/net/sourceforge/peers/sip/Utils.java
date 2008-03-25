@@ -178,7 +178,9 @@ public class Utils {
     public void copyHeader(SipMessage src, SipMessage dst, String name) {
         SipHeaderFieldName sipHeaderFieldName = new SipHeaderFieldName(name);
         SipHeaderFieldValue sipHeaderFieldValue = src.getSipHeaders().get(sipHeaderFieldName);
-        dst.getSipHeaders().add(sipHeaderFieldName, sipHeaderFieldValue);
+        if (sipHeaderFieldValue != null) {
+            dst.getSipHeaders().add(sipHeaderFieldName, sipHeaderFieldValue);
+        }
     }
     
     /**
