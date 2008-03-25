@@ -54,11 +54,17 @@ public class TransactionManager {
         serverTransactions = new Hashtable<String, ServerTransaction>();
         timer = new Timer("Transaction timer");
     }
-
+    
     public ClientTransaction createClientTransaction(SipRequest sipRequest,
-            InetAddress inetAddress, int port, String transport,
+            InetAddress inetAddress, int port, String transport, String pBranchId,
             ClientTransactionUser clientTransactionUser) {
-        String branchId = Utils.getInstance().generateBranchId();
+        String branchId;
+        if (pBranchId == null || "".equals(pBranchId.trim())
+                || !pBranchId.startsWith(RFC3261.BRANCHID_MAGIC_COOKIE)) {
+            branchId = Utils.getInstance().generateBranchId();
+        } else {
+            branchId = pBranchId;
+        }
         String method = sipRequest.getMethod();
         ClientTransaction clientTransaction;
         if (RFC3261.METHOD_INVITE.equals(method)) {

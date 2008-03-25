@@ -55,7 +55,8 @@ public class MidDialogRequestManager extends RequestManager
         //TODO check that subsequent request is supported before client
         //transaction creation
         if (!RFC3261.METHOD_INVITE.equals(method)) {
-            ClientTransaction clientTransaction = createAndStartNonInviteClientTransaction(subRequest);
+            ClientTransaction clientTransaction = createNonInviteClientTransaction(subRequest,
+                    null);
             if (clientTransaction != null) {
                 clientTransaction.start();
             }
@@ -67,8 +68,8 @@ public class MidDialogRequestManager extends RequestManager
     }
     
     
-    protected ClientTransaction createAndStartNonInviteClientTransaction(
-            SipRequest sipRequest) {
+    public ClientTransaction createNonInviteClientTransaction(
+            SipRequest sipRequest, String branchId) {
         //8.1.2
         SipURI requestUri = sipRequest.getRequestUri();
 
@@ -87,7 +88,7 @@ public class MidDialogRequestManager extends RequestManager
         }
         ClientTransaction clientTransaction = TransactionManager.getInstance()
             .createClientTransaction(sipRequest,
-                    requestUri.getHost(), port, transport, this);
+                    requestUri.getHost(), port, transport, branchId, this);
         return clientTransaction;
     }
     

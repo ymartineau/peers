@@ -19,6 +19,7 @@
 
 package net.sourceforge.peers.sip.core.useragent;
 
+import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.syntaxencoding.NameAddress;
@@ -95,6 +96,20 @@ public class InitialRequestManager extends RequestManager {
  
     public void createInitialRequest(String requestUri, String method,
             String profileUri, String callId) throws SipUriSyntaxException {
+        
+        SipRequest sipRequest = createInitialRequestStart(requestUri, method,
+                profileUri, callId);
+        
+        ClientTransaction clientTransaction = null;
+        if (RFC3261.METHOD_INVITE.equals(method)) {
+            clientTransaction = inviteHandler.preProcessInvite(sipRequest);
+        }
+        
+        createInitialRequestEnd(sipRequest, clientTransaction);
+    }
+    
+    private SipRequest createInitialRequestStart(String requestUri, String method,
+            String profileUri, String callId) throws SipUriSyntaxException {
         SipRequest sipRequest = getGenericRequest(requestUri, method,
                 profileUri);
         if (callId != null) {
@@ -102,10 +117,11 @@ public class InitialRequestManager extends RequestManager {
                     new SipHeaderFieldName(RFC3261.HDR_CALLID));
             callIdValue.setValue(callId);
         }
-        ClientTransaction clientTransaction = null;
-        if (RFC3261.METHOD_INVITE.equals(method)) {
-            clientTransaction = inviteHandler.preProcessInvite(sipRequest);
-        }
+        return sipRequest;
+    }
+    
+    private void createInitialRequestEnd(SipRequest sipRequest,
+            ClientTransaction clientTransaction) {
         addContact(sipRequest, clientTransaction.getContact());
         
         // TODO create message receiver on client transport port
@@ -119,6 +135,34 @@ public class InitialRequestManager extends RequestManager {
     public void createInitialRequest(String requestUri, String method,
             String profileUri) throws SipUriSyntaxException {
         createInitialRequest(requestUri, method, profileUri, null);
+    }
+    
+    public void createCancel(SipRequest inviteRequest) {
+        SipHeaders inviteHeaders = inviteRequest.getSipHeaders();
+        SipHeaderFieldValue from = inviteHeaders.get(
+                new SipHeaderFieldName(RFC3261.HDR_FROM));
+        SipHeaderFieldValue callId = inviteHeaders.get(
+                new SipHeaderFieldName(RFC3261.HDR_CALLID));
+        String profileUri = NameAddress.nameAddressToUri(from.getValue());
+        SipRequest sipRequest;
+        try {
+            sipRequest = createInitialRequestStart(
+                    inviteRequest.getRequestUri().toString(), RFC3261.METHOD_CANCEL,
+                    profileUri, callId.getValue());
+        } catch (SipUriSyntaxException e) {
+            Logger.getInstance().error(e);
+            e.printStackTrace();
+            return;
+        }
+        
+        ClientTransaction clientTransaction = null;
+            clientTransaction = cancelHandler.preProcessCancel(sipRequest,
+                    inviteRequest);
+        if (clientTransaction != null) {
+            createInitialRequestEnd(sipRequest, clientTransaction);
+        }
+        
+        
     }
 
     public void manageInitialRequest(SipRequest sipRequest) {
