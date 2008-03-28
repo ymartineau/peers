@@ -87,19 +87,25 @@ public final class RFC3261 {
     public final static char   RIGHT_ANGLE_BRACKET  = '>';
     
       //STATUS CODES
-    public final static int CODE_MIN_PROV          = 100;
-    public final static int CODE_MIN_SUCCESS       = 200;
-    public final static int CODE_MIN_REDIR         = 300;
-    public final static int CODE_MAX               = 699;
+    public final static int CODE_MIN_PROV                            = 100;
+    public final static int CODE_MIN_SUCCESS                         = 200;
+    public final static int CODE_MIN_REDIR                           = 300;
+    public final static int CODE_MAX                                 = 699;
 
-    public final static int CODE_180_RINGING       = 180;
-    public final static int CODE_200_OK            = 200;
-    public final static int CODE_486_BUSYHERE      = 486;
+    public final static int CODE_180_RINGING                         = 180;
+    public final static int CODE_200_OK                              = 200;
+    public final static int CODE_481_CALL_TRANSACTION_DOES_NOT_EXIST = 481;
+    public final static int CODE_486_BUSYHERE                        = 486;
+    public final static int CODE_487_REQUEST_TERMINATED              = 487;
     
       //REASON PHRASES
     public final static String REASON_180_RINGING  = "Ringing";
     public final static String REASON_200_OK       = "OK";
+    public final static String REASON_481_CALL_TRANSACTION_DOES_NOT_EXIST =
+        "Call/Transaction Does Not Exist";
     public final static String REASON_486_BUSYHERE = "Busy Here";
+    public final static String REASON_487_REQUEST_TERMINATED =
+        "Request Terminated";
     
     //TRANSPORT
     

@@ -44,6 +44,7 @@ public class UAS implements SipServerTransportUser {
     static {
         SUPPORTED_METHODS = new ArrayList<String>();
         SUPPORTED_METHODS.add(RFC3261.METHOD_INVITE);
+        SUPPORTED_METHODS.add(RFC3261.METHOD_CANCEL);
     };
     
     private static UAS INSTANCE;

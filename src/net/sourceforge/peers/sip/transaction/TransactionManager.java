@@ -137,6 +137,10 @@ public class TransactionManager {
         return serverTransactions.get(getTransactionId(branchId, method));
     }
 
+    public ServerTransaction getServerTransaction(String branchId, String method) {
+        return serverTransactions.get(getTransactionId(branchId, method));
+    }
+    
     void removeServerTransaction(String branchId, String method) {
         serverTransactions.remove(getTransactionId(branchId, method));
     }
