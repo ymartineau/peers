@@ -191,9 +191,11 @@ public class InitialRequestManager extends RequestManager {
         
         
         //TODO create server transaction
-        if (RFC3261.METHOD_INVITE.equals(sipRequest.getMethod())) {
+        String method = sipRequest.getMethod();
+        if (RFC3261.METHOD_INVITE.equals(method)) {
             inviteHandler.handleInitialInvite(sipRequest);
-            
+        } else if (RFC3261.METHOD_CANCEL.equals(method)) {
+            cancelHandler.handleCancel(sipRequest);
         }
     }
 

@@ -28,17 +28,63 @@ import net.sourceforge.peers.sip.syntaxencoding.SipHeaderParamName;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaders;
 import net.sourceforge.peers.sip.transaction.ClientTransaction;
 import net.sourceforge.peers.sip.transaction.InviteClientTransaction;
+import net.sourceforge.peers.sip.transaction.InviteServerTransaction;
+import net.sourceforge.peers.sip.transaction.ServerTransaction;
+import net.sourceforge.peers.sip.transaction.ServerTransactionUser;
 import net.sourceforge.peers.sip.transaction.TransactionManager;
+import net.sourceforge.peers.sip.transactionuser.Dialog;
+import net.sourceforge.peers.sip.transactionuser.DialogManager;
 import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.SipResponse;
 
-public class CancelHandler extends MethodHandler {
+public class CancelHandler extends MethodHandler implements ServerTransactionUser {
 
     //////////////////////////////////////////////////////////
     // UAS methods
     //////////////////////////////////////////////////////////
     
     public void handleCancel(SipRequest sipRequest) {
+        SipHeaderFieldValue topVia = Utils.getInstance().getTopVia(sipRequest);
+        String branchId = topVia.getParam(new SipHeaderParamName(
+                RFC3261.PARAM_BRANCH));
+        InviteServerTransaction inviteServerTransaction =
+            (InviteServerTransaction)TransactionManager.getInstance()
+                .getServerTransaction(branchId,RFC3261.METHOD_INVITE);
+        SipResponse cancelResponse;
+        if (inviteServerTransaction == null) {
+            //TODO generate CANCEL 481 Call Leg/Transaction Does Not Exist
+            cancelResponse = buildGenericResponse(sipRequest,
+                    RFC3261.CODE_481_CALL_TRANSACTION_DOES_NOT_EXIST,
+                    RFC3261.REASON_481_CALL_TRANSACTION_DOES_NOT_EXIST);
+        } else {
+            cancelResponse = buildGenericResponse(sipRequest,
+                    RFC3261.CODE_200_OK, RFC3261.REASON_200_OK);
+        }
+        ServerTransaction cancelServerTransaction = TransactionManager.getInstance()
+                .createServerTransaction(cancelResponse,
+                        Utils.getInstance().getSipPort(),
+                        RFC3261.TRANSPORT_UDP, this, sipRequest);
+        cancelServerTransaction.start();
+        cancelServerTransaction.receivedRequest(sipRequest);
+        cancelServerTransaction.sendReponse(cancelResponse);
+        if (cancelResponse.getStatusCode() != RFC3261.CODE_200_OK) {
+            return;
+        }
+        
+        SipResponse lastResponse = inviteServerTransaction.getLastResponse();
+        if (lastResponse != null &&
+                lastResponse.getStatusCode() >= RFC3261.CODE_200_OK) {
+            return;
+        }
+        
+        SipResponse inviteResponse = buildGenericResponse(
+                inviteServerTransaction.getRequest(),
+                RFC3261.CODE_487_REQUEST_TERMINATED,
+                RFC3261.REASON_487_REQUEST_TERMINATED);
+        inviteServerTransaction.sendReponse(inviteResponse);
+        
+        Dialog dialog = DialogManager.getInstance().getDialog(lastResponse);
+        dialog.receivedOrSent300To699();
         
     }
     
@@ -92,5 +138,10 @@ public class CancelHandler extends MethodHandler {
         
         return UAC.getInstance().getMidDialogRequestManager()
             .createNonInviteClientTransaction(cancelGenericRequest, branchId);
+    }
+
+    public void transactionFailure() {
+        // TODO Auto-generated method stub
+        
     }
 }
