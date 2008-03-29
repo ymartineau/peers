@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.util.Hashtable;
 import java.util.List;
 
+import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.media.CaptureRtpSender;
 import net.sourceforge.peers.media.IncomingRtpReader;
 import net.sourceforge.peers.sdp.NoCodecException;
@@ -95,6 +96,7 @@ public class InviteHandler extends DialogMethodHandler
         
         inviteServerTransaction.receivedRequest(sipRequest);
         
+        //TODO send 180 more than once
         inviteServerTransaction.sendReponse(sipResponse);
 
         setChanged();
@@ -286,14 +288,17 @@ public class InviteHandler extends DialogMethodHandler
         Dialog dialog = DialogManager.getInstance().getDialog(sipResponse);
         boolean isFirstProvResp = false;
         if (dialog == null) {
+            Logger.getInstance().debug("dialog not found for prov response");
             isFirstProvResp = true;
             dialog = buildDialogForUac(sipResponse, transaction);
         }
+        //TODO this notification is probably useless because dialog state modification
+        //     thereafter always notify dialog observers
         if (isFirstProvResp) {
             setChanged();
             notifyObservers(new SipEvent(EventType.RINGING, sipResponse));
+            dialog.receivedOrSent1xx();
         }
-        dialog.receivedOrSent1xx();
     }
 
     public void successResponseReceived(SipResponse sipResponse, Transaction transaction) {
