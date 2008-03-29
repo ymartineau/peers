@@ -109,20 +109,6 @@ public class BasicGUI implements ActionListener, Observer {
                 new CallFrame(sipUri, callId);
             }
         });
-        
-//        Thread callThread = new Thread() {
-//            @Override
-//            public void run() {
-//                try {
-//                    UAC.getInstance().invite(sipUri, callId);
-//                } catch (SipUriSyntaxException e) {
-//                    // TODO Auto-generated catch block
-//                    e.printStackTrace();
-//                }
-//            }
-//        };
-//        callThread.start();
-//        new CallFrame(sipUri, callId);
     }
 
     public void update(Observable o, Object arg) {

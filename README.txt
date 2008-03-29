@@ -37,7 +37,7 @@ configuration should be enough.
 
 RUNNING
 
-If you are a Windows user you can use the .bat batch script in bin
+If you are a Windows user you can use the .bat batch script in root
 directory, if you use any Unix compatible sytem, you can use the
 .sh script. You can then call any IP address using SIP protocol,
 if the remote host does not listen on the default SIP port (5060),
@@ -46,7 +46,23 @@ you can use the following example URI:
 
 HISTORY
 
-2007-11-25 First release 0.1 minimalist UAC and UAS.
+2007-11-25 0.1 First release
+
+minimalist UAC and UAS.
+
+2007-12-09 0.1.1 First release update
+
+moved startup scripts in root directory
+
+2008-03-29 0.2 Second release
+
+New features:
+ - provisional responses (UAC and UAS),
+ - CANCEL management (UAC and UAS), updated GUI with provisional stuff
+ - new Logger which enables network traffic tracing and classical log4j-like
+   logging in two separate files
+Bugs fixed:
+ - 1900810 MTU too small management
 
 AUTHOR
 

@@ -28,11 +28,14 @@
     <javac destdir="${classes.dir}"
         srcdir="${src.dir}" debug="true">
       <classpath>
-        <fileset dir="${lib.dir}">
+        <fileset dir="${lib.dir}/run">
           <include name="**/*.jar"/>
         </fileset>
       </classpath>
     </javac>
+  </target>
+
+  <target name="test-compile" depends="init">
     <javac destdir="${classes.dir}"
         srcdir="${test.dir}">
       <classpath>
@@ -49,8 +52,10 @@
   </target>
 
   <target name="dist" depends="jar">
+    <mkdir dir="${build.dir}/logs"/>
     <zip destfile="${build.dir}/${ant.project.name}.zip">
-      <zipfileset prefix="${ant.project.name}/lib" dir="${lib.dir}"/>
+      <zipfileset prefix="${ant.project.name}/logs" dir="${build.dir}/logs"/>
+      <zipfileset prefix="${ant.project.name}/lib" dir="${lib.dir}/run"/>
       <zipfileset prefix="${ant.project.name}"
                   file="${build.dir}/${ant.project.name}.jar"/>
       <zipfileset prefix="${ant.project.name}/conf" dir="${conf.dir}"/>
@@ -67,10 +72,15 @@
     </zip>
   </target>
 
-  <target name="dist-src" depends="jar">
+  <target name="dist-src" depends="jar, compile, test-compile">
+    <mkdir dir="${build.dir}/logs"/>
     <zip destfile="${build.dir}/${ant.project.name}-src.zip">
+      <zipfileset prefix="${ant.project.name}/logs" dir="${build.dir}/logs"/>
       <zipfileset prefix="${ant.project.name}/src" dir="${src.dir}"/>
-      <zipfileset prefix="${ant.project.name}/lib" dir="${lib.dir}"/>
+      <zipfileset prefix="${ant.project.name}/test" dir="${test.dir}"/>
+      <zipfileset prefix="${ant.project.name}/resources" dir="${resources.dir}"/>
+      <zipfileset prefix="${ant.project.name}/lib/run" dir="${lib.dir}/run"/>
+      <zipfileset prefix="${ant.project.name}/lib/test" dir="${lib.dir}/test"/>
       <zipfileset prefix="${ant.project.name}"
                   file="${build.dir}/${ant.project.name}.jar"/>
       <zipfileset prefix="${ant.project.name}/conf" dir="${conf.dir}"/>
@@ -83,6 +93,7 @@
         <include name="license-*.txt"/>
         <include name="gpl.txt"/>
         <include name="README.txt"/>
+        <include name="build.xml"/>
       </zipfileset>
     </zip>
   </target>
