@@ -22,21 +22,17 @@ package net.sourceforge.peers.sip.core;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.Iterator;
 import java.util.List;
 
 import junit.framework.TestCase;
 
-import net.sourceforge.peers.sip.core.Config;
-
-import org.dom4j.Attribute;
 import org.dom4j.DocumentException;
 
 public class ConfigTest extends TestCase {
 
     public void testConfig() {
         String urlStr =
-            "file:" + new File("conf/sipstack.xml").getAbsolutePath();
+            "file:" + new File("conf/peers.xml").getAbsolutePath();
         URL url;
         try {
             url = new URL(urlStr);
@@ -54,13 +50,9 @@ public class ConfigTest extends TestCase {
             return;
         }
         
-        List list = config.selectNodes("//peers:profile/@name");
+        List list = config.selectNodes("//peers:profile");
         if (list == null) {
-            fail("no node found for xpath: //peers:profile/@name");
-        }
-        for (Iterator it = list.iterator(); it.hasNext(); ) {
-            Attribute name = (Attribute)it.next();
-            System.out.println(name.getValue());
+            fail("no node found for xpath: //peers:profile");
         }
     }
 }
