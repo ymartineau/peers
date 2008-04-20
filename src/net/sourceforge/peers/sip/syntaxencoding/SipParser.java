@@ -88,7 +88,10 @@ public class SipParser {
     private void parseHeaders(SipMessage sipMessage) throws IOException, SipParserException {
         SipHeaders sipHeaders = new SipHeaders();
         String headerLine = reader.readLine();
-        while (!headerLine.equals("")) {
+        if (headerLine == null) {
+            throw new SipParserException(sipMessage.toString());
+        }
+        while (!"".equals(headerLine)) {
             String nextLine = reader.readLine();
             if (nextLine != null &&
                     (nextLine.startsWith(" ") || nextLine.startsWith("\t"))) {
@@ -100,6 +103,9 @@ public class SipParser {
                     nextLine = reader.readLine();
                 }
                 headerLine = buf.toString();
+            }
+            if (headerLine == null) {
+                throw new SipParserException(sipMessage.toString());
             }
             int columnPos = headerLine.indexOf(RFC3261.FIELD_NAME_SEPARATOR);
             if (columnPos < 0) {

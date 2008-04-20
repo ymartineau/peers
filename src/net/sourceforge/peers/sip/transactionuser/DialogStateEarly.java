@@ -51,5 +51,6 @@ public class DialogStateEarly extends DialogState {
     @Override
     public void receivedOrSentBye() {
         Logger.getInstance().error(id + " invalid transition");
+        throw new IllegalStateException();
     }
 }

@@ -19,15 +19,15 @@
 
 package net.sourceforge.peers.sip.syntaxencoding;
 
-import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldValue;
-import junit.framework.TestCase;
+import org.testng.annotations.Test;
 
-public class SipHeaderFieldValueTest extends TestCase {
+public class SipHeaderFieldValueTestNG {
 
+    @Test
     public void testSetValue() {
         SipHeaderFieldValue value = new SipHeaderFieldValue(";branch=13456787654");
         value.setValue("SIP/2.0/UDP 127.0.0.1:5060");
-        assertEquals("SIP/2.0/UDP 127.0.0.1:5060;branch=13456787654", value.toString());
+        assert "SIP/2.0/UDP 127.0.0.1:5060;branch=13456787654".equals(value.toString());
     }
 
 }

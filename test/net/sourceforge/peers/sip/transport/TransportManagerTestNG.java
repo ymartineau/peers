@@ -26,23 +26,22 @@ import java.net.UnknownHostException;
 
 import net.sourceforge.peers.sip.syntaxencoding.SipParser;
 import net.sourceforge.peers.sip.syntaxencoding.SipParserException;
-import net.sourceforge.peers.sip.transport.MessageSender;
-import net.sourceforge.peers.sip.transport.SipMessage;
-import net.sourceforge.peers.sip.transport.SipRequest;
-import net.sourceforge.peers.sip.transport.TransportManager;
 
-import junit.framework.TestCase;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
 
-public class TransportManagerTest extends TestCase {
+public class TransportManagerTestNG {
 
     private TransportManager transportManager;
     
-    @Override
-    protected void setUp() throws Exception {
+    @BeforeClass
+    protected void init() {
         transportManager = TransportManager.getInstance();
     }
     
-    public void testCreateClientTransport() {
+    @Test
+    public void testCreateClientTransport() throws SipParserException,
+            UnknownHostException, IOException {
         SipRequest sipRequest = (SipRequest)parse(
                 "INVITE sip:UAB@example.com SIP/2.0\r\n"
                 + "Via: ;branchId=3456UGD\r\n"
@@ -50,36 +49,34 @@ public class TransportManagerTest extends TestCase {
                 + "         pick up the phone\r\n"
                 + "         and talk to me!\r\n"
                 + "\r\n");
-        InetAddress inetAddress;
-        try {
-            inetAddress = InetAddress.getByName("192.168.2.1");
-        } catch (UnknownHostException e) {
-            fail();
-            return;
-        }
-        try {
-            MessageSender messageSender = transportManager.createClientTransport(
-                    sipRequest, inetAddress, 5060, "UDP");
-            messageSender.sendMessage(sipRequest);
-        } catch (IOException e) {
-            fail();
-            return;
-        }
+        InetAddress inetAddress = InetAddress.getByName("192.168.2.1");
+        MessageSender messageSender = transportManager.createClientTransport(
+                sipRequest, inetAddress, 5060, "UDP");
+        messageSender.sendMessage(sipRequest);
     }
 
-    private SipMessage parse(String message) {
+    @Test (expectedExceptions = SipParserException.class)
+    public void shouldThrowIfBadMessage() throws SipParserException, IOException {
+        // two characters for sip line is forbidden, minimum is 3:
+        // A:1
+        parse("IN\r\n");
+    }
+    
+    @Test (expectedExceptions = SipParserException.class)
+    public void shouldThrowIfNoEmptyLine() throws SipParserException, IOException {
+        // two characters for sip line is forbidden, minimum is 3:
+        // A:1
+        parse("INVITE sip:UAB@example.com SIP/2.0\r\n"
+                + "Via: ;branchId=3456UGD\r\n"
+                + "Subject: I know you're there,\r\n"
+                + "         pick up the phone\r\n"
+                + "         and talk to me!\r\n");
+    }
+    
+    private SipMessage parse(String message) throws IOException, SipParserException {
         ByteArrayInputStream bais = new ByteArrayInputStream(message.getBytes());
         SipParser sipParser = new SipParser();
-        SipMessage sipMessage = null;
-        try {
-            sipMessage = sipParser.parse(bais);
-        } catch (SipParserException e) {
-            e.printStackTrace();
-            fail(e.getMessage());
-        } catch (IOException ioe) {
-            ioe.printStackTrace();
-            fail(ioe.getMessage());
-        }
+        SipMessage sipMessage = sipParser.parse(bais);
         return sipMessage;
     }
 }
