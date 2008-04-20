@@ -24,35 +24,19 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.List;
 
-import junit.framework.TestCase;
-
 import org.dom4j.DocumentException;
+import org.testng.annotations.Test;
 
-public class ConfigTest extends TestCase {
+public class ConfigTestNG {
 
-    public void testConfig() {
+    @Test
+    public void testConfig() throws MalformedURLException, DocumentException {
         String urlStr =
             "file:" + new File("conf/peers.xml").getAbsolutePath();
-        URL url;
-        try {
-            url = new URL(urlStr);
-        } catch (MalformedURLException e1) {
-            e1.printStackTrace();
-            fail();
-            return;
-        }
-        Config config;
-        try {
-            config = new Config(url);
-        } catch (DocumentException e) {
-            e.printStackTrace();
-            fail();
-            return;
-        }
-        
+        URL url = new URL(urlStr);
+        Config config = new Config(url);
         List list = config.selectNodes("//peers:profile");
-        if (list == null) {
-            fail("no node found for xpath: //peers:profile");
-        }
+        assert list != null : "no node found for xpath: //peers:profile";
     }
+
 }

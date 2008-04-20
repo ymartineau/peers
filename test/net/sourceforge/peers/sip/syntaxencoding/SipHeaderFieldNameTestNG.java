@@ -19,13 +19,13 @@
 
 package net.sourceforge.peers.sip.syntaxencoding;
 
-import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldName;
-import junit.framework.TestCase;
+import org.testng.annotations.Test;
 
-public class SipHeaderFieldNameTest extends TestCase {
+public class SipHeaderFieldNameTestNG {
 
+    @Test
     public void testEqualsObject() {
-        assertEquals(new SipHeaderFieldName("From"), new SipHeaderFieldName("f"));
+        assert new SipHeaderFieldName("From").equals(new SipHeaderFieldName("f"));
     }
 
 }

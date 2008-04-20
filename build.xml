@@ -8,13 +8,30 @@
   <property name="test.dir" value="test"/>
   <property name="conf.dir" value="conf"/>
   <property name="resources.dir" value="resources"/>
+  <property name="junit.reports" value="${build.dir}/junit"/>
+  <property name="testng.reports" value="${build.dir}/testng"/>
 
   <description>
     This application is a very basic and minimalist SIP User-Agent.
     You can call a peer using its IP address.
     The partially implemented RFC is RFC3261.
   </description>
-	
+
+  <path id="run">
+    <fileset dir="${lib.dir}/run">
+      <include name="**/*.jar"/>
+    </fileset>
+  </path>
+
+  <path id="test">
+    <pathelement location="${lib.dir}/test/testng-5.8-jdk15.jar"/>
+    <path refid="run"/>
+    <pathelement location="${classes.dir}"/>
+  </path>
+
+  <taskdef name="testng" classpathref="test"
+      classname="org.testng.TestNGAntTask"/>
+
   <target name="init">
     <mkdir dir="${build.dir}"/>
     <mkdir dir="${classes.dir}"/>
@@ -25,14 +42,8 @@
   </target>
 
   <target name="compile" depends="init">
-    <javac destdir="${classes.dir}"
-        srcdir="${src.dir}" debug="true">
-      <classpath>
-        <fileset dir="${lib.dir}/run">
-          <include name="**/*.jar"/>
-        </fileset>
-      </classpath>
-    </javac>
+    <javac destdir="${classes.dir}" srcdir="${src.dir}" debug="true"
+        classpathref="run"/>
   </target>
 
   <target name="test-compile" depends="init">
@@ -96,6 +107,14 @@
         <include name="build.xml"/>
       </zipfileset>
     </zip>
+  </target>
+
+  <target name="test" depends="compile, test-compile">
+    <mkdir dir="${testng.reports}"/>
+    <testng classpathref="test" outputDir="${testng.reports}">
+      <!-- <classfileset dir="${classes.dir}" includes="**/*TestNG.class"/> -->
+      <xmlfileset dir="${test.dir}" includes="testng.xml"/>
+    </testng>
   </target>
 
 </project>
