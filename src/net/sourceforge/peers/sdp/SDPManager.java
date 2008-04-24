@@ -53,8 +53,10 @@ public class SDPManager {
         "a=rtpmap:0 PCMU/8000\r\n";
     
     private SdpParser sdpParser;
+    private UserAgent userAgent;
     
-    public SDPManager() {
+    public SDPManager(UserAgent userAgent) {
+        this.userAgent = userAgent;
         sdpParser = new SdpParser();
     }
     
@@ -67,7 +69,8 @@ public class SDPManager {
         return null;
     }
     
-    public String handleOffer(byte[] offer) throws NoCodecException {
+    public String handleOffer(byte[] offer)
+            throws NoCodecException {
         // TODO generate dynamic content
         SessionDescription sessionDescription;
         try {
@@ -93,7 +96,7 @@ public class SDPManager {
             e.printStackTrace();
             return null;
         }
-        UserAgent.getInstance().setCaptureRtpSender(captureRtpSender);
+        userAgent.setCaptureRtpSender(captureRtpSender);
 
         try {
             captureRtpSender.start();
@@ -113,7 +116,7 @@ public class SDPManager {
             e1.printStackTrace();
             return null;
         }
-        UserAgent.getInstance().setIncomingRtpReader(incomingRtpReader);
+        userAgent.setIncomingRtpReader(incomingRtpReader);
 
         try {
             incomingRtpReader.start();

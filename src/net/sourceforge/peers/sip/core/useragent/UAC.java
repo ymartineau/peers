@@ -36,12 +36,16 @@ public class UAC {
     private MidDialogRequestManager midDialogRequestManager;
     private String profileUri;
     
+    //FIXME
+    private UserAgent userAgent;
+    
     /**
      * should be instanciated only once, it was a singleton.
      */
-    public UAC() {
-        initialRequestManager = new InitialRequestManager();
-        midDialogRequestManager = new MidDialogRequestManager();
+    public UAC(UserAgent userAgent) {
+        this.userAgent = userAgent;
+        initialRequestManager = new InitialRequestManager(userAgent);
+        midDialogRequestManager = new MidDialogRequestManager(userAgent);
         profileUri = "sip:alice@atlanta.com";
     }
     
@@ -69,17 +73,15 @@ public class UAC {
             }
             DialogManager.getInstance().removeDialog(dialog.getId());
         }
-        CaptureRtpSender captureRtpSender =
-            UserAgent.getInstance().getCaptureRtpSender();
+        CaptureRtpSender captureRtpSender = userAgent.getCaptureRtpSender();
         if (captureRtpSender != null) {
             captureRtpSender.stop();
-            UserAgent.getInstance().setCaptureRtpSender(null);
+            userAgent.setCaptureRtpSender(null);
         }
-        IncomingRtpReader incomingRtpReader =
-            UserAgent.getInstance().getIncomingRtpReader();
+        IncomingRtpReader incomingRtpReader = userAgent.getIncomingRtpReader();
         if (incomingRtpReader != null) {
             incomingRtpReader.stop();
-            UserAgent.getInstance().setIncomingRtpReader(null);
+            userAgent.setIncomingRtpReader(null);
         }
     }
 

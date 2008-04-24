@@ -34,6 +34,10 @@ import net.sourceforge.peers.sip.transport.SipRequest;
 
 public class InitialRequestManager extends RequestManager {
 
+    public InitialRequestManager(UserAgent userAgent) {
+        super(userAgent);
+    }
+
     /**
      * gives a new request outside of a dialog
      * 

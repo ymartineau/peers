@@ -62,9 +62,11 @@ public class InviteHandler extends DialogMethodHandler
 
     //TODO move sdp manager, this should probably be in UserAgent
     private SDPManager sdpManager;
+    private UserAgent userAgent;
     
-    public InviteHandler() {
-        sdpManager = new SDPManager();
+    public InviteHandler(UserAgent userAgent) {
+        sdpManager = new SDPManager(userAgent);
+        this.userAgent = userAgent;
     }
     
     
@@ -104,7 +106,7 @@ public class InviteHandler extends DialogMethodHandler
 
         dialog.receivedOrSent1xx();
 
-        List<String> peers = UserAgent.getInstance().getPeers();
+        List<String> peers = userAgent.getPeers();
         String responseTo = sipRequest.getSipHeaders().get(
                 new SipHeaderFieldName(RFC3261.HDR_FROM)).getValue();
         if (!peers.contains(responseTo)) {
@@ -117,7 +119,9 @@ public class InviteHandler extends DialogMethodHandler
         
     }
     
-    public void acceptCall(SipRequest sipRequest, Dialog dialog) {
+    //FIXME remove useragent parameter (redesign interface with gui)
+    public void acceptCall(SipRequest sipRequest, Dialog dialog,
+            UserAgent userAgent) {
         SipHeaders reqHeaders = sipRequest.getSipHeaders();
         SipHeaderFieldValue contentType =
             reqHeaders.get(new SipHeaderFieldName(RFC3261.HDR_CONTENT_TYPE));
@@ -321,7 +325,7 @@ public class InviteHandler extends DialogMethodHandler
         
         //13.2.2.4
 
-        List<String> peers = UserAgent.getInstance().getPeers();
+        List<String> peers = userAgent.getPeers();
         String responseTo = responseHeaders.get(
                 new SipHeaderFieldName(RFC3261.HDR_TO)).getValue();
         if (!peers.contains(responseTo)) {
@@ -362,7 +366,7 @@ public class InviteHandler extends DialogMethodHandler
             e.printStackTrace();
             return;
         }
-        UserAgent.getInstance().setCaptureRtpSender(captureRtpSender);
+        userAgent.setCaptureRtpSender(captureRtpSender);
 
         try {
             captureRtpSender.start();
@@ -382,7 +386,7 @@ public class InviteHandler extends DialogMethodHandler
             e1.printStackTrace();
             return;
         }
-        UserAgent.getInstance().setIncomingRtpReader(incomingRtpReader);
+        userAgent.setIncomingRtpReader(incomingRtpReader);
 
         try {
             incomingRtpReader.start();

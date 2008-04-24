@@ -35,6 +35,12 @@ import net.sourceforge.peers.sip.transport.SipResponse;
 public class ByeHandler extends DialogMethodHandler
         implements ServerTransactionUser {
 
+    private UserAgent userAgent;
+    
+    public ByeHandler(UserAgent userAgent) {
+        this.userAgent = userAgent;
+    }
+    
     ////////////////////////////////////////////////
     // methods for UAC
     ////////////////////////////////////////////////
@@ -44,7 +50,7 @@ public class ByeHandler extends DialogMethodHandler
         // 15.1.1
         
         String addrSpec = sipRequest.getRequestUri().toString();
-        UserAgent.getInstance().getPeers().remove(addrSpec);
+        userAgent.getPeers().remove(addrSpec);
         
         dialog.receivedOrSentBye();
         
@@ -66,11 +72,11 @@ public class ByeHandler extends DialogMethodHandler
         //String remoteUri = dialog.getRemoteUri();
 
         String addrSpec = sipRequest.getRequestUri().toString();
-        UserAgent.getInstance().getPeers().remove(addrSpec);
+        userAgent.getPeers().remove(addrSpec);
         DialogManager.getInstance().removeDialog(dialog.getId());
         Logger.getInstance().debug("removed dialog " + dialog.getId());
-        UserAgent.getInstance().getCaptureRtpSender().stop();
-        UserAgent.getInstance().setCaptureRtpSender(null);
+        userAgent.getCaptureRtpSender().stop();
+        userAgent.setCaptureRtpSender(null);
         
         SipResponse sipResponse =
             MidDialogRequestManager.generateMidDialogResponse(

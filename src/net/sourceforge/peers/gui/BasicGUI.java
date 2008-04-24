@@ -34,8 +34,7 @@ import javax.swing.SwingWorker;
 
 import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.core.useragent.SipEvent;
-import net.sourceforge.peers.sip.core.useragent.UAC;
-import net.sourceforge.peers.sip.core.useragent.UAS;
+import net.sourceforge.peers.sip.core.useragent.UserAgent;
 import net.sourceforge.peers.sip.core.useragent.SipEvent.EventType;
 import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
 import net.sourceforge.peers.sip.transport.SipMessage;
@@ -61,8 +60,7 @@ public class BasicGUI implements ActionListener, Observer {
     private JTextField uri;
     private JButton actionButton;
 
-    private UAS uas;
-    private UAC uac;
+    private UserAgent userAgent;
 
     public BasicGUI() {
         mainFrame = new JFrame("Peers: SIP User-Agent");
@@ -84,9 +82,9 @@ public class BasicGUI implements ActionListener, Observer {
         mainFrame.pack();
         mainFrame.setVisible(true);
         //create sip stack
-        uas = new UAS();
-        uas.getInitialRequestManager().getInviteHandler().addObserver(this);
-        uac = new UAC();
+        userAgent = new UserAgent();
+        userAgent.getUas().getInitialRequestManager()
+            .getInviteHandler().addObserver(this);
         
     }
 
@@ -97,7 +95,7 @@ public class BasicGUI implements ActionListener, Observer {
             @Override
             protected Void doInBackground() throws Exception {
                 try {
-                    uac.invite(sipUri, callId);
+                    userAgent.getUac().invite(sipUri, callId);
                 } catch (SipUriSyntaxException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
@@ -109,7 +107,7 @@ public class BasicGUI implements ActionListener, Observer {
         
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                new CallFrame(sipUri, callId, uac);
+                new CallFrame(sipUri, callId, userAgent);
             }
         });
     }
@@ -120,8 +118,7 @@ public class BasicGUI implements ActionListener, Observer {
             if (sipEvent.getEventType() == EventType.INCOMING_CALL) {
                 SipMessage sipMessage = sipEvent.getSipMessage();
                 if (sipMessage instanceof SipResponse) {
-                    CallFrame callFrame = new CallFrame((SipResponse)sipMessage, uas);
-                    callFrame.setUac(uac);
+                    new CallFrame((SipResponse)sipMessage, userAgent);
                 }
             }
         }
