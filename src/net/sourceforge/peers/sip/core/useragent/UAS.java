@@ -36,7 +36,6 @@ import net.sourceforge.peers.sip.transport.SipResponse;
 import net.sourceforge.peers.sip.transport.SipServerTransportUser;
 import net.sourceforge.peers.sip.transport.TransportManager;
 
-
 public class UAS implements SipServerTransportUser {
 
     public final static ArrayList<String> SUPPORTED_METHODS;
@@ -47,25 +46,20 @@ public class UAS implements SipServerTransportUser {
         SUPPORTED_METHODS.add(RFC3261.METHOD_CANCEL);
     };
     
-    private static UAS INSTANCE;
-    
-    public static UAS getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new UAS();
-        }
-        return INSTANCE;
-    }
-    
     private InitialRequestManager initialRequestManager;
     private MidDialogRequestManager midDialogRequestManager;
     
-    private UAS() {
+    /**
+     * should be instanciated only once, it was a singleton.
+     */
+    public UAS() {
         initialRequestManager = new InitialRequestManager();
         midDialogRequestManager = new MidDialogRequestManager();
 //        SipTransportFactory.getInstance().createServerTransport(this,
 //                Utils.getInstance().getSipPort(), RFC3261.TRANSPORT_UDP);
         //TODO make it configurable
         try {
+            TransportManager.getInstance().setUas(this);//FIXME fix this cross reference
             TransportManager.getInstance().createServerTransport(
                     RFC3261.TRANSPORT_UDP, Utils.getInstance().getSipPort());
         } catch (IOException e) {

@@ -22,6 +22,7 @@ package net.sourceforge.peers.sip.core.useragent;
 import net.sourceforge.peers.media.CaptureRtpSender;
 import net.sourceforge.peers.media.IncomingRtpReader;
 import net.sourceforge.peers.sip.RFC3261;
+import net.sourceforge.peers.sip.core.useragent.handlers.InviteHandler;
 import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
 import net.sourceforge.peers.sip.transactionuser.Dialog;
 import net.sourceforge.peers.sip.transactionuser.DialogManager;
@@ -30,21 +31,15 @@ import net.sourceforge.peers.sip.transactionuser.DialogStateEarly;
 import net.sourceforge.peers.sip.transport.SipRequest;
 
 public class UAC {
-
-    private static UAC INSTANCE;
-    
-    public static UAC getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new UAC();
-        }
-        return INSTANCE;
-    }
     
     private InitialRequestManager initialRequestManager;
     private MidDialogRequestManager midDialogRequestManager;
     private String profileUri;
     
-    private UAC() {
+    /**
+     * should be instanciated only once, it was a singleton.
+     */
+    public UAC() {
         initialRequestManager = new InitialRequestManager();
         midDialogRequestManager = new MidDialogRequestManager();
         profileUri = "sip:alice@atlanta.com";
@@ -65,7 +60,8 @@ public class UAC {
         if (dialog != null) {
             if (dialog.getState() instanceof DialogStateEarly) {
                 //TODO generate cancel
-                initialRequestManager.createCancel(sipRequest);
+                initialRequestManager.createCancel(sipRequest,
+                        midDialogRequestManager, profileUri);
             } else if (dialog.getState() instanceof DialogStateConfirmed) {
                 midDialogRequestManager.generateMidDialogRequest(
                         dialog, RFC3261.METHOD_BYE);
@@ -86,16 +82,9 @@ public class UAC {
             UserAgent.getInstance().setIncomingRtpReader(null);
         }
     }
-    
-    public InitialRequestManager getInitialRequestManager() {
-        return initialRequestManager;
+
+    public InviteHandler getInviteHandler() {
+        return initialRequestManager.getInviteHandler();
     }
 
-    public MidDialogRequestManager getMidDialogRequestManager() {
-        return midDialogRequestManager;
-    }
-
-    public String getProfileUri() {
-        return profileUri;
-    }
 }

@@ -24,13 +24,14 @@ import java.util.HashMap;
 import net.sourceforge.peers.sip.RFC3261;
 
 
-public final class SipHeadersTable {
-
-    private static SipHeadersTable INSTANCE;
+public class SipHeadersTable {
     
     private HashMap<Character, String> headers;
     
-    private SipHeadersTable() {
+    /**
+     * should be instanciated only once, it was a singleton.
+     */
+    public SipHeadersTable() {
         headers = new HashMap<Character, String>();
         //RFC 3261 Section 10
         headers.put(RFC3261.COMPACT_HDR_CALLID,           RFC3261.HDR_CALLID);
@@ -43,13 +44,6 @@ public final class SipHeadersTable {
         headers.put(RFC3261.COMPACT_HDR_SUPPORTED,        RFC3261.HDR_SUBJECT);
         headers.put(RFC3261.COMPACT_HDR_TO,               RFC3261.HDR_TO);
         headers.put(RFC3261.COMPACT_HDR_VIA,              RFC3261.HDR_VIA);
-    }
-    
-    public static SipHeadersTable getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new SipHeadersTable(); 
-        }
-        return INSTANCE;
     }
     
     public String getLongForm(char compactForm) {

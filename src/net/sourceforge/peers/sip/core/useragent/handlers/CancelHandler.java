@@ -21,7 +21,7 @@ package net.sourceforge.peers.sip.core.useragent.handlers;
 
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.Utils;
-import net.sourceforge.peers.sip.core.useragent.UAC;
+import net.sourceforge.peers.sip.core.useragent.MidDialogRequestManager;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldName;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldValue;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderParamName;
@@ -93,7 +93,8 @@ public class CancelHandler extends MethodHandler implements ServerTransactionUse
     //////////////////////////////////////////////////////////
     
     public ClientTransaction preProcessCancel(SipRequest cancelGenericRequest,
-            SipRequest inviteRequest) {
+            SipRequest inviteRequest,
+            MidDialogRequestManager midDialogRequestManager) {
         //TODO
         //p. 54 §9.1
         
@@ -136,8 +137,8 @@ public class CancelHandler extends MethodHandler implements ServerTransactionUse
         }
 
         
-        return UAC.getInstance().getMidDialogRequestManager()
-            .createNonInviteClientTransaction(cancelGenericRequest, branchId);
+        return midDialogRequestManager.createNonInviteClientTransaction(
+                cancelGenericRequest, branchId);
     }
 
     public void transactionFailure() {

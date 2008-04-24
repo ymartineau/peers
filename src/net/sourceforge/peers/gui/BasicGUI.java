@@ -55,12 +55,15 @@ public class BasicGUI implements ActionListener, Observer {
         JFrame.setDefaultLookAndFeelDecorated(true);
         new BasicGUI();
     }
-    
+
     private JFrame mainFrame;
     private JPanel mainPanel;
     private JTextField uri;
     private JButton actionButton;
-    
+
+    private UAS uas;
+    private UAC uac;
+
     public BasicGUI() {
         mainFrame = new JFrame("Peers: SIP User-Agent");
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -81,9 +84,9 @@ public class BasicGUI implements ActionListener, Observer {
         mainFrame.pack();
         mainFrame.setVisible(true);
         //create sip stack
-        UAS uas = UAS.getInstance();
+        uas = new UAS();
         uas.getInitialRequestManager().getInviteHandler().addObserver(this);
-        UAC.getInstance();
+        uac = new UAC();
         
     }
 
@@ -94,7 +97,7 @@ public class BasicGUI implements ActionListener, Observer {
             @Override
             protected Void doInBackground() throws Exception {
                 try {
-                    UAC.getInstance().invite(sipUri, callId);
+                    uac.invite(sipUri, callId);
                 } catch (SipUriSyntaxException e) {
                     // TODO Auto-generated catch block
                     e.printStackTrace();
@@ -106,7 +109,7 @@ public class BasicGUI implements ActionListener, Observer {
         
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                new CallFrame(sipUri, callId);
+                new CallFrame(sipUri, callId, uac);
             }
         });
     }
@@ -117,7 +120,8 @@ public class BasicGUI implements ActionListener, Observer {
             if (sipEvent.getEventType() == EventType.INCOMING_CALL) {
                 SipMessage sipMessage = sipEvent.getSipMessage();
                 if (sipMessage instanceof SipResponse) {
-                    new CallFrame((SipResponse)sipMessage);
+                    CallFrame callFrame = new CallFrame((SipResponse)sipMessage, uas);
+                    callFrame.setUac(uac);
                 }
             }
         }

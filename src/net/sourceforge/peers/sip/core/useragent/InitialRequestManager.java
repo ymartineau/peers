@@ -105,7 +105,7 @@ public class InitialRequestManager extends RequestManager {
             clientTransaction = inviteHandler.preProcessInvite(sipRequest);
         }
         
-        createInitialRequestEnd(sipRequest, clientTransaction);
+        createInitialRequestEnd(sipRequest, clientTransaction, profileUri);
     }
     
     private SipRequest createInitialRequestStart(String requestUri, String method,
@@ -121,8 +121,8 @@ public class InitialRequestManager extends RequestManager {
     }
     
     private void createInitialRequestEnd(SipRequest sipRequest,
-            ClientTransaction clientTransaction) {
-        addContact(sipRequest, clientTransaction.getContact());
+            ClientTransaction clientTransaction, String profileUri) {
+        addContact(sipRequest, clientTransaction.getContact(), profileUri);
         
         // TODO create message receiver on client transport port
         if (clientTransaction != null) {
@@ -137,13 +137,11 @@ public class InitialRequestManager extends RequestManager {
         createInitialRequest(requestUri, method, profileUri, null);
     }
     
-    public void createCancel(SipRequest inviteRequest) {
+    public void createCancel(SipRequest inviteRequest,
+            MidDialogRequestManager midDialogRequestManager, String profileUri) {
         SipHeaders inviteHeaders = inviteRequest.getSipHeaders();
-        SipHeaderFieldValue from = inviteHeaders.get(
-                new SipHeaderFieldName(RFC3261.HDR_FROM));
         SipHeaderFieldValue callId = inviteHeaders.get(
                 new SipHeaderFieldName(RFC3261.HDR_CALLID));
-        String profileUri = NameAddress.nameAddressToUri(from.getValue());
         SipRequest sipRequest;
         try {
             sipRequest = createInitialRequestStart(
@@ -157,9 +155,9 @@ public class InitialRequestManager extends RequestManager {
         
         ClientTransaction clientTransaction = null;
             clientTransaction = cancelHandler.preProcessCancel(sipRequest,
-                    inviteRequest);
+                    inviteRequest, midDialogRequestManager);
         if (clientTransaction != null) {
-            createInitialRequestEnd(sipRequest, clientTransaction);
+            createInitialRequestEnd(sipRequest, clientTransaction, profileUri);
         }
         
         
@@ -199,7 +197,8 @@ public class InitialRequestManager extends RequestManager {
         }
     }
 
-    private void addContact(SipRequest sipRequest, String contactEnd) {
+    private void addContact(SipRequest sipRequest, String contactEnd,
+            String profileUri) {
         SipHeaders sipHeaders = sipRequest.getSipHeaders();
         
         
@@ -209,8 +208,7 @@ public class InitialRequestManager extends RequestManager {
         StringBuffer contactBuf = new StringBuffer();
         contactBuf.append(RFC3261.SIP_SCHEME);
         contactBuf.append(RFC3261.SCHEME_SEPARATOR);
-        String userPart = Utils.getInstance().getUserPart(
-                UAC.getInstance().getProfileUri());
+        String userPart = Utils.getInstance().getUserPart(profileUri);
         contactBuf.append(userPart);
         contactBuf.append(RFC3261.AT);
         contactBuf.append(contactEnd);
