@@ -50,18 +50,14 @@ import net.sourceforge.peers.sip.transport.SipResponse;
 
 public class CallFrame implements ActionListener, Observer {
 
+    //GUI strings
     public static final String ACCEPT_ACTION = "Accept";
     public static final String BYE_ACTION    = "Bye";
     public static final String CANCEL_ACTION = "Cancel";
     public static final String CLOSE_ACTION  = "Close";
     public static final String REJECT_ACTION = "Reject";
     
-    private String callId;
-    private boolean isUac;
-    private Dialog dialog;
-    private SipRequest sipRequest;
-    private InviteHandler inviteHandler;
-    
+    //GUI objects
     private JFrame frame;
     private JPanel mainPanel;
     private JLabel text;
@@ -71,12 +67,21 @@ public class CallFrame implements ActionListener, Observer {
     private JButton closeButton;
     private JButton rejectButton;
     
+    //sip stack objects
+    private String callId;
+    private boolean isUac;
+    private Dialog dialog;
+    private SipRequest sipRequest;
+    private InviteHandler inviteHandler;
+    
+    private UAC uac;
+    
     //for uac
-    public CallFrame(String requestUri, String callId) {
+    public CallFrame(String requestUri, String callId, UAC uac) {
         isUac = true;
         this.callId = callId;
-        inviteHandler = UAC.getInstance().getInitialRequestManager()
-            .getInviteHandler();
+        this.uac = uac;
+        inviteHandler = uac.getInviteHandler();
         
         frame = new JFrame(requestUri);
         //TODO window listener
@@ -104,14 +109,13 @@ public class CallFrame implements ActionListener, Observer {
     }
     
     //for uas
-    public CallFrame(SipResponse sipResponse) {
+    public CallFrame(SipResponse sipResponse, UAS uas) {
         isUac = false;
-        this.sipRequest = Utils.getInstance().getSipRequest(sipResponse);
+        sipRequest = Utils.getInstance().getSipRequest(sipResponse);
         dialog = DialogManager.getInstance().getDialog(sipResponse);
         dialog.addObserver(this);
         callId = dialog.getCallId();
-        inviteHandler = UAS.getInstance().getInitialRequestManager()
-                .getInviteHandler();
+        inviteHandler = uas.getInitialRequestManager().getInviteHandler();
     }
 
     private void acceptCall() {
@@ -140,8 +144,7 @@ public class CallFrame implements ActionListener, Observer {
         SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
-                UAC.getInstance().getInitialRequestManager()
-                        .createCancel(sipRequest);
+                uac.terminate(dialog, sipRequest);
                 return null;
             }
         };
@@ -152,7 +155,7 @@ public class CallFrame implements ActionListener, Observer {
         SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
-                UAC.getInstance().terminate(dialog);
+                uac.terminate(dialog);
                 return null;
             }
         };
@@ -306,4 +309,9 @@ public class CallFrame implements ActionListener, Observer {
         cancelButton = null;
         byeButton = null;
     }
+
+    public void setUac(UAC uac) {
+        this.uac = uac;
+    }
+    
 }

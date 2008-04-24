@@ -42,6 +42,8 @@ public abstract class MessageReceiver implements Runnable {
     
     protected int port;
     private boolean isListening;
+    
+    private UAS uas;
 
     public MessageReceiver(int port) {
         super();
@@ -114,7 +116,7 @@ public abstract class MessageReceiver implements Runnable {
             ServerTransaction serverTransaction =
                 transactionManager.getServerTransaction(sipRequest);
             if (serverTransaction == null) {
-                UAS.getInstance().messageReceived(sipMessage);
+                uas.messageReceived(sipMessage);
             } else {
                 serverTransaction.receivedRequest(sipRequest);
             }
@@ -124,7 +126,7 @@ public abstract class MessageReceiver implements Runnable {
                 transactionManager.getClientTransaction(sipResponse);
             Logger.getInstance().debug("ClientTransaction = " + clientTransaction);
             if (clientTransaction == null) {
-                UAS.getInstance().messageReceived(sipMessage);
+                uas.messageReceived(sipMessage);
             } else {
                 clientTransaction.receivedResponse(sipResponse);
             }
@@ -137,6 +139,10 @@ public abstract class MessageReceiver implements Runnable {
 
     public synchronized boolean isListening() {
         return isListening;
+    }
+
+    public void setUas(UAS uas) {
+        this.uas = uas;
     }
     
 }

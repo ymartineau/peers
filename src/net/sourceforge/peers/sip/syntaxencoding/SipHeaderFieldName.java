@@ -35,7 +35,8 @@ public class SipHeaderFieldName {
         if (name.equalsIgnoreCase(objName)) {
             return true;
         }
-        return name.equalsIgnoreCase(SipHeadersTable.getInstance().getLongForm(objName.charAt(0)));
+        SipHeadersTable sipHeadersTable = new SipHeadersTable();
+        return name.equalsIgnoreCase(sipHeadersTable.getLongForm(objName.charAt(0)));
     }
 
     @Override

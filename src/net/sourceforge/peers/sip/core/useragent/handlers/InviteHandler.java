@@ -277,7 +277,9 @@ public class InviteHandler extends DialogMethodHandler
 
     public void errResponseReceived(SipResponse sipResponse) {
         Dialog dialog = DialogManager.getInstance().getDialog(sipResponse);
-        dialog.receivedOrSent300To699();
+        if (dialog != null) {
+            dialog.receivedOrSent300To699();
+        }
         setChanged();
         notifyObservers(new SipEvent(EventType.ERROR, sipResponse));
     }

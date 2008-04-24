@@ -27,7 +27,7 @@ public class UASTestMain {
      * @param args
      */
     public static void main(String[] args) {
-        UAS.getInstance();
+        new UAS();
     }
 
 }

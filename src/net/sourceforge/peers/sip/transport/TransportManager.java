@@ -43,6 +43,7 @@ import java.util.Hashtable;
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.Utils;
+import net.sourceforge.peers.sip.core.useragent.UAS;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldName;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldValue;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderParamName;
@@ -54,6 +55,8 @@ public class TransportManager {
 
     private static TransportManager INSTANCE;
     private static int NO_TTL = -1;
+    
+    private UAS uas;
     
     public static TransportManager getInstance() {
         if (INSTANCE == null) {
@@ -307,6 +310,7 @@ public class TransportManager {
         if (RFC3261.TRANSPORT_UDP.equalsIgnoreCase(conn.getRemoteTransport())) {
             DatagramSocket datagramSocket = (DatagramSocket)socket;
             messageReceiver = new UdpMessageReceiver(datagramSocket);
+            messageReceiver.setUas(uas);
         }
         messageReceivers.put(conn, messageReceiver);
         return messageReceiver;
@@ -325,6 +329,7 @@ public class TransportManager {
                 Logger.getInstance().info("added datagram socket " + conn);
             }
             messageReceiver = new UdpMessageReceiver(datagramSocket);
+            messageReceiver.setUas(uas);
             //TODO create also tcp receiver using a recursive call
         } else {
             //TODO
@@ -333,6 +338,9 @@ public class TransportManager {
         messageReceivers.put(conn, messageReceiver);
         return messageReceiver;
     }
-    
+
+    public void setUas(UAS uas) {
+        this.uas = uas;
+    }
     
 }
