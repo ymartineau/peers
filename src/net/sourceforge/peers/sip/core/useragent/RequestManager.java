@@ -35,11 +35,11 @@ public abstract class RequestManager {
     protected OptionsHandler optionsHandler;
     protected RegisterHandler registerHandler;
     
-    public RequestManager() {
-        inviteHandler = new InviteHandler();
+    public RequestManager(UserAgent userAgent) {
+        inviteHandler = new InviteHandler(userAgent);
         cancelHandler = new CancelHandler();
         ackHandler = new AckHandler();
-        byeHandler = new ByeHandler();
+        byeHandler = new ByeHandler(userAgent);
         optionsHandler = new OptionsHandler();
         registerHandler = new RegisterHandler();
     }

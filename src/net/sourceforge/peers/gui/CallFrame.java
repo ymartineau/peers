@@ -34,8 +34,7 @@ import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.JavaUtils;
 import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.core.useragent.SipEvent;
-import net.sourceforge.peers.sip.core.useragent.UAC;
-import net.sourceforge.peers.sip.core.useragent.UAS;
+import net.sourceforge.peers.sip.core.useragent.UserAgent;
 import net.sourceforge.peers.sip.core.useragent.SipEvent.EventType;
 import net.sourceforge.peers.sip.core.useragent.handlers.InviteHandler;
 import net.sourceforge.peers.sip.transactionuser.Dialog;
@@ -74,14 +73,14 @@ public class CallFrame implements ActionListener, Observer {
     private SipRequest sipRequest;
     private InviteHandler inviteHandler;
     
-    private UAC uac;
+    private UserAgent userAgent;
     
     //for uac
-    public CallFrame(String requestUri, String callId, UAC uac) {
+    public CallFrame(String requestUri, String callId, UserAgent userAgent) {
         isUac = true;
         this.callId = callId;
-        this.uac = uac;
-        inviteHandler = uac.getInviteHandler();
+        this.userAgent = userAgent;
+        inviteHandler = userAgent.getUac().getInviteHandler();
         
         frame = new JFrame(requestUri);
         //TODO window listener
@@ -109,20 +108,23 @@ public class CallFrame implements ActionListener, Observer {
     }
     
     //for uas
-    public CallFrame(SipResponse sipResponse, UAS uas) {
+    public CallFrame(SipResponse sipResponse, UserAgent userAgent) {
         isUac = false;
         sipRequest = Utils.getInstance().getSipRequest(sipResponse);
         dialog = DialogManager.getInstance().getDialog(sipResponse);
         dialog.addObserver(this);
         callId = dialog.getCallId();
-        inviteHandler = uas.getInitialRequestManager().getInviteHandler();
+        this.userAgent = userAgent;
+        inviteHandler = userAgent.getUas()
+            .getInitialRequestManager().getInviteHandler();
     }
 
     private void acceptCall() {
         SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
-                inviteHandler.acceptCall(sipRequest, dialog);
+                //FIXME redisgn interface, only use useragent
+                inviteHandler.acceptCall(sipRequest, dialog, userAgent);
                 return null;
             }
         };
@@ -144,7 +146,7 @@ public class CallFrame implements ActionListener, Observer {
         SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
-                uac.terminate(dialog, sipRequest);
+                userAgent.getUac().terminate(dialog, sipRequest);
                 return null;
             }
         };
@@ -155,7 +157,7 @@ public class CallFrame implements ActionListener, Observer {
         SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {
-                uac.terminate(dialog);
+                userAgent.getUac().terminate(dialog);
                 return null;
             }
         };
@@ -308,10 +310,6 @@ public class CallFrame implements ActionListener, Observer {
         closeButton = null;
         cancelButton = null;
         byeButton = null;
-    }
-
-    public void setUac(UAC uac) {
-        this.uac = uac;
     }
     
 }

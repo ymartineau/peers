@@ -39,6 +39,11 @@ import net.sourceforge.peers.sip.transport.SipResponse;
 public class MidDialogRequestManager extends RequestManager
         implements ClientTransactionUser {
 
+    public MidDialogRequestManager(UserAgent userAgent) {
+        super(userAgent);
+        // TODO Auto-generated constructor stub
+    }
+    
     ////////////////////////////////////////////////
     // methods for UAC
     ////////////////////////////////////////////////

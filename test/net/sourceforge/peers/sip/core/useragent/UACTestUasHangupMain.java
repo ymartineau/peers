@@ -28,8 +28,8 @@ public class UACTestUasHangupMain {
         String requestUri = "sip:bob@"
                 + Utils.getInstance().getMyAddress().getHostAddress() + ":6060";
         try {
-            new UAS();
-            new UAC().invite(requestUri,
+            UserAgent userAgent = new UserAgent();
+            userAgent.getUac().invite(requestUri,
                     Utils.getInstance().generateCallID());
         } catch (SipUriSyntaxException e) {
             e.printStackTrace();

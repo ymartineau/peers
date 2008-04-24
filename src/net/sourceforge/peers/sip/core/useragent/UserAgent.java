@@ -26,6 +26,7 @@ import java.util.List;
 
 import net.sourceforge.peers.media.CaptureRtpSender;
 import net.sourceforge.peers.media.IncomingRtpReader;
+import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.core.Config;
 
 import org.dom4j.DocumentException;
@@ -35,15 +36,6 @@ public class UserAgent {
 
     public final static String CONFIG_FILE = "conf/peers.xml";
     
-    private static UserAgent INSTANCE;
-    
-    public static UserAgent getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new UserAgent();
-        }
-        return INSTANCE;
-    }
-    
     private Config config;
     
     private List<String> peers;
@@ -51,10 +43,12 @@ public class UserAgent {
     
     private CaptureRtpSender captureRtpSender;
     private IncomingRtpReader incomingRtpReader;
+    
+    private UAC uac;
+    private UAS uas;
 
-    private UserAgent() {
-        peers = new ArrayList<String>();
-        //dialogs = new ArrayList<Dialog>();
+    public UserAgent() {
+        
         File configFile = new File(CONFIG_FILE);
         if (!configFile.exists()) {
             System.err.println("configuration file not found: " + CONFIG_FILE);
@@ -67,6 +61,16 @@ public class UserAgent {
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
+        
+        Utils.setConfig(config);
+        
+        
+        uas = new UAS(this);
+        uac = new UAC(this);
+        
+        peers = new ArrayList<String>();
+        //dialogs = new ArrayList<Dialog>();
+
     }
     
 //    public List<Dialog> getDialogs() {
@@ -107,6 +111,14 @@ public class UserAgent {
 
     public synchronized Config getConfig() {
         return config;
+    }
+
+    public UAS getUas() {
+        return uas;
+    }
+
+    public UAC getUac() {
+        return uac;
     }
     
 }

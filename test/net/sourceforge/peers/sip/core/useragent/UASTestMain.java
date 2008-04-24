@@ -19,7 +19,6 @@
 
 package net.sourceforge.peers.sip.core.useragent;
 
-import net.sourceforge.peers.sip.core.useragent.UAS;
 
 public class UASTestMain {
 
@@ -27,7 +26,7 @@ public class UASTestMain {
      * @param args
      */
     public static void main(String[] args) {
-        new UAS();
+        new UserAgent();
     }
 
 }

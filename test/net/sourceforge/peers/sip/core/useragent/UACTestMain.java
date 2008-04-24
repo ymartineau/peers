@@ -29,11 +29,11 @@ public class UACTestMain {
     public static void main(String[] args) {
         String requestUri = "sip:bob@" + Utils.getInstance()
             .getMyAddress().getHostAddress() + ":6060";
-        UAC uac;
+        UserAgent userAgent;
         try {
-            new UAS();
-            uac = new UAC();
-            uac.invite(requestUri, Utils.getInstance().generateCallID());
+            userAgent = new UserAgent();
+            userAgent.getUac().invite(requestUri,
+                    Utils.getInstance().generateCallID());
         } catch (SipUriSyntaxException e) {
             e.printStackTrace();
             return;
@@ -47,7 +47,7 @@ public class UACTestMain {
         
         Dialog dialog = DialogManager.getInstance().getDialog(requestUri);
         if (dialog != null) {
-            uac.terminate(dialog);
+            userAgent.getUac().terminate(dialog);
         } else {
             System.err.println("dialog not found");
         }

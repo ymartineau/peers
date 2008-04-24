@@ -28,7 +28,6 @@ import java.net.UnknownHostException;
 import java.util.Enumeration;
 
 import net.sourceforge.peers.sip.core.Config;
-import net.sourceforge.peers.sip.core.useragent.UserAgent;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldMultiValue;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldName;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldValue;
@@ -44,6 +43,9 @@ import org.dom4j.Node;
 
 public class Utils {
 
+    //FIXME
+    private static Config config;
+    
     private static Utils INSTANCE;
     
     public static Utils getInstance() {
@@ -51,6 +53,10 @@ public class Utils {
             INSTANCE = new Utils();
         }
         return INSTANCE;
+    }
+    
+    public static void setConfig(Config config) {
+        Utils.config = config;
     }
     
     private InetAddress myAddress;
@@ -61,7 +67,6 @@ public class Utils {
     private Utils() {
         super();
         
-        Config config = UserAgent.getInstance().getConfig();
         Node node = config.selectSingleNode("//peers:address");
         if (node == null) {
           try {
