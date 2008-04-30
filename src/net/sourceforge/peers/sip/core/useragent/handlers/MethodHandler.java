@@ -30,13 +30,17 @@ import net.sourceforge.peers.sip.syntaxencoding.SipHeaders;
 import net.sourceforge.peers.sip.transaction.TransactionManager;
 import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.SipResponse;
+import net.sourceforge.peers.sip.transport.TransportManager;
 
 public abstract class MethodHandler extends Observable {
 
     protected TransactionManager transactionManager;
+    protected TransportManager transportManager;
     
-    public MethodHandler(TransactionManager transactionManager) {
+    public MethodHandler(TransactionManager transactionManager,
+            TransportManager transportManager) {
         this.transactionManager = transactionManager;
+        this.transportManager = transportManager;
     }
     
     protected SipResponse buildGenericResponse(SipRequest sipRequest,

@@ -33,6 +33,7 @@ import net.sourceforge.peers.sip.transaction.TransactionManager;
 import net.sourceforge.peers.sip.transport.SipMessage;
 import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.SipResponse;
+import net.sourceforge.peers.sip.transport.TransportManager;
 
 import org.dom4j.DocumentException;
 
@@ -53,6 +54,7 @@ public class UserAgent {
     private UAS uas;
 
     private TransactionManager transactionManager;
+    private TransportManager transportManager;
 
     public UserAgent() {
         
@@ -72,9 +74,11 @@ public class UserAgent {
         Utils.setConfig(config);
         
         transactionManager = new TransactionManager();
+        transportManager = new TransportManager(transactionManager);
+        transactionManager.setTransportManager(transportManager);
         
-        uas = new UAS(this, transactionManager);
-        uac = new UAC(this, transactionManager);
+        uas = new UAS(this, transactionManager, transportManager);
+        uac = new UAC(this, transactionManager, transportManager);
         
         peers = new ArrayList<String>();
         //dialogs = new ArrayList<Dialog>();

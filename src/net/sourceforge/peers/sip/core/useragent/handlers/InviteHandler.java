@@ -62,12 +62,12 @@ public class InviteHandler extends DialogMethodHandler
 
     //TODO move sdp manager, this should probably be in UserAgent
     private SDPManager sdpManager;
-    private UserAgent userAgent;
     
-    public InviteHandler(UserAgent userAgent, TransactionManager transactionManager) {
-        super(transactionManager);
+    public InviteHandler(UserAgent userAgent,
+            TransactionManager transactionManager,
+            TransportManager transportManager) {
+        super(userAgent, transactionManager, transportManager);
         sdpManager = new SDPManager(userAgent);
-        this.userAgent = userAgent;
     }
     
     
@@ -264,7 +264,7 @@ public class InviteHandler extends DialogMethodHandler
         }
         ClientTransaction clientTransaction = transactionManager
                 .createClientTransaction(sipRequest, requestUri.getHost(),
-                    port, transport, null, this);
+                    port, transport, null, this, transportManager);
         sipRequest.setBody(sdpManager.generateOffer().getBytes());
         SipHeaders respHeaders = sipRequest.getSipHeaders();
         respHeaders.add(new SipHeaderFieldName(RFC3261.HDR_CONTENT_TYPE),
@@ -460,7 +460,7 @@ public class InviteHandler extends DialogMethodHandler
         }
 
         try {
-            MessageSender sender = TransportManager.getInstance().createClientTransport(
+            MessageSender sender = transportManager.createClientTransport(
                     ack, requestUri.getHost(), port, transport);
             sender.sendMessage(ack);
         } catch (IOException e) {

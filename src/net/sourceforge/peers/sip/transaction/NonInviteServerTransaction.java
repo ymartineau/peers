@@ -46,8 +46,8 @@ public class NonInviteServerTransaction extends Transaction
     
     NonInviteServerTransaction(String branchId, int port, String transport,
             String method, ServerTransactionUser serverTransactionUser,
-            SipRequest sipRequest, Timer timer) {
-        super(branchId, method, timer);
+            SipRequest sipRequest, Timer timer, TransportManager transportManager) {
+        super(branchId, method, timer, transportManager);
         
         TRYING = new NonInviteServerTransactionStateTrying(getId(), this);
         state = TRYING;
@@ -62,7 +62,7 @@ public class NonInviteServerTransaction extends Transaction
 //        sipServerTransport = SipTransportFactory.getInstance()
 //            .createServerTransport(this, port, transport);
         try {
-            TransportManager.getInstance().createServerTransport(transport, port);
+            transportManager.createServerTransport(transport, port);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -93,8 +93,7 @@ public class NonInviteServerTransaction extends Transaction
         int nbOfResponses = responses.size();
         if (nbOfResponses > 0) {
             try {
-                TransportManager.getInstance().sendResponse(
-                        responses.get(nbOfResponses - 1));
+                transportManager.sendResponse(responses.get(nbOfResponses - 1));
             } catch (IOException e) {
                 e.printStackTrace();
             }

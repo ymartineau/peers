@@ -56,8 +56,9 @@ public class NonInviteClientTransaction extends Transaction
     
     NonInviteClientTransaction(String branchId, InetAddress inetAddress,
             int port, String transport, SipRequest sipRequest,
-            ClientTransactionUser transactionUser, Timer timer) {
-        super(branchId, sipRequest.getMethod(), timer);
+            ClientTransactionUser transactionUser, Timer timer,
+            TransportManager transportManager) {
+        super(branchId, sipRequest.getMethod(), timer, transportManager);
         
         SipHeaderFieldValue via = new SipHeaderFieldValue("");
         via.addParam(new SipHeaderParamName(RFC3261.PARAM_BRANCH), branchId);
@@ -79,7 +80,7 @@ public class NonInviteClientTransaction extends Transaction
         remoteInetAddress = inetAddress;
         
         try {
-            messageSender = TransportManager.getInstance().createClientTransport(
+            messageSender = transportManager.createClientTransport(
                     request, remoteInetAddress, remotePort, transport);
         } catch (IOException e) {
             e.printStackTrace();

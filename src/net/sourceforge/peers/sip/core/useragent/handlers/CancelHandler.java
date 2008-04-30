@@ -36,16 +36,17 @@ import net.sourceforge.peers.sip.transactionuser.Dialog;
 import net.sourceforge.peers.sip.transactionuser.DialogManager;
 import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.SipResponse;
+import net.sourceforge.peers.sip.transport.TransportManager;
 
 public class CancelHandler extends MethodHandler implements ServerTransactionUser {
+
+    public CancelHandler(TransactionManager transactionManager, TransportManager transportManager) {
+        super(transactionManager, transportManager);
+    }
 
     //////////////////////////////////////////////////////////
     // UAS methods
     //////////////////////////////////////////////////////////
-    
-    public CancelHandler(TransactionManager transactionManager) {
-        super(transactionManager);
-    }
 
     public void handleCancel(SipRequest sipRequest) {
         SipHeaderFieldValue topVia = Utils.getInstance().getTopVia(sipRequest);

@@ -54,17 +54,9 @@ import net.sourceforge.peers.sip.transaction.TransactionManager;
 
 public class TransportManager {
 
-    private static TransportManager INSTANCE;
     private static int NO_TTL = -1;
     
     private UAS uas;
-    
-    public static TransportManager getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new TransportManager();
-        }
-        return INSTANCE;
-    }
     
     protected SipParser sipParser;
     
@@ -74,11 +66,12 @@ public class TransportManager {
     
     private TransactionManager transactionManager;
     
-    private TransportManager() {
+    public TransportManager(TransactionManager transactionManager) {
         sipParser = new SipParser();
         datagramSockets = new Hashtable<SipTransportConnection, DatagramSocket>();
         messageSenders = new Hashtable<SipTransportConnection, MessageSender>();
         messageReceivers = new Hashtable<SipTransportConnection, MessageReceiver>();
+        this.transactionManager = transactionManager;
     }
     
     public MessageSender createClientTransport(SipRequest sipRequest,
@@ -128,11 +121,9 @@ public class TransportManager {
             if (TRANSPORT_TCP.equals(transport) || TRANSPORT_UDP.equals(transport)
                     || TRANSPORT_SCTP.equals(transport)) {
                 localPort = TRANSPORT_DEFAULT_PORT;
-            }
-            else if (TRANSPORT_SCTP.equals(transport)) {
+            } else if (TRANSPORT_SCTP.equals(transport)) {
                 localPort = TRANSPORT_TLS_PORT;
-            }
-            else {
+            } else {
                 throw new RuntimeException("unknown transport type");
             }
         }
@@ -312,7 +303,8 @@ public class TransportManager {
         MessageReceiver messageReceiver = null;
         if (RFC3261.TRANSPORT_UDP.equalsIgnoreCase(conn.getRemoteTransport())) {
             DatagramSocket datagramSocket = (DatagramSocket)socket;
-            messageReceiver = new UdpMessageReceiver(datagramSocket, transactionManager);
+            messageReceiver = new UdpMessageReceiver(datagramSocket, transactionManager,
+                    this);
             messageReceiver.setUas(uas);
         }
         messageReceivers.put(conn, messageReceiver);
@@ -331,7 +323,8 @@ public class TransportManager {
                 datagramSockets.put(conn, datagramSocket);
                 Logger.getInstance().info("added datagram socket " + conn);
             }
-            messageReceiver = new UdpMessageReceiver(datagramSocket, transactionManager);
+            messageReceiver = new UdpMessageReceiver(datagramSocket, transactionManager,
+                    this);
             messageReceiver.setUas(uas);
             //TODO create also tcp receiver using a recursive call
         } else {
@@ -344,10 +337,6 @@ public class TransportManager {
 
     public void setUas(UAS uas) {
         this.uas = uas;
-    }
-
-    public void setTransactionManager(TransactionManager transactionManager) {
-        this.transactionManager = transactionManager;
     }
     
 }

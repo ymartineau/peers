@@ -52,8 +52,9 @@ public class InviteServerTransaction extends InviteTransaction
     
     InviteServerTransaction(String branchId, int port, String transport,
             SipResponse sipResponse, ServerTransactionUser serverTransactionUser,
-            SipRequest sipRequest, Timer timer, TransactionManager transactionManager) {
-        super(branchId, timer);
+            SipRequest sipRequest, Timer timer, TransactionManager transactionManager,
+            TransportManager transportManager) {
+        super(branchId, timer, transportManager);
         
         this.transactionManager = transactionManager;
         
@@ -79,7 +80,7 @@ public class InviteServerTransaction extends InviteTransaction
 //        sipServerTransport = SipTransportFactory.getInstance()
 //            .createServerTransport(this, port, transport);
         try {
-            TransportManager.getInstance().createServerTransport(transport, port);
+            transportManager.createServerTransport(transport, port);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -131,8 +132,7 @@ public class InviteServerTransaction extends InviteTransaction
         int nbOfResponses = responses.size();
         if (nbOfResponses > 0) {
             try {
-                TransportManager.getInstance().sendResponse(
-                        responses.get(nbOfResponses - 1));
+                transportManager.sendResponse(responses.get(nbOfResponses - 1));
             } catch (IOException e) {
                 e.printStackTrace();
             }

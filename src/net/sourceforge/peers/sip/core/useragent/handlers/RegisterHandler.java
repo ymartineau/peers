@@ -21,11 +21,13 @@ package net.sourceforge.peers.sip.core.useragent.handlers;
 
 import net.sourceforge.peers.sip.transaction.TransactionManager;
 import net.sourceforge.peers.sip.transport.SipRequest;
+import net.sourceforge.peers.sip.transport.TransportManager;
 
 public class RegisterHandler extends MethodHandler {
 
-    public RegisterHandler(TransactionManager transactionManager) {
-        super(transactionManager);
+    public RegisterHandler(TransactionManager transactionManager,
+            TransportManager transportManager) {
+        super(transactionManager, transportManager);
     }
 
     public void handleRegister(SipRequest sipRequest) {

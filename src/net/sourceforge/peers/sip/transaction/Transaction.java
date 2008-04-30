@@ -26,6 +26,7 @@ import java.util.Timer;
 
 import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.SipResponse;
+import net.sourceforge.peers.sip.transport.TransportManager;
 
 
 public abstract class Transaction {
@@ -39,12 +40,15 @@ public abstract class Transaction {
     protected List<SipResponse> responses;
     
     protected Timer timer;
+    protected TransportManager transportManager;
 
-    protected Transaction(String branchId, String method, Timer timer) {
+    protected Transaction(String branchId, String method, Timer timer,
+            TransportManager transportManager) {
         super();
         this.branchId = branchId;
         this.method = method;
         this.timer = timer;
+        this.transportManager = transportManager;
         responses = Collections.synchronizedList(new ArrayList<SipResponse>());
     }
 

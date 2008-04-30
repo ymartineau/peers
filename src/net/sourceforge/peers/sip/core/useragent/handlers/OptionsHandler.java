@@ -21,11 +21,13 @@ package net.sourceforge.peers.sip.core.useragent.handlers;
 
 import net.sourceforge.peers.sip.transaction.TransactionManager;
 import net.sourceforge.peers.sip.transport.SipRequest;
+import net.sourceforge.peers.sip.transport.TransportManager;
 
 public class OptionsHandler extends MethodHandler {
 
-    public OptionsHandler(TransactionManager transactionManager) {
-        super(transactionManager);
+    public OptionsHandler(TransactionManager transactionManager,
+            TransportManager transportManager) {
+        super(transactionManager, transportManager);
     }
 
     public void handleOptions(SipRequest sipRequest) {

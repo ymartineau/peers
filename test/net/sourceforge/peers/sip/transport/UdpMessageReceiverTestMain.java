@@ -28,7 +28,8 @@ public class UdpMessageReceiverTestMain implements Runnable {
 
     public void run() {
         try {
-            TransportManager.getInstance().createServerTransport("UDP", 5060);
+            TransportManager transportManager = new TransportManager(null);
+            transportManager.createServerTransport("UDP", 5060);
         } catch (IOException e) {
             e.printStackTrace();
             return;
