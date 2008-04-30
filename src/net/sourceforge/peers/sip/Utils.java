@@ -32,11 +32,7 @@ import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldMultiValue;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldName;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldValue;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaders;
-import net.sourceforge.peers.sip.transaction.Transaction;
-import net.sourceforge.peers.sip.transaction.TransactionManager;
 import net.sourceforge.peers.sip.transport.SipMessage;
-import net.sourceforge.peers.sip.transport.SipRequest;
-import net.sourceforge.peers.sip.transport.SipResponse;
 
 import org.dom4j.Node;
 
@@ -209,30 +205,4 @@ public class Utils {
         return sipUri.substring(start + 1, end);
     }
 
-    /**
-     * Gives the sipMessage if sipMessage is a SipRequest or 
-     * the SipRequest corresponding to the SipResponse
-     * if sipMessage is a SipResponse
-     * @param sipMessage
-     * @return null if sipMessage is neither a SipRequest neither a SipResponse
-     */
-    public SipRequest getSipRequest(SipMessage sipMessage) {
-        if (sipMessage instanceof SipRequest) {
-            return (SipRequest) sipMessage;
-        } else if (sipMessage instanceof SipResponse) {
-            SipResponse sipResponse = (SipResponse) sipMessage;
-            Transaction transaction = (Transaction)TransactionManager
-                .getInstance().getClientTransaction(sipResponse);
-            if (transaction == null) {
-                transaction = (Transaction)TransactionManager
-                    .getInstance().getServerTransaction(sipResponse);
-            }
-            if (transaction == null) {
-                return null;
-            }
-            return transaction.getRequest();
-        } else {
-            return null;
-        }
-    }
 }

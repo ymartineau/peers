@@ -35,7 +35,7 @@ public class InviteServerTransactionStateConfirmed extends
         // TODO destroy invite server transaction immediately
         // (dereference it in transaction manager serverTransactions hashtable)
         
-        TransactionManager.getInstance().removeServerTransaction(
+        inviteServerTransaction.transactionManager.removeServerTransaction(
                 inviteServerTransaction.branchId, inviteServerTransaction.method);
     }
     

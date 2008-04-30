@@ -43,12 +43,16 @@ public class CancelHandler extends MethodHandler implements ServerTransactionUse
     // UAS methods
     //////////////////////////////////////////////////////////
     
+    public CancelHandler(TransactionManager transactionManager) {
+        super(transactionManager);
+    }
+
     public void handleCancel(SipRequest sipRequest) {
         SipHeaderFieldValue topVia = Utils.getInstance().getTopVia(sipRequest);
         String branchId = topVia.getParam(new SipHeaderParamName(
                 RFC3261.PARAM_BRANCH));
         InviteServerTransaction inviteServerTransaction =
-            (InviteServerTransaction)TransactionManager.getInstance()
+            (InviteServerTransaction)transactionManager
                 .getServerTransaction(branchId,RFC3261.METHOD_INVITE);
         SipResponse cancelResponse;
         if (inviteServerTransaction == null) {
@@ -60,7 +64,7 @@ public class CancelHandler extends MethodHandler implements ServerTransactionUse
             cancelResponse = buildGenericResponse(sipRequest,
                     RFC3261.CODE_200_OK, RFC3261.REASON_200_OK);
         }
-        ServerTransaction cancelServerTransaction = TransactionManager.getInstance()
+        ServerTransaction cancelServerTransaction = transactionManager
                 .createServerTransaction(cancelResponse,
                         Utils.getInstance().getSipPort(),
                         RFC3261.TRANSPORT_UDP, this, sipRequest);
@@ -130,7 +134,7 @@ public class CancelHandler extends MethodHandler implements ServerTransactionUse
         
         
         InviteClientTransaction inviteClientTransaction = (InviteClientTransaction)
-        TransactionManager.getInstance().getClientTransaction(inviteRequest);
+        transactionManager.getClientTransaction(inviteRequest);
         SipResponse lastResponse = inviteClientTransaction.getLastResponse();
         if (lastResponse.getStatusCode() >= RFC3261.CODE_200_OK) {
             return null;

@@ -30,12 +30,14 @@ import net.sourceforge.peers.sip.syntaxencoding.SipHeaders;
 import net.sourceforge.peers.sip.syntaxencoding.SipURI;
 import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
 import net.sourceforge.peers.sip.transaction.ClientTransaction;
+import net.sourceforge.peers.sip.transaction.TransactionManager;
 import net.sourceforge.peers.sip.transport.SipRequest;
 
 public class InitialRequestManager extends RequestManager {
 
-    public InitialRequestManager(UserAgent userAgent) {
-        super(userAgent);
+    public InitialRequestManager(UserAgent userAgent, TransactionManager
+            transactionManager) {
+        super(userAgent, transactionManager);
     }
 
     /**

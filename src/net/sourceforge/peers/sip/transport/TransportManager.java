@@ -49,6 +49,7 @@ import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldValue;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderParamName;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaders;
 import net.sourceforge.peers.sip.syntaxencoding.SipParser;
+import net.sourceforge.peers.sip.transaction.TransactionManager;
 
 
 public class TransportManager {
@@ -70,6 +71,8 @@ public class TransportManager {
     private Hashtable<SipTransportConnection, DatagramSocket> datagramSockets;
     private Hashtable<SipTransportConnection, MessageSender> messageSenders;
     private Hashtable<SipTransportConnection, MessageReceiver> messageReceivers;
+    
+    private TransactionManager transactionManager;
     
     private TransportManager() {
         sipParser = new SipParser();
@@ -309,7 +312,7 @@ public class TransportManager {
         MessageReceiver messageReceiver = null;
         if (RFC3261.TRANSPORT_UDP.equalsIgnoreCase(conn.getRemoteTransport())) {
             DatagramSocket datagramSocket = (DatagramSocket)socket;
-            messageReceiver = new UdpMessageReceiver(datagramSocket);
+            messageReceiver = new UdpMessageReceiver(datagramSocket, transactionManager);
             messageReceiver.setUas(uas);
         }
         messageReceivers.put(conn, messageReceiver);
@@ -328,7 +331,7 @@ public class TransportManager {
                 datagramSockets.put(conn, datagramSocket);
                 Logger.getInstance().info("added datagram socket " + conn);
             }
-            messageReceiver = new UdpMessageReceiver(datagramSocket);
+            messageReceiver = new UdpMessageReceiver(datagramSocket, transactionManager);
             messageReceiver.setUas(uas);
             //TODO create also tcp receiver using a recursive call
         } else {
@@ -341,6 +344,10 @@ public class TransportManager {
 
     public void setUas(UAS uas) {
         this.uas = uas;
+    }
+
+    public void setTransactionManager(TransactionManager transactionManager) {
+        this.transactionManager = transactionManager;
     }
     
 }

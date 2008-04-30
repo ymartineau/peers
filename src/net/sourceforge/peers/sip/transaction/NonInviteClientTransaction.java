@@ -44,7 +44,6 @@ public class NonInviteClientTransaction extends Transaction
     public final NonInviteClientTransactionState COMPLETED;
     public final NonInviteClientTransactionState TERMINATED;
     
-    protected Timer timer;
     protected ClientTransactionUser transactionUser;
     protected String transport;
     protected int nbRetrans;
@@ -57,14 +56,13 @@ public class NonInviteClientTransaction extends Transaction
     
     NonInviteClientTransaction(String branchId, InetAddress inetAddress,
             int port, String transport, SipRequest sipRequest,
-            ClientTransactionUser transactionUser) {
-        super(branchId, sipRequest.getMethod());
+            ClientTransactionUser transactionUser, Timer timer) {
+        super(branchId, sipRequest.getMethod(), timer);
         
         SipHeaderFieldValue via = new SipHeaderFieldValue("");
         via.addParam(new SipHeaderParamName(RFC3261.PARAM_BRANCH), branchId);
         sipRequest.getSipHeaders().add(new SipHeaderFieldName(RFC3261.HDR_VIA), via, 0);
         
-        timer = TransactionManager.getInstance().timer;
         nbRetrans = 0;
         
         INIT = new NonInviteClientTransactionStateInit(getId(), this);

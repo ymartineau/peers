@@ -28,6 +28,11 @@ import net.sourceforge.peers.media.CaptureRtpSender;
 import net.sourceforge.peers.media.IncomingRtpReader;
 import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.core.Config;
+import net.sourceforge.peers.sip.transaction.Transaction;
+import net.sourceforge.peers.sip.transaction.TransactionManager;
+import net.sourceforge.peers.sip.transport.SipMessage;
+import net.sourceforge.peers.sip.transport.SipRequest;
+import net.sourceforge.peers.sip.transport.SipResponse;
 
 import org.dom4j.DocumentException;
 
@@ -47,6 +52,8 @@ public class UserAgent {
     private UAC uac;
     private UAS uas;
 
+    private TransactionManager transactionManager;
+
     public UserAgent() {
         
         File configFile = new File(CONFIG_FILE);
@@ -64,13 +71,41 @@ public class UserAgent {
         
         Utils.setConfig(config);
         
+        transactionManager = new TransactionManager();
         
-        uas = new UAS(this);
-        uac = new UAC(this);
+        uas = new UAS(this, transactionManager);
+        uac = new UAC(this, transactionManager);
         
         peers = new ArrayList<String>();
         //dialogs = new ArrayList<Dialog>();
 
+    }
+    
+    /**
+     * Gives the sipMessage if sipMessage is a SipRequest or 
+     * the SipRequest corresponding to the SipResponse
+     * if sipMessage is a SipResponse
+     * @param sipMessage
+     * @return null if sipMessage is neither a SipRequest neither a SipResponse
+     */
+    public SipRequest getSipRequest(SipMessage sipMessage) {
+        if (sipMessage instanceof SipRequest) {
+            return (SipRequest) sipMessage;
+        } else if (sipMessage instanceof SipResponse) {
+            SipResponse sipResponse = (SipResponse) sipMessage;
+            Transaction transaction = (Transaction)transactionManager
+                .getClientTransaction(sipResponse);
+            if (transaction == null) {
+                transaction = (Transaction)transactionManager
+                    .getServerTransaction(sipResponse);
+            }
+            if (transaction == null) {
+                return null;
+            }
+            return transaction.getRequest();
+        } else {
+            return null;
+        }
     }
     
 //    public List<Dialog> getDialogs() {

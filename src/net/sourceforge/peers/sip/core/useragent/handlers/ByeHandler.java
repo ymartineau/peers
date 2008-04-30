@@ -37,7 +37,8 @@ public class ByeHandler extends DialogMethodHandler
 
     private UserAgent userAgent;
     
-    public ByeHandler(UserAgent userAgent) {
+    public ByeHandler(UserAgent userAgent, TransactionManager transactionManager) {
+        super(transactionManager);
         this.userAgent = userAgent;
     }
     
@@ -88,8 +89,8 @@ public class ByeHandler extends DialogMethodHandler
         // TODO determine port and transport for server transaction>transport
         // from initial invite
         // FIXME determine port and transport for server transaction>transport
-        ServerTransaction serverTransaction =
-            TransactionManager.getInstance().createServerTransaction(
+        ServerTransaction serverTransaction = transactionManager
+            .createServerTransaction(
                     sipResponse,
                     Utils.getInstance().getSipPort(),
                     RFC3261.TRANSPORT_UDP,
