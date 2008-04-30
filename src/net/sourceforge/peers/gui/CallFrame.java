@@ -110,7 +110,7 @@ public class CallFrame implements ActionListener, Observer {
     //for uas
     public CallFrame(SipResponse sipResponse, UserAgent userAgent) {
         isUac = false;
-        sipRequest = Utils.getInstance().getSipRequest(sipResponse);
+        sipRequest = userAgent.getSipRequest(sipResponse);
         dialog = DialogManager.getInstance().getDialog(sipResponse);
         dialog.addObserver(this);
         callId = dialog.getCallId();
@@ -214,7 +214,7 @@ public class CallFrame implements ActionListener, Observer {
         
         case RINGING:
             dialog = DialogManager.getInstance().getDialog(sipEvent.getSipMessage());
-            sipRequest = Utils.getInstance().getSipRequest(sipEvent.getSipMessage());
+            sipRequest = userAgent.getSipRequest(sipEvent.getSipMessage());
             dialog.addObserver(this);
             break;
             

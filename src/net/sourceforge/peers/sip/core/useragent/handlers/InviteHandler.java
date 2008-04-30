@@ -64,7 +64,8 @@ public class InviteHandler extends DialogMethodHandler
     private SDPManager sdpManager;
     private UserAgent userAgent;
     
-    public InviteHandler(UserAgent userAgent) {
+    public InviteHandler(UserAgent userAgent, TransactionManager transactionManager) {
+        super(transactionManager);
         sdpManager = new SDPManager(userAgent);
         this.userAgent = userAgent;
     }
@@ -90,7 +91,7 @@ public class InviteHandler extends DialogMethodHandler
         //here dialog is already stored in dialogs in DialogManager
         
         InviteServerTransaction inviteServerTransaction = (InviteServerTransaction)
-            TransactionManager.getInstance().createServerTransaction(sipResponse,
+            transactionManager.createServerTransaction(sipResponse,
                     Utils.getInstance().getSipPort(), RFC3261.TRANSPORT_UDP, this,
                     sipRequest);
         
@@ -179,8 +180,8 @@ public class InviteHandler extends DialogMethodHandler
         // TODO determine port and transport for server transaction>transport
         // from initial invite
         // FIXME determine port and transport for server transaction>transport
-        ServerTransaction serverTransaction =
-            TransactionManager.getInstance().getServerTransaction(sipRequest);
+        ServerTransaction serverTransaction = transactionManager
+                .getServerTransaction(sipRequest);
         
         serverTransaction.start();
         
@@ -224,8 +225,8 @@ public class InviteHandler extends DialogMethodHandler
         // TODO determine port and transport for server transaction>transport
         // from initial invite
         // FIXME determine port and transport for server transaction>transport
-        ServerTransaction serverTransaction =
-            TransactionManager.getInstance().getServerTransaction(sipRequest);
+        ServerTransaction serverTransaction = transactionManager
+                .getServerTransaction(sipRequest);
         
         serverTransaction.start();
         
@@ -261,8 +262,8 @@ public class InviteHandler extends DialogMethodHandler
         if (port == SipURI.DEFAULT_PORT) {
             port = RFC3261.TRANSPORT_DEFAULT_PORT;
         }
-        ClientTransaction clientTransaction = TransactionManager.getInstance()
-            .createClientTransaction(sipRequest, requestUri.getHost(),
+        ClientTransaction clientTransaction = transactionManager
+                .createClientTransaction(sipRequest, requestUri.getHost(),
                     port, transport, null, this);
         sipRequest.setBody(sdpManager.generateOffer().getBytes());
         SipHeaders respHeaders = sipRequest.getSipHeaders();
@@ -296,7 +297,12 @@ public class InviteHandler extends DialogMethodHandler
         if (dialog == null) {
             Logger.getInstance().debug("dialog not found for prov response");
             isFirstProvResp = true;
-            dialog = buildDialogForUac(sipResponse, transaction);
+            SipHeaderFieldValue to = sipResponse.getSipHeaders()
+                .get(new SipHeaderFieldName(RFC3261.HDR_TO));
+            String toTag = to.getParam(new SipHeaderParamName(RFC3261.PARAM_TAG));
+            if (toTag != null) {
+                dialog = buildDialogForUac(sipResponse, transaction);
+            }
         }
         //TODO this notification is probably useless because dialog state modification
         //     thereafter always notify dialog observers

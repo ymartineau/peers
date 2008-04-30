@@ -24,6 +24,7 @@ import net.sourceforge.peers.media.IncomingRtpReader;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.core.useragent.handlers.InviteHandler;
 import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
+import net.sourceforge.peers.sip.transaction.TransactionManager;
 import net.sourceforge.peers.sip.transactionuser.Dialog;
 import net.sourceforge.peers.sip.transactionuser.DialogManager;
 import net.sourceforge.peers.sip.transactionuser.DialogStateConfirmed;
@@ -42,10 +43,12 @@ public class UAC {
     /**
      * should be instanciated only once, it was a singleton.
      */
-    public UAC(UserAgent userAgent) {
+    public UAC(UserAgent userAgent, TransactionManager transactionManager) {
         this.userAgent = userAgent;
-        initialRequestManager = new InitialRequestManager(userAgent);
-        midDialogRequestManager = new MidDialogRequestManager(userAgent);
+        initialRequestManager = new InitialRequestManager(userAgent,
+                transactionManager);
+        midDialogRequestManager = new MidDialogRequestManager(userAgent,
+                transactionManager);
         profileUri = "sip:alice@atlanta.com";
     }
     

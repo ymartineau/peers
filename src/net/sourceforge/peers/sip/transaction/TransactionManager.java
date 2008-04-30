@@ -35,21 +35,12 @@ import net.sourceforge.peers.sip.transport.SipResponse;
 
 public class TransactionManager {
 
-    private static TransactionManager INSTANCE;
-
-    public static TransactionManager getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new TransactionManager();
-        }
-        return INSTANCE;
-    }
-
     protected Timer timer;
     
     private Hashtable<String, ClientTransaction> clientTransactions;
     private Hashtable<String, ServerTransaction> serverTransactions;
 
-    private TransactionManager() {
+    public TransactionManager() {
         clientTransactions = new Hashtable<String, ClientTransaction>();
         serverTransactions = new Hashtable<String, ServerTransaction>();
         timer = new Timer("Transaction timer");
@@ -69,10 +60,11 @@ public class TransactionManager {
         ClientTransaction clientTransaction;
         if (RFC3261.METHOD_INVITE.equals(method)) {
             clientTransaction = new InviteClientTransaction(branchId,
-                    inetAddress, port, transport, sipRequest, clientTransactionUser);
+                    inetAddress, port, transport, sipRequest, clientTransactionUser,
+                    timer);
         } else {
             clientTransaction = new NonInviteClientTransaction(branchId,
-                    inetAddress, port, transport, sipRequest, clientTransactionUser);
+                    inetAddress, port, transport, sipRequest, clientTransactionUser, timer);
         }
         clientTransactions.put(getTransactionId(branchId, method),
                 clientTransaction);
@@ -93,11 +85,12 @@ public class TransactionManager {
         // TODO create server transport user and pass it to server transaction
         if (RFC3261.METHOD_INVITE.equals(method)) {
             serverTransaction = new InviteServerTransaction(branchId, port,
-                    transport, sipResponse, serverTransactionUser, sipRequest);
+                    transport, sipResponse, serverTransactionUser, sipRequest,
+                    timer, this);
             // serverTransaction = new InviteServerTransaction(branchId);
         } else {
             serverTransaction = new NonInviteServerTransaction(branchId, port,
-                    transport, method, serverTransactionUser, sipRequest);
+                    transport, method, serverTransactionUser, sipRequest, timer);
         }
         serverTransactions.put(getTransactionId(branchId, method),
                 serverTransaction);

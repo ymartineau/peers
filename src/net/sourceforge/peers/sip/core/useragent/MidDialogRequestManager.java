@@ -39,8 +39,9 @@ import net.sourceforge.peers.sip.transport.SipResponse;
 public class MidDialogRequestManager extends RequestManager
         implements ClientTransactionUser {
 
-    public MidDialogRequestManager(UserAgent userAgent) {
-        super(userAgent);
+    public MidDialogRequestManager(UserAgent userAgent, TransactionManager
+            transactionManager) {
+        super(userAgent, transactionManager);
         // TODO Auto-generated constructor stub
     }
     
@@ -91,7 +92,7 @@ public class MidDialogRequestManager extends RequestManager
         if (port == SipURI.DEFAULT_PORT) {
             port = RFC3261.TRANSPORT_DEFAULT_PORT;
         }
-        ClientTransaction clientTransaction = TransactionManager.getInstance()
+        ClientTransaction clientTransaction = transactionManager
             .createClientTransaction(sipRequest,
                     requestUri.getHost(), port, transport, branchId, this);
         return clientTransaction;

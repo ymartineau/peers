@@ -19,12 +19,14 @@
 
 package net.sourceforge.peers.sip.transaction;
 
+import java.util.Timer;
+
 import net.sourceforge.peers.sip.RFC3261;
 
 public abstract class InviteTransaction extends Transaction {
-
-    protected InviteTransaction(String branchId) {
-        super(branchId, RFC3261.METHOD_INVITE);
+    
+    protected InviteTransaction(String branchId, Timer timer) {
+        super(branchId, RFC3261.METHOD_INVITE, timer);
     }
 
 }

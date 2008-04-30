@@ -27,11 +27,18 @@ import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldName;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldValue;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderParamName;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaders;
+import net.sourceforge.peers.sip.transaction.TransactionManager;
 import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.SipResponse;
 
 public abstract class MethodHandler extends Observable {
 
+    protected TransactionManager transactionManager;
+    
+    public MethodHandler(TransactionManager transactionManager) {
+        this.transactionManager = transactionManager;
+    }
+    
     protected SipResponse buildGenericResponse(SipRequest sipRequest,
             int statusCode, String reasonPhrase) {
         //8.2.6

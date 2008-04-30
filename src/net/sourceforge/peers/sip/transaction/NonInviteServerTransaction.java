@@ -46,8 +46,8 @@ public class NonInviteServerTransaction extends Transaction
     
     NonInviteServerTransaction(String branchId, int port, String transport,
             String method, ServerTransactionUser serverTransactionUser,
-            SipRequest sipRequest) {
-        super(branchId, method);
+            SipRequest sipRequest, Timer timer) {
+        super(branchId, method, timer);
         
         TRYING = new NonInviteServerTransactionStateTrying(getId(), this);
         state = TRYING;
@@ -57,7 +57,6 @@ public class NonInviteServerTransaction extends Transaction
         
         //this.port = port;
         this.transport = transport;
-        timer = TransactionManager.getInstance().timer;
         this.serverTransactionUser = serverTransactionUser;
         request = sipRequest;
 //        sipServerTransport = SipTransportFactory.getInstance()

@@ -22,6 +22,7 @@ package net.sourceforge.peers.sip.transaction;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Timer;
 
 import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.SipResponse;
@@ -36,11 +37,14 @@ public abstract class Transaction {
     
     protected SipRequest request;
     protected List<SipResponse> responses;
+    
+    protected Timer timer;
 
-    protected Transaction(String branchId, String method) {
+    protected Transaction(String branchId, String method, Timer timer) {
         super();
         this.branchId = branchId;
         this.method = method;
+        this.timer = timer;
         responses = Collections.synchronizedList(new ArrayList<SipResponse>());
     }
 

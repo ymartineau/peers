@@ -28,6 +28,7 @@ import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldName;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldValue;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderParamName;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaders;
+import net.sourceforge.peers.sip.transaction.TransactionManager;
 import net.sourceforge.peers.sip.transactionuser.Dialog;
 import net.sourceforge.peers.sip.transactionuser.DialogManager;
 import net.sourceforge.peers.sip.transport.SipMessage;
@@ -52,14 +53,17 @@ public class UAS implements SipServerTransportUser {
     /**
      * should be instanciated only once, it was a singleton.
      */
-    public UAS(UserAgent userAgent) {
-        initialRequestManager = new InitialRequestManager(userAgent);
-        midDialogRequestManager = new MidDialogRequestManager(userAgent);
+    public UAS(UserAgent userAgent, TransactionManager transactionManager) {
+        initialRequestManager = new InitialRequestManager(userAgent,
+                transactionManager);
+        midDialogRequestManager = new MidDialogRequestManager(userAgent,
+                transactionManager);
 //        SipTransportFactory.getInstance().createServerTransport(this,
 //                Utils.getInstance().getSipPort(), RFC3261.TRANSPORT_UDP);
         //TODO make it configurable
         try {
             TransportManager.getInstance().setUas(this);//FIXME fix this cross reference
+            TransportManager.getInstance().setTransactionManager(transactionManager);
             TransportManager.getInstance().createServerTransport(
                     RFC3261.TRANSPORT_UDP, Utils.getInstance().getSipPort());
         } catch (IOException e) {

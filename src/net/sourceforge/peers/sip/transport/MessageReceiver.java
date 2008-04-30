@@ -44,10 +44,12 @@ public abstract class MessageReceiver implements Runnable {
     private boolean isListening;
     
     private UAS uas;
+    private TransactionManager transactionManager;
 
-    public MessageReceiver(int port) {
+    public MessageReceiver(int port, TransactionManager transactionManager) {
         super();
         this.port = port;
+        this.transactionManager = transactionManager;
         isListening = true;
     }
     
@@ -91,7 +93,6 @@ public abstract class MessageReceiver implements Runnable {
         if (sipMessage == null) {
             return;
         }
-        TransactionManager transactionManager = TransactionManager.getInstance();
         if (sipMessage instanceof SipRequest) {
             SipRequest sipRequest = (SipRequest)sipMessage;
             

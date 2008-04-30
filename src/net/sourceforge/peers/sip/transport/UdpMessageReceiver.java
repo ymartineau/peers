@@ -25,14 +25,16 @@ import java.net.DatagramSocket;
 import java.net.SocketException;
 
 import net.sourceforge.peers.Logger;
+import net.sourceforge.peers.sip.transaction.TransactionManager;
 
 
 public class UdpMessageReceiver extends MessageReceiver {
 
     private DatagramSocket datagramSocket;
     
-    public UdpMessageReceiver(DatagramSocket datagramSocket) throws SocketException {
-        super(datagramSocket.getLocalPort());
+    public UdpMessageReceiver(DatagramSocket datagramSocket,
+            TransactionManager transactionManager) throws SocketException {
+        super(datagramSocket.getLocalPort(), transactionManager);
         this.datagramSocket = datagramSocket;
     }
 

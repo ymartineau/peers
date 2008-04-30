@@ -32,6 +32,7 @@ import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldValue;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderParamName;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaders;
 import net.sourceforge.peers.sip.transaction.Transaction;
+import net.sourceforge.peers.sip.transaction.TransactionManager;
 import net.sourceforge.peers.sip.transactionuser.Dialog;
 import net.sourceforge.peers.sip.transactionuser.DialogManager;
 import net.sourceforge.peers.sip.transport.SipRequest;
@@ -44,8 +45,8 @@ public abstract class DialogMethodHandler extends MethodHandler {
     
     protected Timer ackTimer;
     
-    public DialogMethodHandler() {
-
+    public DialogMethodHandler(TransactionManager transactionManager) {
+        super(transactionManager);
         ackTimer = new Timer();
     }
     

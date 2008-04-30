@@ -41,7 +41,6 @@ public class InviteServerTransaction extends InviteTransaction
     public final InviteServerTransactionState TERMINATED;
     
     protected String transport;
-    protected Timer timer;
     protected int nbRetrans;
     protected ServerTransactionUser serverTransactionUser;
     
@@ -49,10 +48,14 @@ public class InviteServerTransaction extends InviteTransaction
     //private SipServerTransport sipServerTransport;
     private int port;
     
+    TransactionManager transactionManager;
+    
     InviteServerTransaction(String branchId, int port, String transport,
             SipResponse sipResponse, ServerTransactionUser serverTransactionUser,
-            SipRequest sipRequest) {
-        super(branchId);
+            SipRequest sipRequest, Timer timer, TransactionManager transactionManager) {
+        super(branchId, timer);
+        
+        this.transactionManager = transactionManager;
         
         INIT = new InviteServerTransactionStateInit(getId(), this);
         state = INIT;
@@ -65,7 +68,6 @@ public class InviteServerTransaction extends InviteTransaction
         this.port = port;
         this.transport = transport;
         responses.add(sipResponse);
-        timer = TransactionManager.getInstance().timer;
         nbRetrans = 0;
         this.serverTransactionUser = serverTransactionUser;
         //TODO pass INV to TU, send 100 if TU won't in 200ms

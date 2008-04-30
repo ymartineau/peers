@@ -46,7 +46,6 @@ public class InviteClientTransaction extends InviteTransaction
     public final InviteClientTransactionState COMPLETED;
     public final InviteClientTransactionState TERMINATED;
 
-    protected Timer timer;
     protected ClientTransactionUser transactionUser;
     protected String transport;
     
@@ -60,14 +59,13 @@ public class InviteClientTransaction extends InviteTransaction
     
     InviteClientTransaction(String branchId, InetAddress inetAddress,
             int port, String transport, SipRequest sipRequest,
-            ClientTransactionUser transactionUser) {
-        super(branchId);
+            ClientTransactionUser transactionUser, Timer timer) {
+        super(branchId, timer);
         
         SipHeaderFieldValue via = new SipHeaderFieldValue("");
         via.addParam(new SipHeaderParamName(RFC3261.PARAM_BRANCH), branchId);
         sipRequest.getSipHeaders().add(new SipHeaderFieldName(RFC3261.HDR_VIA), via, 0);
         
-        timer = TransactionManager.getInstance().timer;
         nbRetrans = 0;
         
         INIT = new InviteClientTransactionStateInit(getId(), this);
