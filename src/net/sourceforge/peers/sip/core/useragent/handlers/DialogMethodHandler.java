@@ -25,6 +25,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import net.sourceforge.peers.sip.RFC3261;
+import net.sourceforge.peers.sip.core.useragent.UserAgent;
 import net.sourceforge.peers.sip.syntaxencoding.NameAddress;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldMultiValue;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldName;
@@ -37,17 +38,21 @@ import net.sourceforge.peers.sip.transactionuser.Dialog;
 import net.sourceforge.peers.sip.transactionuser.DialogManager;
 import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.SipResponse;
+import net.sourceforge.peers.sip.transport.TransportManager;
 
 
 public abstract class DialogMethodHandler extends MethodHandler {
 
 
-    
+    protected UserAgent userAgent;
     protected Timer ackTimer;
     
-    public DialogMethodHandler(TransactionManager transactionManager) {
-        super(transactionManager);
+    public DialogMethodHandler(UserAgent userAgent,
+            TransactionManager transactionManager,
+            TransportManager transportManager) {
+        super(transactionManager, transportManager);
         ackTimer = new Timer();
+        this.userAgent = userAgent;
     }
     
     protected Dialog buildDialogForUas(SipResponse sipResponse,

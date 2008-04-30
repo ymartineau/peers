@@ -22,11 +22,13 @@ package net.sourceforge.peers.sip.transaction;
 import java.util.Timer;
 
 import net.sourceforge.peers.sip.RFC3261;
+import net.sourceforge.peers.sip.transport.TransportManager;
 
 public abstract class InviteTransaction extends Transaction {
     
-    protected InviteTransaction(String branchId, Timer timer) {
-        super(branchId, RFC3261.METHOD_INVITE, timer);
+    protected InviteTransaction(String branchId, Timer timer,
+            TransportManager transportManager) {
+        super(branchId, RFC3261.METHOD_INVITE, timer, transportManager);
     }
 
 }

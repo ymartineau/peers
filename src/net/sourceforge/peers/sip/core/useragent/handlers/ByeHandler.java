@@ -31,15 +31,15 @@ import net.sourceforge.peers.sip.transactionuser.Dialog;
 import net.sourceforge.peers.sip.transactionuser.DialogManager;
 import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.SipResponse;
+import net.sourceforge.peers.sip.transport.TransportManager;
 
 public class ByeHandler extends DialogMethodHandler
         implements ServerTransactionUser {
 
-    private UserAgent userAgent;
-    
-    public ByeHandler(UserAgent userAgent, TransactionManager transactionManager) {
-        super(transactionManager);
-        this.userAgent = userAgent;
+    public ByeHandler(UserAgent userAgent,
+            TransactionManager transactionManager,
+            TransportManager transportManager) {
+        super(userAgent, transactionManager, transportManager);
     }
     
     ////////////////////////////////////////////////

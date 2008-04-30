@@ -26,6 +26,7 @@ import net.sourceforge.peers.sip.core.useragent.handlers.InviteHandler;
 import net.sourceforge.peers.sip.core.useragent.handlers.OptionsHandler;
 import net.sourceforge.peers.sip.core.useragent.handlers.RegisterHandler;
 import net.sourceforge.peers.sip.transaction.TransactionManager;
+import net.sourceforge.peers.sip.transport.TransportManager;
 
 
 public abstract class RequestManager {
@@ -37,16 +38,25 @@ public abstract class RequestManager {
     protected RegisterHandler registerHandler;
     
     protected TransactionManager transactionManager;
+    protected TransportManager transportManager;
     
-    public RequestManager(UserAgent userAgent, TransactionManager
-            transactionManager) {
-        inviteHandler = new InviteHandler(userAgent, transactionManager);
-        cancelHandler = new CancelHandler(transactionManager);
-        ackHandler = new AckHandler(transactionManager);
-        byeHandler = new ByeHandler(userAgent, transactionManager);
-        optionsHandler = new OptionsHandler(transactionManager);
-        registerHandler = new RegisterHandler(transactionManager);
+    public RequestManager(UserAgent userAgent,
+            TransactionManager transactionManager,
+            TransportManager transportManager) {
+        inviteHandler = new InviteHandler(userAgent,
+                transactionManager, transportManager);
+        cancelHandler = new CancelHandler(transactionManager,
+                transportManager);
+        ackHandler = new AckHandler(transactionManager,
+                transportManager);
+        byeHandler = new ByeHandler(userAgent,
+                transactionManager, transportManager);
+        optionsHandler = new OptionsHandler(transactionManager,
+                transportManager);
+        registerHandler = new RegisterHandler(transactionManager,
+                transportManager);
         this.transactionManager = transactionManager;
+        this.transportManager = transportManager;
     }
 
     public InviteHandler getInviteHandler() {

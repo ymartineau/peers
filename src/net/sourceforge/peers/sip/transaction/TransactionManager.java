@@ -31,6 +31,7 @@ import net.sourceforge.peers.sip.syntaxencoding.SipHeaderParamName;
 import net.sourceforge.peers.sip.transport.SipMessage;
 import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.SipResponse;
+import net.sourceforge.peers.sip.transport.TransportManager;
 
 
 public class TransactionManager {
@@ -40,6 +41,8 @@ public class TransactionManager {
     private Hashtable<String, ClientTransaction> clientTransactions;
     private Hashtable<String, ServerTransaction> serverTransactions;
 
+    private TransportManager transportManager;
+    
     public TransactionManager() {
         clientTransactions = new Hashtable<String, ClientTransaction>();
         serverTransactions = new Hashtable<String, ServerTransaction>();
@@ -48,7 +51,8 @@ public class TransactionManager {
     
     public ClientTransaction createClientTransaction(SipRequest sipRequest,
             InetAddress inetAddress, int port, String transport, String pBranchId,
-            ClientTransactionUser clientTransactionUser) {
+            ClientTransactionUser clientTransactionUser,
+            TransportManager transportManager) {
         String branchId;
         if (pBranchId == null || "".equals(pBranchId.trim())
                 || !pBranchId.startsWith(RFC3261.BRANCHID_MAGIC_COOKIE)) {
@@ -61,10 +65,11 @@ public class TransactionManager {
         if (RFC3261.METHOD_INVITE.equals(method)) {
             clientTransaction = new InviteClientTransaction(branchId,
                     inetAddress, port, transport, sipRequest, clientTransactionUser,
-                    timer);
+                    timer, transportManager);
         } else {
             clientTransaction = new NonInviteClientTransaction(branchId,
-                    inetAddress, port, transport, sipRequest, clientTransactionUser, timer);
+                    inetAddress, port, transport, sipRequest, clientTransactionUser,
+                    timer, transportManager);
         }
         clientTransactions.put(getTransactionId(branchId, method),
                 clientTransaction);
@@ -86,11 +91,12 @@ public class TransactionManager {
         if (RFC3261.METHOD_INVITE.equals(method)) {
             serverTransaction = new InviteServerTransaction(branchId, port,
                     transport, sipResponse, serverTransactionUser, sipRequest,
-                    timer, this);
+                    timer, this, transportManager);
             // serverTransaction = new InviteServerTransaction(branchId);
         } else {
             serverTransaction = new NonInviteServerTransaction(branchId, port,
-                    transport, method, serverTransactionUser, sipRequest, timer);
+                    transport, method, serverTransactionUser, sipRequest, timer,
+                    transportManager);
         }
         serverTransactions.put(getTransactionId(branchId, method),
                 serverTransaction);
@@ -144,6 +150,10 @@ public class TransactionManager {
         buf.append(Transaction.ID_SEPARATOR);
         buf.append(method);
         return buf.toString();
+    }
+
+    public void setTransportManager(TransportManager transportManager) {
+        this.transportManager = transportManager;
     }
 
 }

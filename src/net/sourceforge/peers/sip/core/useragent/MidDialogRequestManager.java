@@ -34,17 +34,18 @@ import net.sourceforge.peers.sip.transaction.TransactionManager;
 import net.sourceforge.peers.sip.transactionuser.Dialog;
 import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.SipResponse;
+import net.sourceforge.peers.sip.transport.TransportManager;
 
 
 public class MidDialogRequestManager extends RequestManager
         implements ClientTransactionUser {
 
-    public MidDialogRequestManager(UserAgent userAgent, TransactionManager
-            transactionManager) {
-        super(userAgent, transactionManager);
-        // TODO Auto-generated constructor stub
+    public MidDialogRequestManager(UserAgent userAgent,
+            TransactionManager transactionManager,
+            TransportManager transportManager) {
+        super(userAgent, transactionManager, transportManager);
     }
-    
+
     ////////////////////////////////////////////////
     // methods for UAC
     ////////////////////////////////////////////////
@@ -94,7 +95,8 @@ public class MidDialogRequestManager extends RequestManager
         }
         ClientTransaction clientTransaction = transactionManager
             .createClientTransaction(sipRequest,
-                    requestUri.getHost(), port, transport, branchId, this);
+                    requestUri.getHost(), port, transport, branchId, this,
+                    transportManager);
         return clientTransaction;
     }
     

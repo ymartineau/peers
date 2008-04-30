@@ -30,6 +30,7 @@ import net.sourceforge.peers.sip.transactionuser.DialogManager;
 import net.sourceforge.peers.sip.transactionuser.DialogStateConfirmed;
 import net.sourceforge.peers.sip.transactionuser.DialogStateEarly;
 import net.sourceforge.peers.sip.transport.SipRequest;
+import net.sourceforge.peers.sip.transport.TransportManager;
 
 public class UAC {
     
@@ -43,12 +44,13 @@ public class UAC {
     /**
      * should be instanciated only once, it was a singleton.
      */
-    public UAC(UserAgent userAgent, TransactionManager transactionManager) {
+    public UAC(UserAgent userAgent, TransactionManager transactionManager,
+            TransportManager transportManager) {
         this.userAgent = userAgent;
         initialRequestManager = new InitialRequestManager(userAgent,
-                transactionManager);
+                transactionManager, transportManager);
         midDialogRequestManager = new MidDialogRequestManager(userAgent,
-                transactionManager);
+                transactionManager, transportManager);
         profileUri = "sip:alice@atlanta.com";
     }
     

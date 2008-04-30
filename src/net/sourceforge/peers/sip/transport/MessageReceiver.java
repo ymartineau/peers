@@ -45,11 +45,14 @@ public abstract class MessageReceiver implements Runnable {
     
     private UAS uas;
     private TransactionManager transactionManager;
+    private TransportManager transportManager;
 
-    public MessageReceiver(int port, TransactionManager transactionManager) {
+    public MessageReceiver(int port, TransactionManager transactionManager,
+            TransportManager transportManager) {
         super();
         this.port = port;
         this.transactionManager = transactionManager;
+        this.transportManager = transportManager;
         isListening = true;
     }
     
@@ -83,8 +86,8 @@ public abstract class MessageReceiver implements Runnable {
             throws IOException {
         SipMessage sipMessage = null;
         try {
-            sipMessage = TransportManager.getInstance().sipParser
-                    .parse(new ByteArrayInputStream(message));
+            sipMessage = transportManager.sipParser.parse(
+                    new ByteArrayInputStream(message));
         } catch (IOException e) {
             e.printStackTrace();
         } catch (SipParserException e) {

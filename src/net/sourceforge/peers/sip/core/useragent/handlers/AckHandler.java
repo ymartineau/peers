@@ -21,11 +21,12 @@ package net.sourceforge.peers.sip.core.useragent.handlers;
 
 import net.sourceforge.peers.sip.transaction.TransactionManager;
 import net.sourceforge.peers.sip.transport.SipRequest;
+import net.sourceforge.peers.sip.transport.TransportManager;
 
 public class AckHandler extends MethodHandler {
 
-    public AckHandler(TransactionManager transactionManager) {
-        super(transactionManager);
+    public AckHandler(TransactionManager transactionManager, TransportManager transportManager) {
+        super(transactionManager, transportManager);
     }
 
     public void handleAck(SipRequest sipRequest) {

@@ -49,8 +49,9 @@ public class UdpMessageSenderTestMain implements Runnable {
             e.printStackTrace();
             return;
         }
+        TransportManager transportManager = new TransportManager(null);
         try {
-            MessageSender messageSender = TransportManager.getInstance()
+            MessageSender messageSender = transportManager
                     .createClientTransport(sipRequest, inetAddress, 5060, "UDP");
             messageSender.sendMessage(sipRequest);
         } catch (IOException e) {

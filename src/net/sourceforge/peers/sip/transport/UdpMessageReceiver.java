@@ -33,8 +33,9 @@ public class UdpMessageReceiver extends MessageReceiver {
     private DatagramSocket datagramSocket;
     
     public UdpMessageReceiver(DatagramSocket datagramSocket,
-            TransactionManager transactionManager) throws SocketException {
-        super(datagramSocket.getLocalPort(), transactionManager);
+            TransactionManager transactionManager,
+            TransportManager transportManager) throws SocketException {
+        super(datagramSocket.getLocalPort(), transactionManager, transportManager);
         this.datagramSocket = datagramSocket;
     }
 

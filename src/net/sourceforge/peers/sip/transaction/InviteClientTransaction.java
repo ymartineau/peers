@@ -59,8 +59,9 @@ public class InviteClientTransaction extends InviteTransaction
     
     InviteClientTransaction(String branchId, InetAddress inetAddress,
             int port, String transport, SipRequest sipRequest,
-            ClientTransactionUser transactionUser, Timer timer) {
-        super(branchId, timer);
+            ClientTransactionUser transactionUser, Timer timer,
+            TransportManager transportManager) {
+        super(branchId, timer, transportManager);
         
         SipHeaderFieldValue via = new SipHeaderFieldValue("");
         via.addParam(new SipHeaderParamName(RFC3261.PARAM_BRANCH), branchId);
@@ -84,7 +85,7 @@ public class InviteClientTransaction extends InviteTransaction
         remoteInetAddress = inetAddress;
         
         try {
-            messageSender = TransportManager.getInstance().createClientTransport(
+            messageSender = transportManager.createClientTransport(
                     request, remoteInetAddress, remotePort, transport);
         } catch (IOException e) {
             e.printStackTrace();
