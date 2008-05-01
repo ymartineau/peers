@@ -22,6 +22,11 @@ package net.sourceforge.peers.sip.core.useragent;
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.Utils;
+import net.sourceforge.peers.sip.core.useragent.handlers.ByeHandler;
+import net.sourceforge.peers.sip.core.useragent.handlers.CancelHandler;
+import net.sourceforge.peers.sip.core.useragent.handlers.InviteHandler;
+import net.sourceforge.peers.sip.core.useragent.handlers.OptionsHandler;
+import net.sourceforge.peers.sip.core.useragent.handlers.RegisterHandler;
 import net.sourceforge.peers.sip.syntaxencoding.NameAddress;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldName;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldValue;
@@ -38,10 +43,23 @@ import net.sourceforge.peers.sip.transport.TransportManager;
 public class InitialRequestManager extends RequestManager {
 
     public InitialRequestManager(UserAgent userAgent,
+            InviteHandler inviteHandler,
+            CancelHandler cancelHandler,
+            ByeHandler byeHandler,
+            OptionsHandler optionsHandler,
+            RegisterHandler registerHandler,
             DialogManager dialogManager,
             TransactionManager transactionManager,
             TransportManager transportManager) {
-        super(userAgent, dialogManager, transactionManager, transportManager);
+        super(userAgent,
+                inviteHandler,
+                cancelHandler,
+                byeHandler,
+                optionsHandler,
+                registerHandler,
+                dialogManager,
+                transactionManager,
+                transportManager);
     }
 
     /**

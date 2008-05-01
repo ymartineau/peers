@@ -54,17 +54,15 @@ public class UAS implements SipServerTransportUser {
     /**
      * should be instanciated only once, it was a singleton.
      */
-    public UAS(UserAgent userAgent, DialogManager dialogManager,
+    public UAS(UserAgent userAgent,
+            InitialRequestManager initialRequestManager,
+            MidDialogRequestManager midDialogRequestManager,
+            DialogManager dialogManager,
             TransactionManager transactionManager,
             TransportManager transportManager) {
+        this.initialRequestManager = initialRequestManager;
+        this.midDialogRequestManager = midDialogRequestManager;
         this.dialogManager = dialogManager;
-        initialRequestManager = new InitialRequestManager(userAgent,
-                dialogManager, transactionManager, transportManager);
-        midDialogRequestManager = new MidDialogRequestManager(userAgent,
-                dialogManager, transactionManager, transportManager);
-//        SipTransportFactory.getInstance().createServerTransport(this,
-//                Utils.getInstance().getSipPort(), RFC3261.TRANSPORT_UDP);
-        //TODO make it configurable
         try {
             transportManager.setUas(this);
             transportManager.createServerTransport(

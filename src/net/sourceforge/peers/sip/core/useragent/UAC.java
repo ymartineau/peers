@@ -45,15 +45,16 @@ public class UAC {
     /**
      * should be instanciated only once, it was a singleton.
      */
-    public UAC(UserAgent userAgent, DialogManager dialogManager,
+    public UAC(UserAgent userAgent,
+            InitialRequestManager initialRequestManager,
+            MidDialogRequestManager midDialogRequestManager,
+            DialogManager dialogManager,
             TransactionManager transactionManager,
             TransportManager transportManager) {
         this.userAgent = userAgent;
+        this.initialRequestManager = initialRequestManager;
+        this.midDialogRequestManager = midDialogRequestManager;
         this.dialogManager = dialogManager;
-        initialRequestManager = new InitialRequestManager(userAgent, dialogManager,
-                transactionManager, transportManager);
-        midDialogRequestManager = new MidDialogRequestManager(userAgent, dialogManager,
-                transactionManager, transportManager);
         profileUri = "sip:alice@atlanta.com";
     }
     
