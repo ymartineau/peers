@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Peers NAT TestNG suite">
+  <test name="PeersClient">
+    <classes>
+      <class name="net.sourceforge.peers.nat.PeersClientTestNG"/>
+    </classes>
+  </test>
+</suite>

@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Peers SDP TestNG suite">
+  <test name="SDP Parser">
+    <classes>
+      <class name="net.sourceforge.peers.sdp.SdpParserTestNG"/>
+    </classes>
+  </test>
+</suite>

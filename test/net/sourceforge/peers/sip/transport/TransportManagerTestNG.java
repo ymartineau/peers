@@ -39,9 +39,6 @@ public class TransportManagerTestNG {
     @BeforeClass
     protected void init() throws UnknownHostException {
         //TODO interface between transport manager and transaction manager
-//        File configFile = new File("conf/peers.xml");
-//        assert configFile.exists() : "configuration file not found: conf/peers.xml";
-//        Config config = new Config(configFile.toURI().toURL());
         transportManager = new TransportManager(new TransactionManager(),
                 InetAddress.getLocalHost(), RFC3261.TRANSPORT_DEFAULT_PORT);
     }

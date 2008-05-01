@@ -113,7 +113,7 @@
     <mkdir dir="${testng.reports}"/>
     <testng classpathref="test" outputDir="${testng.reports}">
       <!-- <classfileset dir="${classes.dir}" includes="**/*TestNG.class"/> -->
-      <xmlfileset dir="${test.dir}" includes="testng.xml"/>
+      <xmlfileset dir="${test.dir}" includes="*.testng.xml"/>
     </testng>
   </target>
 
