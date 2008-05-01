@@ -295,7 +295,7 @@ public class InviteHandler extends DialogMethodHandler
         // already been received
         Dialog dialog = dialogManager.getDialog(sipResponse);
         boolean isFirstProvResp = false;
-        if (dialog == null) {
+        if (dialog == null && sipResponse.getStatusCode() != RFC3261.CODE_100_TRYING) {
             Logger.debug("dialog not found for prov response");
             isFirstProvResp = true;
             SipHeaderFieldValue to = sipResponse.getSipHeaders()

@@ -92,6 +92,7 @@ public final class RFC3261 {
     public final static int CODE_MIN_REDIR                           = 300;
     public final static int CODE_MAX                                 = 699;
 
+    public final static int CODE_100_TRYING                          = 100;
     public final static int CODE_180_RINGING                         = 180;
     public final static int CODE_200_OK                              = 200;
     public final static int CODE_481_CALL_TRANSACTION_DOES_NOT_EXIST = 481;
