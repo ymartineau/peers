@@ -22,7 +22,6 @@ package net.sourceforge.peers.sip.core.useragent;
 import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
 import net.sourceforge.peers.sip.transactionuser.Dialog;
-import net.sourceforge.peers.sip.transactionuser.DialogManager;
 
 public class UACTestMain {
 
@@ -45,7 +44,7 @@ public class UACTestMain {
             e.printStackTrace();
         }
         
-        Dialog dialog = DialogManager.getInstance().getDialog(requestUri);
+        Dialog dialog = userAgent.getDialogManager().getDialog(requestUri);
         if (dialog != null) {
             userAgent.getUac().terminate(dialog);
         } else {

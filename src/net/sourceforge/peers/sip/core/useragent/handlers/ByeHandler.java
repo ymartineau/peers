@@ -36,12 +36,12 @@ import net.sourceforge.peers.sip.transport.TransportManager;
 public class ByeHandler extends DialogMethodHandler
         implements ServerTransactionUser {
 
-    public ByeHandler(UserAgent userAgent,
+    public ByeHandler(UserAgent userAgent, DialogManager dialogManager,
             TransactionManager transactionManager,
             TransportManager transportManager) {
-        super(userAgent, transactionManager, transportManager);
+        super(userAgent, dialogManager, transactionManager, transportManager);
     }
-    
+
     ////////////////////////////////////////////////
     // methods for UAC
     ////////////////////////////////////////////////
@@ -55,7 +55,7 @@ public class ByeHandler extends DialogMethodHandler
         
         dialog.receivedOrSentBye();
         
-        DialogManager.getInstance().removeDialog(dialog.getId());
+        dialogManager.removeDialog(dialog.getId());
         Logger.getInstance().debug("removed dialog " + dialog.getId());
     }
     
@@ -74,7 +74,7 @@ public class ByeHandler extends DialogMethodHandler
 
         String addrSpec = sipRequest.getRequestUri().toString();
         userAgent.getPeers().remove(addrSpec);
-        DialogManager.getInstance().removeDialog(dialog.getId());
+        dialogManager.removeDialog(dialog.getId());
         Logger.getInstance().debug("removed dialog " + dialog.getId());
         userAgent.getCaptureRtpSender().stop();
         userAgent.setCaptureRtpSender(null);
@@ -103,7 +103,7 @@ public class ByeHandler extends DialogMethodHandler
         
         serverTransaction.sendReponse(sipResponse);
         
-        DialogManager.getInstance().removeDialog(dialog.getId());
+        dialogManager.removeDialog(dialog.getId());
         
 //        setChanged();
 //        notifyObservers(sipRequest);

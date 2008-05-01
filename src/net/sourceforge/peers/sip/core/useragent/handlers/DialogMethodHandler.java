@@ -43,16 +43,18 @@ import net.sourceforge.peers.sip.transport.TransportManager;
 
 public abstract class DialogMethodHandler extends MethodHandler {
 
-
     protected UserAgent userAgent;
+    protected DialogManager dialogManager;
     protected Timer ackTimer;
     
     public DialogMethodHandler(UserAgent userAgent,
+            DialogManager dialogManager,
             TransactionManager transactionManager,
             TransportManager transportManager) {
         super(transactionManager, transportManager);
         ackTimer = new Timer();
         this.userAgent = userAgent;
+        this.dialogManager = dialogManager;
     }
     
     protected Dialog buildDialogForUas(SipResponse sipResponse,
@@ -76,7 +78,7 @@ public abstract class DialogMethodHandler extends MethodHandler {
 
         SipHeaderFieldName contactName = new SipHeaderFieldName(RFC3261.HDR_CONTACT);
         
-        Dialog dialog = DialogManager.getInstance().createDialog(sipResponse);
+        Dialog dialog = dialogManager.createDialog(sipResponse);
         
         //build dialog state
         
@@ -152,7 +154,6 @@ public abstract class DialogMethodHandler extends MethodHandler {
         SipHeaders headers = sipResponse.getSipHeaders();
         SipHeaderFieldValue to = headers.get(new SipHeaderFieldName(RFC3261.HDR_TO));
         String toTag = to.getParam(new SipHeaderParamName(RFC3261.PARAM_TAG));
-        DialogManager dialogManager = DialogManager.getInstance();
         
         Dialog dialog = dialogManager.getDialog(sipResponse);
         if (dialog == null) {
@@ -250,7 +251,7 @@ public abstract class DialogMethodHandler extends MethodHandler {
         @Override
         public void run() {
             ArrayList<Dialog> purgedDialogs = new ArrayList<Dialog>();
-            Collection<Dialog> dialogs = DialogManager.getInstance().getDialogCollection();
+            Collection<Dialog> dialogs = dialogManager.getDialogCollection();
             for (Dialog dialog : dialogs) {
                 String remoteUri = dialog.getRemoteUri();
                 if (remoteUri.equals(toUri) &&

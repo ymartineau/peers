@@ -26,6 +26,7 @@ import net.sourceforge.peers.sip.core.useragent.handlers.InviteHandler;
 import net.sourceforge.peers.sip.core.useragent.handlers.OptionsHandler;
 import net.sourceforge.peers.sip.core.useragent.handlers.RegisterHandler;
 import net.sourceforge.peers.sip.transaction.TransactionManager;
+import net.sourceforge.peers.sip.transactionuser.DialogManager;
 import net.sourceforge.peers.sip.transport.TransportManager;
 
 
@@ -41,15 +42,16 @@ public abstract class RequestManager {
     protected TransportManager transportManager;
     
     public RequestManager(UserAgent userAgent,
+            DialogManager dialogManager,
             TransactionManager transactionManager,
             TransportManager transportManager) {
-        inviteHandler = new InviteHandler(userAgent,
+        inviteHandler = new InviteHandler(userAgent, dialogManager,
                 transactionManager, transportManager);
-        cancelHandler = new CancelHandler(transactionManager,
-                transportManager);
+        cancelHandler = new CancelHandler(userAgent, dialogManager,
+                transactionManager, transportManager);
         ackHandler = new AckHandler(transactionManager,
                 transportManager);
-        byeHandler = new ByeHandler(userAgent,
+        byeHandler = new ByeHandler(userAgent, dialogManager,
                 transactionManager, transportManager);
         optionsHandler = new OptionsHandler(transactionManager,
                 transportManager);

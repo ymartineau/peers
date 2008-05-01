@@ -30,6 +30,7 @@ import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.core.Config;
 import net.sourceforge.peers.sip.transaction.Transaction;
 import net.sourceforge.peers.sip.transaction.TransactionManager;
+import net.sourceforge.peers.sip.transactionuser.DialogManager;
 import net.sourceforge.peers.sip.transport.SipMessage;
 import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.SipResponse;
@@ -53,6 +54,7 @@ public class UserAgent {
     private UAC uac;
     private UAS uas;
 
+    private DialogManager dialogManager;
     private TransactionManager transactionManager;
     private TransportManager transportManager;
 
@@ -73,12 +75,13 @@ public class UserAgent {
         
         Utils.setConfig(config);
         
+        dialogManager = new DialogManager();
         transactionManager = new TransactionManager();
         transportManager = new TransportManager(transactionManager);
         transactionManager.setTransportManager(transportManager);
         
-        uas = new UAS(this, transactionManager, transportManager);
-        uac = new UAC(this, transactionManager, transportManager);
+        uas = new UAS(this, dialogManager, transactionManager, transportManager);
+        uac = new UAC(this, dialogManager, transactionManager, transportManager);
         
         peers = new ArrayList<String>();
         //dialogs = new ArrayList<Dialog>();
@@ -158,6 +161,10 @@ public class UserAgent {
 
     public UAC getUac() {
         return uac;
+    }
+
+    public DialogManager getDialogManager() {
+        return dialogManager;
     }
     
 }

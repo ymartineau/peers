@@ -40,16 +40,19 @@ public class UAC {
     
     //FIXME
     private UserAgent userAgent;
+    private DialogManager dialogManager;
     
     /**
      * should be instanciated only once, it was a singleton.
      */
-    public UAC(UserAgent userAgent, TransactionManager transactionManager,
+    public UAC(UserAgent userAgent, DialogManager dialogManager,
+            TransactionManager transactionManager,
             TransportManager transportManager) {
         this.userAgent = userAgent;
-        initialRequestManager = new InitialRequestManager(userAgent,
+        this.dialogManager = dialogManager;
+        initialRequestManager = new InitialRequestManager(userAgent, dialogManager,
                 transactionManager, transportManager);
-        midDialogRequestManager = new MidDialogRequestManager(userAgent,
+        midDialogRequestManager = new MidDialogRequestManager(userAgent, dialogManager,
                 transactionManager, transportManager);
         profileUri = "sip:alice@atlanta.com";
     }
@@ -76,7 +79,7 @@ public class UAC {
                         dialog, RFC3261.METHOD_BYE);
                 
             }
-            DialogManager.getInstance().removeDialog(dialog.getId());
+            dialogManager.removeDialog(dialog.getId());
         }
         CaptureRtpSender captureRtpSender = userAgent.getCaptureRtpSender();
         if (captureRtpSender != null) {
