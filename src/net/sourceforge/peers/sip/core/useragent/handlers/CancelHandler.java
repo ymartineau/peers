@@ -53,7 +53,7 @@ public class CancelHandler extends DialogMethodHandler
     //////////////////////////////////////////////////////////
 
     public void handleCancel(SipRequest sipRequest) {
-        SipHeaderFieldValue topVia = Utils.getInstance().getTopVia(sipRequest);
+        SipHeaderFieldValue topVia = Utils.getTopVia(sipRequest);
         String branchId = topVia.getParam(new SipHeaderParamName(
                 RFC3261.PARAM_BRANCH));
         InviteServerTransaction inviteServerTransaction =
@@ -71,7 +71,7 @@ public class CancelHandler extends DialogMethodHandler
         }
         ServerTransaction cancelServerTransaction = transactionManager
                 .createServerTransaction(cancelResponse,
-                        Utils.getInstance().getSipPort(),
+                        userAgent.getSipPort(),
                         RFC3261.TRANSPORT_UDP, this, sipRequest);
         cancelServerTransaction.start();
         cancelServerTransaction.receivedRequest(sipRequest);
@@ -127,7 +127,7 @@ public class CancelHandler extends DialogMethodHandler
         //top-via
 //        cancelHeaders.add(new SipHeaderFieldName(RFC3261.HDR_VIA),
 //                Utils.getInstance().getTopVia(inviteRequest));
-        SipHeaderFieldValue topVia = Utils.getInstance().getTopVia(inviteRequest);
+        SipHeaderFieldValue topVia = Utils.getTopVia(inviteRequest);
         String branchId = topVia.getParam(new SipHeaderParamName(RFC3261.PARAM_BRANCH));
         
         //route

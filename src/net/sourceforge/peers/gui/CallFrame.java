@@ -187,7 +187,7 @@ public class CallFrame implements ActionListener, Observer {
             if (arg instanceof SipEvent) {
                 SipEvent sipEvent = (SipEvent) arg;
                 SipMessage sipMessage = sipEvent.getSipMessage();
-                if (Utils.getInstance().getMessageCallId(sipMessage).equals(callId)) {
+                if (Utils.getMessageCallId(sipMessage).equals(callId)) {
                     manageInviteHandlerEvent(sipEvent);
                 }
                 //if event is not for this frame (conversation) simply discard it

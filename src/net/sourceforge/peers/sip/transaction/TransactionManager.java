@@ -56,7 +56,7 @@ public class TransactionManager {
         String branchId;
         if (pBranchId == null || "".equals(pBranchId.trim())
                 || !pBranchId.startsWith(RFC3261.BRANCHID_MAGIC_COOKIE)) {
-            branchId = Utils.getInstance().generateBranchId();
+            branchId = Utils.generateBranchId();
         } else {
             branchId = pBranchId;
         }
@@ -80,7 +80,7 @@ public class TransactionManager {
             int port, String transport,
             ServerTransactionUser serverTransactionUser,
             SipRequest sipRequest) {
-        SipHeaderFieldValue via = Utils.getInstance().getTopVia(sipResponse);
+        SipHeaderFieldValue via = Utils.getTopVia(sipResponse);
         String branchId = via.getParam(new SipHeaderParamName(
                 RFC3261.PARAM_BRANCH));
         String cseq = sipResponse.getSipHeaders().get(
@@ -104,7 +104,7 @@ public class TransactionManager {
     }
 
     public ClientTransaction getClientTransaction(SipMessage sipMessage) {
-        SipHeaderFieldValue via = Utils.getInstance().getTopVia(sipMessage);
+        SipHeaderFieldValue via = Utils.getTopVia(sipMessage);
         String branchId = via.getParam(new SipHeaderParamName(
                 RFC3261.PARAM_BRANCH));
         String cseq = sipMessage.getSipHeaders().get(
@@ -114,7 +114,7 @@ public class TransactionManager {
     }
 
     public ServerTransaction getServerTransaction(SipMessage sipMessage) {
-        SipHeaderFieldValue via = Utils.getInstance().getTopVia(sipMessage);
+        SipHeaderFieldValue via = Utils.getTopVia(sipMessage);
         String branchId = via.getParam(new SipHeaderParamName(
                 RFC3261.PARAM_BRANCH));
         String method;

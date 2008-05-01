@@ -19,20 +19,20 @@
 
 package net.sourceforge.peers.sip.core.useragent;
 
-import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
 import net.sourceforge.peers.sip.transactionuser.Dialog;
 
 public class UACTestMain {
 
     public static void main(String[] args) {
-        String requestUri = "sip:bob@" + Utils.getInstance()
-            .getMyAddress().getHostAddress() + ":6060";
+        String requestUri;
         UserAgent userAgent;
         try {
             userAgent = new UserAgent();
+            requestUri = "sip:bob@" + userAgent.getMyAddress().getHostAddress()
+                + ":6060";
             userAgent.getUac().invite(requestUri,
-                    Utils.getInstance().generateCallID());
+                    userAgent.getMyAddress().getHostName());
         } catch (SipUriSyntaxException e) {
             e.printStackTrace();
             return;

@@ -38,6 +38,7 @@ public abstract class RequestManager {
     protected OptionsHandler optionsHandler;
     protected RegisterHandler registerHandler;
     
+    protected UserAgent userAgent;
     protected TransactionManager transactionManager;
     protected TransportManager transportManager;
     
@@ -57,6 +58,7 @@ public abstract class RequestManager {
                 transportManager);
         registerHandler = new RegisterHandler(transactionManager,
                 transportManager);
+        this.userAgent = userAgent;
         this.transactionManager = transactionManager;
         this.transportManager = transportManager;
     }

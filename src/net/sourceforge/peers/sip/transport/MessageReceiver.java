@@ -100,7 +100,7 @@ public abstract class MessageReceiver implements Runnable {
             SipRequest sipRequest = (SipRequest)sipMessage;
             
             
-            SipHeaderFieldValue topVia = Utils.getInstance().getTopVia(sipRequest);
+            SipHeaderFieldValue topVia = Utils.getTopVia(sipRequest);
             String sentBy =
                 topVia.getParam(new SipHeaderParamName(RFC3261.PARAM_SENTBY));
             if (sentBy != null) {

@@ -57,7 +57,6 @@ public class InitialRequestManager extends RequestManager {
         //8.1.1
         SipRequest request = new SipRequest(method, new SipURI(requestUri));
         SipHeaders headers = request.getSipHeaders();
-        Utils utils = Utils.getInstance();
         //String hostAddress = utils.getMyAddress().getHostAddress();
         
         //Via
@@ -75,7 +74,7 @@ public class InitialRequestManager extends RequestManager {
 //        headers.add(new SipHeaderFieldName(RFC3261.HDR_VIA), via);
         
 
-        utils.addCommonHeaders(headers);
+        Utils.addCommonHeaders(headers);
         
         //To
         
@@ -88,18 +87,19 @@ public class InitialRequestManager extends RequestManager {
         NameAddress fromNA = new NameAddress(profileUri);
         SipHeaderFieldValue from = new SipHeaderFieldValue(fromNA.toString());
         from.addParam(new SipHeaderParamName(RFC3261.PARAM_TAG),
-                utils.generateTag());
+                Utils.generateTag());
         headers.add(new SipHeaderFieldName(RFC3261.HDR_FROM), from);
         
         //Call-ID
         
         headers.add(new SipHeaderFieldName(RFC3261.HDR_CALLID),
-                new SipHeaderFieldValue(utils.generateCallID()));
+                new SipHeaderFieldValue(
+                        Utils.generateCallID(userAgent.getMyAddress())));
         
         //CSeq
         
         headers.add(new SipHeaderFieldName(RFC3261.HDR_CSEQ),
-                new SipHeaderFieldValue(utils.generateCSeq(method)));
+                new SipHeaderFieldValue(userAgent.generateCSeq(method)));
         
         return request;
     }
@@ -218,7 +218,7 @@ public class InitialRequestManager extends RequestManager {
         StringBuffer contactBuf = new StringBuffer();
         contactBuf.append(RFC3261.SIP_SCHEME);
         contactBuf.append(RFC3261.SCHEME_SEPARATOR);
-        String userPart = Utils.getInstance().getUserPart(profileUri);
+        String userPart = Utils.getUserPart(profileUri);
         contactBuf.append(userPart);
         contactBuf.append(RFC3261.AT);
         contactBuf.append(contactEnd);

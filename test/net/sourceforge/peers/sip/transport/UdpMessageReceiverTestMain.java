@@ -20,7 +20,9 @@
 package net.sourceforge.peers.sip.transport;
 
 import java.io.IOException;
+import java.net.InetAddress;
 
+import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.transport.TransportManager;
 
 
@@ -28,8 +30,9 @@ public class UdpMessageReceiverTestMain implements Runnable {
 
     public void run() {
         try {
-            TransportManager transportManager = new TransportManager(null);
-            transportManager.createServerTransport("UDP", 5060);
+            TransportManager transportManager = new TransportManager(null,
+                    InetAddress.getLocalHost(), RFC3261.TRANSPORT_DEFAULT_PORT);
+            transportManager.createServerTransport("UDP", RFC3261.TRANSPORT_DEFAULT_PORT);
         } catch (IOException e) {
             e.printStackTrace();
             return;

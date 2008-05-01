@@ -27,7 +27,6 @@ import java.net.SocketException;
 
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.RFC3261;
-import net.sourceforge.peers.sip.Utils;
 
 
 public class UdpMessageSender extends MessageSender {
@@ -35,14 +34,14 @@ public class UdpMessageSender extends MessageSender {
     private DatagramSocket datagramSocket;
     
     public UdpMessageSender(InetAddress inetAddress, int port,
-            DatagramSocket datagramSocket)
+            DatagramSocket datagramSocket, InetAddress myAddress)
             throws SocketException {
         super(inetAddress, port);
 
         this.datagramSocket = datagramSocket;
         StringBuffer buf = new StringBuffer();
         //buf.append(datagramSocket.getLocalAddress().getHostAddress());
-        buf.append(Utils.getInstance().getMyAddress().getHostAddress());
+        buf.append(myAddress.getHostAddress());
         buf.append(RFC3261.TRANSPORT_PORT_SEP);
         buf.append(datagramSocket.getLocalPort());
         buf.append(RFC3261.PARAM_SEPARATOR);

@@ -93,7 +93,7 @@ public class InviteHandler extends DialogMethodHandler
         
         InviteServerTransaction inviteServerTransaction = (InviteServerTransaction)
             transactionManager.createServerTransaction(sipResponse,
-                    Utils.getInstance().getSipPort(), RFC3261.TRANSPORT_UDP, this,
+                    userAgent.getSipPort(), RFC3261.TRANSPORT_UDP, this,
                     sipRequest);
         
         inviteServerTransaction.start();
@@ -361,13 +361,13 @@ public class InviteHandler extends DialogMethodHandler
             sdpManager.handleAnswer(sipResponse.getBody());
         String remoteAddress = sessionDescription.getIpAddress().getHostAddress();
         int remotePort = sessionDescription.getMedias().get(0).getPort();
-        String localAddress = Utils.getInstance().getMyAddress().getHostAddress();
+        String localAddress = userAgent.getMyAddress().getHostAddress();
         CaptureRtpSender captureRtpSender;
         //TODO this could be optimized, create captureRtpSender at stack init
         //     and just retrieve it here
         try {
             captureRtpSender = new CaptureRtpSender(localAddress,
-                    Utils.getInstance().getRtpPort(),
+                    userAgent.getRtpPort(),
                     remoteAddress, remotePort);
         } catch (IOException e) {
             e.printStackTrace();
@@ -428,7 +428,7 @@ public class InviteHandler extends DialogMethodHandler
         //add Via with only the branchid parameter
         
         SipHeaderFieldValue via = new SipHeaderFieldValue("");
-        SipHeaderFieldValue respTopVia =Utils.getInstance().getTopVia(sipResponse);
+        SipHeaderFieldValue respTopVia = Utils.getTopVia(sipResponse);
         SipHeaderParamName branchIdName = new SipHeaderParamName(RFC3261.PARAM_BRANCH);
         via.addParam(branchIdName, respTopVia.getParam(branchIdName));
         

@@ -155,20 +155,19 @@ public class InviteClientTransaction extends InviteTransaction
         
         //17.1.1.3
         ack = new SipRequest(RFC3261.METHOD_ACK, request.getRequestUri());
-        Utils utils = Utils.getInstance();
-        SipHeaderFieldValue topVia = utils.getTopVia(request);
+        SipHeaderFieldValue topVia = Utils.getTopVia(request);
         SipHeaders ackSipHeaders = ack.getSipHeaders();
         ackSipHeaders.add(new SipHeaderFieldName(RFC3261.HDR_VIA), topVia);
-        utils.copyHeader(request, ack, RFC3261.HDR_CALLID);
-        utils.copyHeader(request, ack, RFC3261.HDR_FROM);
-        utils.copyHeader(getLastResponse(), ack, RFC3261.HDR_TO);
+        Utils.copyHeader(request, ack, RFC3261.HDR_CALLID);
+        Utils.copyHeader(request, ack, RFC3261.HDR_FROM);
+        Utils.copyHeader(getLastResponse(), ack, RFC3261.HDR_TO);
         //TODO what happens if a prov response is received after a 200+ ...
         SipHeaders requestSipHeaders = request.getSipHeaders();
         SipHeaderFieldName cseqName = new SipHeaderFieldName(RFC3261.HDR_CSEQ);
         SipHeaderFieldValue cseq = requestSipHeaders.get(cseqName);
         cseq.setValue(cseq.toString().replace(RFC3261.METHOD_INVITE, RFC3261.METHOD_ACK));
         ackSipHeaders.add(cseqName, cseq);
-        utils.copyHeader(request, ack, RFC3261.HDR_ROUTE);
+        Utils.copyHeader(request, ack, RFC3261.HDR_ROUTE);
         
         sendAck();
     }

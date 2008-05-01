@@ -19,107 +19,21 @@
 
 package net.sourceforge.peers.sip;
 
-import static net.sourceforge.peers.sip.RFC3261.HDR_VIA;
 
 import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.net.UnknownHostException;
-import java.util.Enumeration;
 
-import net.sourceforge.peers.sip.core.Config;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldMultiValue;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldName;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldValue;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaders;
 import net.sourceforge.peers.sip.transport.SipMessage;
 
-import org.dom4j.Node;
-
 
 public class Utils {
 
-    //FIXME
-    private static Config config;
-    
-    private static Utils INSTANCE;
-    
-    public static Utils getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new Utils();
-        }
-        return INSTANCE;
-    }
-    
-    public static void setConfig(Config config) {
-        Utils.config = config;
-    }
-    
-    private InetAddress myAddress;
-    private int sipPort;
-    private int rtpPort;
-    private int cseqCounter;
-
-    private Utils() {
-        super();
-        
-        Node node = config.selectSingleNode("//peers:address");
-        if (node == null) {
-          try {
-                boolean found = false;
-                Enumeration<NetworkInterface> e = NetworkInterface
-                        .getNetworkInterfaces();
-                while (e.hasMoreElements() && !found) {
-                    NetworkInterface networkInterface = e.nextElement();
-//                    Logger.getInstance().debug(networkInterface.getDisplayName());
-                    Enumeration<InetAddress> f = networkInterface
-                            .getInetAddresses();
-                    while (f.hasMoreElements() && !found) {
-                        InetAddress inetAddress = f.nextElement();
-                        if (inetAddress.isSiteLocalAddress()) {
-                            this.myAddress = inetAddress;
-                            found = true;
-                        }
-                    }
-                }
-            } catch (SocketException e) {
-                e.printStackTrace();
-            }
-        } else {
-            try {
-                myAddress = InetAddress.getByName(node.getText());
-            } catch (UnknownHostException e) {
-                e.printStackTrace();
-            }
-        }
-
-        node = config.selectSingleNode("//peers:sip/peers:profile/peers:port");
-        if (node == null) {
-            sipPort = RFC3261.TRANSPORT_DEFAULT_PORT;
-        } else {
-            sipPort = Integer.parseInt(node.getText());
-        }
-        
-        node = config.selectSingleNode("//peers:rtp/peers:port");
-        rtpPort = Integer.parseInt(node.getText());
-        cseqCounter = 0;
-    }
-
-    public InetAddress getMyAddress() {
-        return myAddress;
-    }
-    
-    public int getSipPort() {
-        return sipPort;
-    }
-
-    public int getRtpPort() {
-        return rtpPort;
-    }
-
-    public SipHeaderFieldValue getTopVia(SipMessage sipMessage) {
+    public final static SipHeaderFieldValue getTopVia(SipMessage sipMessage) {
         SipHeaders sipHeaders = sipMessage.getSipHeaders();
-        SipHeaderFieldName viaName = new SipHeaderFieldName(HDR_VIA);
+        SipHeaderFieldName viaName = new SipHeaderFieldName(RFC3261.HDR_VIA);
         SipHeaderFieldValue via = sipHeaders.get(viaName);
         if (via instanceof SipHeaderFieldMultiValue) {
             via = ((SipHeaderFieldMultiValue)via).getValues().get(0);
@@ -127,30 +41,22 @@ public class Utils {
         return via;
     }
     
-    public String generateTag() {
+    public final static String generateTag() {
         return randomString(8);
     }
     
-    public String generateCallID() {
+    public final static String generateCallID(InetAddress inetAddress) {
         //TODO make a hash using current time millis, public ip @, private @, and a random string
         StringBuffer buf = new StringBuffer();
         buf.append(randomString(8));
         buf.append('-');
         buf.append(String.valueOf(System.currentTimeMillis()));
         buf.append('@');
-        buf.append(myAddress.getHostName());
+        buf.append(inetAddress.getHostName());
         return buf.toString();
     }
     
-    public String generateCSeq(String method) {
-        StringBuffer buf = new StringBuffer();
-        buf.append(cseqCounter++);
-        buf.append(' ');
-        buf.append(method);
-        return buf.toString();
-    }
-    
-    public String generateBranchId() {
+    public final static String generateBranchId() {
         StringBuffer buf = new StringBuffer();
         buf.append(RFC3261.BRANCHID_MAGIC_COOKIE);
         //TODO must be unique across space and time...
@@ -158,13 +64,13 @@ public class Utils {
         return buf.toString();
     }
     
-    public String getMessageCallId(SipMessage sipMessage) {
+    public final static String getMessageCallId(SipMessage sipMessage) {
         SipHeaderFieldValue callId = sipMessage.getSipHeaders().get(
                 new SipHeaderFieldName(RFC3261.HDR_CALLID));
         return callId.getValue();
     }
     
-    public String randomString(int length) {
+    public final static String randomString(int length) {
         String chars = "abcdefghijklmnopqrstuvwxyz" +
                        "ABCDEFGHIFKLMNOPRSTUVWXYZ" +
                        "0123456789";
@@ -176,7 +82,7 @@ public class Utils {
         return buf.toString();
     }
     
-    public void copyHeader(SipMessage src, SipMessage dst, String name) {
+    public final static void copyHeader(SipMessage src, SipMessage dst, String name) {
         SipHeaderFieldName sipHeaderFieldName = new SipHeaderFieldName(name);
         SipHeaderFieldValue sipHeaderFieldValue = src.getSipHeaders().get(sipHeaderFieldName);
         if (sipHeaderFieldValue != null) {
@@ -184,11 +90,17 @@ public class Utils {
         }
     }
     
+    public final static String getUserPart(String sipUri) {
+        int start = sipUri.indexOf(RFC3261.SCHEME_SEPARATOR);
+        int end = sipUri.indexOf(RFC3261.AT);
+        return sipUri.substring(start + 1, end);
+    }
+
     /**
      * adds Max-Forwards Supported and Require headers
      * @param headers
      */
-    public void addCommonHeaders(SipHeaders headers) {
+    public final static void addCommonHeaders(SipHeaders headers) {
         //Max-Forwards
         
         headers.add(new SipHeaderFieldName(RFC3261.HDR_MAXFORWARDS),
@@ -197,12 +109,4 @@ public class Utils {
         
         //TODO Supported and Require
     }
-    
-    
-    public String getUserPart(String sipUri) {
-        int start = sipUri.indexOf(RFC3261.SCHEME_SEPARATOR);
-        int end = sipUri.indexOf(RFC3261.AT);
-        return sipUri.substring(start + 1, end);
-    }
-
 }
