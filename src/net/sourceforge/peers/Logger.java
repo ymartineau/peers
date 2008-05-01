@@ -28,26 +28,17 @@ import java.util.Date;
 
 public class Logger {
 
-    public static final String LOG_FILE = "logs/peers.log";
-    public static final String NETWORK_FILE = "logs/transport.log";
+    public final static String LOG_FILE = "logs/peers.log";
+    public final static String NETWORK_FILE = "logs/transport.log";
     
-    private static Logger INSTANCE;
+    private static PrintWriter logWriter;
+    private static PrintWriter networkWriter;
+    private final static Object logMutex;
+    private final static Object networkMutex;
+    private final static SimpleDateFormat logFormatter;
+    private final static SimpleDateFormat networkFormatter;
     
-    public static Logger getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new Logger();
-        }
-        return INSTANCE;
-    }
-    
-    private PrintWriter logWriter;
-    private PrintWriter networkWriter;
-    private Object logMutex;
-    private Object networkMutex;
-    private SimpleDateFormat logFormatter;
-    private SimpleDateFormat networkFormatter;
-    
-    private Logger() {
+    static {
         try {
             logWriter = new PrintWriter(new BufferedWriter(
                     new FileWriter(LOG_FILE)));
@@ -62,28 +53,28 @@ public class Logger {
         networkFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS");
     }
     
-    public void debug(Object message) {
+    public final static void debug(Object message) {
         synchronized (logMutex) {
             logWriter.write(genericLog(message.toString(), "DEBUG"));
             logWriter.flush();
         }
     }
     
-    public void info(Object message) {
+    public final static void info(Object message) {
         synchronized (logMutex) {
             logWriter.write(genericLog(message.toString(), "INFO "));
             logWriter.flush();
         }
     }
     
-    public void error(Object message) {
+    public final static void error(Object message) {
         synchronized (logMutex) {
             logWriter.write(genericLog(message.toString(), "WARN "));
             logWriter.flush();
         }
     }
     
-    private String genericLog(String message, String level) {
+    private final static String genericLog(String message, String level) {
         StringBuffer buf = new StringBuffer();
         buf.append(logFormatter.format(new Date()));
         buf.append(" ");
@@ -96,7 +87,7 @@ public class Logger {
         return buf.toString();
     }
     
-    public void traceNetwork(String message, String direction) {
+    public final static void traceNetwork(String message, String direction) {
         synchronized (networkMutex) {
             StringBuffer buf = new StringBuffer();
             buf.append(networkFormatter.format(new Date()));

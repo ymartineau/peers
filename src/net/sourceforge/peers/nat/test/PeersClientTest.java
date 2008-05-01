@@ -35,7 +35,7 @@ public class PeersClientTest extends TestCase {
         super.setUp();
         peersClient = new MockPeersClient("alice@atlanta.com", new DataReceiver(){
             public void dataReceived(byte[] data, String peerId) {
-                Logger.getInstance().debug("received bytes from " + peerId + ": "
+                Logger.debug("received bytes from " + peerId + ": "
                                         + new String(data));
             }
         });

@@ -276,7 +276,7 @@ public class TransportManager {
             if (datagramSocket == null) {
                 datagramSocket = new DatagramSocket();
                 datagramSockets.put(conn, datagramSocket);
-                Logger.getInstance().info("added datagram socket " + conn);
+                Logger.info("added datagram socket " + conn);
             }
             socket = datagramSocket;
             messageSender = new UdpMessageSender(conn.getRemoteInetAddress(),
@@ -313,14 +313,14 @@ public class TransportManager {
     private MessageReceiver createMessageReceiver(SipTransportConnection conn)
             throws IOException {
         MessageReceiver messageReceiver = null;
-        Logger.getInstance().info("adding " + conn + ": " + messageReceiver
+        Logger.info("adding " + conn + ": " + messageReceiver
                     + " to message receivers");
         if (RFC3261.TRANSPORT_UDP.equals(conn.getRemoteTransport())) {
             DatagramSocket datagramSocket = datagramSockets.get(conn);
             if (datagramSocket == null) {
                 datagramSocket = new DatagramSocket(conn.getRemotePort());
                 datagramSockets.put(conn, datagramSocket);
-                Logger.getInstance().info("added datagram socket " + conn);
+                Logger.info("added datagram socket " + conn);
             }
             messageReceiver = new UdpMessageReceiver(datagramSocket, transactionManager,
                     this);

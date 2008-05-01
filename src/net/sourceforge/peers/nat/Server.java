@@ -98,7 +98,7 @@ public class Server {
             e.printStackTrace();
             return null;
         }
-        Logger.getInstance().debug("retrieved peers");
+        Logger.debug("retrieved peers");
         SAXReader saxReader = new SAXReader();
         Document doc;
         try {
@@ -128,7 +128,7 @@ public class Server {
             e.printStackTrace();
             return null;
         }
-        Logger.getInstance().debug("> sent:\n" + get.toString());
+        Logger.debug("> sent:\n" + get.toString());
         
         StringBuffer result = new StringBuffer();
         try {
@@ -140,13 +140,13 @@ public class Server {
                 result.append(new String(exactBuf));
             }
         } catch (SocketTimeoutException e) {
-            Logger.getInstance().debug("socket timeout");
+            Logger.debug("socket timeout");
             return null;
         } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
-        Logger.getInstance().debug("< received:\n" + result.toString());
+        Logger.debug("< received:\n" + result.toString());
         return result.toString();
     }
     

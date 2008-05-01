@@ -101,11 +101,11 @@ public class UlawStream implements Runnable {
             //TODO code cleaning: targetEncoding is only employed to display info...
             AudioFormat.Encoding targetEncoding = AudioFormat.Encoding.ULAW;
             
-            Logger.getInstance().debug("target encodings for " + format.getEncoding());
+            Logger.debug("target encodings for " + format.getEncoding());
             AudioFormat.Encoding[] encodings =
                 AudioSystem.getTargetEncodings(format.getEncoding());
             for (AudioFormat.Encoding encoding : encodings) {
-                Logger.getInstance().debug(encoding);
+                Logger.debug(encoding);
             }
             
             
@@ -124,9 +124,9 @@ public class UlawStream implements Runnable {
 //            AudioInputStream ulawAIS = AudioSystem.getAudioInputStream(targetFormat,
 //                    sourceStream);
             
-            Logger.getInstance().debug("target formats");
+            Logger.debug("target formats");
             for (AudioFormat audioFormat : formats) {
-                Logger.getInstance().debug(audioFormat);
+                Logger.debug(audioFormat);
             }
             
             
@@ -166,7 +166,7 @@ public class UlawStream implements Runnable {
                 
             } catch (LineUnavailableException e) {
                 // Handle the error ...
-                Logger.getInstance().error(e);
+                Logger.error(e);
                 e.printStackTrace();
                 return;
             }
@@ -332,7 +332,7 @@ public class UlawStream implements Runnable {
 //            
 //            fileInputStream.close();
             
-            Logger.getInstance().debug("streaming finished");
+            Logger.debug("streaming finished");
 
         } catch (FileNotFoundException fnfe) {
 

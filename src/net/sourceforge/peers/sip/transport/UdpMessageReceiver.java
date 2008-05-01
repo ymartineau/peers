@@ -47,7 +47,7 @@ public class UdpMessageReceiver extends MessageReceiver {
         byte[] trimmedPacket = new byte[packet.getLength()];
         System.arraycopy(packet.getData(), 0,
                 trimmedPacket, 0, trimmedPacket.length);
-        Logger.getInstance().traceNetwork(new String(trimmedPacket), "RECEIVED");
+        Logger.traceNetwork(new String(trimmedPacket), "RECEIVED");
         processMessage(trimmedPacket, packet.getAddress());
     }
 

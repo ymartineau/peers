@@ -165,7 +165,7 @@ public class CallFrame implements ActionListener, Observer {
     
     public void actionPerformed(ActionEvent e) {
         String actionCommand = e.getActionCommand();
-        Logger.getInstance().debug(callId + " action performed: " + actionCommand);
+        Logger.debug(callId + " action performed: " + actionCommand);
         if (CLOSE_ACTION.equals(actionCommand)) {
             hangup();
         } else if (CANCEL_ACTION.equals(actionCommand)) {
@@ -182,7 +182,7 @@ public class CallFrame implements ActionListener, Observer {
     }
 
     public void update(Observable o, Object arg) {
-        Logger.getInstance().debug("update with observable " + o + " arg = " + arg);
+        Logger.debug("update with observable " + o + " arg = " + arg);
         if (o.equals(inviteHandler)) {
             if (arg instanceof SipEvent) {
                 SipEvent sipEvent = (SipEvent) arg;
@@ -243,7 +243,7 @@ public class CallFrame implements ActionListener, Observer {
         buf.append(" -> ");
         buf.append(JavaUtils.getShortClassName(dialogState.getClass()));
         buf.append("]");
-        Logger.getInstance().debug(buf.toString());
+        Logger.debug(buf.toString());
         if (dialogState instanceof DialogStateEarly) {
             if (isUac && cancelButton == null) {
                 //TODO implement cancel in core

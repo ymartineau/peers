@@ -134,11 +134,11 @@ public class AudioUlawEncodeDecode02 {
 
     public static void main(String args[]) {
 
-        Logger.getInstance().debug("Process and display truncation");
+        Logger.debug("Process and display truncation");
         
         processAndDisplayTruncation();
 
-        Logger.getInstance().debug("Process and display ULAW");
+        Logger.debug("Process and display ULAW");
         // Reinitialize values in the processing loop.
         value = 0;
         increment = 1;

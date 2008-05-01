@@ -55,7 +55,7 @@ public class ByeHandler extends DialogMethodHandler
         dialog.receivedOrSentBye();
         
         dialogManager.removeDialog(dialog.getId());
-        Logger.getInstance().debug("removed dialog " + dialog.getId());
+        Logger.debug("removed dialog " + dialog.getId());
     }
     
     
@@ -74,7 +74,7 @@ public class ByeHandler extends DialogMethodHandler
         String addrSpec = sipRequest.getRequestUri().toString();
         userAgent.getPeers().remove(addrSpec);
         dialogManager.removeDialog(dialog.getId());
-        Logger.getInstance().debug("removed dialog " + dialog.getId());
+        Logger.debug("removed dialog " + dialog.getId());
         userAgent.getCaptureRtpSender().stop();
         userAgent.setCaptureRtpSender(null);
         

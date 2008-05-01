@@ -158,7 +158,7 @@ public class InitialRequestManager extends RequestManager {
                     inviteRequest.getRequestUri().toString(), RFC3261.METHOD_CANCEL,
                     profileUri, callId.getValue());
         } catch (SipUriSyntaxException e) {
-            Logger.getInstance().error(e);
+            Logger.error(e);
             e.printStackTrace();
             return;
         }

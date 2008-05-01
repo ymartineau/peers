@@ -41,7 +41,7 @@ public class UDPReceiver extends Thread {
                 byte[] buf = new byte[1024];
                 DatagramPacket packet = new DatagramPacket(buf, buf.length);
                 datagramSocket.receive(packet);
-                Logger.getInstance().debug("< received:\n" + new String(packet.getData()));
+                Logger.debug("< received:\n" + new String(packet.getData()));
             }
         } catch (IOException e) {
             e.printStackTrace();

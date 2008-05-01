@@ -83,7 +83,7 @@ public class PeerManager extends Thread {
                 DatagramPacket datagramPacket =
                     new DatagramPacket(buf, buf.length, remoteAddress, remotePort);
                 datagramSocket.send(datagramPacket);
-                Logger.getInstance().debug("> sent:\n" + message);
+                Logger.debug("> sent:\n" + message);
                 try {
                     Thread.sleep(5000);
                 } catch (InterruptedException e) {
