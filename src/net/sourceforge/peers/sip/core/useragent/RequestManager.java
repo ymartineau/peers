@@ -19,7 +19,6 @@
 
 package net.sourceforge.peers.sip.core.useragent;
 
-import net.sourceforge.peers.sip.core.useragent.handlers.AckHandler;
 import net.sourceforge.peers.sip.core.useragent.handlers.ByeHandler;
 import net.sourceforge.peers.sip.core.useragent.handlers.CancelHandler;
 import net.sourceforge.peers.sip.core.useragent.handlers.InviteHandler;
@@ -33,7 +32,6 @@ import net.sourceforge.peers.sip.transport.TransportManager;
 public abstract class RequestManager {
     protected InviteHandler inviteHandler;
     protected CancelHandler cancelHandler;
-    protected AckHandler ackHandler;
     protected ByeHandler byeHandler;
     protected OptionsHandler optionsHandler;
     protected RegisterHandler registerHandler;
@@ -43,22 +41,20 @@ public abstract class RequestManager {
     protected TransportManager transportManager;
     
     public RequestManager(UserAgent userAgent,
+            InviteHandler inviteHandler,
+            CancelHandler cancelHandler,
+            ByeHandler byeHandler,
+            OptionsHandler optionsHandler,
+            RegisterHandler registerHandler,
             DialogManager dialogManager,
             TransactionManager transactionManager,
             TransportManager transportManager) {
-        inviteHandler = new InviteHandler(userAgent, dialogManager,
-                transactionManager, transportManager);
-        cancelHandler = new CancelHandler(userAgent, dialogManager,
-                transactionManager, transportManager);
-        ackHandler = new AckHandler(transactionManager,
-                transportManager);
-        byeHandler = new ByeHandler(userAgent, dialogManager,
-                transactionManager, transportManager);
-        optionsHandler = new OptionsHandler(transactionManager,
-                transportManager);
-        registerHandler = new RegisterHandler(transactionManager,
-                transportManager);
         this.userAgent = userAgent;
+        this.inviteHandler = inviteHandler;
+        this.cancelHandler = cancelHandler;
+        this.byeHandler = byeHandler;
+        this.optionsHandler = optionsHandler;
+        this.registerHandler = registerHandler;
         this.transactionManager = transactionManager;
         this.transportManager = transportManager;
     }

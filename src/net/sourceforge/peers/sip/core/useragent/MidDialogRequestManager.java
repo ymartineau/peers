@@ -22,6 +22,11 @@ package net.sourceforge.peers.sip.core.useragent;
 import java.util.Hashtable;
 
 import net.sourceforge.peers.sip.RFC3261;
+import net.sourceforge.peers.sip.core.useragent.handlers.ByeHandler;
+import net.sourceforge.peers.sip.core.useragent.handlers.CancelHandler;
+import net.sourceforge.peers.sip.core.useragent.handlers.InviteHandler;
+import net.sourceforge.peers.sip.core.useragent.handlers.OptionsHandler;
+import net.sourceforge.peers.sip.core.useragent.handlers.RegisterHandler;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldName;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldValue;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderParamName;
@@ -42,10 +47,23 @@ public class MidDialogRequestManager extends RequestManager
         implements ClientTransactionUser {
 
     public MidDialogRequestManager(UserAgent userAgent,
+            InviteHandler inviteHandler,
+            CancelHandler cancelHandler,
+            ByeHandler byeHandler,
+            OptionsHandler optionsHandler,
+            RegisterHandler registerHandler,
             DialogManager dialogManager,
             TransactionManager transactionManager,
             TransportManager transportManager) {
-        super(userAgent, dialogManager, transactionManager, transportManager);
+        super(userAgent,
+                inviteHandler,
+                cancelHandler,
+                byeHandler,
+                optionsHandler,
+                registerHandler,
+                dialogManager,
+                transactionManager,
+                transportManager);
     }
 
 

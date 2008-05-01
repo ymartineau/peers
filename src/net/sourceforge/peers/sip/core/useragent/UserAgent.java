@@ -33,6 +33,11 @@ import net.sourceforge.peers.media.CaptureRtpSender;
 import net.sourceforge.peers.media.IncomingRtpReader;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.core.Config;
+import net.sourceforge.peers.sip.core.useragent.handlers.ByeHandler;
+import net.sourceforge.peers.sip.core.useragent.handlers.CancelHandler;
+import net.sourceforge.peers.sip.core.useragent.handlers.InviteHandler;
+import net.sourceforge.peers.sip.core.useragent.handlers.OptionsHandler;
+import net.sourceforge.peers.sip.core.useragent.handlers.RegisterHandler;
 import net.sourceforge.peers.sip.transaction.Transaction;
 import net.sourceforge.peers.sip.transaction.TransactionManager;
 import net.sourceforge.peers.sip.transactionuser.DialogManager;
@@ -134,16 +139,74 @@ public class UserAgent {
         
         
         
-        
+        //transaction user
         
         dialogManager = new DialogManager();
+        
+        //transaction
+        
         transactionManager = new TransactionManager();
+        
+        //transport
+        
         transportManager = new TransportManager(transactionManager,
-                myAddress, sipPort);
+                myAddress,
+                sipPort);
+        
         transactionManager.setTransportManager(transportManager);
         
-        uas = new UAS(this, dialogManager, transactionManager, transportManager);
-        uac = new UAC(this, dialogManager, transactionManager, transportManager);
+        //core
+        
+        InviteHandler inviteHandler = new InviteHandler(this,
+                dialogManager,
+                transactionManager,
+                transportManager);
+        CancelHandler cancelHandler = new CancelHandler(this,
+                dialogManager,
+                transactionManager,
+                transportManager);
+        ByeHandler byeHandler = new ByeHandler(this,
+                dialogManager,
+                transactionManager,
+                transportManager);
+        OptionsHandler optionsHandler = new OptionsHandler(transactionManager,
+                transportManager);
+        RegisterHandler registerHandler = new RegisterHandler(transactionManager,
+                transportManager);
+        
+        InitialRequestManager initialRequestManager = new InitialRequestManager(
+                this,
+                inviteHandler,
+                cancelHandler,
+                byeHandler,
+                optionsHandler,
+                registerHandler,
+                dialogManager,
+                transactionManager,
+                transportManager);
+        MidDialogRequestManager midDialogRequestManager = new MidDialogRequestManager(
+                this,
+                inviteHandler,
+                cancelHandler,
+                byeHandler,
+                optionsHandler,
+                registerHandler,
+                dialogManager,
+                transactionManager,
+                transportManager);
+        
+        uas = new UAS(this,
+                initialRequestManager,
+                midDialogRequestManager,
+                dialogManager,
+                transactionManager,
+                transportManager);
+        uac = new UAC(this,
+                initialRequestManager,
+                midDialogRequestManager,
+                dialogManager,
+                transactionManager,
+                transportManager);
         
         peers = new ArrayList<String>();
         //dialogs = new ArrayList<Dialog>();
