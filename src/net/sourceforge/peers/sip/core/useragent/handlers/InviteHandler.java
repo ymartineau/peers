@@ -64,9 +64,10 @@ public class InviteHandler extends DialogMethodHandler
     private SDPManager sdpManager;
     
     public InviteHandler(UserAgent userAgent,
+            DialogManager dialogManager,
             TransactionManager transactionManager,
             TransportManager transportManager) {
-        super(userAgent, transactionManager, transportManager);
+        super(userAgent, dialogManager, transactionManager, transportManager);
         sdpManager = new SDPManager(userAgent);
     }
     
@@ -212,7 +213,7 @@ public class InviteHandler extends DialogMethodHandler
         if (remoteUri.indexOf(RFC3261.LEFT_ANGLE_BRACKET) > -1) {
             remoteUri = NameAddress.nameAddressToUri(remoteUri);
         }
-        Dialog dialog = DialogManager.getInstance().getDialog(remoteUri);
+        Dialog dialog = dialogManager.getDialog(remoteUri);
         
         //TODO manage auto reject Do not disturb (DND)
         SipResponse sipResponse =
@@ -281,7 +282,7 @@ public class InviteHandler extends DialogMethodHandler
     //////////////////////////////////////////////////////////
 
     public void errResponseReceived(SipResponse sipResponse) {
-        Dialog dialog = DialogManager.getInstance().getDialog(sipResponse);
+        Dialog dialog = dialogManager.getDialog(sipResponse);
         if (dialog != null) {
             dialog.receivedOrSent300To699();
         }
@@ -292,7 +293,7 @@ public class InviteHandler extends DialogMethodHandler
     public void provResponseReceived(SipResponse sipResponse, Transaction transaction) {
         // dialog may have already been created if a previous 1xx has
         // already been received
-        Dialog dialog = DialogManager.getInstance().getDialog(sipResponse);
+        Dialog dialog = dialogManager.getDialog(sipResponse);
         boolean isFirstProvResp = false;
         if (dialog == null) {
             Logger.getInstance().debug("dialog not found for prov response");
@@ -342,7 +343,7 @@ public class InviteHandler extends DialogMethodHandler
                     64 * RFC3261.TIMER_T1);
         }
         
-        Dialog dialog = DialogManager.getInstance().getDialog(sipResponse);
+        Dialog dialog = dialogManager.getDialog(sipResponse);
         
         if (dialog != null) {
             //dialog already created with a 180 for example

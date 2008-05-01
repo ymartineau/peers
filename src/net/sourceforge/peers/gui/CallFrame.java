@@ -38,7 +38,6 @@ import net.sourceforge.peers.sip.core.useragent.UserAgent;
 import net.sourceforge.peers.sip.core.useragent.SipEvent.EventType;
 import net.sourceforge.peers.sip.core.useragent.handlers.InviteHandler;
 import net.sourceforge.peers.sip.transactionuser.Dialog;
-import net.sourceforge.peers.sip.transactionuser.DialogManager;
 import net.sourceforge.peers.sip.transactionuser.DialogState;
 import net.sourceforge.peers.sip.transactionuser.DialogStateConfirmed;
 import net.sourceforge.peers.sip.transactionuser.DialogStateEarly;
@@ -111,7 +110,7 @@ public class CallFrame implements ActionListener, Observer {
     public CallFrame(SipResponse sipResponse, UserAgent userAgent) {
         isUac = false;
         sipRequest = userAgent.getSipRequest(sipResponse);
-        dialog = DialogManager.getInstance().getDialog(sipResponse);
+        dialog = userAgent.getDialogManager().getDialog(sipResponse);
         dialog.addObserver(this);
         callId = dialog.getCallId();
         this.userAgent = userAgent;
@@ -213,13 +212,13 @@ public class CallFrame implements ActionListener, Observer {
         switch (eventType) {
         
         case RINGING:
-            dialog = DialogManager.getInstance().getDialog(sipEvent.getSipMessage());
+            dialog = userAgent.getDialogManager().getDialog(sipEvent.getSipMessage());
             sipRequest = userAgent.getSipRequest(sipEvent.getSipMessage());
             dialog.addObserver(this);
             break;
             
         case CALLEE_PICKUP:
-            dialog = DialogManager.getInstance().getDialog(sipEvent.getSipMessage());
+            dialog = userAgent.getDialogManager().getDialog(sipEvent.getSipMessage());
             dialog.addObserver(this);
             break;
             

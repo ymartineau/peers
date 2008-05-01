@@ -32,19 +32,10 @@ import net.sourceforge.peers.sip.transport.SipResponse;
 
 
 public class DialogManager {
-
-    private static DialogManager INSTANCE;
-    
-    public static DialogManager getInstance() {
-        if (INSTANCE == null) {
-            INSTANCE = new DialogManager();
-        }
-        return INSTANCE;
-    }
     
     private Hashtable<String, Dialog> dialogs;
     
-    private DialogManager() {
+    public DialogManager() {
         dialogs = new Hashtable<String, Dialog>();
     }
 

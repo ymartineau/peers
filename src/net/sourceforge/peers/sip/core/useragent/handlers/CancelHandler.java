@@ -22,6 +22,7 @@ package net.sourceforge.peers.sip.core.useragent.handlers;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.core.useragent.MidDialogRequestManager;
+import net.sourceforge.peers.sip.core.useragent.UserAgent;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldName;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldValue;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderParamName;
@@ -38,10 +39,13 @@ import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.SipResponse;
 import net.sourceforge.peers.sip.transport.TransportManager;
 
-public class CancelHandler extends MethodHandler implements ServerTransactionUser {
+public class CancelHandler extends DialogMethodHandler
+        implements ServerTransactionUser {
 
-    public CancelHandler(TransactionManager transactionManager, TransportManager transportManager) {
-        super(transactionManager, transportManager);
+    public CancelHandler(UserAgent userAgent, DialogManager dialogManager,
+            TransactionManager transactionManager,
+            TransportManager transportManager) {
+        super(userAgent, dialogManager, transactionManager, transportManager);
     }
 
     //////////////////////////////////////////////////////////
@@ -88,7 +92,7 @@ public class CancelHandler extends MethodHandler implements ServerTransactionUse
                 RFC3261.REASON_487_REQUEST_TERMINATED);
         inviteServerTransaction.sendReponse(inviteResponse);
         
-        Dialog dialog = DialogManager.getInstance().getDialog(lastResponse);
+        Dialog dialog = dialogManager.getDialog(lastResponse);
         dialog.receivedOrSent300To699();
         
     }

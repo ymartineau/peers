@@ -50,15 +50,19 @@ public class UAS implements SipServerTransportUser {
     private InitialRequestManager initialRequestManager;
     private MidDialogRequestManager midDialogRequestManager;
     
+    private DialogManager dialogManager;
+    
     /**
      * should be instanciated only once, it was a singleton.
      */
-    public UAS(UserAgent userAgent, TransactionManager transactionManager,
+    public UAS(UserAgent userAgent, DialogManager dialogManager,
+            TransactionManager transactionManager,
             TransportManager transportManager) {
+        this.dialogManager = dialogManager;
         initialRequestManager = new InitialRequestManager(userAgent,
-                transactionManager, transportManager);
+                dialogManager, transactionManager, transportManager);
         midDialogRequestManager = new MidDialogRequestManager(userAgent,
-                transactionManager, transportManager);
+                dialogManager, transactionManager, transportManager);
 //        SipTransportFactory.getInstance().createServerTransport(this,
 //                Utils.getInstance().getSipPort(), RFC3261.TRANSPORT_UDP);
         //TODO make it configurable
@@ -97,7 +101,7 @@ public class UAS implements SipServerTransportUser {
             headers.get(new SipHeaderFieldName(RFC3261.HDR_TO));
         String toTag = to.getParam(new SipHeaderParamName(RFC3261.PARAM_TAG));
         if (toTag != null) {
-            Dialog dialog = DialogManager.getInstance().getDialog(sipRequest);
+            Dialog dialog = dialogManager.getDialog(sipRequest);
             if (dialog != null) {
                 //this is a mid-dialog request
                 midDialogRequestManager.manageMidDialogRequest(sipRequest, dialog);
