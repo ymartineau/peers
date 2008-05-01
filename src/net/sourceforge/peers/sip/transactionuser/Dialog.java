@@ -157,7 +157,7 @@ public class Dialog extends Observable {
             }
         }
         
-        Utils.getInstance().addCommonHeaders(headers);
+        Utils.addCommonHeaders(headers);
         
         return subsequentRequest;
     }

@@ -25,12 +25,13 @@ import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
 public class UACTestUasHangupMain {
 
     public static void main(String[] args) {
-        String requestUri = "sip:bob@"
-                + Utils.getInstance().getMyAddress().getHostAddress() + ":6060";
+        String requestUri;
         try {
             UserAgent userAgent = new UserAgent();
+            requestUri = "sip:bob@"
+                + userAgent.getMyAddress().getHostAddress() + ":6060";
             userAgent.getUac().invite(requestUri,
-                    Utils.getInstance().generateCallID());
+                    Utils.generateCallID(userAgent.getMyAddress()));
         } catch (SipUriSyntaxException e) {
             e.printStackTrace();
         }

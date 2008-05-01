@@ -90,7 +90,7 @@ public class BasicGUI implements ActionListener, Observer {
 
     public void actionPerformed(ActionEvent e) {
         final String sipUri = uri.getText();
-        final String callId = Utils.getInstance().generateCallID();
+        final String callId = Utils.generateCallID(userAgent.getMyAddress());
         SwingWorker<Void, Void> swingWorker = new SwingWorker<Void, Void>() {
             @Override
             protected Void doInBackground() throws Exception {

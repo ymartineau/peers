@@ -66,12 +66,18 @@ public class TransportManager {
     
     private TransactionManager transactionManager;
     
-    public TransportManager(TransactionManager transactionManager) {
+    private InetAddress myAddress;
+    private int sipPort;
+    
+    public TransportManager(TransactionManager transactionManager,
+            InetAddress myAddress, int sipPort) {
         sipParser = new SipParser();
         datagramSockets = new Hashtable<SipTransportConnection, DatagramSocket>();
         messageSenders = new Hashtable<SipTransportConnection, MessageSender>();
         messageReceivers = new Hashtable<SipTransportConnection, MessageReceiver>();
         this.transactionManager = transactionManager;
+        this.myAddress = myAddress;
+        this.sipPort = sipPort;
     }
     
     public MessageSender createClientTransport(SipRequest sipRequest,
@@ -87,7 +93,7 @@ public class TransportManager {
         //18.1
         
         //via created by transaction layer to add branchid
-        SipHeaderFieldValue via = Utils.getInstance().getTopVia(sipRequest);
+        SipHeaderFieldValue via = Utils.getTopVia(sipRequest);
         StringBuffer buf = new StringBuffer(DEFAULT_SIP_VERSION);
         buf.append(TRANSPORT_VIA_SEP);
         if (sipRequest.toString().getBytes().length > TRANSPORT_UDP_USUAL_MAX_SIZE) {
@@ -107,27 +113,22 @@ public class TransportManager {
         //TODO user server connection
         
 
-        //TODO make local address and local port configurable
-        InetAddress localAddress = Utils.getInstance().getMyAddress();
-        int localPort = Utils.getInstance().getSipPort();
-        
-        
-        buf.append(localAddress.getHostAddress()); //TODO use getHostName if real DNS
+        buf.append(myAddress.getHostAddress()); //TODO use getHostName if real DNS
         buf.append(TRANSPORT_PORT_SEP);
         
 
-        if (localPort < 1) {
+        if (sipPort < 1) {
             //use default port
             if (TRANSPORT_TCP.equals(transport) || TRANSPORT_UDP.equals(transport)
                     || TRANSPORT_SCTP.equals(transport)) {
-                localPort = TRANSPORT_DEFAULT_PORT;
+                sipPort = TRANSPORT_DEFAULT_PORT;
             } else if (TRANSPORT_SCTP.equals(transport)) {
-                localPort = TRANSPORT_TLS_PORT;
+                sipPort = TRANSPORT_TLS_PORT;
             } else {
                 throw new RuntimeException("unknown transport type");
             }
         }
-        buf.append(localPort);//no, this port must be configured
+        buf.append(sipPort);
         //TODO add sent-by (p. 143) Before...
         
         via.setValue(buf.toString());
@@ -146,7 +147,7 @@ public class TransportManager {
     public void createServerTransport(String transportType, int port)
             throws IOException {
         SipTransportConnection conn = new SipTransportConnection(
-                    Utils.getInstance().getMyAddress(), port, transportType);
+                    myAddress, port, transportType);
         
         MessageReceiver messageReceiver = messageReceivers.get(conn);
         if (messageReceiver == null) {
@@ -160,7 +161,7 @@ public class TransportManager {
     
     public void sendResponse(SipResponse sipResponse) throws IOException {
         //18.2.2
-        SipHeaderFieldValue topVia = Utils.getInstance().getTopVia(sipResponse);
+        SipHeaderFieldValue topVia = Utils.getTopVia(sipResponse);
         String topViaValue = topVia.getValue();
         StringBuffer buf = new StringBuffer(topViaValue);
         String hostport = null;
@@ -279,7 +280,7 @@ public class TransportManager {
             }
             socket = datagramSocket;
             messageSender = new UdpMessageSender(conn.getRemoteInetAddress(),
-                    conn.getRemotePort(), datagramSocket);
+                    conn.getRemotePort(), datagramSocket, myAddress);
         } else {
             // TODO
             // messageReceiver = new TcpMessageReceiver(port);
@@ -288,9 +289,7 @@ public class TransportManager {
         //when a mesage is sent over a transport, the transport layer
         //must also be able to receive messages on this transport
         SipTransportConnection serverConn = new SipTransportConnection(
-                Utils.getInstance().getMyAddress(),
-                messageSender.getLocalPort(),
-                conn.getRemoteTransport());
+                myAddress, messageSender.getLocalPort(), conn.getRemoteTransport());
         
         MessageReceiver messageReceiver =
             createMessageReceiver(serverConn, socket);

@@ -61,7 +61,7 @@ public abstract class MethodHandler extends Observable {
         String to = reqHeaders.get(toName).getValue();
         SipHeaderFieldValue toValue = new SipHeaderFieldValue(to);
         toValue.addParam(new SipHeaderParamName(RFC3261.PARAM_TAG),
-                Utils.getInstance().randomString(10));// TODO 19.3
+                Utils.randomString(10));// TODO 19.3
         respHeaders.add(toName, toValue);
         return sipResponse;
     }

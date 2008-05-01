@@ -20,13 +20,18 @@
 package net.sourceforge.peers.sip.core.useragent;
 
 import java.io.File;
+import java.net.InetAddress;
 import java.net.MalformedURLException;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.List;
 
 import net.sourceforge.peers.media.CaptureRtpSender;
 import net.sourceforge.peers.media.IncomingRtpReader;
-import net.sourceforge.peers.sip.Utils;
+import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.core.Config;
 import net.sourceforge.peers.sip.transaction.Transaction;
 import net.sourceforge.peers.sip.transaction.TransactionManager;
@@ -37,6 +42,7 @@ import net.sourceforge.peers.sip.transport.SipResponse;
 import net.sourceforge.peers.sip.transport.TransportManager;
 
 import org.dom4j.DocumentException;
+import org.dom4j.Node;
 
 
 public class UserAgent {
@@ -58,6 +64,11 @@ public class UserAgent {
     private TransactionManager transactionManager;
     private TransportManager transportManager;
 
+    private InetAddress myAddress;
+    private int sipPort;
+    private int rtpPort;
+    private int cseqCounter;
+    
     public UserAgent() {
         
         File configFile = new File(CONFIG_FILE);
@@ -73,11 +84,62 @@ public class UserAgent {
             e.printStackTrace();
         }
         
-        Utils.setConfig(config);
+        //config
+        
+        //find stack ip address
+        Node node = config.selectSingleNode("//peers:address");
+        if (node == null) {
+            //automatically detect stack ip address
+            try {
+                boolean found = false;
+                Enumeration<NetworkInterface> e = NetworkInterface
+                        .getNetworkInterfaces();
+                while (e.hasMoreElements() && !found) {
+                    NetworkInterface networkInterface = e.nextElement();
+//                    Logger.getInstance().debug(networkInterface.getDisplayName());
+                    Enumeration<InetAddress> f = networkInterface
+                            .getInetAddresses();
+                    while (f.hasMoreElements() && !found) {
+                        InetAddress inetAddress = f.nextElement();
+                        if (inetAddress.isSiteLocalAddress()) {
+                            this.myAddress = inetAddress;
+                            found = true;
+                        }
+                    }
+                }
+            } catch (SocketException e) {
+                e.printStackTrace();
+            }
+        } else {
+            //manually configured stack ip address
+            try {
+                myAddress = InetAddress.getByName(node.getText());
+            } catch (UnknownHostException e) {
+                e.printStackTrace();
+            }
+        }
+
+        //stack sip listening port
+        node = config.selectSingleNode("//peers:sip/peers:profile/peers:port");
+        if (node == null) {
+            sipPort = RFC3261.TRANSPORT_DEFAULT_PORT;
+        } else {
+            sipPort = Integer.parseInt(node.getText());
+        }
+        
+        //stack rtp listening port
+        node = config.selectSingleNode("//peers:rtp/peers:port");
+        rtpPort = Integer.parseInt(node.getText());
+        cseqCounter = 0;
+        
+        
+        
+        
         
         dialogManager = new DialogManager();
         transactionManager = new TransactionManager();
-        transportManager = new TransportManager(transactionManager);
+        transportManager = new TransportManager(transactionManager,
+                myAddress, sipPort);
         transactionManager.setTransportManager(transportManager);
         
         uas = new UAS(this, dialogManager, transactionManager, transportManager);
@@ -135,6 +197,14 @@ public class UserAgent {
 //        return null;
 //    }
 
+    public String generateCSeq(String method) {
+        StringBuffer buf = new StringBuffer();
+        buf.append(cseqCounter++);
+        buf.append(' ');
+        buf.append(method);
+        return buf.toString();
+    }
+    
     public CaptureRtpSender getCaptureRtpSender() {
         return captureRtpSender;
     }
@@ -167,4 +237,15 @@ public class UserAgent {
         return dialogManager;
     }
     
+    public InetAddress getMyAddress() {
+        return myAddress;
+    }
+    
+    public int getSipPort() {
+        return sipPort;
+    }
+
+    public int getRtpPort() {
+        return rtpPort;
+    }
 }

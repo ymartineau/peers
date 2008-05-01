@@ -25,32 +25,10 @@ import java.io.IOException;
 
 import net.sourceforge.peers.media.CaptureRtpSender;
 import net.sourceforge.peers.media.IncomingRtpReader;
-import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.core.useragent.UserAgent;
 
 //TODO ekiga -d 4 > ekiga-debug.txt 2>&1
 public class SDPManager {
-
-    public static String SUCCESS_MODEL =
-        "v=0\r\n" +
-        "o=user1 53655765 2353687637 IN IP4 "
-            + Utils.getInstance().getMyAddress().getHostAddress() + "\r\n" +
-        "s=-\r\n" +
-        "c=IN IP4 " + Utils.getInstance().getMyAddress().getHostAddress() + "\r\n" +
-        "t=0 0\r\n" +
-        "m=audio " + Utils.getInstance().getRtpPort() + " RTP/AVP 0\r\n" +
-        "a=rtpmap:0 PCMU/8000\r\n";
-
-    public static String FAILURE_MODEL =
-        "v=0\r\n" +
-        "o=user1 53655765 2353687637 IN IP4 "
-            + Utils.getInstance().getMyAddress().getHostAddress() + "\r\n" +
-        "s=-\r\n" +
-        "c=IN IP4 " + Utils.getInstance().getMyAddress().getHostAddress() + "\r\n" +
-        "t=0 0\r\n" +
-        "a=inactive\r\n" +
-        "m=audio " + Utils.getInstance().getRtpPort() + " RTP/AVP 0\r\n" +
-        "a=rtpmap:0 PCMU/8000\r\n";
     
     private SdpParser sdpParser;
     private UserAgent userAgent;
@@ -89,8 +67,7 @@ public class SDPManager {
         CaptureRtpSender captureRtpSender;
         try {
             captureRtpSender = new CaptureRtpSender(
-                    Utils.getInstance().getMyAddress().getHostAddress(),
-                    Utils.getInstance().getRtpPort(),
+                    userAgent.getMyAddress().getHostAddress(), userAgent.getRtpPort(),
                     destAddress, destPort);
         } catch (IOException e) {
             e.printStackTrace();
@@ -126,15 +103,34 @@ public class SDPManager {
             e1.printStackTrace();
         }
         
-        return SUCCESS_MODEL;
+        return generateOffer();
     }
     
     public String generateErrorResponse() {
-        // TODO generate dynamic content
-        return FAILURE_MODEL;
+        StringBuffer buf = generateSdpBegining();
+        buf.append("a=inactive\r\n");
+        return generateSdpEnd(buf);
     }
     
     public String generateOffer() {
-        return SUCCESS_MODEL;
+        return generateSdpEnd(generateSdpBegining());
     }
+    
+    private StringBuffer generateSdpBegining() {
+        String hostAddress = userAgent.getMyAddress().getHostAddress();
+        StringBuffer buf = new StringBuffer();
+        buf.append("v=0\r\n");
+        buf.append("o=user1 53655765 2353687637 IN IP4 ").append(hostAddress).append("\r\n");
+        buf.append("s=-\r\n");
+        buf.append("c=IN IP4 ").append(hostAddress).append("\r\n");
+        buf.append("t=0 0\r\n");
+        return buf;
+    }
+    
+    private String generateSdpEnd(StringBuffer buf) {
+        buf.append("m=audio ").append(userAgent.getRtpPort()).append(" RTP/AVP 0\r\n");
+        buf.append("a=rtpmap:0 PCMU/8000\r\n");
+        return buf.toString();
+    }
+
 }

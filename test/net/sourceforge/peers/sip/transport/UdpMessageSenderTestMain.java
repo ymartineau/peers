@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.syntaxencoding.SipParser;
 import net.sourceforge.peers.sip.syntaxencoding.SipParserException;
 import net.sourceforge.peers.sip.transport.MessageSender;
@@ -49,7 +50,14 @@ public class UdpMessageSenderTestMain implements Runnable {
             e.printStackTrace();
             return;
         }
-        TransportManager transportManager = new TransportManager(null);
+        TransportManager transportManager;
+        try {
+            transportManager = new TransportManager(null,
+                    InetAddress.getLocalHost(), RFC3261.TRANSPORT_DEFAULT_PORT);
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+            return;
+        }
         try {
             MessageSender messageSender = transportManager
                     .createClientTransport(sipRequest, inetAddress, 5060, "UDP");
