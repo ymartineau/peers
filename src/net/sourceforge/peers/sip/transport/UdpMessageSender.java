@@ -58,7 +58,7 @@ public class UdpMessageSender extends MessageSender {
         DatagramPacket packet = new DatagramPacket(buf, buf.length, inetAddress,
                 port);
         datagramSocket.send(packet);
-        Logger.getInstance().traceNetwork(new String(packet.getData()), "SENT");
+        Logger.traceNetwork(new String(packet.getData()), "SENT");
     }
 
 }

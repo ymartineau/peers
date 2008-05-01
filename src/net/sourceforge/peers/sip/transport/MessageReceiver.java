@@ -128,7 +128,7 @@ public abstract class MessageReceiver implements Runnable {
             SipResponse sipResponse = (SipResponse)sipMessage;
             ClientTransaction clientTransaction =
                 transactionManager.getClientTransaction(sipResponse);
-            Logger.getInstance().debug("ClientTransaction = " + clientTransaction);
+            Logger.debug("ClientTransaction = " + clientTransaction);
             if (clientTransaction == null) {
                 uas.messageReceived(sipMessage);
             } else {

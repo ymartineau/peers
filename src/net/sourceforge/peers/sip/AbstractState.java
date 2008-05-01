@@ -36,7 +36,7 @@ public abstract class AbstractState {
         buf.append(JavaUtils.getShortClassName(this.getClass())).append(" -> ");
         buf.append(JavaUtils.getShortClassName(state.getClass())).append("] ");
         buf.append(new Exception().getStackTrace()[1].getMethodName());
-        Logger.getInstance().debug(buf.toString());
+        Logger.debug(buf.toString());
     }
     
 }
