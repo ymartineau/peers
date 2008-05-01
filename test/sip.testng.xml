@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
-<suite name="Peers TestNG suite">
+<suite name="Peers SIP TestNG suite">
   <test name="Syntax - Encoding">
     <packages>
       <package name="net.sourceforge.peers.sip.syntaxencoding">

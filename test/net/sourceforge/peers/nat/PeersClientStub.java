@@ -17,30 +17,33 @@
     Copyright 2007, 2008 Yohann Martineau 
 */
 
-package net.sourceforge.peers.nat.test.mock;
+package net.sourceforge.peers.nat;
 
 import net.sourceforge.peers.nat.api.DataReceiver;
 import net.sourceforge.peers.nat.api.PeersClient;
 import net.sourceforge.peers.nat.api.TCPTransport;
 import net.sourceforge.peers.nat.api.UDPTransport;
 
-public class MockPeersClient extends PeersClient {
+public class PeersClientStub extends PeersClient {
 
-    public MockPeersClient(String myId, DataReceiver dataReceiver) {
+    public PeersClientStub(String myId, DataReceiver dataReceiver) {
         super(myId, dataReceiver);
-        // TODO Auto-generated constructor stub
     }
 
     @Override
     public TCPTransport createTCPTransport(String peerId) {
-        // TODO Auto-generated method stub
-        return null;
+        return new TCPTransport() {
+            public void sendData(byte[] data) {
+            }
+        };
     }
 
     @Override
     public UDPTransport createUDPTransport(String peerId) {
-        // TODO Auto-generated method stub
-        return null;
+        return new UDPTransport() {
+            public void sendData(byte[] data) {
+            }
+        };
     }
 
 }

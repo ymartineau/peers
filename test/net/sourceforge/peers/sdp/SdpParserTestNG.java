@@ -21,15 +21,15 @@ package net.sourceforge.peers.sdp;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 
-import junit.framework.TestCase;
+import org.testng.annotations.Test;
 
-public class SdpParserTest extends TestCase {
+public class SdpParserTestNG {
 
-    public void testParse() {
+    @Test
+    public void testParse() throws IOException {
         SdpParser sdpParser = new SdpParser();
         String body = "v=0\n"
             + "o=jdoe 2890844526 2890842807 IN IP4 10.47.16.5\n"
@@ -45,57 +45,39 @@ public class SdpParserTest extends TestCase {
             + "m=video 51372 RTP/AVP 99\r\n"
             + "a=rtpmap:99 h263-1998/90000\r";
         SessionDescription sessionDescription;
-        try {
-            sessionDescription = sdpParser.parse(body.getBytes());
-        } catch (IOException e) {
-            e.printStackTrace();
-            fail();
-            return;
-        }
-        assertNotNull(sessionDescription);
-        assertEquals("jdoe", sessionDescription.getUsername());
-        assertEquals(2890844526L, sessionDescription.getId());
-        assertEquals(2890842807L, sessionDescription.getVersion());
-        try {
-            assertEquals(InetAddress.getByName("224.2.17.12"),
+        sessionDescription = sdpParser.parse(body.getBytes());
+        assert sessionDescription != null;
+        assert "jdoe".equals(sessionDescription.getUsername());
+        assert 2890844526L == sessionDescription.getId();
+        assert 2890842807L == sessionDescription.getVersion();
+        assert InetAddress.getByName("224.2.17.12").equals(
                     sessionDescription.getIpAddress());
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
-        assertEquals("SDP Seminar", sessionDescription.getName());
+        assert "SDP Seminar".equals(sessionDescription.getName());
         
         Hashtable<String, String> sessionAttributes =
             sessionDescription.getAttributes();
-        assertNotNull(sessionAttributes);
-        assertEquals(1, sessionAttributes.size());
-        assertEquals("", sessionAttributes.get("recvonly"));
+        assert sessionAttributes != null;
+        assert 1 == sessionAttributes.size();
+        assert "".equals(sessionAttributes.get("recvonly"));
         
         ArrayList<MediaDescription> mediaDescriptions =
             sessionDescription.getMedias();
-        assertNotNull(mediaDescriptions);
-        assertTrue(mediaDescriptions.size() == 2);
+        assert mediaDescriptions != null;
+        assert mediaDescriptions.size() == 2;
         
         MediaDescription audioMedia = mediaDescriptions.get(0);
-        try {
-            assertEquals(InetAddress.getByName("224.2.17.12"),
+        assert InetAddress.getByName("224.2.17.12").equals(
                     audioMedia.getIpAddress());
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
-        assertEquals(49170, audioMedia.getPort());
+        assert 49170 == audioMedia.getPort();
         
         MediaDescription videoMedia = mediaDescriptions.get(1);
-        try {
-            assertEquals(InetAddress.getByName("224.2.17.12"),
+        assert InetAddress.getByName("224.2.17.12").equals(
                     videoMedia.getIpAddress());
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-        }
-        assertEquals(51372, videoMedia.getPort());
+        assert 51372 == videoMedia.getPort();
         Hashtable<String, String> videoAttributes = videoMedia.getAttributes();
-        assertNotNull(videoAttributes);
-        assertEquals(1, videoAttributes.size());
-        assertEquals("99 h263-1998/90000", videoAttributes.get("rtpmap"));
+        assert videoAttributes != null;
+        assert 1 == videoAttributes.size();
+        assert "99 h263-1998/90000".equals(videoAttributes.get("rtpmap"));
     }
 
 }

@@ -17,23 +17,24 @@
     Copyright 2007, 2008 Yohann Martineau 
 */
 
-package net.sourceforge.peers.nat.test;
+package net.sourceforge.peers.nat;
 
-import junit.framework.TestCase;
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.nat.api.DataReceiver;
 import net.sourceforge.peers.nat.api.PeersClient;
 import net.sourceforge.peers.nat.api.TCPTransport;
 import net.sourceforge.peers.nat.api.UDPTransport;
-import net.sourceforge.peers.nat.test.mock.MockPeersClient;
 
-public class PeersClientTest extends TestCase {
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.Test;
+
+public class PeersClientTestNG {
 
     private PeersClient peersClient;
     
-    protected void setUp() throws Exception {
-        super.setUp();
-        peersClient = new MockPeersClient("alice@atlanta.com", new DataReceiver(){
+    @BeforeClass
+    public void init() {
+        peersClient = new PeersClientStub("alice@atlanta.com", new DataReceiver() {
             public void dataReceived(byte[] data, String peerId) {
                 Logger.debug("received bytes from " + peerId + ": "
                                         + new String(data));
@@ -41,11 +42,14 @@ public class PeersClientTest extends TestCase {
         });
     }
 
+    @Test
     public void testCreateUDPTransport() {
         UDPTransport transport = peersClient.createUDPTransport("bob@biloxi.com");
+        assert transport != null : "transport is null";
         transport.sendData("hello world".getBytes());
     }
 
+    @Test
     public void testCreateTCPTransport() {
         TCPTransport transport = peersClient.createTCPTransport("bob@biloxi.com");
         transport.sendData("hello world".getBytes());
