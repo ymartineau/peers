@@ -123,7 +123,7 @@ public class CallFrame implements ActionListener, Observer {
             @Override
             protected Void doInBackground() throws Exception {
                 //FIXME redisgn interface, only use useragent
-                inviteHandler.acceptCall(sipRequest, dialog, userAgent);
+                inviteHandler.acceptCall(sipRequest, dialog);
                 return null;
             }
         };

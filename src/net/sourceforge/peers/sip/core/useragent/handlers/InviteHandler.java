@@ -25,7 +25,6 @@ import java.io.IOException;
 import java.util.Hashtable;
 import java.util.List;
 
-import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.media.CaptureRtpSender;
 import net.sourceforge.peers.media.IncomingRtpReader;
 import net.sourceforge.peers.sdp.NoCodecException;
@@ -121,9 +120,7 @@ public class InviteHandler extends DialogMethodHandler
         
     }
     
-    //FIXME remove useragent parameter (redesign interface with gui)
-    public void acceptCall(SipRequest sipRequest, Dialog dialog,
-            UserAgent userAgent) {
+    public void acceptCall(SipRequest sipRequest, Dialog dialog) {
         SipHeaders reqHeaders = sipRequest.getSipHeaders();
         SipHeaderFieldValue contentType =
             reqHeaders.get(new SipHeaderFieldName(RFC3261.HDR_CONTENT_TYPE));
@@ -294,20 +291,37 @@ public class InviteHandler extends DialogMethodHandler
         // dialog may have already been created if a previous 1xx has
         // already been received
         Dialog dialog = dialogManager.getDialog(sipResponse);
-        boolean isFirstProvResp = false;
-        if (dialog == null && sipResponse.getStatusCode() != RFC3261.CODE_100_TRYING) {
-            Logger.debug("dialog not found for prov response");
-            isFirstProvResp = true;
-            SipHeaderFieldValue to = sipResponse.getSipHeaders()
-                .get(new SipHeaderFieldName(RFC3261.HDR_TO));
+        boolean isFirstProvRespWithToTag = false;
+        if (dialog == null) {
+            SipHeaderFieldValue to = sipResponse.getSipHeaders().get(
+                    new SipHeaderFieldName(RFC3261.HDR_TO));
             String toTag = to.getParam(new SipHeaderParamName(RFC3261.PARAM_TAG));
             if (toTag != null) {
-                dialog = buildDialogForUac(sipResponse, transaction);
+                dialog = dialogManager.createDialog(sipResponse);
+                isFirstProvRespWithToTag = true;
+            } else {
+                //TODO maybe stop retransmissions
             }
         }
+        
+        if (dialog != null) {
+            buildOrUpdateDialogForUac(sipResponse, transaction);
+        }
+        
+//        
+//        if (dialog == null && sipResponse.getStatusCode() != RFC3261.CODE_100_TRYING) {
+//            Logger.debug("dialog not found for prov response");
+//            isFirstProvRespWithToTag = true;
+//            SipHeaderFieldValue to = sipResponse.getSipHeaders()
+//                .get(new SipHeaderFieldName(RFC3261.HDR_TO));
+//            String toTag = to.getParam(new SipHeaderParamName(RFC3261.PARAM_TAG));
+//            if (toTag != null) {
+//                dialog = buildOrUpdateDialogForUac(sipResponse, transaction);
+//            }
+//        }
         //TODO this notification is probably useless because dialog state modification
         //     thereafter always notify dialog observers
-        if (isFirstProvResp) {
+        if (isFirstProvRespWithToTag) {
             setChanged();
             notifyObservers(new SipEvent(EventType.RINGING, sipResponse));
             dialog.receivedOrSent1xx();
@@ -350,7 +364,7 @@ public class InviteHandler extends DialogMethodHandler
             dialog.setRouteSet(computeRouteSet(sipResponse.getSipHeaders()));
         } else {
             //new dialog
-            dialog = buildDialogForUac(sipResponse, transaction);
+            dialog = buildOrUpdateDialogForUac(sipResponse, transaction);
         }
         
         setChanged();
