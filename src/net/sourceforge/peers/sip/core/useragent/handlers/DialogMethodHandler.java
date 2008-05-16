@@ -150,10 +150,10 @@ public abstract class DialogMethodHandler extends MethodHandler {
         return dialog;
     }
     
-    protected Dialog buildDialogForUac(SipResponse sipResponse, Transaction transaction) {
+    //TODO throw an exception if dialog elements are lacking when dialog is built from 200
+    protected Dialog buildOrUpdateDialogForUac(SipResponse sipResponse,
+            Transaction transaction) {
         SipHeaders headers = sipResponse.getSipHeaders();
-        SipHeaderFieldValue to = headers.get(new SipHeaderFieldName(RFC3261.HDR_TO));
-        String toTag = to.getParam(new SipHeaderParamName(RFC3261.PARAM_TAG));
         
         Dialog dialog = dialogManager.getDialog(sipResponse);
         if (dialog == null) {
@@ -166,17 +166,23 @@ public abstract class DialogMethodHandler extends MethodHandler {
         
         //route set
         
-        dialog.setRouteSet(computeRouteSet(headers));        
+        ArrayList<String> routeSet = computeRouteSet(headers);
+        if (routeSet != null) {
+            dialog.setRouteSet(routeSet);
+        }
         
         //remote target
         
         SipHeaderFieldValue contact = headers.get(new SipHeaderFieldName(RFC3261.HDR_CONTACT));
-        String remoteTarget = NameAddress.nameAddressToUri(contact.toString());
-        dialog.setRemoteTarget(remoteTarget);
+        if (contact != null) {
+            String remoteTarget = NameAddress.nameAddressToUri(contact.toString());
+            dialog.setRemoteTarget(remoteTarget);
+        }
+        
+        SipHeaders requestSipHeaders = transaction.getRequest().getSipHeaders();
         
         //local cseq
         
-        SipHeaders requestSipHeaders = transaction.getRequest().getSipHeaders();
         String requestCSeq = requestSipHeaders.get(
                 new SipHeaderFieldName(RFC3261.HDR_CSEQ)).toString();
         requestCSeq = requestCSeq.substring(0, requestCSeq.indexOf(' '));
@@ -184,32 +190,39 @@ public abstract class DialogMethodHandler extends MethodHandler {
         
         //callID
         
-        String requestCallID = requestSipHeaders.get(
-                new SipHeaderFieldName(RFC3261.HDR_CALLID)).toString();
-        dialog.setCallId(requestCallID);
+        //already done in createDialog()
+//        String requestCallID = requestSipHeaders.get(
+//                new SipHeaderFieldName(RFC3261.HDR_CALLID)).toString();
+//        dialog.setCallId(requestCallID);
         
         //local tag
         
-        SipHeaderFieldValue requestFrom = requestSipHeaders.get(
-                new SipHeaderFieldName(RFC3261.HDR_FROM));
-        String requestFromTag =
-            requestFrom.getParam(new SipHeaderParamName(RFC3261.PARAM_TAG));
-        dialog.setLocalTag(requestFromTag);
+        //already done in createDialog()
+//        SipHeaderFieldValue requestFrom = requestSipHeaders.get(
+//                new SipHeaderFieldName(RFC3261.HDR_FROM));
+//        String requestFromTag =
+//            requestFrom.getParam(new SipHeaderParamName(RFC3261.PARAM_TAG));
+//        dialog.setLocalTag(requestFromTag);
         
         //remote tag
         
-        dialog.setRemoteTag(toTag);
+        //already done in createDialog()
+//        dialog.setRemoteTag(toTag);
         
           //remote uri
         
-        String remoteUri = to.getValue();
-        if (remoteUri.indexOf(RFC3261.LEFT_ANGLE_BRACKET) > -1) {
-            remoteUri = NameAddress.nameAddressToUri(remoteUri);
+        SipHeaderFieldValue to = headers.get(new SipHeaderFieldName(RFC3261.HDR_TO));
+        if (to != null) {
+            String remoteUri = to.getValue();
+            if (remoteUri.indexOf(RFC3261.LEFT_ANGLE_BRACKET) > -1) {
+                remoteUri = NameAddress.nameAddressToUri(remoteUri);
+            }
+            dialog.setRemoteUri(remoteUri);
         }
-        dialog.setRemoteUri(remoteUri);
         
           //local uri
-        
+        SipHeaderFieldValue requestFrom = requestSipHeaders.get(
+              new SipHeaderFieldName(RFC3261.HDR_FROM));
         String localUri = requestFrom.getValue();
         if (localUri.indexOf(RFC3261.LEFT_ANGLE_BRACKET) > -1) {
             localUri = NameAddress.nameAddressToUri(localUri);

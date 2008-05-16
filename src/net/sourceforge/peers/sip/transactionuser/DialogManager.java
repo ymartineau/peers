@@ -39,6 +39,11 @@ public class DialogManager {
         dialogs = new Hashtable<String, Dialog>();
     }
 
+    /**
+     * @param sipResponse sip response must contain a To tag, a
+     *        From tag and a Call-ID
+     * @return the new Dialog created
+     */
     public synchronized Dialog createDialog(SipResponse sipResponse) {
         SipHeaders sipHeaders = sipResponse.getSipHeaders();
         String callID = sipHeaders.get(

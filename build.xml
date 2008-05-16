@@ -48,7 +48,7 @@
 
   <target name="test-compile" depends="init">
     <javac destdir="${classes.dir}"
-        srcdir="${test.dir}">
+        srcdir="${test.dir}" debug="true">
       <classpath>
         <fileset dir="${lib.dir}">
           <include name="**/*.jar"/>

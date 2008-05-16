@@ -313,8 +313,6 @@ public class TransportManager {
     private MessageReceiver createMessageReceiver(SipTransportConnection conn)
             throws IOException {
         MessageReceiver messageReceiver = null;
-        Logger.info("adding " + conn + ": " + messageReceiver
-                    + " to message receivers");
         if (RFC3261.TRANSPORT_UDP.equals(conn.getRemoteTransport())) {
             DatagramSocket datagramSocket = datagramSockets.get(conn);
             if (datagramSocket == null) {
@@ -331,6 +329,8 @@ public class TransportManager {
             //messageReceiver = new TcpMessageReceiver(port);
         }
         messageReceivers.put(conn, messageReceiver);
+        Logger.info("added " + conn + ": " + messageReceiver
+                + " to message receivers");
         return messageReceiver;
     }
 
