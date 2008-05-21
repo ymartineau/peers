@@ -144,6 +144,24 @@ public class SipParserTestNG {
         }
     }
     
+    @Test (expectedExceptions = SipParserException.class)
+    public void shouldThrowIfBadMessage() throws SipParserException, IOException {
+        // two characters for sip line is forbidden, minimum is 3:
+        // A:1
+        parse("IN\r\n");
+    }
+    
+    @Test (expectedExceptions = SipParserException.class)
+    public void shouldThrowIfNoEmptyLine() throws SipParserException, IOException {
+        // two characters for sip line is forbidden, minimum is 3:
+        // A:1
+        parse("INVITE sip:UAB@example.com SIP/2.0\r\n"
+                + "Via: ;branchId=3456UGD\r\n"
+                + "Subject: I know you're there,\r\n"
+                + "         pick up the phone\r\n"
+                + "         and talk to me!\r\n");
+    }
+    
     private SipMessage parse(String message) throws SipParserException, IOException {
         ByteArrayInputStream bais = new ByteArrayInputStream(message.getBytes());
         SipParser sipParser = new SipParser();

@@ -262,7 +262,7 @@ public class InviteHandler extends DialogMethodHandler
         }
         ClientTransaction clientTransaction = transactionManager
                 .createClientTransaction(sipRequest, requestUri.getHost(),
-                    port, transport, null, this, transportManager);
+                    port, transport, null, this);
         sipRequest.setBody(sdpManager.generateOffer().getBytes());
         SipHeaders respHeaders = sipRequest.getSipHeaders();
         respHeaders.add(new SipHeaderFieldName(RFC3261.HDR_CONTENT_TYPE),

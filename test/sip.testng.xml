@@ -9,9 +9,18 @@
     </packages>
   </test>
   <test name="Transport">
-    <classes>
-      <class name="net.sourceforge.peers.sip.transport.TransportManagerTestNG"/>
-    </classes>
+    <packages>
+      <package name="net.sourceforge.peers.sip.transport">
+        <include name=".*TestNG"/>
+      </package>
+    </packages>
+  </test>
+  <test name="Transaction">
+    <packages>
+      <package name="net.sourceforge.peers.sip.transaction">
+        <include name=".*TestNG"/>
+      </package>
+    </packages>
   </test>
   <test name="Dialog state machine">
     <classes>
