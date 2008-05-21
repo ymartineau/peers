@@ -116,8 +116,7 @@ public class MidDialogRequestManager extends RequestManager
         }
         ClientTransaction clientTransaction = transactionManager
             .createClientTransaction(sipRequest,
-                    requestUri.getHost(), port, transport, branchId, this,
-                    transportManager);
+                    requestUri.getHost(), port, transport, branchId, this);
         return clientTransaction;
     }
     
