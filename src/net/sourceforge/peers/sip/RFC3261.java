@@ -34,7 +34,7 @@ public final class RFC3261 {
     public final static String METHOD_OPTIONS  = "OPTIONS";
     public final static String METHOD_CANCEL   = "CANCEL";
     
-        //Normal form
+        //Classical form
     
     public final static String HDR_CALLID           = "Call-ID";
     public final static String HDR_CONTACT          = "Contact";

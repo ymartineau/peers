@@ -41,7 +41,7 @@ public class SipHeadersTable {
         headers.put(RFC3261.COMPACT_HDR_CONTENT_TYPE,     RFC3261.HDR_CONTENT_TYPE);
         headers.put(RFC3261.COMPACT_HDR_FROM,             RFC3261.HDR_FROM);
         headers.put(RFC3261.COMPACT_HDR_SUBJECT,          RFC3261.HDR_SUBJECT);
-        headers.put(RFC3261.COMPACT_HDR_SUPPORTED,        RFC3261.HDR_SUBJECT);
+        headers.put(RFC3261.COMPACT_HDR_SUPPORTED,        RFC3261.HDR_SUPPORTED);
         headers.put(RFC3261.COMPACT_HDR_TO,               RFC3261.HDR_TO);
         headers.put(RFC3261.COMPACT_HDR_VIA,              RFC3261.HDR_VIA);
     }
