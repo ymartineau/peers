@@ -52,7 +52,7 @@ public class TransactionManagerTestNG {
     @Test
     public void testCreateNonInviteClientTransaction()
             throws IOException, SipParserException {
-        String testMessage = "MESSAGE sip:bob@bilox.com SIP/2.0\r\n" +
+        String testMessage = "MESSAGE sip:bob@biloxi.com SIP/2.0\r\n" +
         "Via: \r\n" +
         "\r\n";
         int port = 6061;
@@ -78,13 +78,14 @@ public class TransactionManagerTestNG {
                     RFC3261.BRANCHID_MAGIC_COOKIE + "dsj2J347hsd23SD",
                     clientTransactionUser);
         assert clientTransaction != null;
+        assert clientTransaction instanceof NonInviteClientTransaction;
         String contact = clientTransaction.getContact();
         assert contact.indexOf(localHost.getHostAddress()) > -1;
     }
     
-    //TODO testCreateInviteClientTransaction
     @Test
-    public void testCreateServerTransaction() throws IOException, SipParserException {
+    public void testCreateNonInviteServerTransaction()
+            throws IOException, SipParserException {
         String message = "MESSAGE sip:john@doe.co.uk SIP/2.0\r\n" +
                 "Via: \r\n" +
                 "\r\n";
@@ -103,7 +104,65 @@ public class TransactionManagerTestNG {
             transactionManager.createServerTransaction(sipResponse,
                 6063, "UDP", serverTransactionUser, sipRequest);
         assert serverTransaction != null;
-        
+        assert serverTransaction instanceof NonInviteServerTransaction;
+    }
+    
+    @Test
+    public void testInviteClientTransaction()
+            throws IOException, SipParserException {
+        String testMessage = "INVITE sip:bob@biloxi.com SIP/2.0\r\n" +
+        "Via: \r\n" +
+        "\r\n";
+        int port = 6061;
+        InetAddress localHost = InetAddress.getLocalHost();
+        SipRequest sipRequest = (SipRequest)parse(testMessage);
+        ClientTransactionUser clientTransactionUser = new ClientTransactionUser() {
+            public void errResponseReceived(SipResponse sipResponse) {
+            }
+            public void provResponseReceived(SipResponse sipResponse, Transaction transaction) {
+            }
+            public void successResponseReceived(SipResponse sipResponse, Transaction transaction) {
+            }
+            public void transactionTimeout() {
+            }
+            public void transactionTransportError() {
+            }
+        };
+        ClientTransaction clientTransaction =
+            transactionManager.createClientTransaction(sipRequest,
+                    localHost,
+                    port,
+                    "UDP",
+                    RFC3261.BRANCHID_MAGIC_COOKIE + "dsj2J347hsd23SD",
+                    clientTransactionUser);
+        assert clientTransaction != null;
+        assert clientTransaction instanceof InviteClientTransaction;
+        String contact = clientTransaction.getContact();
+        assert contact.indexOf(localHost.getHostAddress()) > -1;
+    }
+    
+    @Test
+    public void testCreateInviteServerTransaction()
+            throws IOException, SipParserException {
+        String message = "INVITE sip:john@doe.co.uk SIP/2.0\r\n" +
+                "Via: \r\n" +
+                "\r\n";
+        SipRequest sipRequest = (SipRequest)parse(message);
+        String response = "SIP/2.0 200 OK\r\n" +
+                "Via: \r\n" +
+                "CSeq: 1 INVITE\r\n" +
+                "\r\n";
+        SipResponse sipResponse = (SipResponse)parse(response);
+        ServerTransactionUser serverTransactionUser =
+            new ServerTransactionUser() {
+                public void transactionFailure() {
+                }
+            };
+        ServerTransaction serverTransaction =
+            transactionManager.createServerTransaction(sipResponse,
+                6063, "UDP", serverTransactionUser, sipRequest);
+        assert serverTransaction != null;
+        assert serverTransaction instanceof InviteServerTransaction;
     }
     
     private SipMessage parse(String message) throws IOException, SipParserException {

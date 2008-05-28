@@ -22,10 +22,12 @@
       </package>
     </packages>
   </test>
-  <test name="Dialog state machine">
-    <classes>
-      <class name="net.sourceforge.peers.sip.transactionuser.DialogTestNG"/>
-    </classes>
+  <test name="Transaction User">
+    <packages>
+      <package name="net.sourceforge.peers.sip.transactionuser">
+        <include name=".*TestNG"/>
+      </package>
+    </packages>
   </test>
   <test name="Configuration">
     <classes>

@@ -21,7 +21,9 @@ package net.sourceforge.peers.sip.syntaxencoding;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 
+import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.transport.SipMessage;
 import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.SipResponse;
@@ -112,6 +114,76 @@ public class SipParserTestNG {
     }
     
     @Test
+    public void testCompactHeaders() throws SipParserException, IOException {
+        SipMessage sipMessage = parse("OPTIONS sip:h@google.com SIP/2.0\r\n" +
+                "i: mldkjf43532@host.domain\r\n" +
+                "m: <192.168.5.6:43673>\r\n" +
+                "e:gzip\r\n" +
+                "l: \r\n" +
+                "  15\r\n" +
+                "c: text/html\r\n" +
+                "f:\"Jessy James\" <sip:jenny@jones.com>;tag=kpo34fz\r\n" +
+                "s:what about the wheather today\r\n" +
+                "k: INVITE,BYE, CANCEL\r\n" +
+                "t: john the ripper <sip:john@ripper.com;killer>;tag=kpsd4fz\r\n" +
+                "v: SIP/2.0/UDP 192.168.20.2;branch=mdsif12f\r\n" +
+                "v: SIP/2.0/UDP 172.20.2.168;branch=msdf343f\r\n" +
+                "v: SIP/2.0/UDP 10.1.5.7;branch=mfdf343f\r\n" +
+                "v: SIP/2.0/UDP 64.32.165.46;branch=m134343f\r\n" +
+                "\r\n" +
+                "kd\r\n" +
+                "pe0_\n" +
+                ";_{\r" +
+                " p");
+        SipHeaders sipHeaders = sipMessage.getSipHeaders();
+        SipHeaderFieldValue callId =
+            sipHeaders.get(new SipHeaderFieldName(RFC3261.HDR_CALLID));
+        assert callId != null;
+        assert callId.getValue().indexOf("ldkjf43532@host.domain") > -1;
+        SipHeaderFieldValue contact =
+            sipHeaders.get(new SipHeaderFieldName(RFC3261.HDR_CONTACT));
+        assert contact != null;
+        assert contact.getValue().indexOf("<192.168.5.6:43673>") > -1;
+        SipHeaderFieldValue contentEncoding =
+            sipHeaders.get(new SipHeaderFieldName(RFC3261.HDR_CONTENT_ENCODING));
+        assert contentEncoding != null;
+        assert contentEncoding.getValue().indexOf("gzip") > -1;
+        SipHeaderFieldValue contentlLength =
+            sipHeaders.get(new SipHeaderFieldName(RFC3261.HDR_CONTENT_LENGTH));
+        assert contentlLength != null;
+        assert contentlLength.getValue().indexOf("15") > -1;
+        assert sipMessage.getBody().length == 15;
+        SipHeaderFieldValue contentType =
+            sipHeaders.get(new SipHeaderFieldName(RFC3261.HDR_CONTENT_TYPE));
+        assert contentType != null;
+        assert contentType.getValue().indexOf("text/html") > -1;
+        SipHeaderFieldValue from =
+            sipHeaders.get(new SipHeaderFieldName(RFC3261.HDR_FROM));
+        assert from != null;
+        assert from.getValue().indexOf("\"Jessy James\" <sip:jenny@jones.com>") > -1;
+        SipHeaderFieldValue subject =
+            sipHeaders.get(new SipHeaderFieldName(RFC3261.HDR_SUBJECT));
+        assert subject != null;
+        assert subject.getValue().indexOf("what about the wheather today") > -1;
+        SipHeaderFieldValue supported =
+            sipHeaders.get(new SipHeaderFieldName(RFC3261.HDR_SUPPORTED));
+        assert supported != null;
+        assert supported.getValue().indexOf("INVITE,BYE, CANCEL") > -1;
+        SipHeaderFieldValue to =
+            sipHeaders.get(new SipHeaderFieldName(RFC3261.HDR_TO));
+        assert to != null;
+        assert to.getValue().indexOf("john the ripper <sip:john@ripper.com;killer>") > -1;
+        SipHeaderFieldMultiValue via = (SipHeaderFieldMultiValue)
+            sipHeaders.get(new SipHeaderFieldName(RFC3261.HDR_VIA));
+        assert via != null;
+        ArrayList<SipHeaderFieldValue> values = via.getValues();
+        assert values.get(0).getValue().indexOf("SIP/2.0/UDP 192.168.20.2") > -1;
+        assert values.get(1).getValue().indexOf("SIP/2.0/UDP 172.20.2.168") > -1;
+        assert values.get(2).getValue().indexOf("SIP/2.0/UDP 10.1.5.7") > -1;
+        assert values.get(3).getValue().indexOf("SIP/2.0/UDP 64.32.165.46") > -1;
+    }
+    
+    @Test
     public void testParseBody() throws SipParserException, IOException {
         SipMessage sipMessage = parse("INVITE sip:UAB@example.com SIP/2.0\r\n"
                 + "Via: <sip:alice@atlanta.com>;transport=TCP\r\n"
@@ -160,6 +232,14 @@ public class SipParserTestNG {
                 + "Subject: I know you're there,\r\n"
                 + "         pick up the phone\r\n"
                 + "         and talk to me!\r\n");
+    }
+    
+    @Test (expectedExceptions = SipParserException.class)
+    public void shouldThrowIfBadContentLength() throws SipParserException, IOException {
+        parse("INVITE sip:bob@ietf.org\r\n" +
+                "Content-Length: 10" +
+                "\r\n" +
+                "12345");
     }
     
     private SipMessage parse(String message) throws SipParserException, IOException {
