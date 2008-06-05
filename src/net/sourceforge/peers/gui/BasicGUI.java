@@ -22,6 +22,8 @@ package net.sourceforge.peers.gui;
 import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -32,6 +34,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
+import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.core.useragent.SipEvent;
 import net.sourceforge.peers.sip.core.useragent.UserAgent;
@@ -40,7 +43,7 @@ import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
 import net.sourceforge.peers.sip.transport.SipMessage;
 import net.sourceforge.peers.sip.transport.SipResponse;
 
-public class BasicGUI implements ActionListener, Observer {
+public class BasicGUI implements ActionListener, Observer, WindowListener {
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
@@ -64,7 +67,9 @@ public class BasicGUI implements ActionListener, Observer {
 
     public BasicGUI() {
         mainFrame = new JFrame("Peers: SIP User-Agent");
-        mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+//        mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        mainFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        mainFrame.addWindowListener(this);
         
         mainPanel = new JPanel();
         
@@ -88,6 +93,10 @@ public class BasicGUI implements ActionListener, Observer {
         
     }
 
+    //////////////////////////////////////////////////////////
+    // ActionListener methods
+    //////////////////////////////////////////////////////////
+    
     public void actionPerformed(ActionEvent e) {
         final String sipUri = uri.getText();
         final String callId = Utils.generateCallID(userAgent.getMyAddress());
@@ -112,6 +121,10 @@ public class BasicGUI implements ActionListener, Observer {
         });
     }
 
+    //////////////////////////////////////////////////////////
+    // Observer methods
+    //////////////////////////////////////////////////////////
+    
     public void update(Observable o, Object arg) {
         if (arg instanceof SipEvent) {
             SipEvent sipEvent = (SipEvent) arg;
@@ -122,5 +135,36 @@ public class BasicGUI implements ActionListener, Observer {
                 }
             }
         }
+    }
+
+    //////////////////////////////////////////////////////////
+    // WindowAdapter methods
+    //////////////////////////////////////////////////////////
+    
+    public void windowActivated(WindowEvent arg0) {
+    }
+
+    public void windowClosed(WindowEvent arg0) {
+        try {
+            userAgent.getUac().unregister();
+        } catch (Throwable t) {
+            Logger.debug(t);
+        }
+        System.exit(0);
+    }
+
+    public void windowClosing(WindowEvent arg0) {
+    }
+
+    public void windowDeactivated(WindowEvent arg0) {
+    }
+
+    public void windowDeiconified(WindowEvent arg0) {
+    }
+
+    public void windowIconified(WindowEvent arg0) {
+    }
+
+    public void windowOpened(WindowEvent arg0) {
     }
 }

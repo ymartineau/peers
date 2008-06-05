@@ -71,10 +71,11 @@ public final class RFC3261 {
     public final static String PARAM_MADDR      = "maddr";
     public final static String PARAM_TTL        = "ttl";
     public final static String PARAM_SENTBY     = "sent-by";
-    public final static String PARAM_BRANCH   = "branch";
+    public final static String PARAM_BRANCH     = "branch";
     public final static String PARAM_TAG        = "tag";
     public final static String PARAM_TRANSPORT  = "transport";
     public final static String PARAM_RECEIVED   = "received";
+    public final static String PARAM_EXPIRES    = "expires";
     
         //Miscellaneous
     public final static char   FIELD_NAME_SEPARATOR = ':';

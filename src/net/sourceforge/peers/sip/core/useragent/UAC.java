@@ -22,6 +22,7 @@ package net.sourceforge.peers.sip.core.useragent;
 import net.sourceforge.peers.media.CaptureRtpSender;
 import net.sourceforge.peers.media.IncomingRtpReader;
 import net.sourceforge.peers.sip.RFC3261;
+import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.core.useragent.handlers.InviteHandler;
 import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
 import net.sourceforge.peers.sip.transaction.TransactionManager;
@@ -36,6 +37,8 @@ public class UAC {
     
     private InitialRequestManager initialRequestManager;
     private MidDialogRequestManager midDialogRequestManager;
+
+    private String registerCallID;
     private String profileUri;
     
     //FIXME
@@ -55,16 +58,33 @@ public class UAC {
         this.initialRequestManager = initialRequestManager;
         this.midDialogRequestManager = midDialogRequestManager;
         this.dialogManager = dialogManager;
-        profileUri = "sip:alice@atlanta.com";
+        this.profileUri = RFC3261.SIP_SCHEME + RFC3261.SCHEME_SEPARATOR
+            + userAgent.getUserpart() + RFC3261.AT + userAgent.getDomain();
+        registerCallID = Utils.generateCallID(userAgent.getMyAddress());
+    }
+
+    /**
+     * For the moment we consider that only one profile uri is used at a time.
+     * @throws SipUriSyntaxException 
+     */
+    public void register() throws SipUriSyntaxException {
+        String requestUri = RFC3261.SIP_SCHEME + RFC3261.SCHEME_SEPARATOR
+            + userAgent.getDomain();
+        initialRequestManager.createInitialRequest(requestUri,
+                RFC3261.METHOD_REGISTER, profileUri, registerCallID);
     }
     
-    public void invite(String requestUri, String callId) throws SipUriSyntaxException {
-        //TODO make profileUri configurable
+    public void unregister() {
+        initialRequestManager.registerHandler.unregister();
+    }
+    
+    public void invite(String requestUri, String callId)
+            throws SipUriSyntaxException {
         initialRequestManager.createInitialRequest(requestUri,
                 RFC3261.METHOD_INVITE, profileUri, callId);
         
     }
-
+    
     public void terminate(Dialog dialog) {
         terminate(dialog, null);
     }
