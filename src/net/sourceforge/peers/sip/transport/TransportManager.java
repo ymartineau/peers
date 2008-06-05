@@ -280,7 +280,7 @@ public class TransportManager {
             }
             socket = datagramSocket;
             messageSender = new UdpMessageSender(conn.getRemoteInetAddress(),
-                    conn.getRemotePort(), datagramSocket, myAddress);
+                    conn.getRemotePort(), datagramSocket, myAddress, sipPort);
         } else {
             // TODO
             // messageReceiver = new TcpMessageReceiver(port);

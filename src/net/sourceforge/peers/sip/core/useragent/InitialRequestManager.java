@@ -60,6 +60,7 @@ public class InitialRequestManager extends RequestManager {
                 dialogManager,
                 transactionManager,
                 transportManager);
+        registerHandler.setInitialRequestManager(this);
     }
 
     /**
@@ -131,6 +132,8 @@ public class InitialRequestManager extends RequestManager {
         ClientTransaction clientTransaction = null;
         if (RFC3261.METHOD_INVITE.equals(method)) {
             clientTransaction = inviteHandler.preProcessInvite(sipRequest);
+        } else if (RFC3261.METHOD_REGISTER.equals(method)) {
+            clientTransaction = registerHandler.preProcessRegister(sipRequest);
         }
         
         createInitialRequestEnd(sipRequest, clientTransaction, profileUri);
@@ -225,7 +228,7 @@ public class InitialRequestManager extends RequestManager {
         }
     }
 
-    private void addContact(SipRequest sipRequest, String contactEnd,
+    public void addContact(SipRequest sipRequest, String contactEnd,
             String profileUri) {
         SipHeaders sipHeaders = sipRequest.getSipHeaders();
         

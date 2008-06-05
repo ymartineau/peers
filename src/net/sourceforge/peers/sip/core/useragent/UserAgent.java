@@ -38,6 +38,7 @@ import net.sourceforge.peers.sip.core.useragent.handlers.CancelHandler;
 import net.sourceforge.peers.sip.core.useragent.handlers.InviteHandler;
 import net.sourceforge.peers.sip.core.useragent.handlers.OptionsHandler;
 import net.sourceforge.peers.sip.core.useragent.handlers.RegisterHandler;
+import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
 import net.sourceforge.peers.sip.transaction.Transaction;
 import net.sourceforge.peers.sip.transaction.TransactionManager;
 import net.sourceforge.peers.sip.transactionuser.DialogManager;
@@ -73,6 +74,9 @@ public class UserAgent {
     private int sipPort;
     private int rtpPort;
     private int cseqCounter;
+    
+    private String userpart;
+    private String domain;
     
     public UserAgent() {
         
@@ -132,6 +136,22 @@ public class UserAgent {
             sipPort = Integer.parseInt(node.getText());
         }
         
+        //stack sip user part
+        node = config.selectSingleNode("//peers:sip/peers:profile/peers:userpart");
+        if (node == null) {
+            userpart = "alice";
+        } else {
+            userpart = node.getText();
+        }
+        
+        //stack sip domain
+        node = config.selectSingleNode("//peers:sip/peers:profile/peers:domain");
+        if (node == null) {
+            domain = "atlanta.com";
+        } else {
+            domain = node.getText();
+        }
+        
         //stack rtp listening port
         node = config.selectSingleNode("//peers:rtp/peers:port");
         rtpPort = Integer.parseInt(node.getText());
@@ -171,10 +191,12 @@ public class UserAgent {
                 transportManager);
         OptionsHandler optionsHandler = new OptionsHandler(transactionManager,
                 transportManager);
-        RegisterHandler registerHandler = new RegisterHandler(transactionManager,
+        RegisterHandler registerHandler = new RegisterHandler(
+                transactionManager,
                 transportManager);
         
-        InitialRequestManager initialRequestManager = new InitialRequestManager(
+        InitialRequestManager initialRequestManager =
+            new InitialRequestManager(
                 this,
                 inviteHandler,
                 cancelHandler,
@@ -184,7 +206,8 @@ public class UserAgent {
                 dialogManager,
                 transactionManager,
                 transportManager);
-        MidDialogRequestManager midDialogRequestManager = new MidDialogRequestManager(
+        MidDialogRequestManager midDialogRequestManager =
+            new MidDialogRequestManager(
                 this,
                 inviteHandler,
                 cancelHandler,
@@ -211,6 +234,11 @@ public class UserAgent {
         peers = new ArrayList<String>();
         //dialogs = new ArrayList<Dialog>();
 
+        try {
+            uac.register();
+        } catch (SipUriSyntaxException e) {
+            e.printStackTrace();
+        }
     }
     
     /**
@@ -311,4 +339,13 @@ public class UserAgent {
     public int getRtpPort() {
         return rtpPort;
     }
+
+    public String getDomain() {
+        return domain;
+    }
+
+    public String getUserpart() {
+        return userpart;
+    }
+    
 }

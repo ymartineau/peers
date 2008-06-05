@@ -51,8 +51,8 @@ public class TransactionManager {
     
     //TODO remove transportManager parameter, use class variable transportManager
     public ClientTransaction createClientTransaction(SipRequest sipRequest,
-            InetAddress inetAddress, int port, String transport, String pBranchId,
-            ClientTransactionUser clientTransactionUser) {
+            InetAddress inetAddress, int port, String transport,
+            String pBranchId, ClientTransactionUser clientTransactionUser) {
         String branchId;
         if (pBranchId == null || "".equals(pBranchId.trim())
                 || !pBranchId.startsWith(RFC3261.BRANCHID_MAGIC_COOKIE)) {

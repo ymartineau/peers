@@ -60,6 +60,8 @@ public class NonInviteClientTransaction extends Transaction
             TransportManager transportManager) {
         super(branchId, sipRequest.getMethod(), timer, transportManager);
         
+        this.transport = transport;
+        
         SipHeaderFieldValue via = new SipHeaderFieldValue("");
         via.addParam(new SipHeaderParamName(RFC3261.PARAM_BRANCH), branchId);
         sipRequest.getSipHeaders().add(new SipHeaderFieldName(RFC3261.HDR_VIA), via, 0);
@@ -75,7 +77,7 @@ public class NonInviteClientTransaction extends Transaction
         
         request = sipRequest;
         this.transactionUser = transactionUser;
-        this.transport = transport;
+        
         remotePort = port;
         remoteInetAddress = inetAddress;
         

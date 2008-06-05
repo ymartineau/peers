@@ -63,6 +63,8 @@ public class InviteClientTransaction extends InviteTransaction
             TransportManager transportManager) {
         super(branchId, timer, transportManager);
         
+        this.transport = transport;
+        
         SipHeaderFieldValue via = new SipHeaderFieldValue("");
         via.addParam(new SipHeaderParamName(RFC3261.PARAM_BRANCH), branchId);
         sipRequest.getSipHeaders().add(new SipHeaderFieldName(RFC3261.HDR_VIA), via, 0);
@@ -80,7 +82,7 @@ public class InviteClientTransaction extends InviteTransaction
         
         request = sipRequest;
         this.transactionUser = transactionUser;
-        this.transport = transport;
+        
         remotePort = port;
         remoteInetAddress = inetAddress;
         
