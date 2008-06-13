@@ -247,7 +247,7 @@ public class CallFrame implements ActionListener, Observer {
         if (dialogState instanceof DialogStateEarly) {
             if (isUac && cancelButton == null) {
                 //TODO implement cancel in core
-                text.setText("Ringing " + dialog.getRemoteTarget());
+                text.setText("Ringing " + dialog.getRemoteUri());
                 cancelButton = new JButton(CANCEL_ACTION);
                 cancelButton.setActionCommand(CANCEL_ACTION);
                 cancelButton.addActionListener(this);
@@ -255,9 +255,9 @@ public class CallFrame implements ActionListener, Observer {
                 mainPanel.add(cancelButton);
                 frame.pack();
             } else {
-                frame = new JFrame(dialog.getRemoteTarget());
+                frame = new JFrame(dialog.getRemoteUri());
                 mainPanel = new JPanel();
-                text = new JLabel("Incoming call from " + dialog.getRemoteTarget());
+                text = new JLabel("Incoming call from " + dialog.getRemoteUri());
                 acceptButton = new JButton(ACCEPT_ACTION);
                 acceptButton.setActionCommand(ACCEPT_ACTION);
                 acceptButton.addActionListener(this);
@@ -273,7 +273,7 @@ public class CallFrame implements ActionListener, Observer {
             }
         } else if (dialogState instanceof DialogStateConfirmed) {
             //TODO create hangup button and remove previous buttons for both uac and uas
-            text.setText("Talk to " + dialog.getRemoteTarget());
+            text.setText("Talk to " + dialog.getRemoteUri());
             byeButton = new JButton(BYE_ACTION);
             byeButton.setActionCommand(BYE_ACTION);
             byeButton.addActionListener(this);

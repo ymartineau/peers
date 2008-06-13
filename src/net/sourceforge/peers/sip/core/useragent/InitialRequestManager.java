@@ -124,7 +124,20 @@ public class InitialRequestManager extends RequestManager {
     }
  
     public void createInitialRequest(String requestUri, String method,
+            String profileUri) throws SipUriSyntaxException {
+        createInitialRequest(requestUri, method, profileUri, null);
+    }
+    
+    public void createInitialRequest(String requestUri, String method,
             String profileUri, String callId) throws SipUriSyntaxException {
+        
+        createInitialRequest(requestUri, method, profileUri, callId, null);
+    }
+    
+    public void createInitialRequest(String requestUri, String method,
+            String profileUri, String callId,
+            MessageInterceptor messageInterceptor)
+                throws SipUriSyntaxException {
         
         SipRequest sipRequest = createInitialRequestStart(requestUri, method,
                 profileUri, callId);
@@ -135,7 +148,9 @@ public class InitialRequestManager extends RequestManager {
         } else if (RFC3261.METHOD_REGISTER.equals(method)) {
             clientTransaction = registerHandler.preProcessRegister(sipRequest);
         }
-        
+        if (messageInterceptor != null) {
+            messageInterceptor.postProcess(sipRequest);
+        }
         createInitialRequestEnd(sipRequest, clientTransaction, profileUri);
     }
     
@@ -161,11 +176,6 @@ public class InitialRequestManager extends RequestManager {
         } else {
             System.err.println("method not supported");
         }
-    }
-    
-    public void createInitialRequest(String requestUri, String method,
-            String profileUri) throws SipUriSyntaxException {
-        createInitialRequest(requestUri, method, profileUri, null);
     }
     
     public void createCancel(SipRequest inviteRequest,

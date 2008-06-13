@@ -362,10 +362,8 @@ public class InviteHandler extends DialogMethodHandler
         if (dialog != null) {
             //dialog already created with a 180 for example
             dialog.setRouteSet(computeRouteSet(sipResponse.getSipHeaders()));
-        } else {
-            //new dialog
-            dialog = buildOrUpdateDialogForUac(sipResponse, transaction);
         }
+        dialog = buildOrUpdateDialogForUac(sipResponse, transaction);
         
         setChanged();
         notifyObservers(new SipEvent(EventType.CALLEE_PICKUP, sipResponse));

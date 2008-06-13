@@ -103,6 +103,7 @@
     <xs:sequence>
       <xs:element name="userpart" type="xs:string"/>
       <xs:element name="domain" type="xs:string"/>
+      <xs:element name="password" type="xs:string" minOccurs="0"/>
       <xs:element name="outboundProxy" type="outboundProxyType" minOccurs="0"/>
       <xs:element name="interface" type="interfaceRefType"/>
       <xs:element name="port" type="portType" minOccurs="0"/>

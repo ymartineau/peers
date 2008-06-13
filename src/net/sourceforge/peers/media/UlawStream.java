@@ -24,7 +24,6 @@ import gov.nist.jrtp.RtpPacket;
 import gov.nist.jrtp.RtpSession;
 
 import java.io.ByteArrayOutputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import javax.sound.sampled.AudioFormat;
@@ -52,6 +51,8 @@ public class UlawStream implements Runnable {
 
     private RtpSession rtpSession;
     private boolean stopped = false;
+    
+    private TargetDataLine line;
     
 	/** The rate in miliseconds at which packets are sent.*/
 	private static long RATE = 20;
@@ -91,92 +92,116 @@ public class UlawStream implements Runnable {
         //int bufferSize = RtpPacket.MAX_PAYLOAD_BUFFER_SIZE;
         //byte[] buffer = new byte[bufferSize];
 
-        try {
-
-            AudioFormat format = new AudioFormat((float)8000, 16, 1, true, false);
-            //G.711
+        AudioFormat format = new AudioFormat((float)8000, 16, 1, true, false);
+        //G.711
 //            AudioFormat format = new AudioFormat(AudioFormat.Encoding.ULAW, 8000, 16, 1,
 //                    16, 8000, true);
-            
-            //TODO code cleaning: targetEncoding is only employed to display info...
-            AudioFormat.Encoding targetEncoding = AudioFormat.Encoding.ULAW;
-            
-            Logger.debug("target encodings for " + format.getEncoding());
-            AudioFormat.Encoding[] encodings =
-                AudioSystem.getTargetEncodings(format.getEncoding());
-            for (AudioFormat.Encoding encoding : encodings) {
-                Logger.debug(encoding);
-            }
-            
-            
-            AudioFormat[] formats = AudioSystem.getTargetFormats(targetEncoding, format);
-            AudioFormat targetFormat = null;
-            if (formats.length >= 1) {
-                targetFormat = formats[0];
-            }
-            if (targetFormat == null) {
-                System.err.println("no audio format found");
-                return;
-            }
-            
-            
-            
+        
+        //TODO code cleaning: targetEncoding is only employed to display info...
+        AudioFormat.Encoding targetEncoding = AudioFormat.Encoding.ULAW;
+        
+        Logger.debug("target encodings for " + format.getEncoding());
+        AudioFormat.Encoding[] encodings =
+            AudioSystem.getTargetEncodings(format.getEncoding());
+        for (AudioFormat.Encoding encoding : encodings) {
+            Logger.debug(encoding);
+        }
+        
+        
+        AudioFormat[] formats = AudioSystem.getTargetFormats(targetEncoding, format);
+        AudioFormat targetFormat = null;
+        if (formats.length >= 1) {
+            targetFormat = formats[0];
+        }
+        if (targetFormat == null) {
+            System.err.println("no audio format found");
+            return;
+        }
+        
+        
+        
 //            AudioInputStream ulawAIS = AudioSystem.getAudioInputStream(targetFormat,
 //                    sourceStream);
-            
-            Logger.debug("target formats");
-            for (AudioFormat audioFormat : formats) {
-                Logger.debug(audioFormat);
-            }
-            
-            
-            
+        
+        Logger.debug("target formats");
+        for (AudioFormat audioFormat : formats) {
+            Logger.debug(audioFormat);
+        }
+        
+        
+        
 //            if (AudioSystem.isConversionSupported(AudioFormat.Encoding.ULAW,
 //                    new AudioFormat((float)8000, 16, 1, true, false))) {
 //                logger.debug("conversion ok");
 //            } else {
 //                logger.debug("conversion unavailable");
 //            }
-            
-            
-            TargetDataLine line;
-            DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
+        
+        
+        DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
 
+        
+        
+
+
+
+        
+        
+        try {
+
+            line = (TargetDataLine) AudioSystem.getLine(info);
+            line.open(format);
             
             
+        } catch (LineUnavailableException e) {
+            // Handle the error ...
+            Logger.error(e);
+            e.printStackTrace();
+            return;
+        }
+        line.start();
+        
+        //separate capture in another thread
+        
+        Thread thread = new Thread(new CaptureRunnable());
+        thread.start();
+    }
 
-            // Set up a test RTP packet
-            RtpPacket rtpPacket = new RtpPacket();
-            rtpPacket.setV(2);
-//          rtpPacket.setP(1);
-//          rtpPacket.setX(1);
-//          rtpPacket.setCC(1);
-//          rtpPacket.setM(1);
-            rtpPacket.setPT(0);
-//          rtpPacket.setTS(System.currentTimeMillis());
-            rtpPacket.setSSRC(1);
+    public synchronized void setStopped(boolean stopped) {
+        this.stopped = stopped;
+    }
+    
+    /**
+     * RTP Payload size of packets sent by wengophone: 160 bytes
+     * RTP Payload size of packets sent by wengophone: 512 bytes, then 34 bytes
+     */
+    class CaptureRunnable implements Runnable {
+        public void run() {
 
-            long startupTime = System.currentTimeMillis();
-            
-            try {
-
-                line = (TargetDataLine) AudioSystem.getLine(info);
-                line.open(format);
-                
-                
-            } catch (LineUnavailableException e) {
-                // Handle the error ...
-                Logger.error(e);
-                e.printStackTrace();
-                return;
-            }
-            line.start();
             int numBytesRead;
             byte[] data = new byte[line.getBufferSize() / 5];
 
+            long startupTime = System.currentTimeMillis();
+            
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             
+            // Set up a test RTP packet
+            RtpPacket rtpPacket = new RtpPacket();
+            rtpPacket.setV(2);
+//              rtpPacket.setP(1);
+//              rtpPacket.setX(1);
+//              rtpPacket.setCC(1);
+//              rtpPacket.setM(1);
+            rtpPacket.setPT(0);
+//              rtpPacket.setTS(System.currentTimeMillis());
+            rtpPacket.setSSRC(1);
+//            long captureTime = System.currentTimeMillis();
             while (!stopped) {
+                
+//                long previousCaptureTime = captureTime;
+//                captureTime = System.currentTimeMillis();
+//                long captureInterval = captureTime - previousCaptureTime;
+                
                 // Read the next chunk of data from the TargetDataLine.
                 numBytesRead = line.read(data, 0, data.length);
                 // Save this chunk of data.
@@ -186,6 +211,7 @@ public class UlawStream implements Runnable {
                 AudioUlawEncodeDecode02.value = 0;
                 AudioUlawEncodeDecode02.increment = 1;
                 AudioUlawEncodeDecode02.limit = 4;
+                
                 for (int i = 0; i < numBytesRead; i += 2) {
                     //TODO data length odd
                     //TODO manage data endianess
@@ -197,25 +223,9 @@ public class UlawStream implements Runnable {
                 baos.write(ulawData, 0, ulawData.length);
                 
                 
-                
-                
-                ///////experimental
-//                InputStream in = new ByteArrayInputStream(baos.toByteArray());
-//                AudioInputStream ais = null;
-//                try {
-//                    ais = AudioSystem.getAudioInputStream(in);
-//                } catch (UnsupportedAudioFileException e1) {
-//                    // TODO Auto-generated catch block
-//                    e1.printStackTrace();
-//                }
-//                AudioInputStream ulawAIS = AudioSystem.getAudioInputStream(
-//                        targetFormat, ais);
-                /////////////////////
-                
-                
                 byte[] buf = baos.toByteArray();
-                int maxSize = RtpPacket.MAX_PAYLOAD_BUFFER_SIZE;
-                rtpPacket.setTS(System.currentTimeMillis() - startupTime);
+                int maxSize = 160;//RtpPacket.MAX_PAYLOAD_BUFFER_SIZE;
+//                rtpPacket.setTS(System.currentTimeMillis() - startupTime);
                 if (buf.length > maxSize) {
                     int index = 0;
                     while (index < buf.length) {
@@ -228,11 +238,10 @@ public class UlawStream implements Runnable {
                         System.arraycopy(buf, index, smallerBuf, 0,
                                 smallerBuf.length);
                         index += maxSize;
+                        rtpPacket.setTS(System.currentTimeMillis() - startupTime);
                         rtpPacket.setPayload(smallerBuf, smallerBuf.length);
                         try {
-
                             rtpSession.sendRtpPacket(rtpPacket);
-                            
                             /* Note that an application is responsible for the timing
                                of packet delays between each outgoing packet.  Here,
                                we set to an arbitrary value = 10ms.  A better method
@@ -241,20 +250,16 @@ public class UlawStream implements Runnable {
                             */
                             try {
                                 Thread.sleep(RATE);
-                                
-                            } catch (Exception e) {
-                                
-                                e.printStackTrace();
+                            } catch (InterruptedException ie) {
+                                ie.printStackTrace();
                             }
-
                         } catch (RtpException re) {
-
                             re.printStackTrace();
-
+                        } catch (IOException ioe) {
+                            ioe.printStackTrace();
                         }
                     }
                 }
-                
                 
                 baos.reset();
                 
@@ -266,88 +271,8 @@ public class UlawStream implements Runnable {
             line.close();
             line = null;
             
-            
-//            AudioInputStream ais = AudioSystem.getAudioInputStream(file);
-            // TODO 22,050 Hz => 8,000 Hz
-//            AudioFormat outDataFormat = new AudioFormat((float)8000.0, 8, 1,
-//                    true, false);
-//            if (!AudioSystem.isConversionSupported(outDataFormat,
-//                    ais.getFormat())) {
-//                System.err.println("conversion not supported");
-//                return;
-//            }
-//            AudioInputStream lowResAis = AudioSystem.getAudioInputStream(
-//                    outDataFormat, ais);
-            
-//            AudioInputStream ulawAis = AudioSystem.getAudioInputStream(
-//                    AudioFormat.Encoding.ULAW, ais/*lowResAis*/);
-//            
-//            
-//            
-//            
-//            AudioSystem.write(ulawAis, AudioFileFormat.Type.WAVE, baos);
-//            rtpPacket.setTS(System.currentTimeMillis() - startupTime);
-//            byte[] buf = baos.toByteArray();
-//            int maxSize = RtpPacket.MAX_PAYLOAD_BUFFER_SIZE;
-//            if (buf.length > maxSize) {
-//                int index = 0;
-//                while (index < buf.length) {
-//                    byte[] smallerBuf;
-//                    if (index + maxSize > buf.length) {
-//                        smallerBuf = new byte[buf.length - index];
-//                    } else {
-//                        smallerBuf  = new byte[maxSize];
-//                    }
-//                    System.arraycopy(buf, index, smallerBuf, 0,
-//                            smallerBuf.length);
-//                    index += maxSize;
-//                    rtpPacket.setPayload(smallerBuf, smallerBuf.length);
-//                    try {
-//
-//                        rtpSession.sendRtpPacket(rtpPacket);
-//                        
-//                        /* Note that an application is responsible for the timing
-//                           of packet delays between each outgoing packet.  Here,
-//                           we set to an arbitrary value = 10ms.  A better method
-//                           (not shown) is to check elapsed time between the 
-//                           sending of each packet to reduce jitter.
-//                        */
-//                        try {
-//                            Thread.sleep(RATE);
-//                            
-//                        } catch (Exception e) {
-//                            
-//                            e.printStackTrace();
-//                        }
-//
-//                    } catch (RtpException re) {
-//
-//                        re.printStackTrace();
-//
-//                    }
-//                }
-//            }
-//            baos.close();
-//                
-//            
-//            fileInputStream.close();
-            
             Logger.debug("streaming finished");
-
-        } catch (FileNotFoundException fnfe) {
-
-            fnfe.printStackTrace();
-
-        } catch (IOException ioe) {
-
-            ioe.printStackTrace();
-
         }
     }
-
-    public synchronized void setStopped(boolean stopped) {
-        this.stopped = stopped;
-    }
-    
     
 }
