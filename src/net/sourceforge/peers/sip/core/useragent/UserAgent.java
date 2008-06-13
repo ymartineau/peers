@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 
+import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.media.CaptureRtpSender;
 import net.sourceforge.peers.media.IncomingRtpReader;
 import net.sourceforge.peers.sip.RFC3261;
@@ -66,6 +67,8 @@ public class UserAgent {
     private UAC uac;
     private UAS uas;
 
+    private ChallengeManager challengeManager;
+    
     private DialogManager dialogManager;
     private TransactionManager transactionManager;
     private TransportManager transportManager;
@@ -119,6 +122,10 @@ public class UserAgent {
             } catch (SocketException e) {
                 e.printStackTrace();
             }
+            if (myAddress == null) {
+                throw new RuntimeException("ip address cannot be determined " +
+                        "please configure it manually in " + CONFIG_FILE);
+            }
         } else {
             //manually configured stack ip address
             try {
@@ -152,12 +159,25 @@ public class UserAgent {
             domain = node.getText();
         }
         
+        //stack sip password
+        node = config.selectSingleNode("//peers:sip/peers:profile/peers:password");
+        String password = null;
+        if (node != null) {
+            password = node.getText();
+        }
+        
         //stack rtp listening port
         node = config.selectSingleNode("//peers:rtp/peers:port");
         rtpPort = Integer.parseInt(node.getText());
         cseqCounter = 0;
         
-        
+        StringBuffer buf = new StringBuffer();
+        buf.append("starting user agent [");
+        buf.append("myAddress: ").append(myAddress.getHostAddress()).append(", ");
+        buf.append("sipPort: ").append(sipPort).append(", ");
+        buf.append("userpart: ").append(userpart).append(", ");
+        buf.append("domain: ").append(domain).append("]");
+        Logger.info(buf);
         
         //transaction user
         
@@ -224,20 +244,33 @@ public class UserAgent {
                 dialogManager,
                 transactionManager,
                 transportManager);
+        String profileUri = RFC3261.SIP_SCHEME + RFC3261.SCHEME_SEPARATOR
+            + userpart + RFC3261.AT + domain;
         uac = new UAC(this,
+                profileUri,
                 initialRequestManager,
                 midDialogRequestManager,
                 dialogManager,
                 transactionManager,
                 transportManager);
         
+        if (password != null) {
+            challengeManager = new ChallengeManager(userpart,
+                    password,
+                    initialRequestManager,
+                    profileUri);
+            registerHandler.setChallengeManager(challengeManager);
+        }
+
         peers = new ArrayList<String>();
         //dialogs = new ArrayList<Dialog>();
 
-        try {
-            uac.register();
-        } catch (SipUriSyntaxException e) {
-            e.printStackTrace();
+        if (password != null) {
+            try {
+                uac.register();
+            } catch (SipUriSyntaxException e) {
+                e.printStackTrace();
+            }
         }
     }
     

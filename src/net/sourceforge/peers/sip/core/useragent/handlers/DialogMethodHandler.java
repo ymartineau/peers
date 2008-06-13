@@ -24,6 +24,7 @@ import java.util.Collection;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.core.useragent.UserAgent;
 import net.sourceforge.peers.sip.syntaxencoding.NameAddress;
@@ -174,6 +175,7 @@ public abstract class DialogMethodHandler extends MethodHandler {
         //remote target
         
         SipHeaderFieldValue contact = headers.get(new SipHeaderFieldName(RFC3261.HDR_CONTACT));
+        Logger.debug("Contact: " + contact);
         if (contact != null) {
             String remoteTarget = NameAddress.nameAddressToUri(contact.toString());
             dialog.setRemoteTarget(remoteTarget);

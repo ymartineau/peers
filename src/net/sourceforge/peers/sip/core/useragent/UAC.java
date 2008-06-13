@@ -49,6 +49,7 @@ public class UAC {
      * should be instanciated only once, it was a singleton.
      */
     public UAC(UserAgent userAgent,
+            String profileUri,
             InitialRequestManager initialRequestManager,
             MidDialogRequestManager midDialogRequestManager,
             DialogManager dialogManager,
@@ -58,8 +59,7 @@ public class UAC {
         this.initialRequestManager = initialRequestManager;
         this.midDialogRequestManager = midDialogRequestManager;
         this.dialogManager = dialogManager;
-        this.profileUri = RFC3261.SIP_SCHEME + RFC3261.SCHEME_SEPARATOR
-            + userAgent.getUserpart() + RFC3261.AT + userAgent.getDomain();
+        this.profileUri = profileUri;
         registerCallID = Utils.generateCallID(userAgent.getMyAddress());
     }
 

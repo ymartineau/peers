@@ -23,6 +23,9 @@ import gov.nist.jrtp.RtpManager;
 import gov.nist.jrtp.RtpSession;
 
 import java.io.IOException;
+import java.io.PipedInputStream;
+import java.io.PipedOutputStream;
+
 
 
 public class CaptureRtpSender {
@@ -30,7 +33,9 @@ public class CaptureRtpSender {
     private RtpManager rtpManager;
 
     private RtpSession rtpSession;
-    private UlawStream ulawStream;
+    private Capture capture;
+    private Encoder encoder;
+    private RtpSender rtpSender;
 
     public CaptureRtpSender(String localAddress, int localPort,
             String remoteAddress, int remotePort)
@@ -39,52 +44,59 @@ public class CaptureRtpSender {
         rtpManager = new RtpManager(localAddress);
         rtpSession = rtpManager.createRtpSession(localPort, remoteAddress,
                 remotePort);
-        this.ulawStream = new UlawStream(rtpSession);
+        PipedOutputStream rawDataOutput = new PipedOutputStream();
+        PipedInputStream rawDataInput;
+        try {
+            rawDataInput = new PipedInputStream(rawDataOutput);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
+        
+        PipedOutputStream encodedDataOutput = new PipedOutputStream();
+        PipedInputStream encodedDataInput;
+        try {
+            encodedDataInput = new PipedInputStream(encodedDataOutput);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return;
+        }
+        
+        capture = new Capture(rawDataOutput);
+        encoder = new Encoder(rawDataInput, encodedDataOutput);
+        rtpSender = new RtpSender(encodedDataInput, rtpSession);
     }
 
     public void start() throws IOException {
-        ulawStream.setStopped(false);
-        new Thread(ulawStream).start();
+        
+        capture.setStopped(false);
+        encoder.setStopped(false);
+        rtpSender.setStopped(false);
+        
+        Thread captureThread = new Thread(capture);
+        Thread encoderThread = new Thread(encoder);
+        Thread rtpSenderThread = new Thread(rtpSender);
+        
+        captureThread.start();
+        encoderThread.start();
+        rtpSenderThread.start();
     }
 
     public void stop() {
-        if (ulawStream != null) {
-            ulawStream.setStopped(true);
+        if (rtpSender != null) {
+            rtpSender.setStopped(true);
+        }
+        if (encoder != null) {
+            encoder.setStopped(true);
+        }
+        if (capture != null) {
+            capture.setStopped(true);
         }
         if (rtpSession != null) {
             rtpSession.shutDown();
         }
     }
-    
-    /**
-     * @param args
-     */
-    public static void main(String[] args) {
-        if (args.length != 4) {
-            System.err.println("usage: java ... "
-                    + "<local_ip> <local_port> <remote_ip> <remote_port>");
-            return;
-        }
-        CaptureRtpSender sender;
-        try {
-            sender = new CaptureRtpSender(args[0], Integer.parseInt(args[1]),
-                    args[2], Integer.parseInt(args[3]));
-        } catch (IOException e) {
-            e.printStackTrace();
-            return;
-        }
-        try {
-            sender.start();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try {
-            Thread.sleep(10000);
-        } catch (InterruptedException e) {
-        }
-        sender.stop();
-    }
-
+ 
     public synchronized RtpSession getRtpSession() {
         return rtpSession;
     }

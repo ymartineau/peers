@@ -71,12 +71,12 @@ public class TransportManagerTestNG {
     @Test (expectedExceptions = SocketException.class)
     public void checkServerConnection() throws SocketException {
         try {
-            transportManager.createServerTransport("UDP", 5060);
+            transportManager.createServerTransport("UDP", 6063);
         } catch (IOException e) {
             e.printStackTrace();
             assert false;
         }
-        new DatagramSocket(5060);
+        new DatagramSocket(6063);
     }
 
     private SipMessage parse(String message) throws IOException, SipParserException {

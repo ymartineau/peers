@@ -103,7 +103,7 @@ public class Utils {
     public final static void addCommonHeaders(SipHeaders headers) {
         //Max-Forwards
         
-        headers.add(new SipHeaderFieldName(RFC3261.HDR_MAXFORWARDS),
+        headers.add(new SipHeaderFieldName(RFC3261.HDR_MAX_FORWARDS),
                 new SipHeaderFieldValue(
                         String.valueOf(RFC3261.DEFAULT_MAXFORWARDS)));
         

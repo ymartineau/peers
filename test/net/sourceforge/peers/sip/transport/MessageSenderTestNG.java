@@ -26,6 +26,7 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import net.sourceforge.peers.sip.PortProvider;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.syntaxencoding.SipParser;
 import net.sourceforge.peers.sip.syntaxencoding.SipParserException;
@@ -41,6 +42,7 @@ public class MessageSenderTestNG {
     private String message;
     private String expectedMessage;
     private volatile boolean messageReceived = false;
+    private volatile int port;
 
     @BeforeClass
     protected void init() throws UnknownHostException {
@@ -57,7 +59,8 @@ public class MessageSenderTestNG {
                         new byte[2048], 2048);
                 DatagramSocket datagramSocket;
                 try {
-                    datagramSocket = new DatagramSocket(6060);
+                    port = PortProvider.getNextPort();
+                    datagramSocket = new DatagramSocket(port);
                     datagramSocket.receive(datagramPacket);
                     byte[] receivedBytes = datagramPacket.getData();
                     int nbReceivedBytes = datagramPacket.getLength();
@@ -86,7 +89,7 @@ public class MessageSenderTestNG {
         InetAddress inetAddress = InetAddress.getLocalHost();
         assert transportManager != null;
         MessageSender messageSender = transportManager.createClientTransport(
-                sipRequest, inetAddress, 6060, "UDP");
+                sipRequest, inetAddress, port, "UDP");
         messageSender.sendMessage(sipRequest);
         expectedMessage = sipRequest.toString();
     }

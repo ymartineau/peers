@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import net.sourceforge.peers.sip.PortProvider;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.syntaxencoding.SipParser;
 import net.sourceforge.peers.sip.syntaxencoding.SipParserException;
@@ -45,7 +46,7 @@ public class TransactionManagerTestNG {
         TransportManager transportManager = new TransportManager(
                 transactionManager,
                 InetAddress.getLocalHost(),
-                6062);
+                PortProvider.getNextPort());
         transactionManager.setTransportManager(transportManager);
     }
     
@@ -55,7 +56,7 @@ public class TransactionManagerTestNG {
         String testMessage = "MESSAGE sip:bob@biloxi.com SIP/2.0\r\n" +
         "Via: \r\n" +
         "\r\n";
-        int port = 6061;
+        int port = PortProvider.getNextPort();
         InetAddress localHost = InetAddress.getLocalHost();
         SipRequest sipRequest = (SipRequest)parse(testMessage);
         ClientTransactionUser clientTransactionUser = new ClientTransactionUser() {
@@ -102,7 +103,8 @@ public class TransactionManagerTestNG {
             };
         ServerTransaction serverTransaction =
             transactionManager.createServerTransaction(sipResponse,
-                6063, "UDP", serverTransactionUser, sipRequest);
+                PortProvider.getNextPort(), "UDP", serverTransactionUser,
+                sipRequest);
         assert serverTransaction != null;
         assert serverTransaction instanceof NonInviteServerTransaction;
     }
@@ -113,7 +115,7 @@ public class TransactionManagerTestNG {
         String testMessage = "INVITE sip:bob@biloxi.com SIP/2.0\r\n" +
         "Via: \r\n" +
         "\r\n";
-        int port = 6061;
+        int port = PortProvider.getNextPort();
         InetAddress localHost = InetAddress.getLocalHost();
         SipRequest sipRequest = (SipRequest)parse(testMessage);
         ClientTransactionUser clientTransactionUser = new ClientTransactionUser() {
@@ -160,7 +162,8 @@ public class TransactionManagerTestNG {
             };
         ServerTransaction serverTransaction =
             transactionManager.createServerTransaction(sipResponse,
-                6063, "UDP", serverTransactionUser, sipRequest);
+                PortProvider.getNextPort(), "UDP", serverTransactionUser,
+                sipRequest);
         assert serverTransaction != null;
         assert serverTransaction instanceof InviteServerTransaction;
     }

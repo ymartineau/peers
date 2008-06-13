@@ -37,7 +37,9 @@
   <sip>
     <profile>
       <userpart>alice</userpart>
-      <domain>atlanta.com</domain>
+      <!-- <domain>biloxi.com</domain> -->
+      <domain>127.0.0.1</domain>
+      <password>alice</password>
       <!-- not implemented
       <outboundProxy>
         <address>192.168.1.10</address>
@@ -45,9 +47,8 @@
       </outboundProxy>
       -->
       <interface ref="eth1"/>
-      <!-- you can specify the sip listening port you want
+      <!-- you can specify the sip listening port you want -->
       <port>6060</port>
-      -->
     </profile>
   </sip>
   <codecs>

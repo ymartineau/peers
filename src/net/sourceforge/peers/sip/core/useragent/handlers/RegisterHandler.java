@@ -24,6 +24,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 import net.sourceforge.peers.sip.RFC3261;
+import net.sourceforge.peers.sip.core.useragent.ChallengeManager;
 import net.sourceforge.peers.sip.core.useragent.InitialRequestManager;
 import net.sourceforge.peers.sip.syntaxencoding.NameAddress;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldName;
@@ -34,6 +35,7 @@ import net.sourceforge.peers.sip.syntaxencoding.SipURI;
 import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
 import net.sourceforge.peers.sip.transaction.ClientTransaction;
 import net.sourceforge.peers.sip.transaction.ClientTransactionUser;
+import net.sourceforge.peers.sip.transaction.NonInviteClientTransaction;
 import net.sourceforge.peers.sip.transaction.Transaction;
 import net.sourceforge.peers.sip.transaction.TransactionManager;
 import net.sourceforge.peers.sip.transport.SipRequest;
@@ -43,10 +45,10 @@ import net.sourceforge.peers.sip.transport.TransportManager;
 public class RegisterHandler extends MethodHandler
         implements ClientTransactionUser {
 
-    //seconds
-    public static final int REFRESH_MARGIN = 10;
+    public static final int REFRESH_MARGIN = 10; // seconds
 
     private InitialRequestManager initialRequestManager;
+    private ChallengeManager challengeManager;
     
     private Timer timer;
     
@@ -54,10 +56,14 @@ public class RegisterHandler extends MethodHandler
     private String profileUriStr;
     private String callIDStr;
     
+    //FIXME should be on a profile based context
+    private boolean challenged;
+    
     public RegisterHandler(TransactionManager transactionManager,
             TransportManager transportManager) {
         super(transactionManager, transportManager);
         timer = new Timer();
+        challenged = false;
     }
 
     //TODO factorize common code here and in invitehandler
@@ -94,10 +100,6 @@ public class RegisterHandler extends MethodHandler
         return clientTransaction;
     }
     
-//    public void register() {
-//        
-//    }
-    
     public void unregister() {
         if (requestUriStr == null) {
             return;
@@ -120,6 +122,10 @@ public class RegisterHandler extends MethodHandler
         SipHeaderFieldValue contact = sipHeaders.get(
                 new SipHeaderFieldName(RFC3261.HDR_CONTACT));
         contact.addParam(new SipHeaderParamName(RFC3261.PARAM_EXPIRES), "0");
+        
+        if (challengeManager != null) {
+            challengeManager.postProcess(sipRequest);
+        }
         clientTransaction.start();
     }
 
@@ -128,8 +134,19 @@ public class RegisterHandler extends MethodHandler
     //////////////////////////////////////////////////////////
     
     public void errResponseReceived(SipResponse sipResponse) {
-        // TODO OK, notify user
-        
+        if (sipResponse.getStatusCode() == RFC3261.CODE_401_UNAUTHORIZED
+                && challengeManager != null) {
+            if (!challenged) {
+                NonInviteClientTransaction nonInviteClientTransaction =
+                    (NonInviteClientTransaction)
+                    transactionManager.getClientTransaction(sipResponse);
+                SipRequest sipRequest = nonInviteClientTransaction.getRequest();
+                challengeManager.handleChallenge(sipRequest, sipResponse);
+                challenged = true;
+            } else {
+                //TODO notify gui, registration failed
+            }
+        }
     }
 
     public void provResponseReceived(SipResponse sipResponse,
@@ -182,6 +199,10 @@ public class RegisterHandler extends MethodHandler
 
     public void setInitialRequestManager(InitialRequestManager initialRequestManager) {
         this.initialRequestManager = initialRequestManager;
+    }
+
+    public void setChallengeManager(ChallengeManager challengeManager) {
+        this.challengeManager = challengeManager;
     }
     
 }
