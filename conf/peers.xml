@@ -36,9 +36,11 @@
   </devices>
   <sip>
     <profile>
+      <!-- username -->
       <userpart>alice</userpart>
-      <!-- <domain>biloxi.com</domain> -->
-      <domain>127.0.0.1</domain>
+      <!-- domain registrar ip address -->
+      <domain>192.168.1.22</domain>
+      <!-- if password is commented out, no REGISTER message is sent -->
       <password>alice</password>
       <!-- not implemented
       <outboundProxy>

@@ -66,6 +66,16 @@ public class BasicGUI implements ActionListener, Observer, WindowListener {
     private UserAgent userAgent;
 
     public BasicGUI() {
+        //create sip stack
+        Thread thread = new Thread(new Runnable() {
+           public void run() {
+               userAgent = new UserAgent();
+               userAgent.getUas().getInitialRequestManager()
+                   .getInviteHandler().addObserver(BasicGUI.this);
+           }
+        });
+        thread.start();
+        
         mainFrame = new JFrame("Peers: SIP User-Agent");
 //        mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -86,11 +96,7 @@ public class BasicGUI implements ActionListener, Observer, WindowListener {
         
         mainFrame.pack();
         mainFrame.setVisible(true);
-        //create sip stack
-        userAgent = new UserAgent();
-        userAgent.getUas().getInitialRequestManager()
-            .getInviteHandler().addObserver(this);
-        
+
     }
 
     //////////////////////////////////////////////////////////
@@ -104,6 +110,7 @@ public class BasicGUI implements ActionListener, Observer, WindowListener {
             @Override
             protected Void doInBackground() throws Exception {
                 try {
+                    new CallFrame(sipUri, callId, userAgent);
                     userAgent.getUac().invite(sipUri, callId);
                 } catch (SipUriSyntaxException e) {
                     // TODO Auto-generated catch block
@@ -114,11 +121,11 @@ public class BasicGUI implements ActionListener, Observer, WindowListener {
         };
         swingWorker.execute();
         
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                new CallFrame(sipUri, callId, userAgent);
-            }
-        });
+//        SwingUtilities.invokeLater(new Runnable() {
+//            public void run() {
+//                
+//            }
+//        });
     }
 
     //////////////////////////////////////////////////////////
@@ -167,4 +174,5 @@ public class BasicGUI implements ActionListener, Observer, WindowListener {
 
     public void windowOpened(WindowEvent arg0) {
     }
+
 }
