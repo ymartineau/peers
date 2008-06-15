@@ -10,6 +10,8 @@
   <property name="resources.dir" value="resources"/>
   <property name="junit.reports" value="${build.dir}/junit"/>
   <property name="testng.reports" value="${build.dir}/testng"/>
+  <property name="log.peers" value="peers.log"/>
+  <property name="log.transport" value="transport.log"/>
 
   <description>
     This application is a very basic and minimalist SIP User-Agent.
@@ -64,6 +66,8 @@
 
   <target name="dist" depends="jar">
     <mkdir dir="${build.dir}/logs"/>
+    <touch file="${build.dir}/logs/${log.peers}"/>
+    <touch file="${build.dir}/logs/${log.transport}"/>
     <zip destfile="${build.dir}/${ant.project.name}.zip">
       <zipfileset prefix="${ant.project.name}/logs" dir="${build.dir}/logs"/>
       <zipfileset prefix="${ant.project.name}/lib" dir="${lib.dir}/run"/>

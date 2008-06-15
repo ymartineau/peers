@@ -169,6 +169,7 @@ public class RegisterHandler extends MethodHandler
         if (expires == null || "".equals(expires.trim())) {
             return;
         }
+        challenged = false;
         int delay = Integer.parseInt(expires) - REFRESH_MARGIN;
         timer.schedule(new RefreshTimerTask(), delay * 1000);
     }
