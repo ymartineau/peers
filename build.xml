@@ -89,6 +89,8 @@
 
   <target name="dist-src" depends="jar, compile, test-compile">
     <mkdir dir="${build.dir}/logs"/>
+    <touch file="${build.dir}/logs/${log.peers}"/>
+    <touch file="${build.dir}/logs/${log.transport}"/>
     <zip destfile="${build.dir}/${ant.project.name}-src.zip">
       <zipfileset prefix="${ant.project.name}/logs" dir="${build.dir}/logs"/>
       <zipfileset prefix="${ant.project.name}/src" dir="${src.dir}"/>
