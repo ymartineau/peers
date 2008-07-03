@@ -20,6 +20,7 @@
 package net.sourceforge.peers;
 
 import java.io.BufferedWriter;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -28,8 +29,8 @@ import java.util.Date;
 
 public class Logger {
 
-    public final static String LOG_FILE = "logs/peers.log";
-    public final static String NETWORK_FILE = "logs/transport.log";
+    public final static String LOG_FILE = "logs" + File.separator + "peers.log";
+    public final static String NETWORK_FILE = "logs" + File.separator + "transport.log";
     
     private static PrintWriter logWriter;
     private static PrintWriter networkWriter;
