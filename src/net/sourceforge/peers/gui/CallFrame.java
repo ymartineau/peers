@@ -280,12 +280,16 @@ public class CallFrame implements ActionListener, Observer {
             if (isUac) {
                 mainPanel.remove(closeButton);
                 closeButton = null;
-                mainPanel.remove(cancelButton);
+                if (cancelButton != null) {
+                    mainPanel.remove(cancelButton);
+                }
                 cancelButton = null;
             } else {
                 mainPanel.remove(acceptButton);
                 acceptButton = null;
-                mainPanel.remove(rejectButton);
+                if (rejectButton != null) {
+                    mainPanel.remove(rejectButton);
+                }
                 rejectButton = null;
             }
             mainPanel.add(byeButton);
