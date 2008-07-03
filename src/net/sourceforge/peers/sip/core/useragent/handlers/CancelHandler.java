@@ -123,6 +123,9 @@ public class CancelHandler extends DialogMethodHandler
         SipHeaderFieldValue cancelFrom = cancelHeaders.get(fromName);
         SipHeaderFieldValue inviteFrom = inviteHeaders.get(fromName);
         cancelFrom.setValue(inviteFrom.getValue());
+        SipHeaderParamName tagParam = new SipHeaderParamName(RFC3261.PARAM_TAG);
+        cancelFrom.removeParam(tagParam);
+        cancelFrom.addParam(tagParam, inviteFrom.getParam(tagParam));
         
         //top-via
 //        cancelHeaders.add(new SipHeaderFieldName(RFC3261.HDR_VIA),
