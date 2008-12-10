@@ -43,8 +43,8 @@ public class ChallengeManager implements MessageInterceptor {
         MessageDigest messageDigest;
         try {
             messageDigest = MessageDigest.getInstance(ALGORITHM_MD5);
-        } catch (NoSuchAlgorithmException e1) {
-            e1.printStackTrace();
+        } catch (NoSuchAlgorithmException e) {
+            Logger.error("no such algorithm " + ALGORITHM_MD5, e);
             return null;
         }
         byte[] messageBytes = message.getBytes();
@@ -114,8 +114,7 @@ public class ChallengeManager implements MessageInterceptor {
             initialRequestManager.createInitialRequest(
                     requestUri, method, profileUri, callId, this);
         } catch (SipUriSyntaxException e) {
-            e.printStackTrace();
-            Logger.error(e);
+            Logger.error("syntax error", e);
         }
     }
     

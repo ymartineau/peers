@@ -24,6 +24,7 @@ import java.net.InetAddress;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldName;
@@ -90,7 +91,7 @@ public class InviteClientTransaction extends InviteTransaction
             messageSender = transportManager.createClientTransport(
                     request, remoteInetAddress, remotePort, transport);
         } catch (IOException e) {
-            e.printStackTrace();
+            Logger.error("input/output error", e);
             transportError();
         }
 
@@ -116,7 +117,7 @@ public class InviteClientTransaction extends InviteTransaction
         try {
             messageSender.sendMessage(request);
         } catch (IOException e) {
-            //e.printStackTrace();
+            Logger.error("input/output error", e);
             transportError();
         }
         
@@ -135,7 +136,7 @@ public class InviteClientTransaction extends InviteTransaction
         // 17.1.1
         int statusCode = sipResponse.getStatusCode();
         if (statusCode < RFC3261.CODE_MIN_PROV) {
-            System.err.println("invalid response code");
+            Logger.error("invalid response code");
         } else if (statusCode < RFC3261.CODE_MIN_SUCCESS) {
             state.received1xx();
         } else if (statusCode < RFC3261.CODE_MIN_REDIR) {
@@ -143,7 +144,7 @@ public class InviteClientTransaction extends InviteTransaction
         } else if (statusCode <= RFC3261.CODE_MAX) {
             state.received300To699();
         } else {
-            System.err.println("invalid response code");
+            Logger.error("invalid response code");
         }
     }
     
@@ -181,7 +182,7 @@ public class InviteClientTransaction extends InviteTransaction
         try {
             messageSender.sendMessage(ack);
         } catch (IOException e) {
-            //e.printStackTrace();
+            Logger.error("input/output error", e);
             transportError();
         }
     }
@@ -192,7 +193,7 @@ public class InviteClientTransaction extends InviteTransaction
         try {
             messageSender.sendMessage(request);
         } catch (IOException e) {
-            //e.printStackTrace();
+            Logger.error("input/output error", e);
             transportError();
         }
         timer.schedule(new TimerA(), (long)Math.pow(2, nbRetrans) * RFC3261.TIMER_T1);

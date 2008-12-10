@@ -192,7 +192,7 @@ public class CallFrame implements ActionListener, Observer {
                 }
                 //if event is not for this frame (conversation) simply discard it
             } else {
-                System.err.println("invite handler notification unknown");
+                Logger.error("invite handler notification unknown");
             }
         } else if (o instanceof Dialog) {
             if (dialog == null) {
@@ -202,7 +202,7 @@ public class CallFrame implements ActionListener, Observer {
                 DialogState dialogState = (DialogState) arg;
                 updateGui(dialogState);
             } else {
-                System.err.println("dialog notification unknown");
+                Logger.error("dialog notification unknown");
             }
         }
     }
@@ -227,7 +227,7 @@ public class CallFrame implements ActionListener, Observer {
             break;
 
         default:
-            System.err.println("unknown sip event: " + sipEvent);
+            Logger.error("unknown sip event: " + sipEvent);
             break;
         }
     }

@@ -23,9 +23,11 @@ import java.util.Hashtable;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.core.useragent.ChallengeManager;
 import net.sourceforge.peers.sip.core.useragent.InitialRequestManager;
+import net.sourceforge.peers.sip.core.useragent.RequestManager;
 import net.sourceforge.peers.sip.syntaxencoding.NameAddress;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldName;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldValue;
@@ -58,24 +60,27 @@ public class RegisterHandler extends MethodHandler
     
     //FIXME should be on a profile based context
     private boolean challenged;
+    private boolean unregistered;
     
     public RegisterHandler(TransactionManager transactionManager,
             TransportManager transportManager) {
         super(transactionManager, transportManager);
         timer = new Timer();
         challenged = false;
+        unregistered = false;
     }
 
     //TODO factorize common code here and in invitehandler
     public ClientTransaction preProcessRegister(SipRequest sipRequest) {
-        SipURI requestUri = sipRequest.getRequestUri();
-        int port = requestUri.getPort();
+        SipHeaders sipHeaders = sipRequest.getSipHeaders();
+        SipURI destinationUri = RequestManager.getDestinationUri(sipRequest);
+        int port = destinationUri.getPort();
         if (port == SipURI.DEFAULT_PORT) {
             port = RFC3261.TRANSPORT_DEFAULT_PORT;
         }
         //TODO if header route is present, addrspec = toproute.nameaddress.addrspec
         String transport = RFC3261.TRANSPORT_UDP;
-        Hashtable<String, String> params = requestUri.getUriParameters();
+        Hashtable<String, String> params = destinationUri.getUriParameters();
         if (params != null) {
             String reqUriTransport = params.get(RFC3261.PARAM_TRANSPORT);
             if (reqUriTransport != null) {
@@ -83,17 +88,16 @@ public class RegisterHandler extends MethodHandler
             }
         }
         ClientTransaction clientTransaction = transactionManager
-            .createClientTransaction(sipRequest, requestUri.getHost(), port,
+            .createClientTransaction(sipRequest, destinationUri.getHost(), port,
                     transport, null, this);
         //TODO 10.2
-        SipHeaders sipHeaders = sipRequest.getSipHeaders();
         SipHeaderFieldValue to = sipHeaders.get(
                 new SipHeaderFieldName(RFC3261.HDR_TO));
         SipHeaderFieldValue from = sipHeaders.get(
                 new SipHeaderFieldName(RFC3261.HDR_FROM));
         String fromValue = from.getValue();
         to.setValue(fromValue);
-        requestUriStr = requestUri.toString();
+        requestUriStr = destinationUri.toString();
         profileUriStr = NameAddress.nameAddressToUri(fromValue);
         callIDStr = sipHeaders.get(new SipHeaderFieldName(RFC3261.HDR_CALLID))
             .toString();
@@ -109,7 +113,7 @@ public class RegisterHandler extends MethodHandler
             sipRequest = initialRequestManager.getGenericRequest(requestUriStr,
                     RFC3261.METHOD_REGISTER, profileUriStr);
         } catch (SipUriSyntaxException e) {
-            e.printStackTrace();
+            Logger.error("syntax error", e);
             return;
         }
         SipHeaders sipHeaders = sipRequest.getSipHeaders();
@@ -126,6 +130,7 @@ public class RegisterHandler extends MethodHandler
         if (challengeManager != null) {
             challengeManager.postProcess(sipRequest);
         }
+        unregistered = true;
         clientTransaction.start();
     }
 
@@ -170,8 +175,10 @@ public class RegisterHandler extends MethodHandler
             return;
         }
         challenged = false;
-        int delay = Integer.parseInt(expires) - REFRESH_MARGIN;
-        timer.schedule(new RefreshTimerTask(), delay * 1000);
+        if (!unregistered) {
+            int delay = Integer.parseInt(expires) - REFRESH_MARGIN;
+            timer.schedule(new RefreshTimerTask(), delay * 1000);
+        }
     }
 
     public void transactionTimeout() {
@@ -193,7 +200,7 @@ public class RegisterHandler extends MethodHandler
                 initialRequestManager.createInitialRequest(requestUriStr,
                         RFC3261.METHOD_REGISTER, profileUriStr, callIDStr);
             } catch (SipUriSyntaxException e) {
-                e.printStackTrace();
+                Logger.error("syntax error", e);
             }
         }
     }

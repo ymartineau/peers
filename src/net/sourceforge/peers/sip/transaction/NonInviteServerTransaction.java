@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.SipResponse;
@@ -64,7 +65,7 @@ public class NonInviteServerTransaction extends Transaction
         try {
             transportManager.createServerTransport(transport, port);
         } catch (IOException e) {
-            e.printStackTrace();
+            Logger.error("input/output error", e);
         }
         
         //TODO pass request to TU
@@ -95,7 +96,7 @@ public class NonInviteServerTransaction extends Transaction
             try {
                 transportManager.sendResponse(responses.get(nbOfResponses - 1));
             } catch (IOException e) {
-                e.printStackTrace();
+                Logger.error("input/output error", e);
             }
         }
     }

@@ -49,7 +49,6 @@ public class TransactionManager {
         timer = new Timer("Transaction timer");
     }
     
-    //TODO remove transportManager parameter, use class variable transportManager
     public ClientTransaction createClientTransaction(SipRequest sipRequest,
             InetAddress inetAddress, int port, String transport,
             String pBranchId, ClientTransactionUser clientTransactionUser) {

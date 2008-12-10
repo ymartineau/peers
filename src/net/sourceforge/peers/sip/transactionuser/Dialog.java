@@ -22,6 +22,7 @@ package net.sourceforge.peers.sip.transactionuser;
 import java.util.ArrayList;
 import java.util.Observable;
 
+import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.syntaxencoding.NameAddress;
@@ -153,7 +154,7 @@ public class Dialog extends Observable {
                 headers.add(new SipHeaderFieldName(RFC3261.HDR_ROUTE),
                         new SipHeaderFieldMultiValue(routes));
             } else {
-                System.err.println("Trying to forward to a strict router, forbidden in this implementation");
+                Logger.error("Trying to forward to a strict router, forbidden in this implementation");
             }
         }
         

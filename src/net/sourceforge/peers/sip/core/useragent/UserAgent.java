@@ -33,12 +33,14 @@ import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.media.CaptureRtpSender;
 import net.sourceforge.peers.media.IncomingRtpReader;
 import net.sourceforge.peers.sip.RFC3261;
+import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.core.Config;
 import net.sourceforge.peers.sip.core.useragent.handlers.ByeHandler;
 import net.sourceforge.peers.sip.core.useragent.handlers.CancelHandler;
 import net.sourceforge.peers.sip.core.useragent.handlers.InviteHandler;
 import net.sourceforge.peers.sip.core.useragent.handlers.OptionsHandler;
 import net.sourceforge.peers.sip.core.useragent.handlers.RegisterHandler;
+import net.sourceforge.peers.sip.syntaxencoding.SipURI;
 import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
 import net.sourceforge.peers.sip.transaction.Transaction;
 import net.sourceforge.peers.sip.transaction.TransactionManager;
@@ -54,7 +56,7 @@ import org.dom4j.Node;
 
 public class UserAgent {
 
-    public final static String CONFIG_FILE = "conf/peers.xml";
+    public final static String CONFIG_FILE = "conf" + File.separator + "peers.xml";
     
     private Config config;
     
@@ -77,23 +79,24 @@ public class UserAgent {
     private int sipPort;
     private int rtpPort;
     private int cseqCounter;
+    private boolean media = true;
+    private SipURI outboundProxy;
     
     private String userpart;
     private String domain;
     
     public UserAgent() {
-        
-        File configFile = new File(CONFIG_FILE);
+        File configFile = new File(Utils.getPeersHome() + CONFIG_FILE);
         if (!configFile.exists()) {
-            System.err.println("configuration file not found: " + CONFIG_FILE);
+            Logger.error("configuration file not found: " + CONFIG_FILE);
             System.exit(-1);
         }
         try {
             config = new Config(configFile.toURI().toURL());
         } catch (DocumentException e) {
-            e.printStackTrace();
+            Logger.error("dom4j document error", e);
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            Logger.error("malformed url", e);
         }
         
         //config
@@ -120,7 +123,7 @@ public class UserAgent {
                     }
                 }
             } catch (SocketException e) {
-                e.printStackTrace();
+                Logger.error("socket error", e);
             }
             if (myAddress == null) {
                 throw new RuntimeException("ip address cannot be determined " +
@@ -131,7 +134,7 @@ public class UserAgent {
             try {
                 myAddress = InetAddress.getByName(node.getText());
             } catch (UnknownHostException e) {
-                e.printStackTrace();
+                Logger.error("unknown host " + node.getText(), e);
             }
         }
 
@@ -166,6 +169,16 @@ public class UserAgent {
             password = node.getText();
         }
         
+        //outbound proxy
+        node = config.selectSingleNode("//peers:sip/peers:profile/peers:outboundProxy");
+        if (node != null) {
+            try {
+                outboundProxy = new SipURI(node.getText());
+            } catch (SipUriSyntaxException e) {
+                Logger.error("syntax error", e);
+            }
+        }
+        
         //stack rtp listening port
         node = config.selectSingleNode("//peers:rtp/peers:port");
         rtpPort = Integer.parseInt(node.getText());
@@ -177,8 +190,15 @@ public class UserAgent {
         buf.append("sipPort: ").append(sipPort).append(", ");
         buf.append("userpart: ").append(userpart).append(", ");
         buf.append("domain: ").append(domain).append("]");
-        Logger.info(buf);
+        Logger.info(buf.toString());
         
+        //is media activated
+        node = config.selectSingleNode("//peers:media");
+        if (node != null) {
+            media = Boolean.parseBoolean(node.getText());
+        }
+        
+
         //transaction user
         
         dialogManager = new DialogManager();
@@ -269,7 +289,7 @@ public class UserAgent {
             try {
                 uac.register();
             } catch (SipUriSyntaxException e) {
-                e.printStackTrace();
+                Logger.error("syntax error", e);
             }
         }
     }
@@ -345,10 +365,6 @@ public class UserAgent {
         this.incomingRtpReader = incomingRtpReader;
     }
 
-    public synchronized Config getConfig() {
-        return config;
-    }
-
     public UAS getUas() {
         return uas;
     }
@@ -379,6 +395,14 @@ public class UserAgent {
 
     public String getUserpart() {
         return userpart;
+    }
+
+    public boolean isMedia() {
+        return media;
+    }
+
+    public SipURI getOutboundProxy() {
+        return outboundProxy;
     }
     
 }

@@ -23,6 +23,7 @@ import gov.nist.jrtp.RtpException;
 
 import java.io.IOException;
 
+import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.media.CaptureRtpSender;
 import net.sourceforge.peers.media.IncomingRtpReader;
 import net.sourceforge.peers.sip.core.useragent.UserAgent;
@@ -42,7 +43,7 @@ public class SDPManager {
         try {
             return sdpParser.parse(answer);
         } catch (IOException e) {
-            e.printStackTrace();
+            Logger.error("input/output error", e);
         }
         return null;
     }
@@ -54,53 +55,54 @@ public class SDPManager {
         try {
             sessionDescription = sdpParser.parse(offer);
         } catch (IOException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            Logger.error("input/output error", e);
             return null;
         }
         String destAddress = sessionDescription.getIpAddress().getHostAddress();
         int destPort = sessionDescription.getMedias().get(0).getPort();
         
-        //FIXME move this to InviteHandler
-        //TODO this could be optimized, create captureRtpSender at stack init
-        //     and just retrieve it here
-        CaptureRtpSender captureRtpSender;
-        try {
-            captureRtpSender = new CaptureRtpSender(
-                    userAgent.getMyAddress().getHostAddress(), userAgent.getRtpPort(),
-                    destAddress, destPort);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-        userAgent.setCaptureRtpSender(captureRtpSender);
+        if (userAgent.isMedia()) {
+            //FIXME move this to InviteHandler
+            //TODO this could be optimized, create captureRtpSender at stack init
+            //     and just retrieve it here
+            CaptureRtpSender captureRtpSender;
+            try {
+                captureRtpSender = new CaptureRtpSender(
+                        userAgent.getMyAddress().getHostAddress(), userAgent.getRtpPort(),
+                        destAddress, destPort);
+            } catch (IOException e) {
+                Logger.error("input/output error", e);
+                return null;
+            }
+            userAgent.setCaptureRtpSender(captureRtpSender);
 
-        try {
-            captureRtpSender.start();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        
-        IncomingRtpReader incomingRtpReader;
-        try {
-            //TODO retrieve port from SDP offer
-//                incomingRtpReader = new IncomingRtpReader(localAddress,
-//                        Utils.getInstance().getRtpPort(),
-//                        remoteAddress, remotePort);
-            //FIXME RTP sessions can be different !
-            incomingRtpReader = new IncomingRtpReader(captureRtpSender.getRtpSession());
-        } catch (IOException e1) {
-            e1.printStackTrace();
-            return null;
-        }
-        userAgent.setIncomingRtpReader(incomingRtpReader);
+            try {
+                captureRtpSender.start();
+            } catch (IOException e) {
+                Logger.error("input/output error", e);
+            }
+            
+            IncomingRtpReader incomingRtpReader;
+            try {
+                //TODO retrieve port from SDP offer
+//                    incomingRtpReader = new IncomingRtpReader(localAddress,
+//                            Utils.getInstance().getRtpPort(),
+//                            remoteAddress, remotePort);
+                //FIXME RTP sessions can be different !
+                incomingRtpReader = new IncomingRtpReader(captureRtpSender.getRtpSession());
+            } catch (IOException e1) {
+                Logger.error("input/output error", e1);
+                return null;
+            }
+            userAgent.setIncomingRtpReader(incomingRtpReader);
 
-        try {
-            incomingRtpReader.start();
-        } catch (IOException e1) {
-            e1.printStackTrace();
-        } catch (RtpException e1) {
-            e1.printStackTrace();
+            try {
+                incomingRtpReader.start();
+            } catch (IOException e1) {
+                Logger.error("input/output error", e1);
+            } catch (RtpException e1) {
+                Logger.error("RTP error", e1);
+            }
         }
         
         return generateOffer();

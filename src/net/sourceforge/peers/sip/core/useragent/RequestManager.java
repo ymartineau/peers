@@ -19,17 +19,46 @@
 
 package net.sourceforge.peers.sip.core.useragent;
 
+import net.sourceforge.peers.Logger;
+import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.core.useragent.handlers.ByeHandler;
 import net.sourceforge.peers.sip.core.useragent.handlers.CancelHandler;
 import net.sourceforge.peers.sip.core.useragent.handlers.InviteHandler;
 import net.sourceforge.peers.sip.core.useragent.handlers.OptionsHandler;
 import net.sourceforge.peers.sip.core.useragent.handlers.RegisterHandler;
+import net.sourceforge.peers.sip.syntaxencoding.NameAddress;
+import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldName;
+import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldValue;
+import net.sourceforge.peers.sip.syntaxencoding.SipHeaders;
+import net.sourceforge.peers.sip.syntaxencoding.SipURI;
+import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
 import net.sourceforge.peers.sip.transaction.TransactionManager;
 import net.sourceforge.peers.sip.transactionuser.DialogManager;
+import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.TransportManager;
 
 
 public abstract class RequestManager {
+
+    public static SipURI getDestinationUri(SipRequest sipRequest) {
+        SipHeaders requestHeaders = sipRequest.getSipHeaders();
+        SipURI destinationUri = null;
+        SipHeaderFieldValue route = requestHeaders.get(
+                new SipHeaderFieldName(RFC3261.HDR_ROUTE));
+        if (route != null) {
+            try {
+                destinationUri = new SipURI(
+                        NameAddress.nameAddressToUri(route.toString()));
+            } catch (SipUriSyntaxException e) {
+                Logger.error("syntax error", e);
+            }
+        }
+        if (destinationUri == null) {
+            destinationUri = sipRequest.getRequestUri();
+        }
+        return destinationUri;
+    }
+
     protected InviteHandler inviteHandler;
     protected CancelHandler cancelHandler;
     protected ByeHandler byeHandler;

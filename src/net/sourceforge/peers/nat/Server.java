@@ -67,7 +67,7 @@ public class Server {
         try {
             encodedEmail = URLEncoder.encode(email, "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+            Logger.error("unsupported encoding", e);
             return;
         }
         StringBuffer urlEnd = new StringBuffer();
@@ -82,7 +82,7 @@ public class Server {
         try {
             encodedEmail = URLEncoder.encode(email, "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+            Logger.error("unsupported encoding", e);
             return null;
         }
         StringBuffer urlBuf = new StringBuffer();
@@ -95,7 +95,7 @@ public class Server {
         try {
             url = new URL(urlBuf.toString());
         } catch (MalformedURLException e) {
-            e.printStackTrace();
+            Logger.error("malformed url", e);
             return null;
         }
         Logger.debug("retrieved peers");
@@ -104,6 +104,7 @@ public class Server {
         try {
             doc = saxReader.read(url);
         } catch (DocumentException e) {
+            Logger.error("dom4j document exception", e);
             e.printStackTrace();
             return null;
         }
@@ -125,7 +126,7 @@ public class Server {
         try {
             socket.getOutputStream().write(get.toString().getBytes());
         } catch (IOException e) {
-            e.printStackTrace();
+            Logger.error("input/output error", e);
             return null;
         }
         Logger.debug("> sent:\n" + get.toString());
@@ -143,7 +144,7 @@ public class Server {
             Logger.debug("socket timeout");
             return null;
         } catch (IOException e) {
-            e.printStackTrace();
+            Logger.error("input/output error", e);
             return null;
         }
         Logger.debug("< received:\n" + result.toString());
@@ -155,7 +156,7 @@ public class Server {
             try {
                 socket.close();
             } catch (IOException e) {
-                e.printStackTrace();
+                Logger.error("input/output error", e);
             }
         }
     }

@@ -57,8 +57,7 @@ public class IncomingRtpReader implements RtpListener {
             line = (SourceDataLine) AudioSystem.getLine(info);
             line.open(format);
         } catch (LineUnavailableException ex) {
-            // Handle the error ... 
-            ex.printStackTrace();
+            Logger.error("line unavailable", ex);
             return;
         }
         line.start();

@@ -22,6 +22,8 @@ package net.sourceforge.peers.sip.core;
 import java.net.URL;
 import java.util.List;
 
+import net.sourceforge.peers.Logger;
+
 import org.dom4j.Document;
 import org.dom4j.DocumentException;
 import org.dom4j.Node;
@@ -44,7 +46,7 @@ public class Config {
                     "http://apache.org/xml/features/validation/schema",
                     true);
         } catch (SAXException e) {
-            e.printStackTrace();
+            Logger.error("SAX error", e);
             return;
         }
         document = reader.read(url);

@@ -104,7 +104,7 @@ public class UlawStream implements Runnable {
         AudioFormat.Encoding[] encodings =
             AudioSystem.getTargetEncodings(format.getEncoding());
         for (AudioFormat.Encoding encoding : encodings) {
-            Logger.debug(encoding);
+            Logger.debug(encoding.toString());
         }
         
         
@@ -114,7 +114,7 @@ public class UlawStream implements Runnable {
             targetFormat = formats[0];
         }
         if (targetFormat == null) {
-            System.err.println("no audio format found");
+            Logger.error("no audio format found");
             return;
         }
         
@@ -125,7 +125,7 @@ public class UlawStream implements Runnable {
         
         Logger.debug("target formats");
         for (AudioFormat audioFormat : formats) {
-            Logger.debug(audioFormat);
+            Logger.debug(audioFormat.toString());
         }
         
         
@@ -154,9 +154,7 @@ public class UlawStream implements Runnable {
             
             
         } catch (LineUnavailableException e) {
-            // Handle the error ...
-            Logger.error(e);
-            e.printStackTrace();
+            Logger.error("line unavailable", e);
             return;
         }
         line.start();
@@ -251,12 +249,12 @@ public class UlawStream implements Runnable {
                             try {
                                 Thread.sleep(RATE);
                             } catch (InterruptedException ie) {
-                                ie.printStackTrace();
+                                Logger.error("Thread interrupted", ie);
                             }
                         } catch (RtpException re) {
-                            re.printStackTrace();
+                            Logger.error("RTP error", re);
                         } catch (IOException ioe) {
-                            ioe.printStackTrace();
+                            Logger.error("input/output error", ioe);
                         }
                     }
                 }
