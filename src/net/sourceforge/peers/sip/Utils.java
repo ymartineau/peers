@@ -20,6 +20,7 @@
 package net.sourceforge.peers.sip;
 
 
+import java.io.File;
 import java.net.InetAddress;
 
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldMultiValue;
@@ -30,6 +31,8 @@ import net.sourceforge.peers.sip.transport.SipMessage;
 
 
 public class Utils {
+
+    public static final String PEERSHOME_SYSTEM_PROPERTY = "peers.home";
 
     public final static SipHeaderFieldValue getTopVia(SipMessage sipMessage) {
         SipHeaders sipHeaders = sipMessage.getSipHeaders();
@@ -108,5 +111,13 @@ public class Utils {
                         String.valueOf(RFC3261.DEFAULT_MAXFORWARDS)));
         
         //TODO Supported and Require
+    }
+
+    public final static String getPeersHome() {
+        String peersHome = System.getProperty(PEERSHOME_SYSTEM_PROPERTY);
+        if (peersHome != null && !"".equals(peersHome.trim())) {
+            return peersHome + File.separator;
+        }
+        return "";
     }
 }

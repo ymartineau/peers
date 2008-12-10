@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.transport.SipMessage;
 import net.sourceforge.peers.sip.transport.SipRequest;
@@ -82,7 +83,7 @@ public class InviteServerTransaction extends InviteTransaction
         try {
             transportManager.createServerTransport(transport, port);
         } catch (IOException e) {
-            e.printStackTrace();
+            Logger.error("input/output error", e);
         }
     }
     
@@ -114,7 +115,7 @@ public class InviteServerTransaction extends InviteTransaction
         } else if (statusCode <= RFC3261.CODE_MAX) {
             state.received300To699();
         } else {
-            System.err.println("invalid response code");
+            Logger.error("invalid response code");
         }
     }
 
@@ -134,7 +135,7 @@ public class InviteServerTransaction extends InviteTransaction
             try {
                 transportManager.sendResponse(responses.get(nbOfResponses - 1));
             } catch (IOException e) {
-                e.printStackTrace();
+                Logger.error("input/output error", e);
             }
         }
     }

@@ -47,8 +47,15 @@ public class UdpMessageReceiver extends MessageReceiver {
         byte[] trimmedPacket = new byte[packet.getLength()];
         System.arraycopy(packet.getData(), 0,
                 trimmedPacket, 0, trimmedPacket.length);
-        Logger.traceNetwork(new String(trimmedPacket), "RECEIVED");
-        processMessage(trimmedPacket, packet.getAddress());
+        StringBuffer direction = new StringBuffer();
+        direction.append("RECEIVED from ").append(packet.getAddress().getHostAddress());
+        direction.append("/").append(packet.getPort());
+        Logger.traceNetwork(new String(trimmedPacket), direction.toString());
+        // ignore keep-alive empty packets (4 NUL bytes = 4 0x00 bytes)
+        // here we just check the packet length, may it be 0x00 bytes or not
+        if (packet.getLength() != 4) {
+            processMessage(trimmedPacket, packet.getAddress());
+        }
     }
 
 

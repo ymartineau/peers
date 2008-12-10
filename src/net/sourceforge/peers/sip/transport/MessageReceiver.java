@@ -61,7 +61,7 @@ public abstract class MessageReceiver implements Runnable {
             try {
                 listen();
             } catch (IOException e) {
-                e.printStackTrace();
+                Logger.error("input/output error", e);
             }
         }
     }
@@ -74,7 +74,7 @@ public abstract class MessageReceiver implements Runnable {
             beginning = new String(message, 0,
                     RFC3261.DEFAULT_SIP_VERSION.length(), CHARACTER_ENCODING);
         } catch (UnsupportedEncodingException e) {
-            e.printStackTrace();
+            Logger.error("unsupported encoding", e);
         }
         if (RFC3261.DEFAULT_SIP_VERSION.equals(beginning)) {
             return false;
@@ -89,9 +89,9 @@ public abstract class MessageReceiver implements Runnable {
             sipMessage = transportManager.sipParser.parse(
                     new ByteArrayInputStream(message));
         } catch (IOException e) {
-            e.printStackTrace();
+            Logger.error("input/output error", e);
         } catch (SipParserException e) {
-            e.printStackTrace();
+            Logger.error("SIP parser error", e);
         }
         if (sipMessage == null) {
             return;

@@ -28,8 +28,13 @@ import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.TargetDataLine;
 
+import net.sourceforge.peers.Logger;
+
 
 public class Capture implements Runnable {
+    
+    public static final int SAMPLE_SIZE = 16;
+    public static final int BUFFER_SIZE = SAMPLE_SIZE * 20;
     
     private PipedOutputStream rawData;
     private boolean isStopped;
@@ -39,32 +44,32 @@ public class Capture implements Runnable {
     }
     
     public void run() {
-        AudioFormat format = new AudioFormat(8000, 16, 1, true, false);
+        AudioFormat format = new AudioFormat(8000, SAMPLE_SIZE, 1, true, false);
         DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
         TargetDataLine line;
         try {
             line = (TargetDataLine) AudioSystem.getLine(info);
             line.open(format);
         } catch (LineUnavailableException e) {
-            e.printStackTrace();
+            Logger.error("line unavailable", e);
             return;
         }
         line.start();
-        byte[] buffer = new byte[320];
+        byte[] buffer = new byte[BUFFER_SIZE];
         
         while (!isStopped) {
             int numBytesRead = line.read(buffer, 0, buffer.length);
-            byte[] trimmedBuffer;
-            if (numBytesRead < buffer.length) {
-                trimmedBuffer = new byte[numBytesRead];
-                System.arraycopy(buffer, 0, trimmedBuffer, 0, numBytesRead);
-            } else {
-                trimmedBuffer = buffer;
-            }
+//            byte[] trimmedBuffer;
+//            if (numBytesRead < buffer.length) {
+//                trimmedBuffer = new byte[numBytesRead];
+//                System.arraycopy(buffer, 0, trimmedBuffer, 0, numBytesRead);
+//            } else {
+//                trimmedBuffer = buffer;
+//            }
             try {
-                rawData.write(trimmedBuffer);
+                rawData.write(buffer, 0, numBytesRead);
             } catch (IOException e) {
-                e.printStackTrace();
+                Logger.error("input/output error", e);
                 return;
             }
         }

@@ -27,10 +27,14 @@ import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import net.sourceforge.peers.sip.Utils;
+
 public class Logger {
 
-    public final static String LOG_FILE = "logs" + File.separator + "peers.log";
-    public final static String NETWORK_FILE = "logs" + File.separator + "transport.log";
+    public final static String LOG_FILE =
+        Utils.getPeersHome() + "logs" + File.separator + "peers.log";
+    public final static String NETWORK_FILE =
+        Utils.getPeersHome() + "logs" + File.separator + "transport.log";
     
     private static PrintWriter logWriter;
     private static PrintWriter networkWriter;
@@ -46,7 +50,7 @@ public class Logger {
             networkWriter = new PrintWriter(new BufferedWriter(
                     new FileWriter(NETWORK_FILE)));
         } catch (IOException e) {
-            e.printStackTrace();
+            Logger.error("input/output error", e);
         }
         logMutex = new Object();
         networkMutex = new Object();
@@ -54,23 +58,31 @@ public class Logger {
         networkFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS");
     }
     
-    public final static void debug(Object message) {
+    public final static void debug(String message) {
         synchronized (logMutex) {
             logWriter.write(genericLog(message.toString(), "DEBUG"));
             logWriter.flush();
         }
     }
     
-    public final static void info(Object message) {
+    public final static void info(String message) {
         synchronized (logMutex) {
             logWriter.write(genericLog(message.toString(), "INFO "));
             logWriter.flush();
         }
     }
     
-    public final static void error(Object message) {
+    public final static void error(String message) {
         synchronized (logMutex) {
-            logWriter.write(genericLog(message.toString(), "WARN "));
+            logWriter.write(genericLog(message.toString(), "ERROR"));
+            logWriter.flush();
+        }
+    }
+    
+    public final static void error(String message, Exception exception) {
+        synchronized (logMutex) {
+            logWriter.write(genericLog(message.toString(), "ERROR"));
+            exception.printStackTrace(logWriter);
             logWriter.flush();
         }
     }

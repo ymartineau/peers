@@ -113,8 +113,7 @@ public class BasicGUI implements ActionListener, Observer, WindowListener {
                     new CallFrame(sipUri, callId, userAgent);
                     userAgent.getUac().invite(sipUri, callId);
                 } catch (SipUriSyntaxException e) {
-                    // TODO Auto-generated catch block
-                    e.printStackTrace();
+                    Logger.error("syntax issue", e);
                 }
                 return null;
             }
@@ -154,8 +153,8 @@ public class BasicGUI implements ActionListener, Observer, WindowListener {
     public void windowClosed(WindowEvent arg0) {
         try {
             userAgent.getUac().unregister();
-        } catch (Throwable t) {
-            Logger.debug(t);
+        } catch (Exception e) {
+            Logger.error("error while unregistering", e);
         }
         System.exit(0);
     }

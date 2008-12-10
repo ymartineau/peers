@@ -195,7 +195,7 @@ public class TransportManager {
         } else if (buf.indexOf(RFC3261.TRANSPORT_UDP) > -1) {
             transport = RFC3261.TRANSPORT_UDP;
         } else {
-            System.err.println("no transport found in top via header," +
+            Logger.error("no transport found in top via header," +
                     " discarding response");
             return;
         }
@@ -210,7 +210,7 @@ public class TransportManager {
             connection = new SipTransportConnection(
                     InetAddress.getByName(host), port, transport);
         } catch (UnknownHostException e) {
-            e.printStackTrace();
+            Logger.error("unknwon host", e);
             return;
         }
         

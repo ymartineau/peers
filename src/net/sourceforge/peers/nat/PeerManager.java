@@ -51,7 +51,7 @@ public class PeerManager extends Thread {
         try {
             datagramSocket = new DatagramSocket(localPort, localAddress);
         } catch (SocketException e) {
-            e.printStackTrace();
+            Logger.error("socket error", e);
             return;
         }
 //        UDPReceiver udpReceiver = new UDPReceiver(datagramSocket);
@@ -64,6 +64,7 @@ public class PeerManager extends Thread {
             try {
                 Thread.sleep(30000);
             } catch (InterruptedException e) {
+                Logger.error("Thread interrupted", e);
                 return;
             }
         }
@@ -87,13 +88,14 @@ public class PeerManager extends Thread {
                 try {
                     Thread.sleep(5000);
                 } catch (InterruptedException e) {
+                    Logger.error("Thread interrupted", e);
                     return;
                 }
             }
 
             //datagramSocket.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            Logger.error("input/output error", e);
             return;
         }
     }

@@ -23,6 +23,8 @@ import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 
+import net.sourceforge.peers.Logger;
+
 public class Encoder implements Runnable {
 
     private PipedInputStream rawData;
@@ -35,19 +37,18 @@ public class Encoder implements Runnable {
     }
     
     public void run() {
-        int buf_size = 320;
-        byte[] buffer = new byte[buf_size];
+        byte[] buffer = new byte[Capture.BUFFER_SIZE];
         
         // for the moment, we consider that the number of
         // bytes read corresponds to the buffer size
-        byte[] ulawData = new byte[buf_size/2];
+        byte[] ulawData = new byte[Capture.BUFFER_SIZE/2];
         
         while (!isStopped) {
 
             try {
-                rawData.read(buffer, 0, buf_size);
+                rawData.read(buffer, 0, Capture.BUFFER_SIZE);
             } catch (IOException e) {
-                e.printStackTrace();
+                Logger.error("input/output error", e);
                 return;
             }
 //            System.out.println(buffer);
@@ -58,7 +59,7 @@ public class Encoder implements Runnable {
             AudioUlawEncodeDecode02.increment = 1;
             AudioUlawEncodeDecode02.limit = 4;
             
-            for (int i = 0; i < buf_size; i += 2) {
+            for (int i = 0; i < Capture.BUFFER_SIZE; i += 2) {
                 //TODO data length odd
                 //TODO manage data endianess
                 short value = (short)buffer[i];
@@ -69,7 +70,7 @@ public class Encoder implements Runnable {
             try {
                 encodedData.write(ulawData);
             } catch (IOException e) {
-                e.printStackTrace();
+                Logger.error("input/output error", e);
                 return;
             }
         }

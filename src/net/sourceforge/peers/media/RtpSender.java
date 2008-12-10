@@ -27,6 +27,8 @@ import java.io.IOException;
 import java.io.PipedInputStream;
 import java.net.UnknownHostException;
 
+import net.sourceforge.peers.Logger;
+
 public class RtpSender implements Runnable {
 
     private PipedInputStream encodedData;
@@ -43,7 +45,7 @@ public class RtpSender implements Runnable {
         rtpPacket.setV(2);
         rtpPacket.setPT(0);
         rtpPacket.setSSRC(1);
-        int buf_size = 160;
+        int buf_size = Capture.BUFFER_SIZE / 2;
         byte[] buffer = new byte[buf_size];
         long counter = 0;
         
@@ -52,7 +54,7 @@ public class RtpSender implements Runnable {
             try {
                 encodedData.read(buffer, 0, buf_size);
             } catch (IOException e) {
-                e.printStackTrace();
+                Logger.error("input/output error", e);
                 return;
             }
             
@@ -62,19 +64,19 @@ public class RtpSender implements Runnable {
             try {
                 rtpSession.sendRtpPacket(rtpPacket);
             } catch (UnknownHostException e) {
-                e.printStackTrace();
+                Logger.error("unknown host", e);
                 return;
             } catch (RtpException e) {
-                e.printStackTrace();
+                Logger.error("RTP error", e);
                 return;
             } catch (IOException e) {
-                e.printStackTrace();
+                Logger.error("input/output error", e);
                 return;
             }
             try {
                 Thread.sleep(15);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                Logger.error("Thread interrupted", e);
                 return;
             }
         }

@@ -44,7 +44,7 @@ public class UDPReceiver extends Thread {
                 Logger.debug("< received:\n" + new String(packet.getData()));
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            Logger.error("input/output error", e);
         }
     }
 }

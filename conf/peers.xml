@@ -24,13 +24,20 @@
     <interfaces>
       <interface id="eth1">
         <name>Ethernet network interface</name>
-        <!-- you can specify the ip address you want
+        <!-- uncomment the following element to specify the ip address you
+             want to use -->
+        <!--
         <address>192.168.1.20</address>
         -->
       </interface>
     </interfaces>
   </network>
   <devices>
+    <!-- uncomment the following option to deactivate media playback and
+         caputre -->
+    <!--
+    <media>false</media>
+    -->
     <audio></audio>
     <video></video>
   </devices>
@@ -39,17 +46,17 @@
       <!-- username -->
       <userpart>alice</userpart>
       <!-- domain registrar ip address -->
-      <domain>192.168.1.22</domain>
+      <domain>192.168.1.20</domain>
       <!-- if password is commented out, no REGISTER message is sent -->
       <password>alice</password>
-      <!-- not implemented
-      <outboundProxy>
-        <address>192.168.1.10</address>
-        <port>5060</port>
-      </outboundProxy>
+      <!-- uncomment the following option to provide an outbound proxy.
+           Don't forget the ;lr parameter to use loose routing, strict routing
+           is not supported. -->
+      <!--
+      <outboundProxy>sip:192.168.1.20;lr</outboundProxy>
       -->
       <interface ref="eth1"/>
-      <!-- you can specify the sip listening port you want -->
+      <!-- you can specify the sip listening port you want to use -->
       <port>6060</port>
     </profile>
   </sip>

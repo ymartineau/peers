@@ -50,9 +50,9 @@ public class NameAddress {
             buf.append(displayName);
             buf.append(' ');
         }
-        buf.append('<');
+        buf.append(RFC3261.LEFT_ANGLE_BRACKET);
         buf.append(addrSpec);
-        buf.append('>');
+        buf.append(RFC3261.RIGHT_ANGLE_BRACKET);
         return buf.toString();
     }
 

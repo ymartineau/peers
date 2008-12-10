@@ -22,9 +22,11 @@ package net.sourceforge.peers.sip.core.useragent.handlers;
 import gov.nist.jrtp.RtpException;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
+import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.media.CaptureRtpSender;
 import net.sourceforge.peers.media.IncomingRtpReader;
 import net.sourceforge.peers.sdp.NoCodecException;
@@ -33,6 +35,7 @@ import net.sourceforge.peers.sdp.SessionDescription;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.core.useragent.MidDialogRequestManager;
+import net.sourceforge.peers.sip.core.useragent.RequestManager;
 import net.sourceforge.peers.sip.core.useragent.SipEvent;
 import net.sourceforge.peers.sip.core.useragent.UserAgent;
 import net.sourceforge.peers.sip.core.useragent.SipEvent.EventType;
@@ -147,7 +150,7 @@ public class InviteHandler extends DialogMethodHandler
                     dialog,
                     RFC3261.CODE_200_OK,
                     RFC3261.REASON_200_OK);
-        
+
         // TODO 13.3 dialog invite-specific processing
         
         // TODO timer if there is an Expires header in INVITE
@@ -174,6 +177,13 @@ public class InviteHandler extends DialogMethodHandler
         respHeaders.add(new SipHeaderFieldName(RFC3261.HDR_CONTENT_TYPE),
                 new SipHeaderFieldValue(RFC3261.CONTENT_TYPE_SDP));
         
+        ArrayList<String> routeSet = dialog.getRouteSet();
+        if (routeSet != null) {
+            SipHeaderFieldName recordRoute = new SipHeaderFieldName(RFC3261.HDR_RECORD_ROUTE);
+            for (String route : routeSet) {
+                respHeaders.add(recordRoute, new SipHeaderFieldValue(route));
+            }
+        }
         
         // TODO determine port and transport for server transaction>transport
         // from initial invite
@@ -245,27 +255,28 @@ public class InviteHandler extends DialogMethodHandler
     public ClientTransaction preProcessInvite(SipRequest sipRequest) {
         
         //8.1.2
-        SipURI requestUri = sipRequest.getRequestUri();
+        SipHeaders requestHeaders = sipRequest.getSipHeaders();
+        SipURI destinationUri = RequestManager.getDestinationUri(sipRequest);
 
         //TODO if header route is present, addrspec = toproute.nameaddress.addrspec
+        
         String transport = RFC3261.TRANSPORT_UDP;
-        Hashtable<String, String> params = requestUri.getUriParameters();
+        Hashtable<String, String> params = destinationUri.getUriParameters();
         if (params != null) {
             String reqUriTransport = params.get(RFC3261.PARAM_TRANSPORT);
             if (reqUriTransport != null) {
                 transport = reqUriTransport; 
             }
         }
-        int port = requestUri.getPort();
+        int port = destinationUri.getPort();
         if (port == SipURI.DEFAULT_PORT) {
             port = RFC3261.TRANSPORT_DEFAULT_PORT;
         }
         ClientTransaction clientTransaction = transactionManager
-                .createClientTransaction(sipRequest, requestUri.getHost(),
+                .createClientTransaction(sipRequest, destinationUri.getHost(),
                     port, transport, null, this);
         sipRequest.setBody(sdpManager.generateOffer().getBytes());
-        SipHeaders respHeaders = sipRequest.getSipHeaders();
-        respHeaders.add(new SipHeaderFieldName(RFC3261.HDR_CONTENT_TYPE),
+        requestHeaders.add(new SipHeaderFieldName(RFC3261.HDR_CONTENT_TYPE),
                 new SipHeaderFieldValue(RFC3261.CONTENT_TYPE_SDP));
         return clientTransaction;
     }
@@ -374,46 +385,49 @@ public class InviteHandler extends DialogMethodHandler
         String remoteAddress = sessionDescription.getIpAddress().getHostAddress();
         int remotePort = sessionDescription.getMedias().get(0).getPort();
         String localAddress = userAgent.getMyAddress().getHostAddress();
-        CaptureRtpSender captureRtpSender;
-        //TODO this could be optimized, create captureRtpSender at stack init
-        //     and just retrieve it here
-        try {
-            captureRtpSender = new CaptureRtpSender(localAddress,
-                    userAgent.getRtpPort(),
-                    remoteAddress, remotePort);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return;
-        }
-        userAgent.setCaptureRtpSender(captureRtpSender);
 
-        try {
-            captureRtpSender.start();
-        } catch (IOException e1) {
-            e1.printStackTrace();
-        }
-        
-        IncomingRtpReader incomingRtpReader;
-        try {
-            //TODO retrieve port from SDP offer
-//                incomingRtpReader = new IncomingRtpReader(localAddress,
-//                        Utils.getInstance().getRtpPort(),
-//                        remoteAddress, remotePort);
-            incomingRtpReader = new IncomingRtpReader(captureRtpSender.getRtpSession());
-        } catch (IOException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-            return;
-        }
-        userAgent.setIncomingRtpReader(incomingRtpReader);
+        if (userAgent.isMedia()) {
+            CaptureRtpSender captureRtpSender;
+            //TODO this could be optimized, create captureRtpSender at stack init
+            //     and just retrieve it here
+            try {
+                captureRtpSender = new CaptureRtpSender(localAddress,
+                        userAgent.getRtpPort(),
+                        remoteAddress, remotePort);
+            } catch (IOException e) {
+                Logger.error("input/output error", e);
+                return;
+            }
+            userAgent.setCaptureRtpSender(captureRtpSender);
 
-        try {
-            incomingRtpReader.start();
-        } catch (IOException e1) {
-            e1.printStackTrace();
-        } catch (RtpException e1) {
-            e1.printStackTrace();
+            try {
+                captureRtpSender.start();
+            } catch (IOException e) {
+                Logger.error("input/output error", e);
+            }
+            
+            IncomingRtpReader incomingRtpReader;
+            try {
+                //TODO retrieve port from SDP offer
+//                    incomingRtpReader = new IncomingRtpReader(localAddress,
+//                            Utils.getInstance().getRtpPort(),
+//                            remoteAddress, remotePort);
+                incomingRtpReader = new IncomingRtpReader(captureRtpSender.getRtpSession());
+            } catch (IOException e) {
+                Logger.error("input/output error", e);
+                return;
+            }
+            userAgent.setIncomingRtpReader(incomingRtpReader);
+
+            try {
+                incomingRtpReader.start();
+            } catch (IOException e) {
+                Logger.error("input/output error", e);
+            } catch (RtpException e) {
+                Logger.error("RTP error", e);
+            }
         }
+
         
         /////////////////
         
@@ -455,29 +469,30 @@ public class InviteHandler extends DialogMethodHandler
 
         //TODO check if sdp is acceptable
 
-        SipURI requestUri = ack.getRequestUri();
+        SipURI destinationUri = RequestManager.getDestinationUri(ack);
 
         //TODO if header route is present, addrspec = toproute.nameaddress.addrspec
         
         String transport = RFC3261.TRANSPORT_UDP;
-        Hashtable<String, String> params = requestUri.getUriParameters();
+        Hashtable<String, String> params = destinationUri.getUriParameters();
         if (params != null) {
             String reqUriTransport = params.get(RFC3261.PARAM_TRANSPORT);
             if (reqUriTransport != null) {
                 transport = reqUriTransport; 
             }
         }
-        int port = requestUri.getPort();
+        int port = destinationUri.getPort();
         if (port == SipURI.DEFAULT_PORT) {
             port = RFC3261.TRANSPORT_DEFAULT_PORT;
         }
 
         try {
+            //FIXME remote address can be a proxy
             MessageSender sender = transportManager.createClientTransport(
-                    ack, requestUri.getHost(), port, transport);
+                    ack, destinationUri.getHost(), port, transport);
             sender.sendMessage(ack);
         } catch (IOException e) {
-            e.printStackTrace();
+            Logger.error("input/output error", e);
         }
         
         

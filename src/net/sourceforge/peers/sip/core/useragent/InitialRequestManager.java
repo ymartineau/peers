@@ -92,7 +92,6 @@ public class InitialRequestManager extends RequestManager {
 //                utils.generateBranchId());
 //        headers.add(new SipHeaderFieldName(RFC3261.HDR_VIA), via);
         
-
         Utils.addCommonHeaders(headers);
         
         //To
@@ -142,6 +141,15 @@ public class InitialRequestManager extends RequestManager {
         SipRequest sipRequest = createInitialRequestStart(requestUri, method,
                 profileUri, callId);
         
+        // TODO add route header for outbound proxy give it to xxxHandler to create
+        // clientTransaction
+        SipURI outboundProxy = userAgent.getOutboundProxy();
+        if (outboundProxy != null) {
+            NameAddress outboundProxyNameAddress =
+                new NameAddress(outboundProxy.toString());
+            sipRequest.getSipHeaders().add(new SipHeaderFieldName(RFC3261.HDR_ROUTE),
+                    new SipHeaderFieldValue(outboundProxyNameAddress.toString()), 0);
+        }
         ClientTransaction clientTransaction = null;
         if (RFC3261.METHOD_INVITE.equals(method)) {
             clientTransaction = inviteHandler.preProcessInvite(sipRequest);
@@ -174,7 +182,7 @@ public class InitialRequestManager extends RequestManager {
         if (clientTransaction != null) {
             clientTransaction.start();
         } else {
-            System.err.println("method not supported");
+            Logger.error("method not supported");
         }
     }
     
@@ -189,8 +197,7 @@ public class InitialRequestManager extends RequestManager {
                     inviteRequest.getRequestUri().toString(), RFC3261.METHOD_CANCEL,
                     profileUri, callId.getValue());
         } catch (SipUriSyntaxException e) {
-            Logger.error(e);
-            e.printStackTrace();
+            Logger.error("syntax error", e);
             return;
         }
         

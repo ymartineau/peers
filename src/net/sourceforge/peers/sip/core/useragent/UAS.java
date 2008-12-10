@@ -22,6 +22,7 @@ package net.sourceforge.peers.sip.core.useragent;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldName;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldValue;
@@ -68,7 +69,7 @@ public class UAS implements SipServerTransportUser {
             transportManager.createServerTransport(
                     RFC3261.TRANSPORT_UDP, userAgent.getSipPort());
         } catch (IOException e) {
-            e.printStackTrace();
+            Logger.error("input/output error", e);
         }
     }
     

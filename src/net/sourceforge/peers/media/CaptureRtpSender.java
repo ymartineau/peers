@@ -26,6 +26,8 @@ import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 
+import net.sourceforge.peers.Logger;
+
 
 
 public class CaptureRtpSender {
@@ -36,6 +38,7 @@ public class CaptureRtpSender {
     private Capture capture;
     private Encoder encoder;
     private RtpSender rtpSender;
+//    private SimpleCapture simpleCapture;
 
     public CaptureRtpSender(String localAddress, int localPort,
             String remoteAddress, int remotePort)
@@ -49,7 +52,7 @@ public class CaptureRtpSender {
         try {
             rawDataInput = new PipedInputStream(rawDataOutput);
         } catch (IOException e) {
-            e.printStackTrace();
+            Logger.error("input/output error", e);
             return;
         }
         
@@ -58,13 +61,14 @@ public class CaptureRtpSender {
         try {
             encodedDataInput = new PipedInputStream(encodedDataOutput);
         } catch (IOException e) {
-            e.printStackTrace();
+            Logger.error("input/output error");
             return;
         }
         
         capture = new Capture(rawDataOutput);
         encoder = new Encoder(rawDataInput, encodedDataOutput);
         rtpSender = new RtpSender(encodedDataInput, rtpSession);
+//        simpleCapture = new SimpleCapture();
     }
 
     public void start() throws IOException {
@@ -80,6 +84,10 @@ public class CaptureRtpSender {
         captureThread.start();
         encoderThread.start();
         rtpSenderThread.start();
+        
+//        simpleCapture.setStopped(false);
+//        Thread simpleCaptureThread = new Thread(simpleCapture);
+//        simpleCaptureThread.start();
     }
 
     public void stop() {
@@ -92,6 +100,9 @@ public class CaptureRtpSender {
         if (capture != null) {
             capture.setStopped(true);
         }
+//        if (simpleCapture != null) {
+//            simpleCapture.setStopped(true);
+//        }
         if (rtpSession != null) {
             rtpSession.shutDown();
         }

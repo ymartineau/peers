@@ -86,25 +86,19 @@
 
   <xs:complexType name="devicesType">
     <xs:sequence>
+      <xs:element name="media" type="xs:boolean" minOccurs="0"/>
       <xs:element name="audio" type="audioType"/>
       <xs:element name="video" type="videoType"/>
     </xs:sequence>
   </xs:complexType>
 
 
-  <xs:complexType name="outboundProxyType">
-    <xs:sequence>
-      <xs:element name="address" type="addressType"/>
-      <xs:element name="port" type="portType"/>
-    </xs:sequence>
-  </xs:complexType>
-
   <xs:complexType name="profileType">
     <xs:sequence>
       <xs:element name="userpart" type="xs:string"/>
       <xs:element name="domain" type="xs:string"/>
       <xs:element name="password" type="xs:string" minOccurs="0"/>
-      <xs:element name="outboundProxy" type="outboundProxyType" minOccurs="0"/>
+      <xs:element name="outboundProxy" type="xs:string" minOccurs="0"/>
       <xs:element name="interface" type="interfaceRefType"/>
       <xs:element name="port" type="portType" minOccurs="0"/>
     </xs:sequence>
