@@ -184,8 +184,6 @@ public class ChallengeManager implements MessageInterceptor {
         buf.append(RFC2617.PARAM_SEPARATOR).append(" ");
         appendParameter(buf, RFC2617.PARAM_URI, requestUri);
         buf.append(RFC2617.PARAM_SEPARATOR).append(" ");
-        appendParameter(buf, RFC2617.PARAM_URI, requestUri);
-        buf.append(RFC2617.PARAM_SEPARATOR).append(" ");
         appendParameter(buf, RFC2617.PARAM_RESPONSE, digest);
         sipHeaders.add(new SipHeaderFieldName(RFC3261.HDR_AUTHORIZATION),
                 new SipHeaderFieldValue(buf.toString()));
