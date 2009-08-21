@@ -280,6 +280,7 @@ public class UserAgent {
                     initialRequestManager,
                     profileUri);
             registerHandler.setChallengeManager(challengeManager);
+            inviteHandler.setChallengeManager(challengeManager);
         }
 
         peers = new ArrayList<String>();

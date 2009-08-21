@@ -52,21 +52,14 @@ public class ChallengeManager implements MessageInterceptor {
         byte[] messageMd5 = messageDigest.digest(messageBytes);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
         PrintStream printStream = new PrintStream(out);
-//        StringBuffer buf = new StringBuffer();
         for (byte b : messageMd5) {
             int u_b = (b < 0) ? 256 + b : b;
             printStream.printf("%02x", u_b);
-//            buf.append(Integer.toHexString(u_b));
         }
         return out.toString();
-//        System.out.println();
-//        return buf.toString();
     }
-    
-    public static void main(String[] args) {
-        System.out.println("md5(a) = " + md5hash("a"));
-    }
-    
+
+
     private String username;
     private String password;
     private String realm;
@@ -74,6 +67,9 @@ public class ChallengeManager implements MessageInterceptor {
     private String requestUri;
     private String digest;
     private String profileUri;
+
+    // FIXME what happens if a challenge is received for a register-refresh
+    //       and another challenge is received in the mean time for an invite?
     private int statusCode;
     private SipHeaderFieldValue contact;
     
@@ -122,6 +118,7 @@ public class ChallengeManager implements MessageInterceptor {
         String method = sipRequest.getMethod();
         requestUri = sipRequest.getRequestUri().toString();
         digest = getRequestDigest(method);
+
         // FIXME message should be copied "as is" not created anew from scratch
         // and this technique is not clean
         String callId = responseHeaders.get(
@@ -191,6 +188,10 @@ public class ChallengeManager implements MessageInterceptor {
             return;
         }
         SipHeaders sipHeaders = sipMessage.getSipHeaders();
+        String cseq = sipHeaders.get(
+                new SipHeaderFieldName(RFC3261.HDR_CSEQ)).getValue();
+        String method = cseq.substring(cseq.trim().lastIndexOf(' ') + 1);
+        digest = getRequestDigest(method);
         StringBuffer buf = new StringBuffer();
         buf.append(RFC2617.SCHEME_DIGEST).append(" ");
         appendParameter(buf, RFC2617.PARAM_USERNAME, username);
@@ -234,4 +235,9 @@ public class ChallengeManager implements MessageInterceptor {
         buf.append(value);
         buf.append(RFC2617.PARAM_VALUE_DELIMITER);
     }
+
+    public void setRequestUri(String requestUri) {
+        this.requestUri = requestUri;
+    }
+
 }

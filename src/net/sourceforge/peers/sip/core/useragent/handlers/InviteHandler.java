@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.media.CaptureRtpSender;
@@ -47,6 +49,7 @@ import net.sourceforge.peers.sip.syntaxencoding.SipHeaders;
 import net.sourceforge.peers.sip.syntaxencoding.SipURI;
 import net.sourceforge.peers.sip.transaction.ClientTransaction;
 import net.sourceforge.peers.sip.transaction.ClientTransactionUser;
+import net.sourceforge.peers.sip.transaction.InviteClientTransaction;
 import net.sourceforge.peers.sip.transaction.InviteServerTransaction;
 import net.sourceforge.peers.sip.transaction.ServerTransaction;
 import net.sourceforge.peers.sip.transaction.ServerTransactionUser;
@@ -259,7 +262,7 @@ public class InviteHandler extends DialogMethodHandler
         SipURI destinationUri = RequestManager.getDestinationUri(sipRequest);
 
         //TODO if header route is present, addrspec = toproute.nameaddress.addrspec
-        
+
         String transport = RFC3261.TRANSPORT_UDP;
         Hashtable<String, String> params = destinationUri.getUriParameters();
         if (params != null) {
@@ -289,10 +292,31 @@ public class InviteHandler extends DialogMethodHandler
     // ClientTransactionUser methods
     //////////////////////////////////////////////////////////
 
-    public void errResponseReceived(SipResponse sipResponse) {
+    public void errResponseReceived(final SipResponse sipResponse) {
         Dialog dialog = dialogManager.getDialog(sipResponse);
         if (dialog != null) {
             dialog.receivedOrSent300To699();
+        }
+        int statusCode = sipResponse.getStatusCode();
+        if (statusCode == RFC3261.CODE_401_UNAUTHORIZED
+                || statusCode == RFC3261.CODE_407_PROXY_AUTHENTICATION_REQUIRED
+                && !challenged) {
+            InviteClientTransaction inviteClientTransaction =
+                (InviteClientTransaction)
+                transactionManager.getClientTransaction(sipResponse);
+            final SipRequest sipRequest = inviteClientTransaction.getRequest();
+            // try to send invite 1 second later, ugly solution,
+            // but it seems to work...
+            Timer timer = new Timer();
+            TimerTask authInviteTask = new TimerTask() {
+                @Override
+                public void run() {
+                    challengeManager.handleChallenge(sipRequest, sipResponse);
+                }
+            };
+            timer.schedule(authInviteTask, 1000);
+            challenged = true;
+            return;
         }
         setChanged();
         notifyObservers(new SipEvent(EventType.ERROR, sipResponse));
@@ -348,7 +372,7 @@ public class InviteHandler extends DialogMethodHandler
             return;
         }
         
-        
+        challenged = false;
         
         
         

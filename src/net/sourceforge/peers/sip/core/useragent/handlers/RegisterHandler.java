@@ -25,7 +25,6 @@ import java.util.TimerTask;
 
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.RFC3261;
-import net.sourceforge.peers.sip.core.useragent.ChallengeManager;
 import net.sourceforge.peers.sip.core.useragent.InitialRequestManager;
 import net.sourceforge.peers.sip.core.useragent.RequestManager;
 import net.sourceforge.peers.sip.syntaxencoding.NameAddress;
@@ -50,23 +49,20 @@ public class RegisterHandler extends MethodHandler
     public static final int REFRESH_MARGIN = 10; // seconds
 
     private InitialRequestManager initialRequestManager;
-    private ChallengeManager challengeManager;
-    
+
     private Timer timer;
-    
+
     private String requestUriStr;
     private String profileUriStr;
     private String callIDStr;
     
     //FIXME should be on a profile based context
-    private boolean challenged;
     private boolean unregistered;
     
     public RegisterHandler(TransactionManager transactionManager,
             TransportManager transportManager) {
         super(transactionManager, transportManager);
         timer = new Timer();
-        challenged = false;
         unregistered = false;
     }
 
@@ -138,7 +134,9 @@ public class RegisterHandler extends MethodHandler
     //////////////////////////////////////////////////////////
     
     public void errResponseReceived(SipResponse sipResponse) {
-        if (sipResponse.getStatusCode() == RFC3261.CODE_401_UNAUTHORIZED
+        int statusCode = sipResponse.getStatusCode();
+        if ((statusCode == RFC3261.CODE_401_UNAUTHORIZED
+                || statusCode == RFC3261.CODE_407_PROXY_AUTHENTICATION_REQUIRED)
                 && challengeManager != null) {
             if (!challenged) {
                 NonInviteClientTransaction nonInviteClientTransaction =
@@ -208,8 +206,4 @@ public class RegisterHandler extends MethodHandler
         this.initialRequestManager = initialRequestManager;
     }
 
-    public void setChallengeManager(ChallengeManager challengeManager) {
-        this.challengeManager = challengeManager;
-    }
-    
 }
