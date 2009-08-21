@@ -105,6 +105,7 @@ public final class RFC3261 {
     public static final int CODE_481_CALL_TRANSACTION_DOES_NOT_EXIST = 481;
     public static final int CODE_486_BUSYHERE                        = 486;
     public static final int CODE_487_REQUEST_TERMINATED              = 487;
+    public static final int CODE_500_SERVER_INTERNAL_ERROR           = 500;
     
       //REASON PHRASES
     public static final String REASON_180_RINGING  = "Ringing";
@@ -114,6 +115,8 @@ public final class RFC3261 {
     public static final String REASON_486_BUSYHERE = "Busy Here";
     public static final String REASON_487_REQUEST_TERMINATED =
         "Request Terminated";
+    public static final String REASON_500_SERVER_INTERNAL_ERROR =
+        "Server Internal Error";
     
     //TRANSPORT
     

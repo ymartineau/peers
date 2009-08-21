@@ -34,6 +34,8 @@ import net.sourceforge.peers.sip.syntaxencoding.SipHeaders;
 import net.sourceforge.peers.sip.syntaxencoding.SipURI;
 import net.sourceforge.peers.sip.transaction.ClientTransaction;
 import net.sourceforge.peers.sip.transaction.ClientTransactionUser;
+import net.sourceforge.peers.sip.transaction.ServerTransaction;
+import net.sourceforge.peers.sip.transaction.ServerTransactionUser;
 import net.sourceforge.peers.sip.transaction.Transaction;
 import net.sourceforge.peers.sip.transaction.TransactionManager;
 import net.sourceforge.peers.sip.transactionuser.Dialog;
@@ -44,7 +46,7 @@ import net.sourceforge.peers.sip.transport.TransportManager;
 
 
 public class MidDialogRequestManager extends RequestManager
-        implements ClientTransactionUser {
+        implements ClientTransactionUser, ServerTransactionUser {
 
     public MidDialogRequestManager(UserAgent userAgent,
             InviteHandler inviteHandler,
@@ -161,27 +163,49 @@ public class MidDialogRequestManager extends RequestManager
     }
 
     public void manageMidDialogRequest(SipRequest sipRequest, Dialog dialog) {
-
-        if (dialog.getRemoteCSeq() == Dialog.EMPTY_CSEQ) {
-            SipHeaders sipHeaders = sipRequest.getSipHeaders();
-            SipHeaderFieldValue cseq =
-                sipHeaders.get(new SipHeaderFieldName(RFC3261.HDR_CSEQ));
-            String cseqStr = cseq.getValue();
-            int pos = cseqStr.indexOf(' ');
-            if (pos < 0) {
-                pos = cseqStr.indexOf('\t');
-            }
-            dialog.setRemoteCSeq(Integer.parseInt(cseqStr.substring(0, pos)));
+        SipHeaders sipHeaders = sipRequest.getSipHeaders();
+        SipHeaderFieldValue cseq =
+            sipHeaders.get(new SipHeaderFieldName(RFC3261.HDR_CSEQ));
+        String cseqStr = cseq.getValue();
+        int pos = cseqStr.indexOf(' ');
+        if (pos < 0) {
+            pos = cseqStr.indexOf('\t');
         }
-        
-        if (RFC3261.METHOD_BYE.equals(sipRequest.getMethod())) {
+        int newCseq = Integer.parseInt(cseqStr.substring(0, pos));
+        int oldCseq = dialog.getRemoteCSeq();
+        if (oldCseq == Dialog.EMPTY_CSEQ) {
+            dialog.setRemoteCSeq(newCseq);
+        } else if (newCseq < oldCseq) {
+            // out of order
+            // RFC3261 §12.2.2 p77
+            // TODO test out of order in-dialog-requests
+            SipResponse sipResponse =
+                generateMidDialogResponse(sipRequest, dialog,
+                    RFC3261.CODE_500_SERVER_INTERNAL_ERROR,
+                    RFC3261.REASON_500_SERVER_INTERNAL_ERROR);
+            ServerTransaction serverTransaction =
+                transactionManager.createServerTransaction(
+                        sipResponse,
+                        userAgent.getSipPort(),
+                        RFC3261.TRANSPORT_UDP,
+                        this, sipRequest);
+            serverTransaction.start();
+            serverTransaction.receivedRequest(sipRequest);
+            serverTransaction.sendReponse(sipResponse);
+        } else {
+            dialog.setRemoteCSeq(newCseq);
+        }
+
+        String method = sipRequest.getMethod();
+        if (RFC3261.METHOD_BYE.equals(method)) {
             byeHandler.handleBye(sipRequest, dialog);
-            
+        } else if (RFC3261.METHOD_INVITE.equals(method)) {
+            inviteHandler.handleReInvite(sipRequest, dialog);
         }
     }
 
     ///////////////////////////////////////
-    //ClientTransaction methods
+    // ClientTransaction methods
     ///////////////////////////////////////
     public void errResponseReceived(SipResponse sipResponse) {
         // TODO Auto-generated method stub
@@ -208,6 +232,15 @@ public class MidDialogRequestManager extends RequestManager
 
 
     public void transactionTransportError() {
+        // TODO Auto-generated method stub
+        
+    }
+
+    ///////////////////////////////////////
+    // ServerTransaction methods
+    ///////////////////////////////////////
+    @Override
+    public void transactionFailure() {
         // TODO Auto-generated method stub
         
     }
