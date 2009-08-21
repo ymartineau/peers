@@ -23,6 +23,7 @@ import java.util.Observable;
 
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.Utils;
+import net.sourceforge.peers.sip.core.useragent.ChallengeManager;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldName;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldValue;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderParamName;
@@ -36,11 +37,14 @@ public abstract class MethodHandler extends Observable {
 
     protected TransactionManager transactionManager;
     protected TransportManager transportManager;
+    protected ChallengeManager challengeManager;
+    protected boolean challenged;
     
     public MethodHandler(TransactionManager transactionManager,
             TransportManager transportManager) {
         this.transactionManager = transactionManager;
         this.transportManager = transportManager;
+        challenged = false;
     }
     
     protected SipResponse buildGenericResponse(SipRequest sipRequest,
@@ -65,4 +69,9 @@ public abstract class MethodHandler extends Observable {
         respHeaders.add(toName, toValue);
         return sipResponse;
     }
+
+    public void setChallengeManager(ChallengeManager challengeManager) {
+        this.challengeManager = challengeManager;
+    }
+
 }
