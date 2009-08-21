@@ -99,7 +99,7 @@ public class RegisterHandler extends MethodHandler
             .toString();
         return clientTransaction;
     }
-    
+
     public void unregister() {
         if (requestUriStr == null) {
             return;
@@ -123,9 +123,6 @@ public class RegisterHandler extends MethodHandler
                 new SipHeaderFieldName(RFC3261.HDR_CONTACT));
         contact.addParam(new SipHeaderParamName(RFC3261.PARAM_EXPIRES), "0");
         unregistered = true;
-        if (challengeManager != null) {
-            challengeManager.postProcess(sipRequest);
-        }
         clientTransaction.start();
     }
 

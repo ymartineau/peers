@@ -66,6 +66,10 @@ public class SDPManager {
             //TODO this could be optimized, create captureRtpSender at stack init
             //     and just retrieve it here
             CaptureRtpSender captureRtpSender;
+            captureRtpSender = userAgent.getCaptureRtpSender();
+            if (captureRtpSender != null) {
+                captureRtpSender.stop();
+            }
             try {
                 captureRtpSender = new CaptureRtpSender(
                         userAgent.getMyAddress().getHostAddress(), userAgent.getRtpPort(),

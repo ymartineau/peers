@@ -32,24 +32,24 @@ public class DialogStateConfirmed extends DialogState {
         Logger.error(id + " invalid transition");
         throw new IllegalStateException();
     }
-    
+
     @Override
     public void receivedOrSent2xx() {
         Logger.error(id + " invalid transition");
         throw new IllegalStateException();
     }
-    
+
     @Override
     public void receivedOrSent300To699() {
         Logger.error(id + " invalid transition");
         throw new IllegalStateException();
     }
-    
+
     @Override
     public void receivedOrSentBye() {
         DialogState nextState = dialog.TERMINATED;
         dialog.setState(nextState);
         log(nextState);
     }
-    
+
 }

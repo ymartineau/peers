@@ -273,7 +273,7 @@ public class UserAgent {
                 dialogManager,
                 transactionManager,
                 transportManager);
-        
+
         if (password != null) {
             challengeManager = new ChallengeManager(userpart,
                     password,
@@ -294,7 +294,7 @@ public class UserAgent {
             }
         }
     }
-    
+
     /**
      * Gives the sipMessage if sipMessage is a SipRequest or 
      * the SipRequest corresponding to the SipResponse

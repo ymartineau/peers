@@ -122,11 +122,27 @@ public class InviteHandler extends DialogMethodHandler
         
     }
     
-    public void handleReInvite(SipRequest sipRequest) {
+    public void handleReInvite(SipRequest sipRequest, Dialog dialog) {
+        SipHeaders sipHeaders = sipRequest.getSipHeaders();
+
+        // §12.2.2 update dialog
+        SipHeaderFieldValue contact =
+            sipHeaders.get(new SipHeaderFieldName(RFC3261.HDR_CONTACT));
+        if (contact != null) {
+            String contactStr = contact.getValue();
+            if (contactStr.indexOf(RFC3261.LEFT_ANGLE_BRACKET) > -1) {
+                contactStr = NameAddress.nameAddressToUri(contactStr);
+            }
+            dialog.setRemoteTarget(contactStr);
+        }
+
+
+        // update session
+        sendSuccessfulResponse(sipRequest, dialog);
         
     }
-    
-    public void acceptCall(SipRequest sipRequest, Dialog dialog) {
+
+    private void sendSuccessfulResponse(SipRequest sipRequest, Dialog dialog) {
         SipHeaders reqHeaders = sipRequest.getSipHeaders();
         SipHeaderFieldValue contentType =
             reqHeaders.get(new SipHeaderFieldName(RFC3261.HDR_CONTENT_TYPE));
@@ -193,7 +209,13 @@ public class InviteHandler extends DialogMethodHandler
         // FIXME determine port and transport for server transaction>transport
         ServerTransaction serverTransaction = transactionManager
                 .getServerTransaction(sipRequest);
-        
+        if (serverTransaction == null) {
+            // in re-INVITE case, no serverTransaction has been created
+            serverTransaction = (InviteServerTransaction)
+            transactionManager.createServerTransaction(sipResponse,
+                    userAgent.getSipPort(), RFC3261.TRANSPORT_UDP, this,
+                    sipRequest);
+        }
         serverTransaction.start();
         
         serverTransaction.receivedRequest(sipRequest);
@@ -205,6 +227,10 @@ public class InviteHandler extends DialogMethodHandler
 
 //        Logger.getInstance().debug("before dialog.receivedOrSent2xx();");
 //        Logger.getInstance().debug("dialog state: " + dialog.getState());
+    }
+
+    public void acceptCall(SipRequest sipRequest, Dialog dialog) {
+        sendSuccessfulResponse(sipRequest, dialog);
         
         dialog.receivedOrSent2xx();
 //        Logger.getInstance().debug("dialog state: " + dialog.getState());
@@ -311,7 +337,10 @@ public class InviteHandler extends DialogMethodHandler
             TimerTask authInviteTask = new TimerTask() {
                 @Override
                 public void run() {
-                    challengeManager.handleChallenge(sipRequest, sipResponse);
+                    if (challengeManager != null) {
+                        challengeManager.handleChallenge(sipRequest,
+                                sipResponse);
+                    }
                 }
             };
             timer.schedule(authInviteTask, 1000);
