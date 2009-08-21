@@ -156,10 +156,8 @@ public class InitialRequestManager extends RequestManager {
         } else if (RFC3261.METHOD_REGISTER.equals(method)) {
             clientTransaction = registerHandler.preProcessRegister(sipRequest);
         }
-        if (messageInterceptor != null) {
-            messageInterceptor.postProcess(sipRequest);
-        }
-        createInitialRequestEnd(sipRequest, clientTransaction, profileUri);
+        createInitialRequestEnd(sipRequest, clientTransaction, profileUri,
+                messageInterceptor);
     }
     
     private SipRequest createInitialRequestStart(String requestUri, String method,
@@ -175,9 +173,12 @@ public class InitialRequestManager extends RequestManager {
     }
     
     private void createInitialRequestEnd(SipRequest sipRequest,
-            ClientTransaction clientTransaction, String profileUri) {
+            ClientTransaction clientTransaction, String profileUri,
+            MessageInterceptor messageInterceptor) {
         addContact(sipRequest, clientTransaction.getContact(), profileUri);
-        
+        if (messageInterceptor != null) {
+            messageInterceptor.postProcess(sipRequest);
+        }
         // TODO create message receiver on client transport port
         if (clientTransaction != null) {
             clientTransaction.start();
@@ -205,7 +206,7 @@ public class InitialRequestManager extends RequestManager {
             clientTransaction = cancelHandler.preProcessCancel(sipRequest,
                     inviteRequest, midDialogRequestManager);
         if (clientTransaction != null) {
-            createInitialRequestEnd(sipRequest, clientTransaction, profileUri);
+            createInitialRequestEnd(sipRequest, clientTransaction, profileUri, null);
         }
         
         

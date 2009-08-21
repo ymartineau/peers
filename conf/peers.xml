@@ -44,9 +44,9 @@
   <sip>
     <profile>
       <!-- username -->
-      <userpart>8155</userpart>
+      <userpart>1000</userpart>
       <!-- domain registrar ip address -->
-      <domain>nexcom.fr</domain>
+      <domain>provider.com</domain>
       <!-- if password is commented out, no REGISTER message is sent -->
       <password>1234</password>
       <!-- uncomment the following option to provide an outbound proxy.

@@ -29,6 +29,7 @@ import net.sourceforge.peers.sip.RFC2617;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldName;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldValue;
+import net.sourceforge.peers.sip.syntaxencoding.SipHeaderParamName;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaders;
 import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
 import net.sourceforge.peers.sip.transport.SipMessage;
@@ -73,6 +74,8 @@ public class ChallengeManager implements MessageInterceptor {
     private String requestUri;
     private String digest;
     private String profileUri;
+    private int statusCode;
+    private SipHeaderFieldValue contact;
     
     private InitialRequestManager initialRequestManager;
     
@@ -88,19 +91,32 @@ public class ChallengeManager implements MessageInterceptor {
 
     public void handleChallenge(SipRequest sipRequest,
             SipResponse sipResponse) {
+        statusCode = sipResponse.getStatusCode();
         SipHeaders responseHeaders = sipResponse.getSipHeaders();
-        SipHeaderFieldValue wwwAuthenticate =
-            responseHeaders.get(new SipHeaderFieldName(
-                    RFC3261.HDR_WWW_AUTHENTICATE));
-        if (wwwAuthenticate == null) {
+        SipHeaders requestHeaders = sipRequest.getSipHeaders();
+        contact = requestHeaders.get(
+                new SipHeaderFieldName(RFC3261.HDR_CONTACT));
+        SipHeaderFieldValue authenticate;
+        SipHeaderFieldName authenticateHeaderName;
+        if (statusCode == RFC3261.CODE_401_UNAUTHORIZED) {
+            authenticateHeaderName = new SipHeaderFieldName(
+                    RFC3261.HDR_WWW_AUTHENTICATE);
+        } else if (statusCode == RFC3261.CODE_407_PROXY_AUTHENTICATION_REQUIRED) {
+            authenticateHeaderName = new SipHeaderFieldName(
+                    RFC3261.HDR_PROXY_AUTHENTICATE);
+        } else {
             return;
         }
-        if (!wwwAuthenticate.getValue().startsWith(RFC2617.SCHEME_DIGEST)) {
+        authenticate = responseHeaders.get(authenticateHeaderName);
+        if (authenticate == null) {
+            return;
+        }
+        if (!authenticate.getValue().startsWith(RFC2617.SCHEME_DIGEST)) {
             Logger.info("unsupported challenge scheme in header: "
-                    + wwwAuthenticate);
+                    + authenticate);
             return;
         }
-        String headerValue = wwwAuthenticate.getValue();
+        String headerValue = authenticate.getValue();
         realm = getParameter(RFC2617.PARAM_REALM, headerValue);
         nonce = getParameter(RFC2617.PARAM_NONCE, headerValue);
         String method = sipRequest.getMethod();
@@ -169,6 +185,7 @@ public class ChallengeManager implements MessageInterceptor {
         return header.substring(0, endDelimiter);
     }
 
+    /** add xxxAuthorization header */
     public void postProcess(SipMessage sipMessage) {
         if (realm == null || nonce == null || digest == null) {
             return;
@@ -185,8 +202,29 @@ public class ChallengeManager implements MessageInterceptor {
         appendParameter(buf, RFC2617.PARAM_URI, requestUri);
         buf.append(RFC2617.PARAM_SEPARATOR).append(" ");
         appendParameter(buf, RFC2617.PARAM_RESPONSE, digest);
-        sipHeaders.add(new SipHeaderFieldName(RFC3261.HDR_AUTHORIZATION),
+        SipHeaderFieldName authorizationName;
+        if (statusCode == RFC3261.CODE_401_UNAUTHORIZED) {
+            authorizationName = new SipHeaderFieldName(
+                    RFC3261.HDR_AUTHORIZATION);
+        } else if (statusCode == RFC3261.CODE_407_PROXY_AUTHENTICATION_REQUIRED) {
+            authorizationName = new SipHeaderFieldName(
+                    RFC3261.HDR_PROXY_AUTHORIZATION);
+        } else {
+            return;
+        }
+        sipHeaders.add(authorizationName,
                 new SipHeaderFieldValue(buf.toString()));
+        // manage authentication on unregister challenge...
+        if (contact != null) {
+            SipHeaderParamName expiresName =
+                new SipHeaderParamName(RFC3261.PARAM_EXPIRES);
+            String expiresString = contact.getParam(expiresName);
+            if (expiresString != null && Integer.parseInt(expiresString) == 0) {
+                SipHeaderFieldValue requestContact =
+                    sipHeaders.get(new SipHeaderFieldName(RFC3261.HDR_CONTACT));
+                requestContact.addParam(expiresName, expiresString);
+            }
+        }
     }
     
     private void appendParameter(StringBuffer buf, String name, String value) {
