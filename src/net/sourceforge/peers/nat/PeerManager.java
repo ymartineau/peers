@@ -58,7 +58,7 @@ public class PeerManager extends Thread {
 //        udpReceiver.start();
         while (true) {
             Element root = document.getRootElement();
-            for (Iterator i = root.elementIterator("peer"); i.hasNext(); ) {
+            for (Iterator<?> i = root.elementIterator("peer"); i.hasNext(); ) {
                 createConnection((Element)i.next(), datagramSocket);
             }
             try {

@@ -68,7 +68,7 @@ public class Config {
 //        return (Node)document.selectSingleNode(xpath);
     }
     
-    public List selectNodes(String xpath) {
+    public List<?> selectNodes(String xpath) {
         DefaultXPath xpathObj = new DefaultXPath(xpath);
         SimpleNamespaceContext snc = new SimpleNamespaceContext();
         snc.addNamespace("peers", "http://peers.sourceforge.net");
