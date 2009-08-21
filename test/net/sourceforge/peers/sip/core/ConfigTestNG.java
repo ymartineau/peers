@@ -35,7 +35,7 @@ public class ConfigTestNG {
             "file:" + new File("conf/peers.xml").getAbsolutePath();
         URL url = new URL(urlStr);
         Config config = new Config(url);
-        List list = config.selectNodes("//peers:profile");
+        List<?> list = config.selectNodes("//peers:profile");
         assert list != null : "no node found for xpath: //peers:profile";
     }
 
