@@ -36,22 +36,24 @@ public final class RFC3261 {
     
         //Classical form
     
-    public static final String HDR_AUTHORIZATION    = "Authorization";
-    public static final String HDR_CALLID           = "Call-ID";
-    public static final String HDR_CONTACT          = "Contact";
-    public static final String HDR_CONTENT_ENCODING = "Content-Encoding";
-    public static final String HDR_CONTENT_LENGTH   = "Content-Length";
-    public static final String HDR_CONTENT_TYPE     = "Content-Type";
-    public static final String HDR_CSEQ             = "CSeq";
-    public static final String HDR_FROM             = "From";
-    public static final String HDR_MAX_FORWARDS     = "Max-Forwards";
-    public static final String HDR_RECORD_ROUTE     = "Record-Route";
-    public static final String HDR_ROUTE            = "Route";
-    public static final String HDR_SUBJECT          = "Subject";
-    public static final String HDR_SUPPORTED        = "Supported";
-    public static final String HDR_TO               = "To";
-    public static final String HDR_VIA              = "Via";
-    public static final String HDR_WWW_AUTHENTICATE = "WWW-Authenticate";
+    public static final String HDR_AUTHORIZATION       = "Authorization";
+    public static final String HDR_CALLID              = "Call-ID";
+    public static final String HDR_CONTACT             = "Contact";
+    public static final String HDR_CONTENT_ENCODING    = "Content-Encoding";
+    public static final String HDR_CONTENT_LENGTH      = "Content-Length";
+    public static final String HDR_CONTENT_TYPE        = "Content-Type";
+    public static final String HDR_CSEQ                = "CSeq";
+    public static final String HDR_FROM                = "From";
+    public static final String HDR_MAX_FORWARDS        = "Max-Forwards";
+    public static final String HDR_RECORD_ROUTE        = "Record-Route";
+    public static final String HDR_PROXY_AUTHENTICATE  = "Proxy-Authenticate";
+    public static final String HDR_PROXY_AUTHORIZATION = "Proxy-Authorization";
+    public static final String HDR_ROUTE               = "Route";
+    public static final String HDR_SUBJECT             = "Subject";
+    public static final String HDR_SUPPORTED           = "Supported";
+    public static final String HDR_TO                  = "To";
+    public static final String HDR_VIA                 = "Via";
+    public static final String HDR_WWW_AUTHENTICATE    = "WWW-Authenticate";
     
         //Compact form
     
@@ -99,6 +101,7 @@ public final class RFC3261 {
     public static final int CODE_180_RINGING                         = 180;
     public static final int CODE_200_OK                              = 200;
     public static final int CODE_401_UNAUTHORIZED                    = 401;
+    public static final int CODE_407_PROXY_AUTHENTICATION_REQUIRED   = 407;
     public static final int CODE_481_CALL_TRANSACTION_DOES_NOT_EXIST = 481;
     public static final int CODE_486_BUSYHERE                        = 486;
     public static final int CODE_487_REQUEST_TERMINATED              = 487;
