@@ -67,45 +67,49 @@ public class SDPManager {
             //     and just retrieve it here
             CaptureRtpSender captureRtpSender;
             captureRtpSender = userAgent.getCaptureRtpSender();
-            if (captureRtpSender != null) {
-                captureRtpSender.stop();
+            if (captureRtpSender == null) {
+                try {
+                    captureRtpSender = new CaptureRtpSender(
+                            userAgent.getMyAddress().getHostAddress(),
+                            userAgent.getRtpPort(), destAddress, destPort);
+                } catch (IOException e) {
+                    Logger.error("input/output error", e);
+                    return null;
+                }
+                userAgent.setCaptureRtpSender(captureRtpSender);
+                try {
+                    captureRtpSender.start();
+                } catch (IOException e) {
+                    Logger.error("input/output error", e);
+                }
+            } else {
+                // update only what's necessary
+                captureRtpSender.update(destAddress, destPort);
             }
-            try {
-                captureRtpSender = new CaptureRtpSender(
-                        userAgent.getMyAddress().getHostAddress(), userAgent.getRtpPort(),
-                        destAddress, destPort);
-            } catch (IOException e) {
-                Logger.error("input/output error", e);
-                return null;
-            }
-            userAgent.setCaptureRtpSender(captureRtpSender);
+            IncomingRtpReader incomingRtpReader =
+                userAgent.getIncomingRtpReader();
+            if (incomingRtpReader == null) {
+                try {
+                    //TODO retrieve port from SDP offer
+//                        incomingRtpReader = new IncomingRtpReader(localAddress,
+//                                Utils.getInstance().getRtpPort(),
+//                                remoteAddress, remotePort);
+                    //FIXME RTP sessions can be different !
+                    incomingRtpReader = new IncomingRtpReader(
+                            captureRtpSender.getRtpSession());
+                } catch (IOException e1) {
+                    Logger.error("input/output error", e1);
+                    return null;
+                }
+                userAgent.setIncomingRtpReader(incomingRtpReader);
 
-            try {
-                captureRtpSender.start();
-            } catch (IOException e) {
-                Logger.error("input/output error", e);
-            }
-            
-            IncomingRtpReader incomingRtpReader;
-            try {
-                //TODO retrieve port from SDP offer
-//                    incomingRtpReader = new IncomingRtpReader(localAddress,
-//                            Utils.getInstance().getRtpPort(),
-//                            remoteAddress, remotePort);
-                //FIXME RTP sessions can be different !
-                incomingRtpReader = new IncomingRtpReader(captureRtpSender.getRtpSession());
-            } catch (IOException e1) {
-                Logger.error("input/output error", e1);
-                return null;
-            }
-            userAgent.setIncomingRtpReader(incomingRtpReader);
-
-            try {
-                incomingRtpReader.start();
-            } catch (IOException e1) {
-                Logger.error("input/output error", e1);
-            } catch (RtpException e1) {
-                Logger.error("RTP error", e1);
+                try {
+                    incomingRtpReader.start();
+                } catch (IOException e1) {
+                    Logger.error("input/output error", e1);
+                } catch (RtpException e1) {
+                    Logger.error("RTP error", e1);
+                }
             }
         }
         

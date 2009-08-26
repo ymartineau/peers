@@ -38,6 +38,7 @@ public class RtpSender implements Runnable {
     public RtpSender(PipedInputStream encodedData, RtpSession rtpSession) {
         this.encodedData = encodedData;
         this.rtpSession = rtpSession;
+        isStopped = false;
     }
     
     public void run() {
@@ -85,5 +86,5 @@ public class RtpSender implements Runnable {
     public synchronized void setStopped(boolean isStopped) {
         this.isStopped = isStopped;
     }
-    
+
 }

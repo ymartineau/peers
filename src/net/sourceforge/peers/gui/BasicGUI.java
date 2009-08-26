@@ -135,9 +135,14 @@ public class BasicGUI implements ActionListener, Observer, WindowListener {
         if (arg instanceof SipEvent) {
             SipEvent sipEvent = (SipEvent) arg;
             if (sipEvent.getEventType() == EventType.INCOMING_CALL) {
-                SipMessage sipMessage = sipEvent.getSipMessage();
+                final SipMessage sipMessage = sipEvent.getSipMessage();
                 if (sipMessage instanceof SipResponse) {
-                    new CallFrame((SipResponse)sipMessage, userAgent);
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            new CallFrame((SipResponse)sipMessage, userAgent);
+                        }
+                    });
                 }
             }
         }
