@@ -21,6 +21,7 @@ package net.sourceforge.peers.gui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Observable;
 import java.util.Observer;
 
@@ -28,6 +29,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 
 import net.sourceforge.peers.Logger;
@@ -232,7 +234,7 @@ public class CallFrame implements ActionListener, Observer {
         }
     }
     
-    private void updateGui(DialogState dialogState) {
+    private void updateGui(final DialogState dialogState) {
         //TODO use a real state machine
         //state.setText(JavaUtils.getShortClassName(dialogState.getClass()));
         StringBuffer buf = new StringBuffer();
@@ -244,75 +246,90 @@ public class CallFrame implements ActionListener, Observer {
         buf.append(JavaUtils.getShortClassName(dialogState.getClass()));
         buf.append("]");
         Logger.debug(buf.toString());
-        if (dialogState instanceof DialogStateEarly) {
-            if (isUac && cancelButton == null) {
-                //TODO implement cancel in core
-                text.setText("Ringing " + dialog.getRemoteUri());
-                cancelButton = new JButton(CANCEL_ACTION);
-                cancelButton.setActionCommand(CANCEL_ACTION);
-                cancelButton.addActionListener(this);
-                mainPanel.remove(closeButton);
-                mainPanel.add(cancelButton);
-                frame.pack();
-            } else {
-                frame = new JFrame(dialog.getRemoteUri());
-                mainPanel = new JPanel();
-                text = new JLabel("Incoming call from " + dialog.getRemoteUri());
-                acceptButton = new JButton(ACCEPT_ACTION);
-                acceptButton.setActionCommand(ACCEPT_ACTION);
-                acceptButton.addActionListener(this);
-                rejectButton = new JButton(REJECT_ACTION);
-                rejectButton.setActionCommand(REJECT_ACTION);
-                rejectButton.addActionListener(this);
-                mainPanel.add(text);
-                mainPanel.add(acceptButton);
-                mainPanel.add(rejectButton);
-                frame.getContentPane().add(mainPanel);
-                frame.pack();
-                frame.setVisible(true);
-            }
-        } else if (dialogState instanceof DialogStateConfirmed) {
-            //TODO create hangup button and remove previous buttons for both uac and uas
-            text.setText("Talk to " + dialog.getRemoteUri());
-            byeButton = new JButton(BYE_ACTION);
-            byeButton.setActionCommand(BYE_ACTION);
-            byeButton.addActionListener(this);
-            if (isUac) {
-                mainPanel.remove(closeButton);
-                closeButton = null;
-                if (cancelButton != null) {
-                    mainPanel.remove(cancelButton);
+        try {
+            SwingUtilities.invokeAndWait(new Runnable() {
+                @Override
+                public void run() {
+                    if (dialogState instanceof DialogStateEarly) {
+                        if (isUac && cancelButton == null) {
+                            //TODO implement cancel in core
+                            text.setText("Ringing " + dialog.getRemoteUri());
+                            cancelButton = new JButton(CANCEL_ACTION);
+                            cancelButton.setActionCommand(CANCEL_ACTION);
+                            cancelButton.addActionListener(CallFrame.this);
+                            mainPanel.remove(closeButton);
+                            mainPanel.add(cancelButton);
+                            frame.pack();
+                        } else {
+                            frame = new JFrame(dialog.getRemoteUri());
+                            mainPanel = new JPanel();
+                            text = new JLabel("Incoming call from " + dialog.getRemoteUri());
+                            acceptButton = new JButton(ACCEPT_ACTION);
+                            acceptButton.setActionCommand(ACCEPT_ACTION);
+                            acceptButton.addActionListener(CallFrame.this);
+                            rejectButton = new JButton(REJECT_ACTION);
+                            rejectButton.setActionCommand(REJECT_ACTION);
+                            rejectButton.addActionListener(CallFrame.this);
+                            mainPanel.add(text);
+                            mainPanel.add(acceptButton);
+                            mainPanel.add(rejectButton);
+                            frame.getContentPane().add(mainPanel);
+                            frame.pack();
+                            frame.setVisible(true);
+                        }
+                    } else if (dialogState instanceof DialogStateConfirmed) {
+                        //TODO create hangup button and remove previous buttons for both uac and uas
+                        text.setText("Talk to " + dialog.getRemoteUri());
+                        byeButton = new JButton(BYE_ACTION);
+                        byeButton.setActionCommand(BYE_ACTION);
+                        byeButton.addActionListener(CallFrame.this);
+                        if (isUac) {
+                            mainPanel.remove(closeButton);
+                            closeButton = null;
+                            if (cancelButton != null) {
+                                mainPanel.remove(cancelButton);
+                            }
+                            cancelButton = null;
+                        } else {
+                            mainPanel.remove(acceptButton);
+                            acceptButton = null;
+                            if (rejectButton != null) {
+                                mainPanel.remove(rejectButton);
+                            }
+                            rejectButton = null;
+                        }
+                        mainPanel.add(byeButton);
+                        frame.pack();
+                    } else if (dialogState instanceof DialogStateTerminated) {
+                        //TODO close frame for both uac and uas
+                        closeFrame();
+                    }
                 }
-                cancelButton = null;
-            } else {
-                mainPanel.remove(acceptButton);
-                acceptButton = null;
-                if (rejectButton != null) {
-                    mainPanel.remove(rejectButton);
-                }
-                rejectButton = null;
-            }
-            mainPanel.add(byeButton);
-            frame.pack();
-        } else if (dialogState instanceof DialogStateTerminated) {
-            //TODO close frame for both uac and uas
-            closeFrame();
+            });
+        } catch (InterruptedException e) {
+            Logger.error("swing thread interrupted", e);
+        } catch (InvocationTargetException e) {
+            Logger.error("target invocation exception", e);
         }
-
     }
     
     private void closeFrame() {
-        if (frame != null) {
-            frame.dispose();
-            frame = null;
-        }
-        mainPanel = null;
-        text = null;
-        rejectButton = null;
-        acceptButton = null;
-        closeButton = null;
-        cancelButton = null;
-        byeButton = null;
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                if (frame != null) {
+                    frame.dispose();
+                    frame = null;
+                }
+                mainPanel = null;
+                text = null;
+                rejectButton = null;
+                acceptButton = null;
+                closeButton = null;
+                cancelButton = null;
+                byeButton = null;
+            }
+        });
     }
     
 }

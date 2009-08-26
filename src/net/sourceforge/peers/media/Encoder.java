@@ -34,6 +34,7 @@ public class Encoder implements Runnable {
     public Encoder(PipedInputStream rawData, PipedOutputStream encodedData) {
         this.rawData = rawData;
         this.encodedData = encodedData;
+        isStopped = false;
     }
     
     public void run() {
@@ -79,4 +80,5 @@ public class Encoder implements Runnable {
     public synchronized void setStopped(boolean isStopped) {
         this.isStopped = isStopped;
     }
+
 }

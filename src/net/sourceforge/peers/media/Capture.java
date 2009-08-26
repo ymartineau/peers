@@ -41,6 +41,7 @@ public class Capture implements Runnable {
     
     public Capture(PipedOutputStream rawData) {
         this.rawData = rawData;
+        isStopped = false;
     }
     
     public void run() {
@@ -79,4 +80,5 @@ public class Capture implements Runnable {
     public synchronized void setStopped(boolean isStopped) {
         this.isStopped = isStopped;
     }
+
 }

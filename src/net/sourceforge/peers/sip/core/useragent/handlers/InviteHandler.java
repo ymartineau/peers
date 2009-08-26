@@ -343,7 +343,7 @@ public class InviteHandler extends DialogMethodHandler
                     }
                 }
             };
-            timer.schedule(authInviteTask, 1000);
+            timer.schedule(authInviteTask, 1500);
             challenged = true;
             return;
         }
