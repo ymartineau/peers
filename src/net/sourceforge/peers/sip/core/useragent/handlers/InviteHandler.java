@@ -125,7 +125,7 @@ public class InviteHandler extends DialogMethodHandler
     public void handleReInvite(SipRequest sipRequest, Dialog dialog) {
         SipHeaders sipHeaders = sipRequest.getSipHeaders();
 
-        // §12.2.2 update dialog
+        // 12.2.2 update dialog
         SipHeaderFieldValue contact =
             sipHeaders.get(new SipHeaderFieldName(RFC3261.HDR_CONTACT));
         if (contact != null) {

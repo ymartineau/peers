@@ -177,7 +177,7 @@ public class MidDialogRequestManager extends RequestManager
             dialog.setRemoteCSeq(newCseq);
         } else if (newCseq < oldCseq) {
             // out of order
-            // RFC3261 §12.2.2 p77
+            // RFC3261 12.2.2 p77
             // TODO test out of order in-dialog-requests
             SipResponse sipResponse =
                 generateMidDialogResponse(sipRequest, dialog,
