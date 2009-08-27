@@ -45,7 +45,7 @@
 
   <target name="compile" depends="init">
     <javac destdir="${classes.dir}" srcdir="${src.dir}" debug="true"
-        classpathref="run"/>
+        classpathref="run" failonerror="true"/>
   </target>
 
   <target name="test-compile" depends="init">
