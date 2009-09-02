@@ -133,8 +133,8 @@ public class TransportManager {
         
         via.setValue(buf.toString());
         
-        SipTransportConnection connection =
-            new SipTransportConnection(inetAddress, port, transport);
+        SipTransportConnection connection = new SipTransportConnection(
+                myAddress, sipPort, inetAddress, port, transport);
 
         MessageSender messageSender = messageSenders.get(connection);
         if (messageSender == null) {
@@ -147,7 +147,8 @@ public class TransportManager {
     public void createServerTransport(String transportType, int port)
             throws IOException {
         SipTransportConnection conn = new SipTransportConnection(
-                    myAddress, port, transportType);
+                    myAddress, port, null, SipTransportConnection.EMPTY_PORT,
+                    transportType);
         
         MessageReceiver messageReceiver = messageReceivers.get(conn);
         if (messageReceiver == null) {
@@ -208,7 +209,8 @@ public class TransportManager {
         SipTransportConnection connection;
         try {
             connection = new SipTransportConnection(
-                    InetAddress.getByName(host), port, transport);
+                    myAddress, sipPort, InetAddress.getByName(host),
+                    port, transport);
         } catch (UnknownHostException e) {
             Logger.error("unknwon host", e);
             return;
@@ -270,11 +272,12 @@ public class TransportManager {
             throws IOException {
         MessageSender messageSender = null;
         Object socket = null;
-        if (RFC3261.TRANSPORT_UDP.equalsIgnoreCase(conn.getRemoteTransport())) {
+        if (RFC3261.TRANSPORT_UDP.equalsIgnoreCase(conn.getTransport())) {
             //TODO use Utils.getMyAddress to create socket on appropriate NIC
             DatagramSocket datagramSocket = datagramSockets.get(conn);
             if (datagramSocket == null) {
-                datagramSocket = new DatagramSocket();
+                datagramSocket = new DatagramSocket(conn.getLocalPort(),
+                        conn.getLocalInetAddress());
                 datagramSockets.put(conn, datagramSocket);
                 Logger.info("added datagram socket " + conn);
             }
@@ -289,7 +292,9 @@ public class TransportManager {
         //when a mesage is sent over a transport, the transport layer
         //must also be able to receive messages on this transport
         SipTransportConnection serverConn = new SipTransportConnection(
-                myAddress, messageSender.getLocalPort(), conn.getRemoteTransport());
+                myAddress, messageSender.getLocalPort(), null,
+                SipTransportConnection.EMPTY_PORT,
+                conn.getTransport());
         
         MessageReceiver messageReceiver =
             createMessageReceiver(serverConn, socket);
@@ -300,7 +305,7 @@ public class TransportManager {
     private MessageReceiver createMessageReceiver(SipTransportConnection conn,
             Object socket) throws IOException {
         MessageReceiver messageReceiver = null;
-        if (RFC3261.TRANSPORT_UDP.equalsIgnoreCase(conn.getRemoteTransport())) {
+        if (RFC3261.TRANSPORT_UDP.equalsIgnoreCase(conn.getTransport())) {
             DatagramSocket datagramSocket = (DatagramSocket)socket;
             messageReceiver = new UdpMessageReceiver(datagramSocket, transactionManager,
                     this);
@@ -313,10 +318,11 @@ public class TransportManager {
     private MessageReceiver createMessageReceiver(SipTransportConnection conn)
             throws IOException {
         MessageReceiver messageReceiver = null;
-        if (RFC3261.TRANSPORT_UDP.equals(conn.getRemoteTransport())) {
+        if (RFC3261.TRANSPORT_UDP.equals(conn.getTransport())) {
             DatagramSocket datagramSocket = datagramSockets.get(conn);
             if (datagramSocket == null) {
-                datagramSocket = new DatagramSocket(conn.getRemotePort());
+                datagramSocket = new DatagramSocket(conn.getLocalPort(),
+                        conn.getLocalInetAddress());
                 datagramSockets.put(conn, datagramSocket);
                 Logger.info("added datagram socket " + conn);
             }
