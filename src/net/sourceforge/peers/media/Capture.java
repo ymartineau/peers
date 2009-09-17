@@ -43,8 +43,9 @@ public class Capture implements Runnable {
         this.rawData = rawData;
         isStopped = false;
     }
-    
+
     public void run() {
+        // linear PCM 8kHz, 16 bits signed, mono-channel, little endian
         AudioFormat format = new AudioFormat(8000, SAMPLE_SIZE, 1, true, false);
         DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
         TargetDataLine line;
