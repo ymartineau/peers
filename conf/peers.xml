@@ -15,54 +15,54 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008 Yohann Martineau 
+    Copyright 2007, 2008, 2009 Yohann Martineau
 -->
 <peers xmlns="http://peers.sourceforge.net"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xsi:schemaLocation="http://peers.sourceforge.net peers.xsd">
   <network>
     <interfaces>
+      <!-- interface id is not employed for the moment -->
       <interface id="eth1">
         <name>Ethernet network interface</name>
-        <!-- uncomment the following element to specify the ip address you
-             want to use -->
-        <!--
-        <address>192.168.1.20</address>
-        -->
+        <!-- a specific address can be specified here, may you have several
+             network interfaces, or several address on a specific interface,
+             you can specify an address to bind on here. -->
+        <!-- <address>192.168.1.20</address> -->
       </interface>
     </interfaces>
   </network>
   <devices>
-    <!-- uncomment the following option to deactivate media playback and
-         caputre -->
-    <!--
-    <media>false</media>
-    -->
+    <!-- audio sending and playback can be activated or deactivated -->
+    <media>true</media>
     <audio></audio>
     <video></video>
   </devices>
   <sip>
     <profile>
-      <!-- username -->
+      <!-- username (corresponding to the user part of your sip uri) -->
       <userpart>1000</userpart>
-      <!-- domain registrar ip address -->
+      <!-- domain (corresponding to the domain part of your sip uri) -->
       <domain>provider.com</domain>
       <!-- if password is commented out, no REGISTER message is sent -->
-      <password>1234</password>
-      <!-- uncomment the following option to provide an outbound proxy.
-           Don't forget the ;lr parameter to use loose routing, strict routing
-           is not supported. -->
-      <outboundProxy>sip:192.168.2.216;lr</outboundProxy>
+      <!-- <password>1234</password> -->
+      <!-- you can specify an outbound proxy for registration and calls -->
+      <!-- <outboundProxy>sip:192.168.1.20;lr</outboundProxy> -->
       <interface ref="eth1"/>
-      <!-- you can specify the sip listening port you want to use -->
-      <port>6060</port>
+      <!-- you can specify the sip listening port you want, default value is
+           5060 -->
+      <!-- <port>6060</port> -->
     </profile>
   </sip>
   <codecs>
     <codec>
+      <!-- not used for the moment -->
       <family>audio</family>
+      <!-- not used for the moment -->
       <name>PCMU</name>
+      <!-- not used for the moment -->
       <payloadType>0</payloadType>
+      <!-- not used for the moment -->
       <!--
       <attributes>
         <attribute name="ptime" value="20"/>
@@ -72,6 +72,8 @@
   </codecs>
   <rtp>
     <interface ref="eth1"/>
-    <port>6002</port>
+    <!-- you can specify the rtp port to use for incoming and outgoing rtp
+         traffic, default value is 8000 -->
+    <!-- <port>7000</port> -->
   </rtp>
 </peers>

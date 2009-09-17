@@ -57,6 +57,7 @@ import org.dom4j.Node;
 public class UserAgent {
 
     public final static String CONFIG_FILE = "conf" + File.separator + "peers.xml";
+    public final static int RTP_DEFAULT_PORT = 8000;
     
     private Config config;
     
@@ -181,7 +182,12 @@ public class UserAgent {
         
         //stack rtp listening port
         node = config.selectSingleNode("//peers:rtp/peers:port");
-        rtpPort = Integer.parseInt(node.getText());
+        if (node != null) {
+            rtpPort = Integer.parseInt(node.getText());
+        } else {
+            rtpPort = RTP_DEFAULT_PORT;
+        }
+        
         cseqCounter = 0;
         
         StringBuffer buf = new StringBuffer();

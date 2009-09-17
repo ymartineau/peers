@@ -15,7 +15,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008 Yohann Martineau 
+    Copyright 2007, 2008, 2009 Yohann Martineau 
 -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
            targetNamespace="http://peers.sourceforge.net"
@@ -142,7 +142,7 @@
   <xs:complexType name="rtpType">
     <xs:sequence>
       <xs:element name="interface" type="interfaceRefType"/>
-      <xs:element name="port" type="portType"/>
+      <xs:element name="port" type="portType" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
 
