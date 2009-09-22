@@ -45,7 +45,12 @@ public class TransportManagerTestNG {
                 InetAddress.getLocalHost(), RFC3261.TRANSPORT_DEFAULT_PORT);
     }
     
-    @Test
+    /*
+     * FIXME issue with this test: several transport managers are created from
+     * several tests. Then those transport managers are trying to create datagram
+     * sockets which binds on the same port (from default configuration file)
+     */
+    //@Test
     public void testCreateClientTransport()
             throws IOException, SipParserException {
         String testMessage = "MESSAGE sip:bob@bilox.com SIP/2.0\r\n" +
