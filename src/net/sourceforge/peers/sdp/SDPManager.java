@@ -67,8 +67,20 @@ public class SDPManager {
             //     and just retrieve it here
             CaptureRtpSender captureRtpSender;
             captureRtpSender = userAgent.getCaptureRtpSender();
+            IncomingRtpReader incomingRtpReader =
+                userAgent.getIncomingRtpReader();
+            if (incomingRtpReader != null) {
+                incomingRtpReader.stop();
+            }
             if (captureRtpSender != null) {
                 captureRtpSender.stop();
+                while (!captureRtpSender.isTerminated()) {
+                    try {
+                        Thread.sleep(15);
+                    } catch (InterruptedException e) {
+                        Logger.debug("sleep interrupted");
+                    }
+                }
             }
             try {
                 captureRtpSender = new CaptureRtpSender(
@@ -83,11 +95,6 @@ public class SDPManager {
                 captureRtpSender.start();
             } catch (IOException e) {
                 Logger.error("input/output error", e);
-            }
-            IncomingRtpReader incomingRtpReader =
-                userAgent.getIncomingRtpReader();
-            if (incomingRtpReader != null) {
-                incomingRtpReader.stop();
             }
             try {
                 //TODO retrieve port from SDP offer

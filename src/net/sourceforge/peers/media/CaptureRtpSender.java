@@ -112,4 +112,10 @@ public class CaptureRtpSender {
         return rtpSession;
     }
 
+    public boolean isTerminated() {
+        if (rtpSender == null) {
+            return true;
+        }
+        return rtpSender.isTerminated();
+    }
 }
