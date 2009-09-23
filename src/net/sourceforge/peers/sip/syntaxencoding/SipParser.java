@@ -36,7 +36,8 @@ public class SipParser {
     
     private final static int BUFF_SIZE = 1024;
     
-    public SipMessage parse(InputStream in) throws IOException, SipParserException {
+    public synchronized SipMessage parse(InputStream in)
+            throws IOException, SipParserException {
         
         InputStreamReader inputStreamReader = new InputStreamReader(in);
         reader = new BufferedReader(inputStreamReader);
