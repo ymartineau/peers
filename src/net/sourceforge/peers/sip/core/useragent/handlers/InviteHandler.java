@@ -22,6 +22,7 @@ package net.sourceforge.peers.sip.core.useragent.handlers;
 import gov.nist.jrtp.RtpException;
 
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -30,6 +31,7 @@ import java.util.TimerTask;
 
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.media.CaptureRtpSender;
+import net.sourceforge.peers.media.Echo;
 import net.sourceforge.peers.media.IncomingRtpReader;
 import net.sourceforge.peers.sdp.NoCodecException;
 import net.sourceforge.peers.sdp.SDPManager;
@@ -439,7 +441,8 @@ public class InviteHandler extends DialogMethodHandler
         int remotePort = sessionDescription.getMedias().get(0).getPort();
         String localAddress = userAgent.getMyAddress().getHostAddress();
 
-        if (userAgent.isMedia()) {
+        switch (userAgent.getMediaMode()) {
+        case captureAndPlayback:
             CaptureRtpSender captureRtpSender;
             //TODO this could be optimized, create captureRtpSender at stack init
             //     and just retrieve it here
@@ -465,7 +468,8 @@ public class InviteHandler extends DialogMethodHandler
 //                    incomingRtpReader = new IncomingRtpReader(localAddress,
 //                            Utils.getInstance().getRtpPort(),
 //                            remoteAddress, remotePort);
-                incomingRtpReader = new IncomingRtpReader(captureRtpSender.getRtpSession());
+                incomingRtpReader = new IncomingRtpReader(
+                        captureRtpSender.getRtpSession());
             } catch (IOException e) {
                 Logger.error("input/output error", e);
                 return;
@@ -479,6 +483,25 @@ public class InviteHandler extends DialogMethodHandler
             } catch (RtpException e) {
                 Logger.error("RTP error", e);
             }
+            break;
+
+        case echo:
+            Echo echo;
+            try {
+                echo = new Echo(localAddress, userAgent.getRtpPort(),
+                            remoteAddress, remotePort);
+            } catch (UnknownHostException e) {
+                Logger.error("unknown host amongst "
+                        + localAddress + " or " + remoteAddress);
+                return;
+            }
+            userAgent.setEcho(echo);
+            Thread echoThread = new Thread(echo);
+            echoThread.start();
+            break;
+        case none:
+        default:
+            break;
         }
 
         

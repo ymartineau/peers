@@ -31,7 +31,9 @@ import java.util.List;
 
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.media.CaptureRtpSender;
+import net.sourceforge.peers.media.Echo;
 import net.sourceforge.peers.media.IncomingRtpReader;
+import net.sourceforge.peers.media.MediaMode;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.core.Config;
@@ -66,6 +68,8 @@ public class UserAgent {
     
     private CaptureRtpSender captureRtpSender;
     private IncomingRtpReader incomingRtpReader;
+    //TODO factorize echo and captureRtpSender
+    private Echo echo;
     
     private UAC uac;
     private UAS uas;
@@ -80,7 +84,7 @@ public class UserAgent {
     private int sipPort;
     private int rtpPort;
     private int cseqCounter;
-    private boolean media = true;
+    private MediaMode mediaMode;
     private SipURI outboundProxy;
     
     private String userpart;
@@ -198,12 +202,13 @@ public class UserAgent {
         buf.append("domain: ").append(domain).append("]");
         Logger.info(buf.toString());
         
-        //is media activated
-        node = config.selectSingleNode("//peers:media");
+        //media mode (none, captureAndPlayback, echo)
+        node = config.selectSingleNode("//peers:mediaMode");
         if (node != null) {
-            media = Boolean.parseBoolean(node.getText());
+            mediaMode = MediaMode.valueOf(node.getText());
+        } else {
+            mediaMode = MediaMode.captureAndPlayback;
         }
-        
 
         //transaction user
         
@@ -404,12 +409,20 @@ public class UserAgent {
         return userpart;
     }
 
-    public boolean isMedia() {
-        return media;
+    public MediaMode getMediaMode() {
+        return mediaMode;
     }
 
     public SipURI getOutboundProxy() {
         return outboundProxy;
+    }
+
+    public Echo getEcho() {
+        return echo;
+    }
+
+    public void setEcho(Echo echo) {
+        this.echo = echo;
     }
     
 }

@@ -22,9 +22,11 @@ package net.sourceforge.peers.sdp;
 import gov.nist.jrtp.RtpException;
 
 import java.io.IOException;
+import java.net.UnknownHostException;
 
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.media.CaptureRtpSender;
+import net.sourceforge.peers.media.Echo;
 import net.sourceforge.peers.media.IncomingRtpReader;
 import net.sourceforge.peers.sip.core.useragent.UserAgent;
 
@@ -60,9 +62,10 @@ public class SDPManager {
         }
         String destAddress = sessionDescription.getIpAddress().getHostAddress();
         int destPort = sessionDescription.getMedias().get(0).getPort();
-        
-        if (userAgent.isMedia()) {
-            //FIXME move this to InviteHandler
+
+        switch (userAgent.getMediaMode()) {
+        case captureAndPlayback:
+          //FIXME move this to InviteHandler
             //TODO this could be optimized, create captureRtpSender at stack init
             //     and just retrieve it here
             CaptureRtpSender captureRtpSender;
@@ -117,6 +120,25 @@ public class SDPManager {
             } catch (RtpException e1) {
                 Logger.error("RTP error", e1);
             }
+            break;
+        case echo:
+            Echo echo;
+            try {
+                echo = new Echo(userAgent.getMyAddress().getHostAddress(),
+                        userAgent.getRtpPort(), destAddress, destPort);
+            } catch (UnknownHostException e) {
+                Logger.error("unknown host amongst "
+                        + userAgent.getMyAddress().getHostAddress()
+                        + " or " + destAddress);
+                return null;
+            }
+            userAgent.setEcho(echo);
+            Thread echoThread = new Thread(echo);
+            echoThread.start();
+            break;
+        case none:
+        default:
+            break;
         }
         
         return generateOffer();

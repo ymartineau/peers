@@ -49,6 +49,14 @@
     </xs:restriction>
   </xs:simpleType>
 
+  <xs:simpleType name="mediaModeType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="none"/>
+      <xs:enumeration value="captureAndPlayback"/>
+      <xs:enumeration value="echo"/>
+    </xs:restriction>
+  </xs:simpleType>
+
   <!-- Complex Types -->
 
 
@@ -86,7 +94,8 @@
 
   <xs:complexType name="devicesType">
     <xs:sequence>
-      <xs:element name="media" type="xs:boolean" minOccurs="0"/>
+      <xs:element name="mediaMode" type="mediaModeType" minOccurs="0"
+          default="captureAndPlayback"/>
       <xs:element name="audio" type="audioType"/>
       <xs:element name="video" type="videoType"/>
     </xs:sequence>

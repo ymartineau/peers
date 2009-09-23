@@ -20,6 +20,7 @@
 package net.sourceforge.peers.sip.core.useragent;
 
 import net.sourceforge.peers.media.CaptureRtpSender;
+import net.sourceforge.peers.media.Echo;
 import net.sourceforge.peers.media.IncomingRtpReader;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.Utils;
@@ -102,15 +103,28 @@ public class UAC {
             }
             dialogManager.removeDialog(dialog.getId());
         }
-        CaptureRtpSender captureRtpSender = userAgent.getCaptureRtpSender();
-        if (captureRtpSender != null) {
-            captureRtpSender.stop();
-            userAgent.setCaptureRtpSender(null);
-        }
-        IncomingRtpReader incomingRtpReader = userAgent.getIncomingRtpReader();
-        if (incomingRtpReader != null) {
-            incomingRtpReader.stop();
-            userAgent.setIncomingRtpReader(null);
+        switch (userAgent.getMediaMode()) {
+        case captureAndPlayback:
+            CaptureRtpSender captureRtpSender = userAgent.getCaptureRtpSender();
+            if (captureRtpSender != null) {
+                captureRtpSender.stop();
+                userAgent.setCaptureRtpSender(null);
+            }
+            IncomingRtpReader incomingRtpReader = userAgent.getIncomingRtpReader();
+            if (incomingRtpReader != null) {
+                incomingRtpReader.stop();
+                userAgent.setIncomingRtpReader(null);
+            }
+            break;
+        case echo:
+            Echo echo = userAgent.getEcho();
+            if (echo != null) {
+                echo.stop();
+                userAgent.setEcho(null);
+            }
+            break;
+        default:
+            break;
         }
     }
 
