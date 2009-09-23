@@ -33,8 +33,15 @@
     </interfaces>
   </network>
   <devices>
-    <!-- audio sending and playback can be activated or deactivated -->
-    <media>true</media>
+    <!-- mediaMode corresponds to the way media is managed. Three values are
+         possible for this parameter:
+           - captureAndPlayback: capture sound from microphone, send
+             corresponding rtp packets, receive rtp packets and play those
+             packets on speakers. This is the default value.
+           - echo: receive rtp packets, do not play them on speakers and send
+             those packets to remote party
+           - none: no media is capture, played, send nor received -->
+    <!-- <mediaMode>captureAndPlayback</mediaMode> -->
     <audio></audio>
     <video></video>
   </devices>

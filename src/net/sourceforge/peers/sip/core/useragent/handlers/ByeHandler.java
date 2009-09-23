@@ -21,6 +21,7 @@ package net.sourceforge.peers.sip.core.useragent.handlers;
 
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.media.CaptureRtpSender;
+import net.sourceforge.peers.media.Echo;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.core.useragent.MidDialogRequestManager;
 import net.sourceforge.peers.sip.core.useragent.UserAgent;
@@ -76,10 +77,24 @@ public class ByeHandler extends DialogMethodHandler
         userAgent.getPeers().remove(addrSpec);
         dialogManager.removeDialog(dialog.getId());
         Logger.debug("removed dialog " + dialog.getId());
-        CaptureRtpSender captureRtpSender = userAgent.getCaptureRtpSender();
-        if (captureRtpSender != null) {
-            captureRtpSender.stop();
-            userAgent.setCaptureRtpSender(null);
+        switch (userAgent.getMediaMode()) {
+        case captureAndPlayback:
+            CaptureRtpSender captureRtpSender = userAgent.getCaptureRtpSender();
+            if (captureRtpSender != null) {
+                captureRtpSender.stop();
+                userAgent.setCaptureRtpSender(null);
+            }
+            break;
+        case echo:
+            Echo echo = userAgent.getEcho();
+            if (echo != null) {
+                echo.stop();
+                userAgent.setEcho(null);
+            }
+            break;
+        case none:
+        default:
+            break;
         }
         
         SipResponse sipResponse =
