@@ -22,6 +22,7 @@ package net.sourceforge.peers.sip.core.useragent.handlers;
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.media.CaptureRtpSender;
 import net.sourceforge.peers.media.Echo;
+import net.sourceforge.peers.media.IncomingRtpReader;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.core.useragent.MidDialogRequestManager;
 import net.sourceforge.peers.sip.core.useragent.UserAgent;
@@ -83,6 +84,11 @@ public class ByeHandler extends DialogMethodHandler
             if (captureRtpSender != null) {
                 captureRtpSender.stop();
                 userAgent.setCaptureRtpSender(null);
+            }
+            IncomingRtpReader incomingRtpReader = userAgent.getIncomingRtpReader();
+            if (incomingRtpReader != null) {
+                incomingRtpReader.stop();
+                userAgent.setIncomingRtpReader(null);
             }
             break;
         case echo:
