@@ -65,13 +65,25 @@ public class IncomingRtpReader implements RtpListener {
         rtpSession.receiveRTPPackets();
     }
     
-    public void stop() {
-        rtpSession.stopRtpPacketReceiver();
-        rtpSession.shutDown();
-        line.drain();
-        line.stop();
-        line.close();
-        line = null;
+    public synchronized void stop() {
+        if (line != null) {
+            try {
+                rtpSession.stopRtpPacketReceiver();
+            } catch (Exception e) {
+                Logger.error("exception in rtpSession.stopRtpPacketReceiver()",
+                        e);
+            }
+            try {
+                rtpSession.shutDown();
+            } catch (Exception e) {
+                Logger.error("exception in rtpSession.shutDown()", e);
+            }
+            
+            line.drain();
+            line.stop();
+            line.close();
+            line = null;
+        }
     }
 
     public void handleRtpErrorEvent(RtpErrorEvent arg0) {

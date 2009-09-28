@@ -348,6 +348,8 @@ public class InviteHandler extends DialogMethodHandler
             timer.schedule(authInviteTask, 1500);
             challenged = true;
             return;
+        } else {
+            challenged = false;
         }
         setChanged();
         notifyObservers(new SipEvent(EventType.ERROR, sipResponse));
