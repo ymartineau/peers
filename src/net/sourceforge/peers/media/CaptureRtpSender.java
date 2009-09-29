@@ -108,13 +108,14 @@ public class CaptureRtpSender {
         }
     }
 
-    public void update(String remoteAddress, int remotePort) {
-        rtpSession.setRemoteIpAddress(remoteAddress);
-        rtpSession.setRemoteRtpRecvPort(remotePort);
-    }
-
     public synchronized RtpSession getRtpSession() {
         return rtpSession;
     }
 
+    public boolean isTerminated() {
+        if (rtpSender == null) {
+            return true;
+        }
+        return rtpSender.isTerminated();
+    }
 }

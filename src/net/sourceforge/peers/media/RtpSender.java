@@ -34,11 +34,13 @@ public class RtpSender implements Runnable {
     private PipedInputStream encodedData;
     private RtpSession rtpSession;
     private boolean isStopped;
+    private boolean isTerminated;
     
     public RtpSender(PipedInputStream encodedData, RtpSession rtpSession) {
         this.encodedData = encodedData;
         this.rtpSession = rtpSession;
         isStopped = false;
+        isTerminated = false;
     }
     
     public void run() {
@@ -81,10 +83,15 @@ public class RtpSender implements Runnable {
                 return;
             }
         }
+        isTerminated = true;
     }
 
     public synchronized void setStopped(boolean isStopped) {
         this.isStopped = isStopped;
+    }
+
+    public boolean isTerminated() {
+        return isTerminated;
     }
 
 }

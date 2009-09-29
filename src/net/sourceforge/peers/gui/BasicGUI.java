@@ -84,7 +84,7 @@ public class BasicGUI implements ActionListener, Observer, WindowListener {
         mainPanel = new JPanel();
         
         
-        uri = new JTextField("sip:192.168.1.2", 15);
+        uri = new JTextField("sip:", 15);
         actionButton = new JButton("Call");
         actionButton.addActionListener(this);
         
@@ -137,12 +137,17 @@ public class BasicGUI implements ActionListener, Observer, WindowListener {
             if (sipEvent.getEventType() == EventType.INCOMING_CALL) {
                 final SipMessage sipMessage = sipEvent.getSipMessage();
                 if (sipMessage instanceof SipResponse) {
-                    SwingUtilities.invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            new CallFrame((SipResponse)sipMessage, userAgent);
+                    CallFrameRunnable callFrameRunnable =
+                        new CallFrameRunnable((SipResponse)sipMessage);
+                    SwingUtilities.invokeLater(callFrameRunnable);
+                    while (!callFrameRunnable.isCallFrameCreated()) {
+                        try {
+                            Thread.sleep(15);
+                        } catch (InterruptedException e) {
+                            Logger.debug("basic gui sleep interrupted");
+                            break;
                         }
-                    });
+                    }
                 }
             }
         }
@@ -179,4 +184,26 @@ public class BasicGUI implements ActionListener, Observer, WindowListener {
     public void windowOpened(WindowEvent arg0) {
     }
 
+    private class CallFrameRunnable implements Runnable {
+
+        private boolean callFrameCreated;
+        private SipResponse sipResponse;
+
+        private CallFrameRunnable(SipResponse sipResponse) {
+            this.sipResponse = sipResponse;
+            callFrameCreated = false;
+        }
+
+        @Override
+        public void run() {
+            Logger.debug("running new call frame");
+            new CallFrame(sipResponse, userAgent);
+            callFrameCreated = true;
+        }
+
+        public boolean isCallFrameCreated() {
+            return callFrameCreated;
+        }
+
+    }
 }

@@ -56,6 +56,9 @@ public class UdpMessageSender extends MessageSender {
 
     @Override
     public synchronized void sendMessage(SipMessage sipMessage) throws IOException {
+        if (sipMessage == null) {
+            return;
+        }
         byte[] buf = sipMessage.toString().getBytes();
         DatagramPacket packet = new DatagramPacket(buf, buf.length, inetAddress,
                 port);
