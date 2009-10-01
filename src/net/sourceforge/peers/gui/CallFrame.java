@@ -170,6 +170,7 @@ public class CallFrame implements ActionListener, Observer {
         Logger.debug(callId + " action performed: " + actionCommand);
         if (CLOSE_ACTION.equals(actionCommand)) {
             hangup();
+            closeFrame();
         } else if (CANCEL_ACTION.equals(actionCommand)) {
             cancel();
         } else if (ACCEPT_ACTION.equals(actionCommand)) {
