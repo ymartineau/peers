@@ -85,6 +85,7 @@ public class BasicGUI implements ActionListener, Observer, WindowListener {
         
         
         uri = new JTextField("sip:", 15);
+        uri.addActionListener(this);
         actionButton = new JButton("Call");
         actionButton.addActionListener(this);
         
