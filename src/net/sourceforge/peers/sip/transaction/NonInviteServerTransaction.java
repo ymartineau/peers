@@ -30,7 +30,7 @@ import net.sourceforge.peers.sip.transport.SipResponse;
 import net.sourceforge.peers.sip.transport.TransportManager;
 
 
-public class NonInviteServerTransaction extends Transaction
+public class NonInviteServerTransaction extends NonInviteTransaction
         implements ServerTransaction/*, SipServerTransportUser*/ {
 
     public final NonInviteServerTransactionState TRYING;

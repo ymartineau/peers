@@ -36,7 +36,7 @@ import net.sourceforge.peers.sip.transport.SipResponse;
 import net.sourceforge.peers.sip.transport.TransportManager;
 
 
-public class NonInviteClientTransaction extends Transaction
+public class NonInviteClientTransaction extends NonInviteTransaction
         implements ClientTransaction, SipClientTransportUser {
 
     public final NonInviteClientTransactionState INIT;
