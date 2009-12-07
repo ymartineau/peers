@@ -52,10 +52,10 @@ public class SipTransportConnection {
             return false;
         }
         SipTransportConnection other = (SipTransportConnection)obj;
-        if (!transport.equals(other.transport)) {
+        if (!transport.equalsIgnoreCase(other.transport)) {
             return false;
         }
-        if (RFC3261.TRANSPORT_UDP.equals(transport)) {
+        if (RFC3261.TRANSPORT_UDP.equalsIgnoreCase(transport)) {
             return localInetAddress.equals(other.localInetAddress) &&
                 localPort == other.localPort;
         }
@@ -69,7 +69,7 @@ public class SipTransportConnection {
         buf.append(':');
         appendPort(buf, localPort);
         buf.append('/');
-        if (!RFC3261.TRANSPORT_UDP.equals(transport)) {
+        if (!RFC3261.TRANSPORT_UDP.equalsIgnoreCase(transport)) {
             appendInetAddress(buf, remoteInetAddress);
             buf.append(':');
             appendPort(buf, remotePort);
