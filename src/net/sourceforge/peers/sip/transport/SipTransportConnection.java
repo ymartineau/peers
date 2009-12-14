@@ -75,7 +75,7 @@ public class SipTransportConnection {
             appendPort(buf, remotePort);
             buf.append('/');
         }
-        buf.append(transport);
+        buf.append(transport.toUpperCase());
         return buf.toString();
     }
 
