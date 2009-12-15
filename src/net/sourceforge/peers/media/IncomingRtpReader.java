@@ -86,9 +86,9 @@ public class IncomingRtpReader implements RtpListener {
         }
     }
 
-    public void handleRtpErrorEvent(RtpErrorEvent arg0) {
-        // TODO Auto-generated method stub
-        Logger.debug("IncomingRtpReader.handleRtpErrorEvent()");
+    public void handleRtpErrorEvent(RtpErrorEvent rtpErrorEvent) {
+        Logger.debug("IncomingRtpReader.handleRtpErrorEvent() "
+                + rtpErrorEvent);
     }
 
     public void handleRtpPacketEvent(RtpPacketEvent rtpEvent) {
@@ -110,13 +110,13 @@ public class IncomingRtpReader implements RtpListener {
         
     }
 
-    public void handleRtpStatusEvent(RtpStatusEvent arg0) {
-        // TODO Auto-generated method stub
-        Logger.debug("IncomingRtpReader.handleRtpStatusEvent()");
+    public void handleRtpStatusEvent(RtpStatusEvent rtpStatusEvent) {
+        Logger.debug("IncomingRtpReader.handleRtpStatusEvent() "
+                + rtpStatusEvent);
     }
 
-    public void handleRtpTimeoutEvent(RtpTimeoutEvent arg0) {
-        // TODO Auto-generated method stub
-        Logger.debug("IncomingRtpReader.handleRtpTimeoutEvent()");
+    public void handleRtpTimeoutEvent(RtpTimeoutEvent rtpTimeoutEvent) {
+        Logger.debug("IncomingRtpReader.handleRtpTimeoutEvent() "
+                + rtpTimeoutEvent);
     }
 }
