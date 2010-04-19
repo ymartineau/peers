@@ -1,0 +1,79 @@
+package net.sourceforge.peers.rtp;
+
+import org.testng.annotations.Test;
+
+public class RtpParserTestNG {
+
+    @Test
+    public void testDecode() {
+        byte[] packet = new byte[172];
+        int pos = 0;
+        // rtp header from peers/integration-tests/captures/test6.pcap packet 2
+        packet[pos++] = new Integer(0x80).byteValue();
+        packet[pos++] = new Integer(0x00).byteValue();
+        packet[pos++] = new Integer(0x02).byteValue();
+        packet[pos++] = new Integer(0xaf).byteValue();
+        packet[pos++] = new Integer(0x00).byteValue();
+        packet[pos++] = new Integer(0x00).byteValue();
+        packet[pos++] = new Integer(0x01).byteValue();
+        packet[pos++] = new Integer(0x8d).byteValue();
+        packet[pos++] = new Integer(0x00).byteValue();
+        packet[pos++] = new Integer(0x00).byteValue();
+        packet[pos++] = new Integer(0x00).byteValue();
+        packet[pos++] = new Integer(0x01).byteValue();
+        for (int i = 0; i < 160; ++i) {
+            packet[pos++] = new Integer(i).byteValue();
+        }
+        RtpParser rtpParser = new RtpParser();
+        RtpPacket rtpPacket = rtpParser.decode(packet);
+        assert rtpPacket.getVersion() == 2;
+        assert !rtpPacket.isPadding();
+        assert !rtpPacket.isExtension();
+        assert rtpPacket.getCsrcCount() == 0;
+        assert !rtpPacket.isMarker();
+        assert rtpPacket.getPayloadType() == 0;
+        assert rtpPacket.getSequenceNumber() == 687;
+        assert rtpPacket.getTimestamp() == 397;
+        assert rtpPacket.getSsrc() == 1;
+        assert rtpPacket.getData().length == 160;
+        for (int i = 0; i < 160; ++i)
+            assert (int)(rtpPacket.getData()[i] & 0xff) == i;
+    }
+
+    @Test
+    public void testEncode() {
+        RtpPacket rtpPacket = new RtpPacket();
+        rtpPacket.setVersion(2);
+        rtpPacket.setPadding(false);
+        rtpPacket.setExtension(false);
+        rtpPacket.setCsrcCount(0);
+        rtpPacket.setMarker(false);
+        rtpPacket.setPayloadType(0);
+        rtpPacket.setSequenceNumber(687);
+        rtpPacket.setTimestamp(397);
+        rtpPacket.setSsrc(1);
+        byte[] data = new byte[160];
+        for (int i = 0; i < data.length; ++i) {
+            data[i] = new Integer(i).byteValue();
+        }
+        rtpPacket.setData(data);
+        RtpParser rtpParser = new RtpParser();
+        byte[] packet = rtpParser.encode(rtpPacket);
+        int pos = 0;
+        assert packet[pos++] == new Integer(0x80).byteValue();
+        assert packet[pos++] == new Integer(0x00).byteValue();
+        assert packet[pos++] == new Integer(0x02).byteValue();
+        assert packet[pos++] == new Integer(0xaf).byteValue();
+        assert packet[pos++] == new Integer(0x00).byteValue();
+        assert packet[pos++] == new Integer(0x00).byteValue();
+        assert packet[pos++] == new Integer(0x01).byteValue();
+        assert packet[pos++] == new Integer(0x8d).byteValue();
+        assert packet[pos++] == new Integer(0x00).byteValue();
+        assert packet[pos++] == new Integer(0x00).byteValue();
+        assert packet[pos++] == new Integer(0x00).byteValue();
+        assert packet[pos++] == new Integer(0x01).byteValue();
+        for (int i = 0; i < rtpPacket.getData().length; ++i)
+            assert rtpPacket.getData()[i] == data[i];
+    }
+
+}
