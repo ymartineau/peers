@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Peers RTP TestNG suite">
+  <test name="RTP Parser">
+    <classes>
+      <class name="net.sourceforge.peers.rtp.RtpParserTestNG"/>
+    </classes>
+  </test>
+</suite>
