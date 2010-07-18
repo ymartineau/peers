@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008, 2009 Yohann Martineau 
+    Copyright 2007, 2008, 2009, 2010 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip.transaction;
@@ -38,7 +38,6 @@ public class InviteClientTransactionStateCompleted extends
     public void received300To699() {
         InviteClientTransactionState nextState = inviteClientTransaction.COMPLETED;
         inviteClientTransaction.setState(nextState);
-        log(nextState);
         inviteClientTransaction.sendAck();
     }
     
@@ -46,7 +45,6 @@ public class InviteClientTransactionStateCompleted extends
     public void transportError() {
         InviteClientTransactionState nextState = inviteClientTransaction.TERMINATED;
         inviteClientTransaction.setState(nextState);
-        log(nextState);
         inviteClientTransaction.transactionUser.transactionTransportError();
     }
     
@@ -54,7 +52,6 @@ public class InviteClientTransactionStateCompleted extends
     public void timerDFires() {
         InviteClientTransactionState nextState = inviteClientTransaction.TERMINATED;
         inviteClientTransaction.setState(nextState);
-        log(nextState);
     }
     
     

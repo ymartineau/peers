@@ -14,39 +14,38 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008, 2009 Yohann Martineau 
+    Copyright 2007, 2008, 2009, 2010 Yohann Martineau 
 */
 
 package net.sourceforge.peers.media;
 
-import gov.nist.jrtp.RtpManager;
-import gov.nist.jrtp.RtpSession;
-
 import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
+import java.net.InetAddress;
 
 import net.sourceforge.peers.Logger;
+import net.sourceforge.peers.rtp.RtpSession;
 
 
 
 public class CaptureRtpSender {
 
-    private RtpManager rtpManager;
-
     private RtpSession rtpSession;
     private Capture capture;
     private Encoder encoder;
     private RtpSender rtpSender;
-//    private SimpleCapture simpleCapture;
 
     public CaptureRtpSender(String localAddress, int localPort,
-            String remoteAddress, int remotePort)
+            String remoteAddress, int remotePort, SoundManager soundManager,
+            boolean mediaDebug)
             throws IOException {
         super();
-        rtpManager = new RtpManager(localAddress);
-        rtpSession = rtpManager.createRtpSession(localPort, remoteAddress,
-                remotePort);
+        InetAddress inetAddress = InetAddress.getByName(localAddress);
+        rtpSession = new RtpSession(inetAddress, localPort, mediaDebug);
+        inetAddress = InetAddress.getByName(remoteAddress);
+        rtpSession.setRemoteAddress(inetAddress);
+        rtpSession.setRemotePort(remotePort);
         PipedOutputStream rawDataOutput = new PipedOutputStream();
         PipedInputStream rawDataInput;
         try {
@@ -64,11 +63,9 @@ public class CaptureRtpSender {
             Logger.error("input/output error");
             return;
         }
-        
-        capture = new Capture(rawDataOutput);
-        encoder = new Encoder(rawDataInput, encodedDataOutput);
-        rtpSender = new RtpSender(encodedDataInput, rtpSession);
-//        simpleCapture = new SimpleCapture();
+        capture = new Capture(rawDataOutput, soundManager);
+        encoder = new Encoder(rawDataInput, encodedDataOutput, mediaDebug);
+        rtpSender = new RtpSender(encodedDataInput, rtpSession, mediaDebug);
     }
 
     public void start() throws IOException {
@@ -85,9 +82,6 @@ public class CaptureRtpSender {
         encoderThread.start();
         rtpSenderThread.start();
         
-//        simpleCapture.setStopped(false);
-//        Thread simpleCaptureThread = new Thread(simpleCapture);
-//        simpleCaptureThread.start();
     }
 
     public void stop() {
@@ -99,12 +93,6 @@ public class CaptureRtpSender {
         }
         if (capture != null) {
             capture.setStopped(true);
-        }
-//        if (simpleCapture != null) {
-//            simpleCapture.setStopped(true);
-//        }
-        if (rtpSession != null) {
-            rtpSession.shutDown();
         }
     }
 

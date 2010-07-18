@@ -17,26 +17,26 @@
     Copyright 2007, 2008, 2009 Yohann Martineau 
 */
 
-package net.sourceforge.peers.sip.core;
 
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.List;
+package net.sourceforge.peers.sip.core.useragent;
 
-import org.dom4j.DocumentException;
-import org.testng.annotations.Test;
+import net.sourceforge.peers.sip.transport.SipRequest;
+import net.sourceforge.peers.sip.transport.SipResponse;
 
-public class ConfigTestNG {
+public interface SipListener {
 
-    @Test
-    public void testConfig() throws MalformedURLException, DocumentException {
-        String urlStr =
-            "file:" + new File("conf/peers.xml").getAbsolutePath();
-        URL url = new URL(urlStr);
-        Config config = new Config(url);
-        List<?> list = config.selectNodes("//peers:profile");
-        assert list != null : "no node found for xpath: //peers:profile";
-    }
+    public void registerSuccessful(SipResponse sipResponse);
+
+    public void registerFailed(SipResponse sipResponse);
+
+    public void incomingCall(SipRequest sipRequest, SipResponse provResponse);
+
+    public void remoteHangup(SipRequest sipRequest);
+
+    public void ringing(SipResponse sipResponse);
+
+    public void calleePickup(SipResponse sipResponse);
+
+    public void error(SipResponse sipResponse);
 
 }

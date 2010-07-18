@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008, 2009 Yohann Martineau 
+    Copyright 2007, 2008, 2009, 2010 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip.transaction;
@@ -33,7 +33,6 @@ public class NonInviteServerTransactionStateProceeding extends
     public void received1xx() {
         NonInviteServerTransactionState nextState = nonInviteServerTransaction.PROCEEDING;
         nonInviteServerTransaction.setState(nextState);
-        log(nextState);
         nonInviteServerTransaction.sendLastResponse();
     }
     
@@ -41,7 +40,6 @@ public class NonInviteServerTransactionStateProceeding extends
     public void received200To699() {
         NonInviteServerTransactionState nextState = nonInviteServerTransaction.COMPLETED;
         nonInviteServerTransaction.setState(nextState);
-        log(nextState);
         nonInviteServerTransaction.sendLastResponse();
         int timeout;
         if (RFC3261.TRANSPORT_UDP.equals(nonInviteServerTransaction.transport)) {
@@ -57,14 +55,12 @@ public class NonInviteServerTransactionStateProceeding extends
     public void transportError() {
         NonInviteServerTransactionState nextState = nonInviteServerTransaction.TERMINATED;
         nonInviteServerTransaction.setState(nextState);
-        log(nextState);
     }
     
     @Override
     public void receivedRequest() {
         NonInviteServerTransactionState nextState = nonInviteServerTransaction.PROCEEDING;
         nonInviteServerTransaction.setState(nextState);
-        log(nextState);
     }
     
 }

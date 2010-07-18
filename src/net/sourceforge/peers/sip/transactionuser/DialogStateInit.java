@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008, 2009 Yohann Martineau 
+    Copyright 2007, 2008, 2009, 2010 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip.transactionuser;
@@ -31,21 +31,18 @@ public class DialogStateInit extends DialogState {
     public void receivedOrSent101To199() {
         DialogState nextState = dialog.EARLY;
         dialog.setState(nextState);
-        log(nextState);
     }
     
     @Override
     public void receivedOrSent2xx() {
         DialogState nextState = dialog.CONFIRMED;
         dialog.setState(nextState);
-        log(nextState);
     }
     
     @Override
     public void receivedOrSent300To699() {
         DialogState nextState = dialog.TERMINATED;
         dialog.setState(nextState);
-        log(nextState);
     }
     
     @Override

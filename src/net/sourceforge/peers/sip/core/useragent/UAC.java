@@ -14,14 +14,16 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008, 2009 Yohann Martineau 
+    Copyright 2007, 2008, 2009, 2010 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip.core.useragent;
 
+import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.media.CaptureRtpSender;
 import net.sourceforge.peers.media.Echo;
 import net.sourceforge.peers.media.IncomingRtpReader;
+import net.sourceforge.peers.media.SoundManager;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.core.useragent.handlers.InviteHandler;
@@ -68,10 +70,10 @@ public class UAC {
      * For the moment we consider that only one profile uri is used at a time.
      * @throws SipUriSyntaxException 
      */
-    public void register() throws SipUriSyntaxException {
+    public SipRequest register() throws SipUriSyntaxException {
         String requestUri = RFC3261.SIP_SCHEME + RFC3261.SCHEME_SEPARATOR
             + userAgent.getDomain();
-        initialRequestManager.createInitialRequest(requestUri,
+        return initialRequestManager.createInitialRequest(requestUri,
                 RFC3261.METHOD_REGISTER, profileUri, registerCallID);
     }
     
@@ -79,9 +81,9 @@ public class UAC {
         initialRequestManager.registerHandler.unregister();
     }
     
-    public void invite(String requestUri, String callId)
+    public SipRequest invite(String requestUri, String callId)
             throws SipUriSyntaxException {
-        initialRequestManager.createInitialRequest(requestUri,
+        return initialRequestManager.createInitialRequest(requestUri,
                 RFC3261.METHOD_INVITE, profileUri, callId);
         
     }
@@ -101,19 +103,41 @@ public class UAC {
                         dialog, RFC3261.METHOD_BYE);
                 
             }
-            dialogManager.removeDialog(dialog.getId());
+            final String callId = dialog.getCallId();
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        Thread.sleep(40000);//TODO change to 4 seconds
+                    } catch (InterruptedException e) {
+                    }
+                    dialogManager.removeDialog(callId);
+                }
+            });
+            thread.start();
         }
         switch (userAgent.getMediaMode()) {
         case captureAndPlayback:
             CaptureRtpSender captureRtpSender = userAgent.getCaptureRtpSender();
             if (captureRtpSender != null) {
                 captureRtpSender.stop();
+                while (!captureRtpSender.isTerminated()) {
+                    try {
+                        Thread.sleep(15);
+                    } catch (InterruptedException e) {
+                        Logger.debug("sleep interrupted");
+                    }
+                }
                 userAgent.setCaptureRtpSender(null);
             }
             IncomingRtpReader incomingRtpReader = userAgent.getIncomingRtpReader();
             if (incomingRtpReader != null) {
                 incomingRtpReader.stop();
                 userAgent.setIncomingRtpReader(null);
+            }
+            SoundManager soundManager = userAgent.getSoundManager();
+            if (soundManager != null) {
+                soundManager.closeLines();
             }
             break;
         case echo:

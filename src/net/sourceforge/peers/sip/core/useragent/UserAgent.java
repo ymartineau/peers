@@ -14,29 +14,25 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008, 2009 Yohann Martineau 
+    Copyright 2007, 2008, 2009, 2010 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip.core.useragent;
 
 import java.io.File;
 import java.net.InetAddress;
-import java.net.MalformedURLException;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.List;
 
+import net.sourceforge.peers.Config;
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.media.CaptureRtpSender;
 import net.sourceforge.peers.media.Echo;
 import net.sourceforge.peers.media.IncomingRtpReader;
 import net.sourceforge.peers.media.MediaMode;
+import net.sourceforge.peers.media.SoundManager;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.Utils;
-import net.sourceforge.peers.sip.core.Config;
 import net.sourceforge.peers.sip.core.useragent.handlers.ByeHandler;
 import net.sourceforge.peers.sip.core.useragent.handlers.CancelHandler;
 import net.sourceforge.peers.sip.core.useragent.handlers.InviteHandler;
@@ -51,9 +47,6 @@ import net.sourceforge.peers.sip.transport.SipMessage;
 import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.SipResponse;
 import net.sourceforge.peers.sip.transport.TransportManager;
-
-import org.dom4j.DocumentException;
-import org.dom4j.Node;
 
 
 public class UserAgent {
@@ -80,135 +73,27 @@ public class UserAgent {
     private TransactionManager transactionManager;
     private TransportManager transportManager;
 
-    private InetAddress myAddress;
-    private int sipPort;
-    private int rtpPort;
     private int cseqCounter;
-    private MediaMode mediaMode;
-    private SipURI outboundProxy;
+    private SipListener sipListener;
     
-    private String userpart;
-    private String domain;
-    
-    public UserAgent() {
-        File configFile = new File(Utils.getPeersHome() + CONFIG_FILE);
-        if (!configFile.exists()) {
-            Logger.error("configuration file not found: " + CONFIG_FILE);
-            System.exit(-1);
-        }
-        try {
-            config = new Config(configFile.toURI().toURL());
-        } catch (DocumentException e) {
-            Logger.error("dom4j document error", e);
-        } catch (MalformedURLException e) {
-            Logger.error("malformed url", e);
-        }
-        
-        //config
-        
-        //find stack ip address
-        Node node = config.selectSingleNode("//peers:address");
-        if (node == null) {
-            //automatically detect stack ip address
-            try {
-                boolean found = false;
-                Enumeration<NetworkInterface> e = NetworkInterface
-                        .getNetworkInterfaces();
-                while (e.hasMoreElements() && !found) {
-                    NetworkInterface networkInterface = e.nextElement();
-//                    Logger.getInstance().debug(networkInterface.getDisplayName());
-                    Enumeration<InetAddress> f = networkInterface
-                            .getInetAddresses();
-                    while (f.hasMoreElements() && !found) {
-                        InetAddress inetAddress = f.nextElement();
-                        if (inetAddress.isSiteLocalAddress()) {
-                            this.myAddress = inetAddress;
-                            found = true;
-                        }
-                    }
-                }
-            } catch (SocketException e) {
-                Logger.error("socket error", e);
-            }
-            if (myAddress == null) {
-                throw new RuntimeException("ip address cannot be determined " +
-                        "please configure it manually in " + CONFIG_FILE);
-            }
-        } else {
-            //manually configured stack ip address
-            try {
-                myAddress = InetAddress.getByName(node.getText());
-            } catch (UnknownHostException e) {
-                Logger.error("unknown host " + node.getText(), e);
-            }
-        }
+    private SoundManager soundManager;
 
-        //stack sip listening port
-        node = config.selectSingleNode("//peers:sip/peers:profile/peers:port");
-        if (node == null) {
-            sipPort = RFC3261.TRANSPORT_DEFAULT_PORT;
-        } else {
-            sipPort = Integer.parseInt(node.getText());
-        }
-        
-        //stack sip user part
-        node = config.selectSingleNode("//peers:sip/peers:profile/peers:userpart");
-        if (node == null) {
-            userpart = "alice";
-        } else {
-            userpart = node.getText();
-        }
-        
-        //stack sip domain
-        node = config.selectSingleNode("//peers:sip/peers:profile/peers:domain");
-        if (node == null) {
-            domain = "atlanta.com";
-        } else {
-            domain = node.getText();
-        }
-        
-        //stack sip password
-        node = config.selectSingleNode("//peers:sip/peers:profile/peers:password");
-        String password = null;
-        if (node != null) {
-            password = node.getText();
-        }
-        
-        //outbound proxy
-        node = config.selectSingleNode("//peers:sip/peers:profile/peers:outboundProxy");
-        if (node != null) {
-            try {
-                outboundProxy = new SipURI(node.getText());
-            } catch (SipUriSyntaxException e) {
-                Logger.error("syntax error", e);
-            }
-        }
-        
-        //stack rtp listening port
-        node = config.selectSingleNode("//peers:rtp/peers:port");
-        if (node != null) {
-            rtpPort = Integer.parseInt(node.getText());
-        } else {
-            rtpPort = RTP_DEFAULT_PORT;
-        }
+    public UserAgent() {
+        config = new Config(Utils.getPeersHome() + CONFIG_FILE);
         
         cseqCounter = 0;
         
         StringBuffer buf = new StringBuffer();
         buf.append("starting user agent [");
-        buf.append("myAddress: ").append(myAddress.getHostAddress()).append(", ");
-        buf.append("sipPort: ").append(sipPort).append(", ");
-        buf.append("userpart: ").append(userpart).append(", ");
-        buf.append("domain: ").append(domain).append("]");
+        buf.append("myAddress: ");
+        buf.append(config.getInetAddress().getHostAddress()).append(", ");
+        buf.append("sipPort: ");
+        buf.append(config.getSipPort()).append(", ");
+        buf.append("userpart: ");
+        buf.append(config.getUserPart()).append(", ");
+        buf.append("domain: ");
+        buf.append(config.getDomain()).append("]");
         Logger.info(buf.toString());
-        
-        //media mode (none, captureAndPlayback, echo)
-        node = config.selectSingleNode("//peers:mediaMode");
-        if (node != null) {
-            mediaMode = MediaMode.valueOf(node.getText());
-        } else {
-            mediaMode = MediaMode.captureAndPlayback;
-        }
 
         //transaction user
         
@@ -221,8 +106,8 @@ public class UserAgent {
         //transport
         
         transportManager = new TransportManager(transactionManager,
-                myAddress,
-                sipPort);
+                config.getInetAddress(),
+                config.getSipPort());
         
         transactionManager.setTransportManager(transportManager);
         
@@ -240,9 +125,10 @@ public class UserAgent {
                 dialogManager,
                 transactionManager,
                 transportManager);
-        OptionsHandler optionsHandler = new OptionsHandler(transactionManager,
+        OptionsHandler optionsHandler = new OptionsHandler(this,
+                transactionManager,
                 transportManager);
-        RegisterHandler registerHandler = new RegisterHandler(
+        RegisterHandler registerHandler = new RegisterHandler(this,
                 transactionManager,
                 transportManager);
         
@@ -276,7 +162,7 @@ public class UserAgent {
                 transactionManager,
                 transportManager);
         String profileUri = RFC3261.SIP_SCHEME + RFC3261.SCHEME_SEPARATOR
-            + userpart + RFC3261.AT + domain;
+            + config.getUserPart() + RFC3261.AT + config.getDomain();
         uac = new UAC(this,
                 profileUri,
                 initialRequestManager,
@@ -285,9 +171,9 @@ public class UserAgent {
                 transactionManager,
                 transportManager);
 
-        if (password != null) {
-            challengeManager = new ChallengeManager(userpart,
-                    password,
+        if (config.getPassword() != null) {
+            challengeManager = new ChallengeManager(config.getUserPart(),
+                    config.getPassword(),
                     initialRequestManager,
                     profileUri);
             registerHandler.setChallengeManager(challengeManager);
@@ -297,13 +183,14 @@ public class UserAgent {
         peers = new ArrayList<String>();
         //dialogs = new ArrayList<Dialog>();
 
-        if (password != null) {
+        if (config.getPassword() != null) {
             try {
                 uac.register();
             } catch (SipUriSyntaxException e) {
                 Logger.error("syntax error", e);
             }
         }
+        soundManager = new SoundManager(config.isMediaDebug());
     }
 
     /**
@@ -390,31 +277,35 @@ public class UserAgent {
     }
     
     public InetAddress getMyAddress() {
-        return myAddress;
+        return config.getInetAddress();
     }
     
     public int getSipPort() {
-        return sipPort;
+        return config.getSipPort();
     }
 
     public int getRtpPort() {
-        return rtpPort;
+        return config.getRtpPort();
     }
 
     public String getDomain() {
-        return domain;
+        return config.getDomain();
     }
 
     public String getUserpart() {
-        return userpart;
+        return config.getUserPart();
     }
 
     public MediaMode getMediaMode() {
-        return mediaMode;
+        return config.getMediaMode();
+    }
+
+    public boolean isMediaDebug() {
+        return config.isMediaDebug();
     }
 
     public SipURI getOutboundProxy() {
-        return outboundProxy;
+        return config.getOutboundProxy();
     }
 
     public Echo getEcho() {
@@ -424,5 +315,17 @@ public class UserAgent {
     public void setEcho(Echo echo) {
         this.echo = echo;
     }
-    
+
+    public SipListener getSipListener() {
+        return sipListener;
+    }
+
+    public void setSipListener(SipListener sipListener) {
+        this.sipListener = sipListener;
+    }
+
+    public SoundManager getSoundManager() {
+        return soundManager;
+    }
+
 }

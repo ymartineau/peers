@@ -1,4 +1,22 @@
 <?xml version="1.0"?>
+<!--
+    This file is part of Peers, a java SIP softphone.
+
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    any later version.
+
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with this program.  If not, see <http://www.gnu.org/licenses/>.
+    
+    Copyright 2007, 2008, 2009, 2010 Yohann Martineau 
+  -->
 <project name="peers" default="dist">
 
   <property name="build.dir" value="build"/>
@@ -14,20 +32,11 @@
   <property name="log.transport" value="transport.log"/>
 
   <description>
-    This application is a very basic and minimalist SIP User-Agent.
-    You can call a peer using its IP address.
-    The partially implemented RFC is RFC3261.
+    This application is a java sip softphone, based on RFC 3261.
   </description>
 
-  <path id="run">
-    <fileset dir="${lib.dir}/run">
-      <include name="**/*.jar"/>
-    </fileset>
-  </path>
-
   <path id="test">
-    <pathelement location="${lib.dir}/test/testng-5.8-jdk15.jar"/>
-    <path refid="run"/>
+    <pathelement location="${lib.dir}/testng-5.8-jdk15.jar"/>
     <pathelement location="${classes.dir}"/>
   </path>
 
@@ -45,7 +54,7 @@
 
   <target name="compile" depends="init">
     <javac destdir="${classes.dir}" srcdir="${src.dir}" debug="true"
-        classpathref="run" failonerror="true"/>
+        failonerror="true"/>
   </target>
 
   <target name="test-compile" depends="init">
@@ -68,9 +77,10 @@
     <mkdir dir="${build.dir}/logs"/>
     <touch file="${build.dir}/logs/${log.peers}"/>
     <touch file="${build.dir}/logs/${log.transport}"/>
+    <mkdir dir="${build.dir}/media"/>
     <zip destfile="${build.dir}/${ant.project.name}.zip">
       <zipfileset prefix="${ant.project.name}/logs" dir="${build.dir}/logs"/>
-      <zipfileset prefix="${ant.project.name}/lib" dir="${lib.dir}/run"/>
+      <zipfileset prefix="${ant.project.name}/media" dir="${build.dir}/media"/>
       <zipfileset prefix="${ant.project.name}"
                   file="${build.dir}/${ant.project.name}.jar"/>
       <zipfileset prefix="${ant.project.name}/conf" dir="${conf.dir}"/>
@@ -80,7 +90,6 @@
       <zipfileset prefix="${ant.project.name}"
                   file="${resources.dir}/peers.bat"/>
       <zipfileset prefix="${ant.project.name}" dir=".">
-        <include name="license-*.txt"/>
         <include name="gpl.txt"/>
         <include name="README.txt"/>
       </zipfileset>
@@ -91,13 +100,14 @@
     <mkdir dir="${build.dir}/logs"/>
     <touch file="${build.dir}/logs/${log.peers}"/>
     <touch file="${build.dir}/logs/${log.transport}"/>
+  	<mkdir dir="${build.dir}/media"/>
     <zip destfile="${build.dir}/${ant.project.name}-src.zip">
       <zipfileset prefix="${ant.project.name}/logs" dir="${build.dir}/logs"/>
+      <zipfileset prefix="${ant.project.name}/media" dir="${build.dir}/media"/>
       <zipfileset prefix="${ant.project.name}/src" dir="${src.dir}"/>
       <zipfileset prefix="${ant.project.name}/test" dir="${test.dir}"/>
       <zipfileset prefix="${ant.project.name}/resources" dir="${resources.dir}"/>
-      <zipfileset prefix="${ant.project.name}/lib/run" dir="${lib.dir}/run"/>
-      <zipfileset prefix="${ant.project.name}/lib/test" dir="${lib.dir}/test"/>
+      <zipfileset prefix="${ant.project.name}/lib" dir="${lib.dir}"/>
       <zipfileset prefix="${ant.project.name}"
                   file="${build.dir}/${ant.project.name}.jar"/>
       <zipfileset prefix="${ant.project.name}/conf" dir="${conf.dir}"/>
@@ -107,7 +117,6 @@
       <zipfileset prefix="${ant.project.name}"
                   file="${resources.dir}/peers.bat"/>
       <zipfileset prefix="${ant.project.name}" dir=".">
-        <include name="license-*.txt"/>
         <include name="gpl.txt"/>
         <include name="README.txt"/>
         <include name="build.xml"/>

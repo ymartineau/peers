@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008, 2009 Yohann Martineau 
+    Copyright 2007, 2008, 2009, 2010 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip.core.useragent.handlers;
@@ -27,6 +27,8 @@ import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.core.useragent.InitialRequestManager;
 import net.sourceforge.peers.sip.core.useragent.RequestManager;
+import net.sourceforge.peers.sip.core.useragent.SipListener;
+import net.sourceforge.peers.sip.core.useragent.UserAgent;
 import net.sourceforge.peers.sip.syntaxencoding.NameAddress;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldName;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldValue;
@@ -59,9 +61,10 @@ public class RegisterHandler extends MethodHandler
     //FIXME should be on a profile based context
     private boolean unregistered;
     
-    public RegisterHandler(TransactionManager transactionManager,
+    public RegisterHandler(UserAgent userAgent,
+            TransactionManager transactionManager,
             TransportManager transportManager) {
-        super(transactionManager, transportManager);
+        super(userAgent, transactionManager, transportManager);
         timer = new Timer();
         unregistered = false;
     }
@@ -143,7 +146,10 @@ public class RegisterHandler extends MethodHandler
                 challengeManager.handleChallenge(sipRequest, sipResponse);
                 challenged = true;
             } else {
-                //TODO notify gui, registration failed
+                SipListener sipListener = userAgent.getSipListener();
+                if (sipListener != null) {
+                    sipListener.registerFailed(sipResponse);
+                }
             }
         }
     }
@@ -172,6 +178,10 @@ public class RegisterHandler extends MethodHandler
         if (!unregistered) {
             int delay = Integer.parseInt(expires) - REFRESH_MARGIN;
             timer.schedule(new RefreshTimerTask(), delay * 1000);
+        }
+        SipListener sipListener = userAgent.getSipListener();
+        if (sipListener != null) {
+            sipListener.registerSuccessful(sipResponse);
         }
     }
 

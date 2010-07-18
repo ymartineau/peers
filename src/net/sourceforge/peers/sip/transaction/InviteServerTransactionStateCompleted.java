@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008, 2009 Yohann Martineau 
+    Copyright 2007, 2008, 2009, 2010 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip.transaction;
@@ -33,7 +33,6 @@ public class InviteServerTransactionStateCompleted extends
     public void timerGFires() {
         InviteServerTransactionState nextState = inviteServerTransaction.COMPLETED;
         inviteServerTransaction.setState(nextState);
-        log(nextState);
         inviteServerTransaction.sendLastResponse();
         long delay = (long)Math.pow(2,
                 ++inviteServerTransaction.nbRetrans) * RFC3261.TIMER_T1;
@@ -46,7 +45,6 @@ public class InviteServerTransactionStateCompleted extends
     public void timerHFiresOrTransportError() {
         InviteServerTransactionState nextState = inviteServerTransaction.TERMINATED;
         inviteServerTransaction.setState(nextState);
-        log(nextState);
         inviteServerTransaction.serverTransactionUser.transactionFailure();
     }
     
@@ -54,7 +52,6 @@ public class InviteServerTransactionStateCompleted extends
     public void receivedAck() {
         InviteServerTransactionState nextState = inviteServerTransaction.CONFIRMED;
         inviteServerTransaction.setState(nextState);
-        log(nextState);
         int delay;
         if (RFC3261.TRANSPORT_UDP.equals(inviteServerTransaction.transport)) {
             delay = RFC3261.TIMER_T4;
@@ -69,7 +66,6 @@ public class InviteServerTransactionStateCompleted extends
     public void receivedInvite() {
         InviteServerTransactionState nextState = inviteServerTransaction.COMPLETED;
         inviteServerTransaction.setState(nextState);
-        log(nextState);
         // retransmission
         inviteServerTransaction.sendLastResponse();
     }

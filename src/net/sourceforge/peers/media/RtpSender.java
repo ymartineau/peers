@@ -14,20 +14,25 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2008, 2009 Yohann Martineau 
+    Copyright 2008, 2009, 2010 Yohann Martineau 
 */
 
 package net.sourceforge.peers.media;
 
-import gov.nist.jrtp.RtpException;
-import gov.nist.jrtp.RtpPacket;
-import gov.nist.jrtp.RtpSession;
-
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PipedInputStream;
-import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Random;
 
+import net.sourceforge.peers.Config;
 import net.sourceforge.peers.Logger;
+import net.sourceforge.peers.rtp.RtpPacket;
+import net.sourceforge.peers.rtp.RtpSession;
+import net.sourceforge.peers.sip.Utils;
 
 public class RtpSender implements Runnable {
 
@@ -35,47 +40,75 @@ public class RtpSender implements Runnable {
     private RtpSession rtpSession;
     private boolean isStopped;
     private boolean isTerminated;
+    private FileOutputStream rtpSenderInput;
+    private boolean mediaDebug;
     
-    public RtpSender(PipedInputStream encodedData, RtpSession rtpSession) {
+    public RtpSender(PipedInputStream encodedData, RtpSession rtpSession,
+            boolean mediaDebug) {
         this.encodedData = encodedData;
         this.rtpSession = rtpSession;
+        this.mediaDebug = mediaDebug;
         isStopped = false;
         isTerminated = false;
     }
     
     public void run() {
+        if (mediaDebug) {
+            SimpleDateFormat simpleDateFormat =
+                new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+            String date = simpleDateFormat.format(new Date());
+            String fileName = Utils.getPeersHome() + File.separator
+                + Config.MEDIA_DIR + File.separator + date + "_rtp_sender.input";
+            try {
+                rtpSenderInput = new FileOutputStream(fileName);
+            } catch (FileNotFoundException e) {
+                Logger.error("cannot create file", e);
+                return;
+            }
+        }
         RtpPacket rtpPacket = new RtpPacket();
-        rtpPacket.setV(2);
-        rtpPacket.setPT(0);
-        rtpPacket.setSSRC(1);
+        rtpPacket.setVersion(2);
+        rtpPacket.setPadding(false);
+        rtpPacket.setExtension(false);
+        rtpPacket.setCsrcCount(0);
+        rtpPacket.setMarker(false);
+        rtpPacket.setPayloadType(0);
+        Random random = new Random();
+        int sequenceNumber = random.nextInt();
+        rtpPacket.setSequenceNumber(sequenceNumber);
+        rtpPacket.setSsrc(random.nextInt());
         int buf_size = Capture.BUFFER_SIZE / 2;
         byte[] buffer = new byte[buf_size];
         long counter = 0;
         
         while (!isStopped) {
-            
+            int numBytesRead;
             try {
-                encodedData.read(buffer, 0, buf_size);
+                numBytesRead = encodedData.read(buffer, 0, buf_size);
             } catch (IOException e) {
                 Logger.error("input/output error", e);
                 return;
             }
-            
-            rtpPacket.setTS(buf_size * counter++);
-            rtpPacket.setPayload(buffer, buf_size);
-            
-            try {
-                rtpSession.sendRtpPacket(rtpPacket);
-            } catch (UnknownHostException e) {
-                Logger.error("unknown host", e);
-                return;
-            } catch (RtpException e) {
-                Logger.error("RTP error", e);
-                return;
-            } catch (IOException e) {
-                Logger.error("input/output error", e);
-                return;
+            byte[] trimmedBuffer;
+            if (numBytesRead < buffer.length) {
+                trimmedBuffer = new byte[numBytesRead];
+                System.arraycopy(buffer, 0, trimmedBuffer, 0, numBytesRead);
+            } else {
+                trimmedBuffer = buffer;
             }
+            if (mediaDebug) {
+                try {
+                    rtpSenderInput.write(trimmedBuffer);
+                } catch (IOException e) {
+                    Logger.error("cannot write to file", e);
+                    break;
+                }
+            }
+            rtpPacket.setSequenceNumber(sequenceNumber + (int)counter);
+            rtpPacket.setTimestamp(buf_size * counter++);
+            rtpPacket.setData(trimmedBuffer);
+            
+            rtpSession.send(rtpPacket);
             try {
                 Thread.sleep(15);
             } catch (InterruptedException e) {
@@ -84,6 +117,14 @@ public class RtpSender implements Runnable {
             }
         }
         isTerminated = true;
+        if (mediaDebug) {
+            try {
+                rtpSenderInput.close();
+            } catch (IOException e) {
+                Logger.error("cannot close file", e);
+                return;
+            }
+        }
     }
 
     public synchronized void setStopped(boolean isStopped) {

@@ -14,19 +14,13 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2008, 2009 Yohann Martineau 
+    Copyright 2008, 2009, 2010 Yohann Martineau 
 */
 
 package net.sourceforge.peers.media;
 
 import java.io.IOException;
 import java.io.PipedOutputStream;
-
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.DataLine;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.TargetDataLine;
 
 import net.sourceforge.peers.Logger;
 
@@ -38,36 +32,24 @@ public class Capture implements Runnable {
     
     private PipedOutputStream rawData;
     private boolean isStopped;
+    private SoundManager soundManager;
     
-    public Capture(PipedOutputStream rawData) {
+    public Capture(PipedOutputStream rawData, SoundManager soundManager) {
         this.rawData = rawData;
+        this.soundManager = soundManager;
         isStopped = false;
     }
 
     public void run() {
-        // linear PCM 8kHz, 16 bits signed, mono-channel, little endian
-        AudioFormat format = new AudioFormat(8000, SAMPLE_SIZE, 1, true, false);
-        DataLine.Info info = new DataLine.Info(TargetDataLine.class, format);
-        TargetDataLine line;
-        try {
-            line = (TargetDataLine) AudioSystem.getLine(info);
-            line.open(format);
-        } catch (LineUnavailableException e) {
-            Logger.error("line unavailable", e);
-            return;
-        }
-        line.start();
         byte[] buffer = new byte[BUFFER_SIZE];
         
         while (!isStopped) {
-            int numBytesRead = line.read(buffer, 0, buffer.length);
-//            byte[] trimmedBuffer;
-//            if (numBytesRead < buffer.length) {
-//                trimmedBuffer = new byte[numBytesRead];
-//                System.arraycopy(buffer, 0, trimmedBuffer, 0, numBytesRead);
-//            } else {
-//                trimmedBuffer = buffer;
-//            }
+            int numBytesRead = soundManager.readData(buffer, 0, buffer.length);
+            if (numBytesRead != buffer.length) {
+                byte[] trimmed = new byte[numBytesRead];
+                System.arraycopy(buffer, 0, trimmed, 0, numBytesRead);
+                buffer = trimmed;
+            }
             try {
                 rawData.write(buffer, 0, numBytesRead);
             } catch (IOException e) {
@@ -75,7 +57,6 @@ public class Capture implements Runnable {
                 return;
             }
         }
-        line.close();
     }
 
     public synchronized void setStopped(boolean isStopped) {

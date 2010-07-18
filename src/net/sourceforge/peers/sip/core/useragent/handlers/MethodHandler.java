@@ -14,16 +14,15 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008, 2009 Yohann Martineau 
+    Copyright 2007, 2008, 2009, 2010 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip.core.useragent.handlers;
 
-import java.util.Observable;
-
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.core.useragent.ChallengeManager;
+import net.sourceforge.peers.sip.core.useragent.UserAgent;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldName;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldValue;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderParamName;
@@ -33,15 +32,18 @@ import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.SipResponse;
 import net.sourceforge.peers.sip.transport.TransportManager;
 
-public abstract class MethodHandler extends Observable {
+public abstract class MethodHandler {
 
+    protected UserAgent userAgent;
     protected TransactionManager transactionManager;
     protected TransportManager transportManager;
     protected ChallengeManager challengeManager;
     protected boolean challenged;
     
-    public MethodHandler(TransactionManager transactionManager,
+    public MethodHandler(UserAgent userAgent,
+            TransactionManager transactionManager,
             TransportManager transportManager) {
+        this.userAgent = userAgent;
         this.transactionManager = transactionManager;
         this.transportManager = transportManager;
         challenged = false;

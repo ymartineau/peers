@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008, 2009 Yohann Martineau 
+    Copyright 2007, 2008, 2009, 2010 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip.core.useragent;
@@ -122,18 +122,19 @@ public class InitialRequestManager extends RequestManager {
         return request;
     }
  
-    public void createInitialRequest(String requestUri, String method,
+    public SipRequest createInitialRequest(String requestUri, String method,
             String profileUri) throws SipUriSyntaxException {
-        createInitialRequest(requestUri, method, profileUri, null);
+        return createInitialRequest(requestUri, method, profileUri, null);
     }
     
-    public void createInitialRequest(String requestUri, String method,
+    public SipRequest createInitialRequest(String requestUri, String method,
             String profileUri, String callId) throws SipUriSyntaxException {
         
-        createInitialRequest(requestUri, method, profileUri, callId, null);
+        return createInitialRequest(requestUri, method, profileUri, callId,
+                null);
     }
     
-    public void createInitialRequest(String requestUri, String method,
+    public SipRequest createInitialRequest(String requestUri, String method,
             String profileUri, String callId,
             MessageInterceptor messageInterceptor)
                 throws SipUriSyntaxException {
@@ -158,6 +159,7 @@ public class InitialRequestManager extends RequestManager {
         }
         createInitialRequestEnd(sipRequest, clientTransaction, profileUri,
                 messageInterceptor);
+        return sipRequest;
     }
     
     private SipRequest createInitialRequestStart(String requestUri, String method,

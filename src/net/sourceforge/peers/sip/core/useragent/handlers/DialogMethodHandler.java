@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008, 2009 Yohann Martineau 
+    Copyright 2007, 2008, 2009, 2010 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip.core.useragent.handlers;
@@ -44,7 +44,6 @@ import net.sourceforge.peers.sip.transport.TransportManager;
 
 public abstract class DialogMethodHandler extends MethodHandler {
 
-    protected UserAgent userAgent;
     protected DialogManager dialogManager;
     protected Timer ackTimer;
     
@@ -52,9 +51,8 @@ public abstract class DialogMethodHandler extends MethodHandler {
             DialogManager dialogManager,
             TransactionManager transactionManager,
             TransportManager transportManager) {
-        super(transactionManager, transportManager);
+        super(userAgent, transactionManager, transportManager);
         ackTimer = new Timer();
-        this.userAgent = userAgent;
         this.dialogManager = dialogManager;
     }
     

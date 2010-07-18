@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008, 2009 Yohann Martineau 
+    Copyright 2007, 2008, 2009, 2010 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip.transaction;
@@ -34,7 +34,6 @@ public class NonInviteClientTransactionStateTrying extends
     public void timerEFires() {
         NonInviteClientTransactionState nextState = nonInviteClientTransaction.TRYING;
         nonInviteClientTransaction.setState(nextState);
-        log(nextState);
         long delay = (long)Math.pow(2,
                 ++nonInviteClientTransaction.nbRetrans) * RFC3261.TIMER_T1;
         nonInviteClientTransaction.sendRetrans(Math.min(delay, RFC3261.TIMER_T2));
@@ -53,7 +52,6 @@ public class NonInviteClientTransactionStateTrying extends
     private void timerFFiresOrTransportError() {
         NonInviteClientTransactionState nextState = nonInviteClientTransaction.TERMINATED;
         nonInviteClientTransaction.setState(nextState);
-        log(nextState);
         nonInviteClientTransaction.transactionUser.transactionTimeout();
     }
     
@@ -61,7 +59,6 @@ public class NonInviteClientTransactionStateTrying extends
     public void received1xx() {
         NonInviteClientTransactionState nextState = nonInviteClientTransaction.PROCEEDING;
         nonInviteClientTransaction.setState(nextState);
-        log(nextState);
         nonInviteClientTransaction.transactionUser.provResponseReceived(
                 nonInviteClientTransaction.getLastResponse(), nonInviteClientTransaction);
     }
@@ -70,7 +67,6 @@ public class NonInviteClientTransactionStateTrying extends
     public void received200To699() {
         NonInviteClientTransactionState nextState = nonInviteClientTransaction.COMPLETED;
         nonInviteClientTransaction.setState(nextState);
-        log(nextState);
         SipResponse response = nonInviteClientTransaction.getLastResponse();
         int code = response.getStatusCode();
         if (code < RFC3261.CODE_MIN_REDIR) {

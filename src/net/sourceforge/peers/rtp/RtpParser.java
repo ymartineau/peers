@@ -66,7 +66,8 @@ public class RtpParser {
     }
 
     public byte[] encode(RtpPacket rtpPacket) {
-        int packetLength = 12 + rtpPacket.getCsrcCount() * 4;
+        byte[] data = rtpPacket.getData();
+        int packetLength = 12 + rtpPacket.getCsrcCount() * 4 + data.length;
         byte[] packet = new byte[packetLength];
         int b = (rtpPacket.getVersion() << 6)
             + ((rtpPacket.isPadding() ? 1 : 0) << 5)
@@ -106,6 +107,8 @@ public class RtpParser {
             b = (int)(rtpPacket.getCsrcList()[i] & 0xff);
             packet[12 + i * 4 + 3] = new Integer(b).byteValue();
         }
+        System.arraycopy(data, 0, packet, 12 + rtpPacket.getCsrcCount() * 4,
+                data.length);
         return packet;
     }
 

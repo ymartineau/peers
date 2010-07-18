@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008, 2009 Yohann Martineau 
+    Copyright 2007, 2008, 2009, 2010 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip.core.useragent.handlers;
@@ -23,8 +23,10 @@ import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.media.CaptureRtpSender;
 import net.sourceforge.peers.media.Echo;
 import net.sourceforge.peers.media.IncomingRtpReader;
+import net.sourceforge.peers.media.SoundManager;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.core.useragent.MidDialogRequestManager;
+import net.sourceforge.peers.sip.core.useragent.SipListener;
 import net.sourceforge.peers.sip.core.useragent.UserAgent;
 import net.sourceforge.peers.sip.transaction.ServerTransaction;
 import net.sourceforge.peers.sip.transaction.ServerTransactionUser;
@@ -83,12 +85,23 @@ public class ByeHandler extends DialogMethodHandler
             CaptureRtpSender captureRtpSender = userAgent.getCaptureRtpSender();
             if (captureRtpSender != null) {
                 captureRtpSender.stop();
+                while (!captureRtpSender.isTerminated()) {
+                    try {
+                        Thread.sleep(15);
+                    } catch (InterruptedException e) {
+                        Logger.debug("sleep interrupted");
+                    }
+                }
                 userAgent.setCaptureRtpSender(null);
             }
             IncomingRtpReader incomingRtpReader = userAgent.getIncomingRtpReader();
             if (incomingRtpReader != null) {
                 incomingRtpReader.stop();
                 userAgent.setIncomingRtpReader(null);
+            }
+            SoundManager soundManager = userAgent.getSoundManager();
+            if (soundManager != null) {
+                soundManager.closeLines();
             }
             break;
         case echo:
@@ -128,7 +141,12 @@ public class ByeHandler extends DialogMethodHandler
         serverTransaction.sendReponse(sipResponse);
         
         dialogManager.removeDialog(dialog.getId());
-        
+
+        SipListener sipListener = userAgent.getSipListener();
+        if (sipListener != null) {
+            sipListener.remoteHangup(sipRequest);
+        }
+
 //        setChanged();
 //        notifyObservers(sipRequest);
     }

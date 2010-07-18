@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008, 2009 Yohann Martineau 
+    Copyright 2007, 2008, 2009, 2010 Yohann Martineau 
 */
 
 package net.sourceforge.peers.nat;
@@ -24,12 +24,13 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
-import java.util.Iterator;
 
 import net.sourceforge.peers.Logger;
 
-import org.dom4j.Document;
-import org.dom4j.Element;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 
 public class PeerManager extends Thread {
 
@@ -57,9 +58,13 @@ public class PeerManager extends Thread {
 //        UDPReceiver udpReceiver = new UDPReceiver(datagramSocket);
 //        udpReceiver.start();
         while (true) {
-            Element root = document.getRootElement();
-            for (Iterator<?> i = root.elementIterator("peer"); i.hasNext(); ) {
-                createConnection((Element)i.next(), datagramSocket);
+            Element root = document.getDocumentElement();
+            NodeList peers = root.getChildNodes();
+            for (int i = 0; i < peers.getLength(); ++i) {
+                Node node = peers.item(i);
+                if (node.getNodeName().equals("peer")) {
+                    createConnection(node, datagramSocket);
+                }
             }
             try {
                 Thread.sleep(30000);
@@ -70,13 +75,25 @@ public class PeerManager extends Thread {
         }
     }
     
-    private void createConnection(Element peer, DatagramSocket datagramSocket) {
-        Element ipaddress = peer.element("ipaddress");
-        Element port = peer.element("port");
-        String ipAddressStr = ipaddress.getText().trim();
-        int remotePort = Integer.parseInt(port.getText().trim());
+    private void createConnection(Node peer, DatagramSocket datagramSocket) {
+        NodeList childNodes = peer.getChildNodes();
+        String ipAddress = null;
+        String port = null;
+        for (int i = 0; i < childNodes.getLength(); ++i) {
+            Node node = childNodes.item(i);
+            String nodeName = node.getNodeName();
+            if (nodeName.equals("ipaddress")) {
+                ipAddress = node.getTextContent();
+            } else if (nodeName.equals("port")) {
+                port = node.getTextContent();
+            }
+        }
+        if (ipAddress == null || port == null) {
+            return;
+        }
+        int remotePort = Integer.parseInt(port);
         try {
-            InetAddress remoteAddress = InetAddress.getByName(ipAddressStr);
+            InetAddress remoteAddress = InetAddress.getByName(ipAddress);
             // DatagramSocket datagramSocket = new DatagramSocket(localPort, localAddress);
             for (int i = 0; i < 5; ++i) {
                 String message = "hello world " + System.currentTimeMillis();

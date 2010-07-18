@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008, 2009 Yohann Martineau 
+    Copyright 2007, 2008, 2009, 2010 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip.transport;
@@ -43,7 +43,6 @@ import java.util.Hashtable;
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.Utils;
-import net.sourceforge.peers.sip.core.useragent.UAS;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldName;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldValue;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderParamName;
@@ -56,7 +55,8 @@ public class TransportManager {
 
     private static int NO_TTL = -1;
     
-    private UAS uas;
+    //private UAS uas;
+    private SipServerTransportUser sipServerTransportUser;
     
     protected SipParser sipParser;
     
@@ -309,7 +309,8 @@ public class TransportManager {
             DatagramSocket datagramSocket = (DatagramSocket)socket;
             messageReceiver = new UdpMessageReceiver(datagramSocket, transactionManager,
                     this);
-            messageReceiver.setUas(uas);
+            //messageReceiver.setUas(uas);
+            messageReceiver.setSipServerTransportUser(sipServerTransportUser);
         }
         messageReceivers.put(conn, messageReceiver);
         return messageReceiver;
@@ -328,7 +329,8 @@ public class TransportManager {
             }
             messageReceiver = new UdpMessageReceiver(datagramSocket, transactionManager,
                     this);
-            messageReceiver.setUas(uas);
+            //messageReceiver.setUas(uas);
+            messageReceiver.setSipServerTransportUser(sipServerTransportUser);
             //TODO create also tcp receiver using a recursive call
         } else {
             //TODO
@@ -340,8 +342,13 @@ public class TransportManager {
         return messageReceiver;
     }
 
-    public void setUas(UAS uas) {
-        this.uas = uas;
+    public void setSipServerTransportUser(
+            SipServerTransportUser sipServerTransportUser) {
+        this.sipServerTransportUser = sipServerTransportUser;
     }
+
+//    public void setUas(UAS uas) {
+//        this.uas = uas;
+//    }
     
 }
