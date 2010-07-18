@@ -1,6 +1,6 @@
 ============================================================
-                Peers: SIP related experiments
-                 http://peers.sourceforge.net
+                   Peers: java sip softphone
+                 http://peers.sourceforge.net/
 ============================================================
 
 
@@ -63,8 +63,8 @@ place calls with usual sip uris:
 
 Advanced users can run several peers instances on the same computer.
 In this case a folder should be created in peers root directory for
-each peers instance. This folder should contain two directories:
-conf and logs. conf should contain peers.xml and peers.xsd for this
+each peers instance. This folder should contain three directories:
+conf, logs and media. conf should contain peers.xml and peers.xsd for this
 instance. peers.xml will need to be updated with this instance
 parameters, peers.xsd can be copied from root conf directory. You will
 need to do this for each instance. <media> parameter in configuration file
@@ -79,19 +79,19 @@ Here is an example configuration:
         peers.xml
         peers.xsd
       logs/
+      media/
     user2/
       conf/
         peers.xml
         peers.xsd
       logs/
+      media/
 
 Once all those files have been created and updated, each instance can
 be run providing a java system property giving peers home directory:
 
-  java -classpath build/classes:lib/run/* -Dpeers.home=user1 net.sourceforge.peers.gui.BasicGUI
+  java -classpath build/classes -Dpeers.home=user1 net.sourceforge.peers.gui.MainFrame
 
-considering source distribution of peers has been downloaded. Please use lib/*
-folder for classpath if you just use binary distribution.
 
 
 HISTORY
