@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008, 2009 Yohann Martineau 
+    Copyright 2007, 2008, 2009, 2010 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip.transport;
@@ -27,7 +27,6 @@ import java.net.InetAddress;
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.Utils;
-import net.sourceforge.peers.sip.core.useragent.UAS;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldValue;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderParamName;
 import net.sourceforge.peers.sip.syntaxencoding.SipParserException;
@@ -43,7 +42,8 @@ public abstract class MessageReceiver implements Runnable {
     protected int port;
     private boolean isListening;
     
-    private UAS uas;
+    //private UAS uas;
+    private SipServerTransportUser sipServerTransportUser;
     private TransactionManager transactionManager;
     private TransportManager transportManager;
 
@@ -120,7 +120,8 @@ public abstract class MessageReceiver implements Runnable {
             ServerTransaction serverTransaction =
                 transactionManager.getServerTransaction(sipRequest);
             if (serverTransaction == null) {
-                uas.messageReceived(sipMessage);
+                //uas.messageReceived(sipMessage);
+                sipServerTransportUser.messageReceived(sipMessage);
             } else {
                 serverTransaction.receivedRequest(sipRequest);
             }
@@ -130,7 +131,8 @@ public abstract class MessageReceiver implements Runnable {
                 transactionManager.getClientTransaction(sipResponse);
             Logger.debug("ClientTransaction = " + clientTransaction);
             if (clientTransaction == null) {
-                uas.messageReceived(sipMessage);
+                //uas.messageReceived(sipMessage);
+                sipServerTransportUser.messageReceived(sipMessage);
             } else {
                 clientTransaction.receivedResponse(sipResponse);
             }
@@ -145,8 +147,13 @@ public abstract class MessageReceiver implements Runnable {
         return isListening;
     }
 
-    public void setUas(UAS uas) {
-        this.uas = uas;
+    public void setSipServerTransportUser(
+            SipServerTransportUser sipServerTransportUser) {
+        this.sipServerTransportUser = sipServerTransportUser;
     }
+
+//    public void setUas(UAS uas) {
+//        this.uas = uas;
+//    }
     
 }

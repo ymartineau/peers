@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008, 2009 Yohann Martineau 
+    Copyright 2007, 2008, 2009, 2010 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip.transaction;
@@ -126,6 +126,31 @@ public class TransactionManager {
         }
         if (RFC3261.METHOD_ACK.equals(method)) {
             method = RFC3261.METHOD_INVITE;
+//            InviteServerTransaction inviteServerTransaction =
+//                (InviteServerTransaction)
+//                serverTransactions.get(getTransactionId(branchId, method));
+//            if (inviteServerTransaction == null) {
+//                Logger.debug("received ACK for unknown transaction" +
+//                		" branchId = " + branchId + ", method = " + method);
+//            } else {
+//                SipResponse sipResponse =
+//                    inviteServerTransaction.getLastResponse();
+//                if (sipResponse == null) {
+//                    Logger.debug("received ACK but no response sent " +
+//                    		"branchId = " + branchId + ", method = " + method);
+//                } else {
+//                    int statusCode = sipResponse.getStatusCode();
+//                    if (statusCode >= RFC3261.CODE_MIN_SUCCESS &&
+//                            statusCode < RFC3261.CODE_MIN_REDIR) {
+//                        // success response => ACK is not in INVITE server
+//                        // transaction
+//                        return null;
+//                    } else {
+//                        // error => ACK belongs to INVITE server transaction
+//                        return inviteServerTransaction;
+//                    }
+//                }
+//            }
             // TODO if positive response, ACK does not belong to transaction
             // retrieve transaction and take responses from transaction
             // and check if a positive response has been received

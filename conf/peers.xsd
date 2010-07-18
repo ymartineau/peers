@@ -94,8 +94,6 @@
 
   <xs:complexType name="devicesType">
     <xs:sequence>
-      <xs:element name="mediaMode" type="mediaModeType" minOccurs="0"
-          default="captureAndPlayback"/>
       <xs:element name="audio" type="audioType"/>
       <xs:element name="video" type="videoType"/>
     </xs:sequence>
@@ -144,6 +142,10 @@
   <xs:complexType name="codecsType">
     <xs:sequence>
       <xs:element name="codec" type="codecType" maxOccurs="unbounded"/>
+      <xs:element name="mediaMode" type="mediaModeType" minOccurs="0"
+          default="captureAndPlayback"/>
+      <xs:element name="mediaDebug" type="xs:boolean" minOccurs="0"
+          default="false"/>
     </xs:sequence>
   </xs:complexType>
 

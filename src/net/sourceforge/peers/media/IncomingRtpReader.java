@@ -14,109 +14,49 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008, 2009 Yohann Martineau 
+    Copyright 2007, 2008, 2009, 2010 Yohann Martineau 
 */
 
 package net.sourceforge.peers.media;
 
-import gov.nist.jrtp.RtpErrorEvent;
-import gov.nist.jrtp.RtpException;
-import gov.nist.jrtp.RtpListener;
-import gov.nist.jrtp.RtpPacket;
-import gov.nist.jrtp.RtpPacketEvent;
-import gov.nist.jrtp.RtpSession;
-import gov.nist.jrtp.RtpStatusEvent;
-import gov.nist.jrtp.RtpTimeoutEvent;
-
 import java.io.IOException;
 
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.DataLine;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.SourceDataLine;
-
-import net.sourceforge.peers.Logger;
+import net.sourceforge.peers.rtp.RtpListener;
+import net.sourceforge.peers.rtp.RtpPacket;
+import net.sourceforge.peers.rtp.RtpSession;
 
 public class IncomingRtpReader implements RtpListener {
 
     private RtpSession rtpSession;
-    private SourceDataLine line;
+    private SoundManager soundManager;
 
-    public IncomingRtpReader(RtpSession rtpSession) throws IOException { 
+    public IncomingRtpReader(RtpSession rtpSession,
+            SoundManager soundManager) throws IOException { 
         super();
         this.rtpSession = rtpSession;
+        this.soundManager = soundManager;
         rtpSession.addRtpListener(this);
     }
     
-    public void start() throws IOException, RtpException {
-        AudioFormat format = new AudioFormat((float)8000, 16, 1, true, false);
-        
-        DataLine.Info info = new DataLine.Info(SourceDataLine.class, format);
-        try {
-            line = (SourceDataLine) AudioSystem.getLine(info);
-            line.open(format);
-        } catch (LineUnavailableException ex) {
-            Logger.error("line unavailable", ex);
-            return;
-        }
-        line.start();
-        
-        rtpSession.receiveRTPPackets();
+    public void start() {
+        rtpSession.start();
     }
     
     public synchronized void stop() {
-        if (line != null) {
-            try {
-                rtpSession.stopRtpPacketReceiver();
-            } catch (Exception e) {
-                Logger.error("exception in rtpSession.stopRtpPacketReceiver()",
-                        e);
-            }
-            try {
-                rtpSession.shutDown();
-            } catch (Exception e) {
-                Logger.error("exception in rtpSession.shutDown()", e);
-            }
-            
-            line.drain();
-            line.stop();
-            line.close();
-            line = null;
+        rtpSession.stop();
+    }
+
+    @Override
+    public void receivedRtpPacket(RtpPacket rtpPacket) {
+        byte[] data = rtpPacket.getData();
+
+        byte[] rawBuf = new byte[data.length * 2];
+        for (int i = 0; i < data.length; ++i) {
+            short decoded = AudioUlawEncodeDecode02.decode(data[i]);
+            rawBuf[2 * i] = (byte)(decoded & 0xFF);
+            rawBuf[2 * i + 1] = (byte)(decoded >>> 8);
         }
+        soundManager.writeData(rawBuf, 0, rawBuf.length);
     }
 
-    public void handleRtpErrorEvent(RtpErrorEvent rtpErrorEvent) {
-        Logger.debug("IncomingRtpReader.handleRtpErrorEvent() "
-                + rtpErrorEvent);
-    }
-
-    public void handleRtpPacketEvent(RtpPacketEvent rtpEvent) {
-        RtpPacket rtpPacket = rtpEvent.getRtpPacket();
-
-        byte[] data = new byte[rtpPacket.getData().length - 12];
-        //remove RTP header: rtpPacket.getData() returns raw
-        //packet bytes (with headers)
-        System.arraycopy(rtpPacket.getData(), 12, data, 0,
-                rtpPacket.getData().length - 12);
-
-		byte[] rawBuf = new byte[data.length * 2];
-		for (int i = 0; i < data.length; ++i) {
-			short decoded = AudioUlawEncodeDecode02.decode(data[i]);
-			rawBuf[2 * i] = (byte)(decoded & 0xFF);
-			rawBuf[2 * i + 1] = (byte)(decoded >>> 8);
-		}
-		line.write(rawBuf, 0, rawBuf.length);
-        
-    }
-
-    public void handleRtpStatusEvent(RtpStatusEvent rtpStatusEvent) {
-        Logger.debug("IncomingRtpReader.handleRtpStatusEvent() "
-                + rtpStatusEvent);
-    }
-
-    public void handleRtpTimeoutEvent(RtpTimeoutEvent rtpTimeoutEvent) {
-        Logger.debug("IncomingRtpReader.handleRtpTimeoutEvent() "
-                + rtpTimeoutEvent);
-    }
 }

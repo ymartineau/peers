@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008, 2009 Yohann Martineau 
+    Copyright 2007, 2008, 2009, 2010 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip.core.useragent.handlers;
@@ -22,6 +22,7 @@ package net.sourceforge.peers.sip.core.useragent.handlers;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.core.useragent.MidDialogRequestManager;
+import net.sourceforge.peers.sip.core.useragent.SipListener;
 import net.sourceforge.peers.sip.core.useragent.UserAgent;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldName;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldValue;
@@ -94,7 +95,11 @@ public class CancelHandler extends DialogMethodHandler
         
         Dialog dialog = dialogManager.getDialog(lastResponse);
         dialog.receivedOrSent300To699();
-        
+
+        SipListener sipListener = userAgent.getSipListener();
+        if (sipListener != null) {
+            sipListener.remoteHangup(sipRequest);
+        }
     }
     
     //////////////////////////////////////////////////////////

@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008, 2009 Yohann Martineau 
+    Copyright 2007, 2008, 2009, 2010 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip;
@@ -30,7 +30,7 @@ public abstract class AbstractState {
         this.id = id;
     }
 
-    protected void log(AbstractState state) {
+    public void log(AbstractState state) {
         StringBuffer buf = new StringBuffer();
         buf.append("SM ").append(id).append(" [");
         buf.append(JavaUtils.getShortClassName(this.getClass())).append(" -> ");

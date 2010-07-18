@@ -19,8 +19,6 @@
 
 package net.sourceforge.peers.sdp;
 
-import gov.nist.jrtp.RtpException;
-
 import java.io.IOException;
 import java.net.UnknownHostException;
 
@@ -28,6 +26,7 @@ import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.media.CaptureRtpSender;
 import net.sourceforge.peers.media.Echo;
 import net.sourceforge.peers.media.IncomingRtpReader;
+import net.sourceforge.peers.media.SoundManager;
 import net.sourceforge.peers.sip.core.useragent.UserAgent;
 
 //TODO ekiga -d 4 > ekiga-debug.txt 2>&1
@@ -48,6 +47,27 @@ public class SDPManager {
             Logger.error("input/output error", e);
         }
         return null;
+    }
+    
+    public String generateResponse(byte[] offer) throws NoCodecException {
+        // TODO use real offer content to generate answer.
+        return generateOffer();
+    }
+
+    public MediaDestination getMediaDestination(byte[] offer) throws NoCodecException {
+        SessionDescription sessionDescription;
+        try {
+            sessionDescription = sdpParser.parse(offer);
+        } catch (IOException e) {
+            Logger.error("input/output error", e);
+            return null;
+        }
+        String destAddress = sessionDescription.getIpAddress().getHostAddress();
+        int destPort = sessionDescription.getMedias().get(0).getPort();
+        MediaDestination mediaDestination = new MediaDestination();
+        mediaDestination.setDestination(destAddress);
+        mediaDestination.setPort(destPort);
+        return mediaDestination;
     }
     
     public String handleOffer(byte[] offer)
@@ -85,10 +105,14 @@ public class SDPManager {
                     }
                 }
             }
+            SoundManager soundManager = userAgent.getSoundManager();
+            soundManager.closeLines();
+            soundManager.openAndStartLines();
             try {
                 captureRtpSender = new CaptureRtpSender(
                         userAgent.getMyAddress().getHostAddress(),
-                        userAgent.getRtpPort(), destAddress, destPort);
+                        userAgent.getRtpPort(), destAddress, destPort,
+                        soundManager, userAgent.isMediaDebug());
             } catch (IOException e) {
                 Logger.error("input/output error", e);
                 return null;
@@ -106,20 +130,14 @@ public class SDPManager {
 //                                remoteAddress, remotePort);
                 //FIXME RTP sessions can be different !
                 incomingRtpReader = new IncomingRtpReader(
-                        captureRtpSender.getRtpSession());
+                        captureRtpSender.getRtpSession(), soundManager);
             } catch (IOException e1) {
                 Logger.error("input/output error", e1);
                 return null;
             }
             userAgent.setIncomingRtpReader(incomingRtpReader);
 
-            try {
-                incomingRtpReader.start();
-            } catch (IOException e1) {
-                Logger.error("input/output error", e1);
-            } catch (RtpException e1) {
-                Logger.error("RTP error", e1);
-            }
+            incomingRtpReader.start();
             break;
         case echo:
             Echo echo;
@@ -143,7 +161,7 @@ public class SDPManager {
         
         return generateOffer();
     }
-    
+
     public String generateErrorResponse() {
         StringBuffer buf = generateSdpBegining();
         buf.append("a=inactive\r\n");

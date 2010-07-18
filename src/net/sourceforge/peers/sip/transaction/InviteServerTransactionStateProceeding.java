@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008, 2009 Yohann Martineau 
+    Copyright 2007, 2008, 2009, 2010 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip.transaction;
@@ -33,7 +33,6 @@ public class InviteServerTransactionStateProceeding extends
     public void received101To199() {
         InviteServerTransactionState nextState = inviteServerTransaction.PROCEEDING;
         inviteServerTransaction.setState(nextState);
-        log(nextState);
         //TODO inviteServerTransaction.sendProvisionalResponse();
         inviteServerTransaction.sendLastResponse();
     }
@@ -42,14 +41,12 @@ public class InviteServerTransactionStateProceeding extends
     public void transportError() {
         InviteServerTransactionState nextState = inviteServerTransaction.TERMINATED;
         inviteServerTransaction.setState(nextState);
-        log(nextState);
     }
     
     @Override
     public void received2xx() {
         InviteServerTransactionState nextState = inviteServerTransaction.TERMINATED;
         inviteServerTransaction.setState(nextState);
-        log(nextState);
         inviteServerTransaction.sendLastResponse();
     }
     
@@ -57,7 +54,6 @@ public class InviteServerTransactionStateProceeding extends
     public void received300To699() {
         InviteServerTransactionState nextState = inviteServerTransaction.COMPLETED;
         inviteServerTransaction.setState(nextState);
-        log(nextState);
         inviteServerTransaction.sendLastResponse();
         if (RFC3261.TRANSPORT_UDP.equals(inviteServerTransaction.transport)) {
             inviteServerTransaction.timer.schedule(
@@ -71,7 +67,6 @@ public class InviteServerTransactionStateProceeding extends
     public void receivedInvite() {
         InviteServerTransactionState nextState = inviteServerTransaction.PROCEEDING;
         inviteServerTransaction.setState(nextState);
-        log(nextState);
     }
     
     

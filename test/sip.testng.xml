@@ -29,9 +29,4 @@
       </package>
     </packages>
   </test>
-  <test name="Configuration">
-    <classes>
-      <class name="net.sourceforge.peers.sip.core.ConfigTestNG"/>
-    </classes>
-  </test>
 </suite>

@@ -45,15 +45,17 @@ import org.xml.sax.SAXException;
 
 public class Config {
 
+    public final static String MEDIA_DIR = "media";
     public final static int RTP_DEFAULT_PORT = 8000;
 
     private InetAddress inetAddress;
-    private MediaMode mediaMode;
     private String userPart;
     private String domain;
     private String password;
     private SipURI outboundProxy;
     private int sipPort;
+    private MediaMode mediaMode;
+    private boolean mediaDebug;
     private int rtpPort;
 
     public Config(String fileName) {
@@ -117,13 +119,6 @@ public class Config {
                 Logger.error("IP address not found, configure it manually");
             }
         }
-        node = getFirstChild(documentElement, "devices");
-        node = getFirstChild(node, "mediaMode");
-        if (node != null) {
-            mediaMode = MediaMode.valueOf(node.getTextContent());
-        } else {
-            mediaMode = MediaMode.captureAndPlayback;
-        }
         node = getFirstChild(documentElement, "sip");
         Node parent = getFirstChild(node, "profile");
         node = getFirstChild(parent, "userpart");
@@ -157,6 +152,19 @@ public class Config {
         } else {
             sipPort = RFC3261.TRANSPORT_DEFAULT_PORT;
         }
+        parent = getFirstChild(documentElement, "codecs");
+        node = getFirstChild(parent, "mediaMode");
+        if (node != null) {
+            mediaMode = MediaMode.valueOf(node.getTextContent());
+        } else {
+            mediaMode = MediaMode.captureAndPlayback;
+        }
+        node = getFirstChild(parent, "mediaDebug");
+        if (node != null) {
+            mediaDebug = Boolean.parseBoolean(node.getTextContent());
+        } else {
+            mediaDebug = false;
+        }
         node = getFirstChild(documentElement, "rtp");
         node = getFirstChild(node, "port");
         if (node != null) {
@@ -184,10 +192,6 @@ public class Config {
         return inetAddress;
     }
 
-    public MediaMode getMediaMode() {
-        return mediaMode;
-    }
-
     public String getUserPart() {
         return userPart;
     }
@@ -206,6 +210,14 @@ public class Config {
 
     public int getSipPort() {
         return sipPort;
+    }
+
+    public MediaMode getMediaMode() {
+        return mediaMode;
+    }
+
+    public boolean isMediaDebug() {
+        return mediaDebug;
     }
 
     public int getRtpPort() {

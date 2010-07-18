@@ -33,32 +33,23 @@
     </interfaces>
   </network>
   <devices>
-    <!-- mediaMode corresponds to the way media is managed. Three values are
-         possible for this parameter:
-           - captureAndPlayback: capture sound from microphone, send
-             corresponding rtp packets, receive rtp packets and play those
-             packets on speakers. This is the default value.
-           - echo: receive rtp packets, do not play them on speakers and send
-             those packets to remote party
-           - none: no media is capture, played, send nor received -->
-    <!-- <mediaMode>captureAndPlayback</mediaMode> -->
     <audio></audio>
     <video></video>
   </devices>
   <sip>
     <profile>
       <!-- username (corresponding to the user part of your sip uri) -->
-      <userpart>1000</userpart>
+      <userpart>yohann.martineau</userpart>
       <!-- domain (corresponding to the domain part of your sip uri) -->
-      <domain>provider.com</domain>
+      <domain>ekiga.net</domain>
       <!-- if password is commented out, no REGISTER message is sent -->
-      <!-- <password>1234</password> -->
+      <!-- <password></password> -->
       <!-- you can specify an outbound proxy for registration and calls -->
       <!-- <outboundProxy>sip:192.168.1.20;lr</outboundProxy> -->
       <interface ref="eth1"/>
       <!-- you can specify the sip listening port you want, default value is
            5060 -->
-      <!-- <port>6060</port> -->
+      <port>6060</port>
     </profile>
   </sip>
   <codecs>
@@ -76,11 +67,26 @@
       </attributes>
       -->
     </codec>
+    <!-- mediaMode corresponds to the way media is managed. Three values are
+         possible for this parameter:
+           - captureAndPlayback: capture sound from microphone, send
+             corresponding rtp packets, receive rtp packets and play those
+             packets on speakers. This is the default value.
+           - echo: receive rtp packets, do not play them on speakers and send
+             those packets to remote party
+           - none: no media is capture, played, send nor received -->
+    <!-- <mediaMode>captureAndPlayback</mediaMode> -->
+    <!-- mediaDebug is a boolean parameter. If set to true, files will be
+         created in a media directory in peers.home directory. Those files will
+         contain raw data at input and output of microphone, encoder, rtp
+         sender, rtp receiver, and speaker.
+         Default value is false, conversations are not recorded. -->
+    <!-- <mediaDebug>false</mediaDebug> -->
   </codecs>
   <rtp>
     <interface ref="eth1"/>
     <!-- you can specify the rtp port to use for incoming and outgoing rtp
          traffic, default value is 8000 -->
-    <!-- <port>7000</port> -->
+    <port>7000</port>
   </rtp>
 </peers>

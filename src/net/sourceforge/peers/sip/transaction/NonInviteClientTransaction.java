@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008, 2009 Yohann Martineau 
+    Copyright 2007, 2008, 2009, 2010 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip.transaction;
@@ -93,6 +93,7 @@ public class NonInviteClientTransaction extends NonInviteTransaction
     }
     
     public void setState(NonInviteClientTransactionState state) {
+        this.state.log(state);
         this.state = state;
     }
 

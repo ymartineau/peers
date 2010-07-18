@@ -91,7 +91,7 @@ public class RtpParserTestNG {
         assert packet[pos++] == new Integer(0x00).byteValue();
         assert packet[pos++] == new Integer(0x01).byteValue();
         for (int i = 0; i < rtpPacket.getData().length; ++i)
-            assert rtpPacket.getData()[i] == data[i];
+            assert packet[pos++] == data[i];
     }
 
 }

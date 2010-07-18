@@ -14,25 +14,30 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008, 2009 Yohann Martineau 
+    Copyright 2007, 2008, 2009, 2010 Yohann Martineau 
 */
 
 package net.sourceforge.peers.nat;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.net.URLEncoder;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 import net.sourceforge.peers.Logger;
 
-import org.dom4j.Document;
-import org.dom4j.DocumentException;
-import org.dom4j.io.SAXReader;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 public class Server {
 
@@ -99,16 +104,25 @@ public class Server {
             return null;
         }
         Logger.debug("retrieved peers");
-        SAXReader saxReader = new SAXReader();
-        Document doc;
+        DocumentBuilderFactory documentBuilderFactory
+            = DocumentBuilderFactory.newInstance();
+        DocumentBuilder documentBuilder;
         try {
-            doc = saxReader.read(url);
-        } catch (DocumentException e) {
-            Logger.error("dom4j document exception", e);
-            e.printStackTrace();
+            documentBuilder = documentBuilderFactory.newDocumentBuilder();
+        } catch (ParserConfigurationException e) {
+            Logger.error("parser configuration exception", e);
             return null;
         }
-        return doc;
+        try {
+            URLConnection urlConnection = url.openConnection();
+            InputStream inputStream = urlConnection.getInputStream();
+            return documentBuilder.parse(inputStream);
+        } catch (IOException e) {
+            Logger.error("IOException", e);
+        } catch (SAXException e) {
+            Logger.error("SAXException", e);
+        }
+        return null;
     }
     
     private String get(String urlEnd) {

@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008, 2009 Yohann Martineau 
+    Copyright 2007, 2008, 2009, 2010 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip.core.useragent;
@@ -65,7 +65,8 @@ public class UAS implements SipServerTransportUser {
         this.midDialogRequestManager = midDialogRequestManager;
         this.dialogManager = dialogManager;
         try {
-            transportManager.setUas(this);
+            //transportManager.setUas(this);
+            transportManager.setSipServerTransportUser(this);
             transportManager.createServerTransport(
                     RFC3261.TRANSPORT_UDP, userAgent.getSipPort());
         } catch (IOException e) {
@@ -113,6 +114,15 @@ public class UAS implements SipServerTransportUser {
             initialRequestManager.manageInitialRequest(sipRequest);
             
         }
+    }
+
+    public void acceptCall(SipRequest sipRequest, Dialog dialog) {
+        initialRequestManager.getInviteHandler().acceptCall(sipRequest,
+                dialog);
+    }
+
+    public void rejectCall(SipRequest sipRequest) {
+        initialRequestManager.getInviteHandler().rejectCall(sipRequest);
     }
 
     public InitialRequestManager getInitialRequestManager() {

@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008, 2009 Yohann Martineau 
+    Copyright 2007, 2008, 2009, 2010 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip.transaction;
@@ -31,7 +31,6 @@ public class InviteClientTransactionStateCalling extends InviteClientTransaction
     public void timerAFires() {
         InviteClientTransactionState nextState = inviteClientTransaction.CALLING;
         inviteClientTransaction.setState(nextState);
-        log(nextState);
         inviteClientTransaction.sendRetrans();
     }
     
@@ -48,7 +47,6 @@ public class InviteClientTransactionStateCalling extends InviteClientTransaction
     private void timerBFiresOrTransportError() {
         InviteClientTransactionState nextState = inviteClientTransaction.TERMINATED;
         inviteClientTransaction.setState(nextState);
-        log(nextState);
         inviteClientTransaction.transactionUser.transactionTimeout();
     }
     
@@ -56,7 +54,6 @@ public class InviteClientTransactionStateCalling extends InviteClientTransaction
     public void received2xx() {
         InviteClientTransactionState nextState = inviteClientTransaction.TERMINATED;
         inviteClientTransaction.setState(nextState);
-        log(nextState);
         inviteClientTransaction.transactionUser.successResponseReceived(
                 inviteClientTransaction.getLastResponse(), inviteClientTransaction);
     }
@@ -65,7 +62,6 @@ public class InviteClientTransactionStateCalling extends InviteClientTransaction
     public void received1xx() {
         InviteClientTransactionState nextState = inviteClientTransaction.PROCEEDING;
         inviteClientTransaction.setState(nextState);
-        log(nextState);
         inviteClientTransaction.transactionUser.provResponseReceived(
                 inviteClientTransaction.getLastResponse(), inviteClientTransaction);
     }
@@ -74,7 +70,6 @@ public class InviteClientTransactionStateCalling extends InviteClientTransaction
     public void received300To699() {
         InviteClientTransactionState nextState = inviteClientTransaction.COMPLETED;
         inviteClientTransaction.setState(nextState);
-        log(nextState);
         inviteClientTransaction.transactionUser.errResponseReceived(
                 inviteClientTransaction.getLastResponse());
         inviteClientTransaction.createAndSendAck();

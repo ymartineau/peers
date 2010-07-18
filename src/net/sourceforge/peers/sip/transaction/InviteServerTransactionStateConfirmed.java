@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008, 2009 Yohann Martineau 
+    Copyright 2007, 2008, 2009, 2010 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip.transaction;
@@ -31,7 +31,6 @@ public class InviteServerTransactionStateConfirmed extends
     public void timerIFires() {
         InviteServerTransactionState nextState = inviteServerTransaction.TERMINATED;
         inviteServerTransaction.setState(nextState);
-        log(nextState);
         // TODO destroy invite server transaction immediately
         // (dereference it in transaction manager serverTransactions hashtable)
         

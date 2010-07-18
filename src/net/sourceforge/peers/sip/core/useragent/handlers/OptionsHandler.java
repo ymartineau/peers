@@ -14,20 +14,22 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008, 2009 Yohann Martineau 
+    Copyright 2007, 2008, 2009, 2010 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip.core.useragent.handlers;
 
+import net.sourceforge.peers.sip.core.useragent.UserAgent;
 import net.sourceforge.peers.sip.transaction.TransactionManager;
 import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.TransportManager;
 
 public class OptionsHandler extends MethodHandler {
 
-    public OptionsHandler(TransactionManager transactionManager,
+    public OptionsHandler(UserAgent userAgent,
+            TransactionManager transactionManager,
             TransportManager transportManager) {
-        super(transactionManager, transportManager);
+        super(userAgent, transactionManager, transportManager);
     }
 
     public void handleOptions(SipRequest sipRequest) {

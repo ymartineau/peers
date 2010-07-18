@@ -14,12 +14,10 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008, 2009 Yohann Martineau 
+    Copyright 2007, 2008, 2009, 2010 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip.core.useragent.handlers;
-
-import gov.nist.jrtp.RtpException;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
@@ -33,6 +31,8 @@ import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.media.CaptureRtpSender;
 import net.sourceforge.peers.media.Echo;
 import net.sourceforge.peers.media.IncomingRtpReader;
+import net.sourceforge.peers.media.SoundManager;
+import net.sourceforge.peers.sdp.MediaDestination;
 import net.sourceforge.peers.sdp.NoCodecException;
 import net.sourceforge.peers.sdp.SDPManager;
 import net.sourceforge.peers.sdp.SessionDescription;
@@ -40,9 +40,8 @@ import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.core.useragent.MidDialogRequestManager;
 import net.sourceforge.peers.sip.core.useragent.RequestManager;
-import net.sourceforge.peers.sip.core.useragent.SipEvent;
+import net.sourceforge.peers.sip.core.useragent.SipListener;
 import net.sourceforge.peers.sip.core.useragent.UserAgent;
-import net.sourceforge.peers.sip.core.useragent.SipEvent.EventType;
 import net.sourceforge.peers.sip.syntaxencoding.NameAddress;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldName;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldValue;
@@ -69,6 +68,7 @@ public class InviteHandler extends DialogMethodHandler
 
     //TODO move sdp manager, this should probably be in UserAgent
     private SDPManager sdpManager;
+    private MediaDestination mediaDestination;
     
     public InviteHandler(UserAgent userAgent,
             DialogManager dialogManager,
@@ -84,13 +84,6 @@ public class InviteHandler extends DialogMethodHandler
     //////////////////////////////////////////////////////////
 
     public void handleInitialInvite(SipRequest sipRequest) {
-        
-//        setChanged();
-//        ArrayList args = new ArrayList();
-//        args.add(Event.incomingCall);
-//        args.add(sipRequest);
-//        
-//        notifyObservers(args);
         
         //generate 180 Ringing
         SipResponse sipResponse = buildGenericResponse(sipRequest,
@@ -110,8 +103,10 @@ public class InviteHandler extends DialogMethodHandler
         //TODO send 180 more than once
         inviteServerTransaction.sendReponse(sipResponse);
 
-        setChanged();
-        notifyObservers(new SipEvent(EventType.INCOMING_CALL, sipResponse));
+        SipListener sipListener = userAgent.getSipListener();
+        if (sipListener != null) {
+            sipListener.incomingCall(sipRequest, sipResponse);
+        }
 
         dialog.receivedOrSent1xx();
 
@@ -181,11 +176,13 @@ public class InviteHandler extends DialogMethodHandler
         // TODO 486 or 600
         
         String body;
-        if (sipRequest.getBody() != null
-                && RFC3261.CONTENT_TYPE_SDP.equals(contentType.getValue())) {
+        byte[] offer = sipRequest.getBody();
+        if (offer != null && RFC3261.CONTENT_TYPE_SDP.equals(
+                contentType.getValue())) {
             // create response in 200
             try {
-                body = sdpManager.handleOffer(sipRequest.getBody());
+                mediaDestination = sdpManager.getMediaDestination(offer);
+                body = sdpManager.generateResponse(offer);
             } catch (NoCodecException e) {
                 body = sdpManager.generateErrorResponse();
             }
@@ -351,8 +348,11 @@ public class InviteHandler extends DialogMethodHandler
         } else {
             challenged = false;
         }
-        setChanged();
-        notifyObservers(new SipEvent(EventType.ERROR, sipResponse));
+        SipListener sipListener = userAgent.getSipListener();
+        if (sipListener != null) {
+            sipListener.error(sipResponse);
+        }
+
     }
 
     public void provResponseReceived(SipResponse sipResponse, Transaction transaction) {
@@ -390,8 +390,10 @@ public class InviteHandler extends DialogMethodHandler
         //TODO this notification is probably useless because dialog state modification
         //     thereafter always notify dialog observers
         if (isFirstProvRespWithToTag) {
-            setChanged();
-            notifyObservers(new SipEvent(EventType.RINGING, sipResponse));
+            SipListener sipListener = userAgent.getSipListener();
+            if (sipListener != null) {
+                sipListener.ringing(sipResponse);
+            }
             dialog.receivedOrSent1xx();
         }
     }
@@ -433,9 +435,11 @@ public class InviteHandler extends DialogMethodHandler
         }
         dialog = buildOrUpdateDialogForUac(sipResponse, transaction);
         
-        setChanged();
-        notifyObservers(new SipEvent(EventType.CALLEE_PICKUP, sipResponse));
-        
+        SipListener sipListener = userAgent.getSipListener();
+        if (sipListener != null) {
+            sipListener.calleePickup(sipResponse);
+        }
+
         //added for media
         SessionDescription sessionDescription =
             sdpManager.handleAnswer(sipResponse.getBody());
@@ -448,10 +452,13 @@ public class InviteHandler extends DialogMethodHandler
             CaptureRtpSender captureRtpSender;
             //TODO this could be optimized, create captureRtpSender at stack init
             //     and just retrieve it here
+            SoundManager soundManager = userAgent.getSoundManager();
+            soundManager.openAndStartLines();
             try {
                 captureRtpSender = new CaptureRtpSender(localAddress,
                         userAgent.getRtpPort(),
-                        remoteAddress, remotePort);
+                        remoteAddress, remotePort, soundManager,
+                        userAgent.isMediaDebug());
             } catch (IOException e) {
                 Logger.error("input/output error", e);
                 return;
@@ -471,20 +478,14 @@ public class InviteHandler extends DialogMethodHandler
 //                            Utils.getInstance().getRtpPort(),
 //                            remoteAddress, remotePort);
                 incomingRtpReader = new IncomingRtpReader(
-                        captureRtpSender.getRtpSession());
+                        captureRtpSender.getRtpSession(), soundManager);
             } catch (IOException e) {
                 Logger.error("input/output error", e);
                 return;
             }
             userAgent.setIncomingRtpReader(incomingRtpReader);
 
-            try {
-                incomingRtpReader.start();
-            } catch (IOException e) {
-                Logger.error("input/output error", e);
-            } catch (RtpException e) {
-                Logger.error("RTP error", e);
-            }
+            incomingRtpReader.start();
             break;
 
         case echo:
@@ -577,6 +578,92 @@ public class InviteHandler extends DialogMethodHandler
         
         
         
+        
+    }
+
+    public void handleAck(SipRequest ack, Dialog dialog) {
+        // TODO determine if ACK is ACK of an initial INVITE or a re-INVITE
+        // in first case, captureRtpSender and incomingRtpReader must be
+        // created, in the second case, they must be updated.
+        Logger.debug("handleAck");
+
+        String destAddress = mediaDestination.getDestination();
+        int destPort = mediaDestination.getPort();
+        
+        switch (userAgent.getMediaMode()) {
+        case captureAndPlayback:
+            //TODO this could be optimized, create captureRtpSender at stack init
+            //     and just retrieve it here
+            CaptureRtpSender captureRtpSender;
+            captureRtpSender = userAgent.getCaptureRtpSender();
+            IncomingRtpReader incomingRtpReader =
+                userAgent.getIncomingRtpReader();
+            if (incomingRtpReader != null) {
+                incomingRtpReader.stop();
+            }
+            if (captureRtpSender != null) {
+                captureRtpSender.stop();
+                while (!captureRtpSender.isTerminated()) {
+                    try {
+                        Thread.sleep(15);
+                    } catch (InterruptedException e) {
+                        Logger.debug("sleep interrupted");
+                    }
+                }
+            }
+            SoundManager soundManager = userAgent.getSoundManager();
+            soundManager.closeLines();
+            soundManager.openAndStartLines();
+            try {
+                captureRtpSender = new CaptureRtpSender(
+                        userAgent.getMyAddress().getHostAddress(),
+                        userAgent.getRtpPort(), destAddress, destPort,
+                        soundManager, userAgent.isMediaDebug());
+            } catch (IOException e) {
+                Logger.error("input/output error", e);
+                return;
+            }
+            userAgent.setCaptureRtpSender(captureRtpSender);
+            try {
+                captureRtpSender.start();
+            } catch (IOException e) {
+                Logger.error("input/output error", e);
+            }
+            try {
+                //TODO retrieve port from SDP offer
+//                        incomingRtpReader = new IncomingRtpReader(localAddress,
+//                                Utils.getInstance().getRtpPort(),
+//                                remoteAddress, remotePort);
+                //FIXME RTP sessions can be different !
+                incomingRtpReader = new IncomingRtpReader(
+                        captureRtpSender.getRtpSession(), soundManager);
+            } catch (IOException e) {
+                Logger.error("input/output error", e);
+                return;
+            }
+            userAgent.setIncomingRtpReader(incomingRtpReader);
+
+            incomingRtpReader.start();
+            break;
+        case echo:
+            Echo echo;
+            try {
+                echo = new Echo(userAgent.getMyAddress().getHostAddress(),
+                        userAgent.getRtpPort(), destAddress, destPort);
+            } catch (UnknownHostException e) {
+                Logger.error("unknown host amongst "
+                        + userAgent.getMyAddress().getHostAddress()
+                        + " or " + destAddress);
+                return;
+            }
+            userAgent.setEcho(echo);
+            Thread echoThread = new Thread(echo);
+            echoThread.start();
+            break;
+        case none:
+        default:
+            break;
+        }
         
     }
 

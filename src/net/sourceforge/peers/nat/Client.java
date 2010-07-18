@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008, 2009 Yohann Martineau 
+    Copyright 2007, 2008, 2009, 2010 Yohann Martineau 
 */
 
 package net.sourceforge.peers.nat;
@@ -24,7 +24,7 @@ import java.net.InetAddress;
 
 import net.sourceforge.peers.Logger;
 
-import org.dom4j.Document;
+import org.w3c.dom.Document;
 
 public class Client {
 
