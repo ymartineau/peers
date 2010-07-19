@@ -34,7 +34,6 @@ import net.sourceforge.peers.media.IncomingRtpReader;
 import net.sourceforge.peers.media.SoundManager;
 import net.sourceforge.peers.sdp.MediaDestination;
 import net.sourceforge.peers.sdp.NoCodecException;
-import net.sourceforge.peers.sdp.SDPManager;
 import net.sourceforge.peers.sdp.SessionDescription;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.Utils;
@@ -66,8 +65,6 @@ import net.sourceforge.peers.sip.transport.TransportManager;
 public class InviteHandler extends DialogMethodHandler
         implements ServerTransactionUser, ClientTransactionUser {
 
-    //TODO move sdp manager, this should probably be in UserAgent
-    private SDPManager sdpManager;
     private MediaDestination mediaDestination;
     
     public InviteHandler(UserAgent userAgent,
@@ -75,7 +72,6 @@ public class InviteHandler extends DialogMethodHandler
             TransactionManager transactionManager,
             TransportManager transportManager) {
         super(userAgent, dialogManager, transactionManager, transportManager);
-        sdpManager = new SDPManager(userAgent);
     }
     
     

@@ -245,6 +245,8 @@ public class InitialRequestManager extends RequestManager {
             inviteHandler.handleInitialInvite(sipRequest);
         } else if (RFC3261.METHOD_CANCEL.equals(method)) {
             cancelHandler.handleCancel(sipRequest);
+        } else if (RFC3261.METHOD_OPTIONS.equals(method)) {
+            optionsHandler.handleOptions(sipRequest);
         }
     }
 

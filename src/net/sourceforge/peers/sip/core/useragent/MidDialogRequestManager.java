@@ -203,6 +203,8 @@ public class MidDialogRequestManager extends RequestManager
             inviteHandler.handleReInvite(sipRequest, dialog);
         } else if (RFC3261.METHOD_ACK.equals(method)) {
             inviteHandler.handleAck(sipRequest, dialog);
+        } else if (RFC3261.METHOD_OPTIONS.equals(method)) {
+            optionsHandler.handleOptions(sipRequest);
         }
     }
 

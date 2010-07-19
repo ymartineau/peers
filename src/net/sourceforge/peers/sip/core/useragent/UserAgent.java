@@ -31,6 +31,7 @@ import net.sourceforge.peers.media.Echo;
 import net.sourceforge.peers.media.IncomingRtpReader;
 import net.sourceforge.peers.media.MediaMode;
 import net.sourceforge.peers.media.SoundManager;
+import net.sourceforge.peers.sdp.SDPManager;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.core.useragent.handlers.ByeHandler;
@@ -76,6 +77,7 @@ public class UserAgent {
     private int cseqCounter;
     private SipListener sipListener;
     
+    private SDPManager sdpManager;
     private SoundManager soundManager;
 
     public UserAgent() {
@@ -190,6 +192,9 @@ public class UserAgent {
                 Logger.error("syntax error", e);
             }
         }
+        sdpManager = new SDPManager(this);
+        inviteHandler.setSdpManager(sdpManager);
+        optionsHandler.setSdpManager(sdpManager);
         soundManager = new SoundManager(config.isMediaDebug());
     }
 
