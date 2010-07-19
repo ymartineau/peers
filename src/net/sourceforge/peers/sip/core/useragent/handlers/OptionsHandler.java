@@ -19,12 +19,20 @@
 
 package net.sourceforge.peers.sip.core.useragent.handlers;
 
+import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.core.useragent.UserAgent;
+import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldName;
+import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldValue;
+import net.sourceforge.peers.sip.syntaxencoding.SipHeaders;
+import net.sourceforge.peers.sip.transaction.ServerTransaction;
+import net.sourceforge.peers.sip.transaction.ServerTransactionUser;
 import net.sourceforge.peers.sip.transaction.TransactionManager;
 import net.sourceforge.peers.sip.transport.SipRequest;
+import net.sourceforge.peers.sip.transport.SipResponse;
 import net.sourceforge.peers.sip.transport.TransportManager;
 
-public class OptionsHandler extends MethodHandler {
+public class OptionsHandler extends MethodHandler
+        implements ServerTransactionUser {
 
     public OptionsHandler(UserAgent userAgent,
             TransactionManager transactionManager,
@@ -33,6 +41,25 @@ public class OptionsHandler extends MethodHandler {
     }
 
     public void handleOptions(SipRequest sipRequest) {
+        SipResponse sipResponse = buildGenericResponse(sipRequest,
+                RFC3261.CODE_200_OK, RFC3261.REASON_200_OK);
+        sipResponse.setBody(sdpManager.generateOffer().getBytes());
+        SipHeaders sipHeaders = sipResponse.getSipHeaders();
+        sipHeaders.add(new SipHeaderFieldName(RFC3261.HDR_CONTENT_TYPE),
+                new SipHeaderFieldValue(RFC3261.CONTENT_TYPE_SDP));
+        ServerTransaction serverTransaction =
+            transactionManager.createServerTransaction(
+                sipResponse, userAgent.getSipPort(), RFC3261.TRANSPORT_UDP,
+                this, sipRequest);
+        serverTransaction.start();
+        serverTransaction.receivedRequest(sipRequest);
+        serverTransaction.sendReponse(sipResponse);
+    }
+
+    @Override
+    public void transactionFailure() {
+        // TODO Auto-generated method stub
         
     }
+
 }
