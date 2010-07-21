@@ -172,12 +172,14 @@ public class EventManager implements SipListener, MainFrameListener,
         Dialog dialog = dialogManager.getDialogFromCallId(callId);
         userAgent.getUac().terminate(dialog, sipRequest);
         callFrames.remove(callId);
+        Logger.debug("dialog to be terminated: " + callId);
         dialogsToBeTerminated.put(callId, dialog);
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    Thread.sleep(4000);
+                    // RFC 3261 9.1 p54
+                    Thread.sleep(RFC3261.TIMER_T1 * 64);
                 } catch (InterruptedException e) {
                 }
                 dialogsToBeTerminated.remove(callId);
