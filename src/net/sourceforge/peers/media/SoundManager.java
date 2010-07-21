@@ -98,7 +98,7 @@ public class SoundManager {
         sourceDataLine.start();
     }
 
-    public void closeLines() {
+    public synchronized void closeLines() {
         if (microphoneOutput != null) {
             try {
                 microphoneOutput.close();
