@@ -57,6 +57,7 @@ public class SoundManager {
     }
 
     public void openAndStartLines() {
+        Logger.debug("openAndStartLines");
         if (mediaDebug) {
             SimpleDateFormat simpleDateFormat =
                 new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
@@ -99,6 +100,7 @@ public class SoundManager {
     }
 
     public synchronized void closeLines() {
+        Logger.debug("closeLines");
         if (microphoneOutput != null) {
             try {
                 microphoneOutput.close();

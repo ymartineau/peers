@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008, 2009 Yohann Martineau 
+    Copyright 2007, 2008, 2009, 2010 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip;
@@ -36,6 +36,7 @@ public final class RFC3261 {
     
         //Classical form
     
+    public static final String HDR_ALLOW               = "Allow";
     public static final String HDR_AUTHORIZATION       = "Authorization";
     public static final String HDR_CALLID              = "Call-ID";
     public static final String HDR_CONTACT             = "Contact";

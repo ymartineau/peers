@@ -37,7 +37,9 @@ import net.sourceforge.peers.sip.transport.TransportManager;
 public class TransactionManager {
 
     protected Timer timer;
-    
+
+    // TODO remove client transactions when they reach terminated state
+    // TODO check that server transactions are removed in all transitions to terminated
     private Hashtable<String, ClientTransaction> clientTransactions;
     private Hashtable<String, ServerTransaction> serverTransactions;
 
