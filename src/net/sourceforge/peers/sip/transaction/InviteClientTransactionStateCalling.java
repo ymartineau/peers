@@ -47,7 +47,8 @@ public class InviteClientTransactionStateCalling extends InviteClientTransaction
     private void timerBFiresOrTransportError() {
         InviteClientTransactionState nextState = inviteClientTransaction.TERMINATED;
         inviteClientTransaction.setState(nextState);
-        inviteClientTransaction.transactionUser.transactionTimeout();
+        inviteClientTransaction.transactionUser.transactionTimeout(
+                inviteClientTransaction);
     }
     
     @Override

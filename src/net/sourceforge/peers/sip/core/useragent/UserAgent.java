@@ -333,4 +333,8 @@ public class UserAgent {
         return soundManager;
     }
 
+    public TransactionManager getTransactionManager() {
+        return transactionManager;
+    }
+
 }

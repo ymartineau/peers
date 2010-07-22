@@ -19,6 +19,10 @@
 
 package net.sourceforge.peers.sip.core.useragent;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.media.CaptureRtpSender;
 import net.sourceforge.peers.media.Echo;
@@ -28,12 +32,13 @@ import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.core.useragent.handlers.InviteHandler;
 import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
+import net.sourceforge.peers.sip.transaction.InviteClientTransaction;
 import net.sourceforge.peers.sip.transaction.TransactionManager;
 import net.sourceforge.peers.sip.transactionuser.Dialog;
 import net.sourceforge.peers.sip.transactionuser.DialogManager;
-import net.sourceforge.peers.sip.transactionuser.DialogStateConfirmed;
-import net.sourceforge.peers.sip.transactionuser.DialogStateEarly;
+import net.sourceforge.peers.sip.transactionuser.DialogState;
 import net.sourceforge.peers.sip.transport.SipRequest;
+import net.sourceforge.peers.sip.transport.SipResponse;
 import net.sourceforge.peers.sip.transport.TransportManager;
 
 public class UAC {
@@ -47,6 +52,7 @@ public class UAC {
     //FIXME
     private UserAgent userAgent;
     private DialogManager dialogManager;
+    private List<String> guiClosedCallIds;
     
     /**
      * should be instanciated only once, it was a singleton.
@@ -64,6 +70,7 @@ public class UAC {
         this.dialogManager = dialogManager;
         this.profileUri = profileUri;
         registerCallID = Utils.generateCallID(userAgent.getMyAddress());
+        guiClosedCallIds = Collections.synchronizedList(new ArrayList<String>());
     }
 
     /**
@@ -87,12 +94,39 @@ public class UAC {
                 RFC3261.METHOD_INVITE, profileUri, callId);
         
     }
-    
-    public void terminate(Dialog dialog) {
-        terminate(dialog, null);
-    }
-    
-    public void terminate(Dialog dialog, SipRequest sipRequest) {
+
+    public void terminate(SipRequest sipRequest) {
+        String callId = Utils.getMessageCallId(sipRequest);
+        if (!guiClosedCallIds.contains(callId)) {
+            guiClosedCallIds.add(callId);
+        }
+        Dialog dialog = dialogManager.getDialogFromCallId(callId);
+        if (dialog != null) {
+            DialogState dialogState = dialog.getState();
+            if (dialog.EARLY.equals(dialogState)) {
+                initialRequestManager.createCancel(sipRequest,
+                        midDialogRequestManager, profileUri);
+            } else if (dialog.CONFIRMED.equals(dialogState)) {
+                midDialogRequestManager.generateMidDialogRequest(
+                        dialog, RFC3261.METHOD_BYE);
+                guiClosedCallIds.remove(callId);
+            }
+        } else {
+            TransactionManager transactionManager =
+                userAgent.getTransactionManager();
+            InviteClientTransaction inviteClientTransaction =
+                (InviteClientTransaction)transactionManager
+                    .getClientTransaction(sipRequest);
+            SipResponse sipResponse = inviteClientTransaction.getLastResponse();
+            if (sipResponse != null) {
+                int statusCode = sipResponse.getStatusCode();
+                if (statusCode < RFC3261.CODE_200_OK) {
+                    initialRequestManager.createCancel(sipRequest,
+                            midDialogRequestManager, profileUri);
+                }
+            }
+        }
+        /*
         if (dialog != null) {
             if (dialog.getState() instanceof DialogStateEarly) {
                 //TODO generate cancel
@@ -116,6 +150,7 @@ public class UAC {
             });
             thread.start();
         }
+        */
         switch (userAgent.getMediaMode()) {
         case captureAndPlayback:
             CaptureRtpSender captureRtpSender = userAgent.getCaptureRtpSender();
@@ -154,6 +189,10 @@ public class UAC {
 
     public InviteHandler getInviteHandler() {
         return initialRequestManager.getInviteHandler();
+    }
+
+    public List<String> getGuiClosedCallIds() {
+        return guiClosedCallIds;
     }
 
 }

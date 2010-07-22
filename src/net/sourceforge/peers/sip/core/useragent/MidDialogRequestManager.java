@@ -229,7 +229,7 @@ public class MidDialogRequestManager extends RequestManager
     }
 
 
-    public void transactionTimeout() {
+    public void transactionTimeout(ClientTransaction clientTransaction) {
         // TODO Auto-generated method stub
         
     }

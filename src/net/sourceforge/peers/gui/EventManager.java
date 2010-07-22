@@ -44,7 +44,6 @@ public class EventManager implements SipListener, MainFrameListener,
     private UserAgent userAgent;
     private MainFrame mainFrame;
     private Map<String, CallFrame> callFrames;
-    private Map<String, Dialog> dialogsToBeTerminated;
 
     public EventManager(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
@@ -53,8 +52,6 @@ public class EventManager implements SipListener, MainFrameListener,
         userAgent.setSipListener(EventManager.this);
         callFrames = Collections.synchronizedMap(
                 new HashMap<String, CallFrame>());
-        dialogsToBeTerminated = Collections.synchronizedMap(
-                new HashMap<String, Dialog>());
     }
 
     // sip events
@@ -75,22 +72,6 @@ public class EventManager implements SipListener, MainFrameListener,
         CallFrame callFrame = getCallFrame(sipResponse);
         if (callFrame != null) {
             callFrame.calleePickup();
-        } else {
-            String callId = Utils.getMessageCallId(sipResponse);
-            final Dialog dialog = dialogsToBeTerminated.remove(callId);
-            if (dialog != null) {
-                Thread thread = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            Thread.sleep(200);
-                        } catch (InterruptedException e) {
-                        }
-                        userAgent.getUac().terminate(dialog);
-                    }
-                });
-                thread.start();
-            }
         }
     }
 
@@ -167,25 +148,7 @@ public class EventManager implements SipListener, MainFrameListener,
     
     @Override
     public synchronized void hangupClicked(SipRequest sipRequest) {
-        final String callId = Utils.getMessageCallId(sipRequest);
-        DialogManager dialogManager = userAgent.getDialogManager();
-        Dialog dialog = dialogManager.getDialogFromCallId(callId);
-        userAgent.getUac().terminate(dialog, sipRequest);
-        callFrames.remove(callId);
-        Logger.debug("dialog to be terminated: " + callId);
-        dialogsToBeTerminated.put(callId, dialog);
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    // RFC 3261 9.1 p54
-                    Thread.sleep(RFC3261.TIMER_T1 * 64);
-                } catch (InterruptedException e) {
-                }
-                dialogsToBeTerminated.remove(callId);
-            }
-        });
-        thread.start();
+        userAgent.getUac().terminate(sipRequest);
     }
 
     @Override

@@ -348,7 +348,11 @@ public class InviteHandler extends DialogMethodHandler
         if (sipListener != null) {
             sipListener.error(sipResponse);
         }
-
+        List<String> guiClosedCallIds = userAgent.getUac().getGuiClosedCallIds();
+        String callId = Utils.getMessageCallId(sipResponse);
+        if (guiClosedCallIds.contains(callId)) {
+            guiClosedCallIds.remove(callId);
+        }
     }
 
     public void provResponseReceived(SipResponse sipResponse, Transaction transaction) {
@@ -391,6 +395,11 @@ public class InviteHandler extends DialogMethodHandler
                 sipListener.ringing(sipResponse);
             }
             dialog.receivedOrSent1xx();
+        }
+        List<String> guiClosedCallIds = userAgent.getUac().getGuiClosedCallIds();
+        String callId = Utils.getMessageCallId(sipResponse);
+        if (guiClosedCallIds.contains(callId)) {
+            userAgent.getUac().terminate(transaction.getRequest());
         }
     }
 
@@ -572,7 +581,11 @@ public class InviteHandler extends DialogMethodHandler
         
         
         
-        
+        List<String> guiClosedCallIds = userAgent.getUac().getGuiClosedCallIds();
+        String callId = Utils.getMessageCallId(sipResponse);
+        if (guiClosedCallIds.contains(callId)) {
+            userAgent.getUac().terminate(request);
+        }
         
         
     }
@@ -663,7 +676,7 @@ public class InviteHandler extends DialogMethodHandler
         
     }
 
-    public void transactionTimeout() {
+    public void transactionTimeout(ClientTransaction clientTransaction) {
         // TODO Auto-generated method stub
         
     }

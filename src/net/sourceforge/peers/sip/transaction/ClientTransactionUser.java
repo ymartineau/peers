@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008, 2009 Yohann Martineau 
+    Copyright 2007, 2008, 2009, 2010 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip.transaction;
@@ -22,7 +22,7 @@ package net.sourceforge.peers.sip.transaction;
 import net.sourceforge.peers.sip.transport.SipResponse;
 
 public interface ClientTransactionUser {
-    public void transactionTimeout();
+    public void transactionTimeout(ClientTransaction clientTransaction);
     public void provResponseReceived(SipResponse sipResponse, Transaction transaction);
     //TODO eventually pass transaction to the transaction user
     public void errResponseReceived(SipResponse sipResponse);//3XX is considered as an error response

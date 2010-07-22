@@ -185,7 +185,7 @@ public class RegisterHandler extends MethodHandler
         }
     }
 
-    public void transactionTimeout() {
+    public void transactionTimeout(ClientTransaction clientTransaction) {
         //TODO alert user
     }
 

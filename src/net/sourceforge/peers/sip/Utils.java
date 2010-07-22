@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008, 2009 Yohann Martineau 
+    Copyright 2007, 2008, 2009, 2010 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip;
@@ -23,6 +23,7 @@ package net.sourceforge.peers.sip;
 import java.io.File;
 import java.net.InetAddress;
 
+import net.sourceforge.peers.sip.core.useragent.UAS;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldMultiValue;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldName;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldValue;
@@ -111,6 +112,17 @@ public class Utils {
                         String.valueOf(RFC3261.DEFAULT_MAXFORWARDS)));
         
         //TODO Supported and Require
+    }
+
+    public final static String generateAllowHeader() {
+        StringBuffer buf = new StringBuffer();
+        for (String supportedMethod: UAS.SUPPORTED_METHODS) {
+            buf.append(supportedMethod);
+            buf.append(", ");
+        }
+        int bufLength = buf.length();
+        buf.delete(bufLength - 2, bufLength);
+        return buf.toString();
     }
 
     public final static String getPeersHome() {

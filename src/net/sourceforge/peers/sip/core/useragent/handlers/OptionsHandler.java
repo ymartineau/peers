@@ -20,6 +20,7 @@
 package net.sourceforge.peers.sip.core.useragent.handlers;
 
 import net.sourceforge.peers.sip.RFC3261;
+import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.core.useragent.UserAgent;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldName;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldValue;
@@ -47,6 +48,8 @@ public class OptionsHandler extends MethodHandler
         SipHeaders sipHeaders = sipResponse.getSipHeaders();
         sipHeaders.add(new SipHeaderFieldName(RFC3261.HDR_CONTENT_TYPE),
                 new SipHeaderFieldValue(RFC3261.CONTENT_TYPE_SDP));
+        sipHeaders.add(new SipHeaderFieldName(RFC3261.HDR_ALLOW),
+                new SipHeaderFieldValue(Utils.generateAllowHeader()));
         ServerTransaction serverTransaction =
             transactionManager.createServerTransaction(
                 sipResponse, userAgent.getSipPort(), RFC3261.TRANSPORT_UDP,

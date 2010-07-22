@@ -52,7 +52,8 @@ public class NonInviteClientTransactionStateTrying extends
     private void timerFFiresOrTransportError() {
         NonInviteClientTransactionState nextState = nonInviteClientTransaction.TERMINATED;
         nonInviteClientTransaction.setState(nextState);
-        nonInviteClientTransaction.transactionUser.transactionTimeout();
+        nonInviteClientTransaction.transactionUser.transactionTimeout(
+                nonInviteClientTransaction);
     }
     
     @Override
