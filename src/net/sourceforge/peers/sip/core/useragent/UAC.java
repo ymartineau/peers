@@ -118,11 +118,17 @@ public class UAC {
                 (InviteClientTransaction)transactionManager
                     .getClientTransaction(sipRequest);
             if (inviteClientTransaction == null) {
-              Logger.error("cannot find invite client transaction" +
-                  " for request " + sipRequest);
+                // provisional response received without to-tag
+                inviteClientTransaction = (InviteClientTransaction)
+                    transactionManager.getClientTransactionFromCallId(callId,
+                            RFC3261.METHOD_INVITE);
+            }
+            if (inviteClientTransaction == null) {
+                Logger.error("cannot find invite client transaction" +
+                        " for call " + callId);
             } else {
                 SipResponse sipResponse =
-                  inviteClientTransaction.getLastResponse();
+                    inviteClientTransaction.getLastResponse();
                 if (sipResponse != null) {
                     int statusCode = sipResponse.getStatusCode();
                     if (statusCode < RFC3261.CODE_200_OK) {
@@ -132,31 +138,6 @@ public class UAC {
                 }
             }
         }
-        /*
-        if (dialog != null) {
-            if (dialog.getState() instanceof DialogStateEarly) {
-                //TODO generate cancel
-                initialRequestManager.createCancel(sipRequest,
-                        midDialogRequestManager, profileUri);
-            } else if (dialog.getState() instanceof DialogStateConfirmed) {
-                midDialogRequestManager.generateMidDialogRequest(
-                        dialog, RFC3261.METHOD_BYE);
-                
-            }
-            final String callId = dialog.getCallId();
-            Thread thread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        Thread.sleep(40000);//TODO change to 4 seconds
-                    } catch (InterruptedException e) {
-                    }
-                    dialogManager.removeDialog(callId);
-                }
-            });
-            thread.start();
-        }
-        */
         switch (userAgent.getMediaMode()) {
         case captureAndPlayback:
             CaptureRtpSender captureRtpSender = userAgent.getCaptureRtpSender();
