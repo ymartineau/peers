@@ -117,12 +117,18 @@ public class UAC {
             InviteClientTransaction inviteClientTransaction =
                 (InviteClientTransaction)transactionManager
                     .getClientTransaction(sipRequest);
-            SipResponse sipResponse = inviteClientTransaction.getLastResponse();
-            if (sipResponse != null) {
-                int statusCode = sipResponse.getStatusCode();
-                if (statusCode < RFC3261.CODE_200_OK) {
-                    initialRequestManager.createCancel(sipRequest,
-                            midDialogRequestManager, profileUri);
+            if (inviteClientTransaction == null) {
+              Logger.error("cannot find invite client transaction" +
+                  " for request " + sipRequest);
+            } else {
+                SipResponse sipResponse =
+                  inviteClientTransaction.getLastResponse();
+                if (sipResponse != null) {
+                    int statusCode = sipResponse.getStatusCode();
+                    if (statusCode < RFC3261.CODE_200_OK) {
+                        initialRequestManager.createCancel(sipRequest,
+                                midDialogRequestManager, profileUri);
+                    }
                 }
             }
         }
