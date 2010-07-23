@@ -114,6 +114,20 @@ public class TransactionManager {
         return clientTransactions.get(getTransactionId(branchId, method));
     }
 
+    public ClientTransaction getClientTransactionFromCallId(String callId,
+            String method) {
+        for (ClientTransaction clientTransaction: clientTransactions.values()) {
+            Transaction transaction = (Transaction)clientTransaction;
+            SipRequest sipRequest = transaction.getRequest();
+            String reqCallId = Utils.getMessageCallId(sipRequest);
+            String reqMethod = sipRequest.getMethod();
+            if (callId.equals(reqCallId) && method.equals(reqMethod)) {
+                return clientTransaction;
+            }
+        }
+        return null;
+    }
+
     public ServerTransaction getServerTransaction(SipMessage sipMessage) {
         SipHeaderFieldValue via = Utils.getTopVia(sipMessage);
         String branchId = via.getParam(new SipHeaderParamName(
