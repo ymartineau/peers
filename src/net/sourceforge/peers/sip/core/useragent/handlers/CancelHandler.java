@@ -19,6 +19,7 @@
 
 package net.sourceforge.peers.sip.core.useragent.handlers;
 
+import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.core.useragent.MidDialogRequestManager;
@@ -146,14 +147,20 @@ public class CancelHandler extends DialogMethodHandler
         }
         
         
-        InviteClientTransaction inviteClientTransaction = (InviteClientTransaction)
-        transactionManager.getClientTransaction(inviteRequest);
-        SipResponse lastResponse = inviteClientTransaction.getLastResponse();
-        if (lastResponse.getStatusCode() >= RFC3261.CODE_200_OK) {
-            return null;
+        InviteClientTransaction inviteClientTransaction =
+            (InviteClientTransaction)transactionManager.getClientTransaction(
+                    inviteRequest);
+        if (inviteClientTransaction != null) {
+            SipResponse lastResponse = inviteClientTransaction.getLastResponse();
+            if (lastResponse != null &&
+                    lastResponse.getStatusCode() >= RFC3261.CODE_200_OK) {
+                return null;
+            }
+        } else {
+            Logger.error("cannt retrieve invite client transaction for"
+                    + " request " + inviteRequest);
         }
 
-        
         return midDialogRequestManager.createNonInviteClientTransaction(
                 cancelGenericRequest, branchId);
     }
