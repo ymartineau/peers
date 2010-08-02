@@ -71,9 +71,9 @@ public class InviteClientTransactionStateCalling extends InviteClientTransaction
     public void received300To699() {
         InviteClientTransactionState nextState = inviteClientTransaction.COMPLETED;
         inviteClientTransaction.setState(nextState);
+        inviteClientTransaction.createAndSendAck();
         inviteClientTransaction.transactionUser.errResponseReceived(
                 inviteClientTransaction.getLastResponse());
-        inviteClientTransaction.createAndSendAck();
     }
     
     

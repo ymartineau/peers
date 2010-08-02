@@ -24,8 +24,6 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.media.CaptureRtpSender;
@@ -325,20 +323,11 @@ public class InviteHandler extends DialogMethodHandler
             InviteClientTransaction inviteClientTransaction =
                 (InviteClientTransaction)
                 transactionManager.getClientTransaction(sipResponse);
-            final SipRequest sipRequest = inviteClientTransaction.getRequest();
-            // try to send invite 1 second later, ugly solution,
-            // but it seems to work...
-            Timer timer = new Timer();
-            TimerTask authInviteTask = new TimerTask() {
-                @Override
-                public void run() {
-                    if (challengeManager != null) {
-                        challengeManager.handleChallenge(sipRequest,
-                                sipResponse);
-                    }
-                }
-            };
-            timer.schedule(authInviteTask, 1500);
+            SipRequest sipRequest = inviteClientTransaction.getRequest();
+            if (challengeManager != null) {
+                challengeManager.handleChallenge(sipRequest,
+                        sipResponse);
+            }
             challenged = true;
             return;
         } else {
