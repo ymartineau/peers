@@ -157,7 +157,7 @@ public class CancelHandler extends DialogMethodHandler
                 return null;
             }
         } else {
-            Logger.error("cannt retrieve invite client transaction for"
+            Logger.error("cannot retrieve invite client transaction for"
                     + " request " + inviteRequest);
         }
 

@@ -31,7 +31,11 @@ import net.sourceforge.peers.media.SoundManager;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.core.useragent.handlers.InviteHandler;
+import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldName;
+import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldValue;
+import net.sourceforge.peers.sip.syntaxencoding.SipHeaders;
 import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
+import net.sourceforge.peers.sip.transaction.ClientTransaction;
 import net.sourceforge.peers.sip.transaction.InviteClientTransaction;
 import net.sourceforge.peers.sip.transaction.TransactionManager;
 import net.sourceforge.peers.sip.transactionuser.Dialog;
@@ -51,6 +55,7 @@ public class UAC {
     
     //FIXME
     private UserAgent userAgent;
+    private TransactionManager transactionManager;
     private DialogManager dialogManager;
     private List<String> guiClosedCallIds;
     
@@ -68,6 +73,7 @@ public class UAC {
         this.initialRequestManager = initialRequestManager;
         this.midDialogRequestManager = midDialogRequestManager;
         this.dialogManager = dialogManager;
+        this.transactionManager = transactionManager;
         this.profileUri = profileUri;
         registerCallID = Utils.generateCallID(userAgent.getMyAddress());
         guiClosedCallIds = Collections.synchronizedList(new ArrayList<String>());
@@ -95,16 +101,43 @@ public class UAC {
         
     }
 
+    private SipRequest getOriginalInvite(String callId) {
+        List<ClientTransaction> clientTransactions =
+            transactionManager.getClientTransactionsFromCallId(callId,
+                    RFC3261.METHOD_INVITE);
+        SipRequest sipRequestNoAuth = null;
+        for (ClientTransaction clientTransaction: clientTransactions) {
+            InviteClientTransaction inviteClientTransaction =
+                (InviteClientTransaction)clientTransaction;
+            SipRequest sipRequest = inviteClientTransaction.getRequest();
+            SipHeaders sipHeaders = sipRequest.getSipHeaders();
+            SipHeaderFieldName authorization = new SipHeaderFieldName(
+                    RFC3261.HDR_AUTHORIZATION);
+            SipHeaderFieldValue value = sipHeaders.get(authorization);
+            if (value == null) {
+                SipHeaderFieldName proxyAuthorization = new SipHeaderFieldName(
+                        RFC3261.HDR_PROXY_AUTHORIZATION);
+                value = sipHeaders.get(proxyAuthorization);
+            }
+            if (value != null) {
+                return sipRequest;
+            }
+            sipRequestNoAuth = sipRequest;
+        }
+        return sipRequestNoAuth;
+    }
+
     public void terminate(SipRequest sipRequest) {
         String callId = Utils.getMessageCallId(sipRequest);
         if (!guiClosedCallIds.contains(callId)) {
             guiClosedCallIds.add(callId);
         }
         Dialog dialog = dialogManager.getDialogFromCallId(callId);
+        SipRequest originalRequest = getOriginalInvite(callId);
         if (dialog != null) {
             DialogState dialogState = dialog.getState();
             if (dialog.EARLY.equals(dialogState)) {
-                initialRequestManager.createCancel(sipRequest,
+                initialRequestManager.createCancel(originalRequest,
                         midDialogRequestManager, profileUri);
             } else if (dialog.CONFIRMED.equals(dialogState)) {
                 midDialogRequestManager.generateMidDialogRequest(
@@ -112,17 +145,9 @@ public class UAC {
                 guiClosedCallIds.remove(callId);
             }
         } else {
-            TransactionManager transactionManager =
-                userAgent.getTransactionManager();
             InviteClientTransaction inviteClientTransaction =
                 (InviteClientTransaction)transactionManager
-                    .getClientTransaction(sipRequest);
-            if (inviteClientTransaction == null) {
-                // provisional response received without to-tag
-                inviteClientTransaction = (InviteClientTransaction)
-                    transactionManager.getClientTransactionFromCallId(callId,
-                            RFC3261.METHOD_INVITE);
-            }
+                    .getClientTransaction(originalRequest);
             if (inviteClientTransaction == null) {
                 Logger.error("cannot find invite client transaction" +
                         " for call " + callId);

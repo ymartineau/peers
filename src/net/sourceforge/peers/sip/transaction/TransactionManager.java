@@ -20,7 +20,9 @@
 package net.sourceforge.peers.sip.transaction;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 import java.util.Timer;
 
 import net.sourceforge.peers.sip.RFC3261;
@@ -114,18 +116,20 @@ public class TransactionManager {
         return clientTransactions.get(getTransactionId(branchId, method));
     }
 
-    public ClientTransaction getClientTransactionFromCallId(String callId,
+    public List<ClientTransaction> getClientTransactionsFromCallId(String callId,
             String method) {
+        ArrayList<ClientTransaction> clientTransactionsFromCallId =
+            new ArrayList<ClientTransaction>();
         for (ClientTransaction clientTransaction: clientTransactions.values()) {
             Transaction transaction = (Transaction)clientTransaction;
             SipRequest sipRequest = transaction.getRequest();
             String reqCallId = Utils.getMessageCallId(sipRequest);
             String reqMethod = sipRequest.getMethod();
             if (callId.equals(reqCallId) && method.equals(reqMethod)) {
-                return clientTransaction;
+                clientTransactionsFromCallId.add(clientTransaction);
             }
         }
-        return null;
+        return clientTransactionsFromCallId;
     }
 
     public ServerTransaction getServerTransaction(SipMessage sipMessage) {
