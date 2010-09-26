@@ -101,7 +101,7 @@ public class UAC {
         
     }
 
-    private SipRequest getOriginalInvite(String callId) {
+    private SipRequest getInviteWithAuth(String callId) {
         List<ClientTransaction> clientTransactions =
             transactionManager.getClientTransactionsFromCallId(callId,
                     RFC3261.METHOD_INVITE);
@@ -133,11 +133,11 @@ public class UAC {
             guiClosedCallIds.add(callId);
         }
         Dialog dialog = dialogManager.getDialogFromCallId(callId);
-        SipRequest originalRequest = getOriginalInvite(callId);
+        SipRequest inviteWithAuth = getInviteWithAuth(callId);
         if (dialog != null) {
             DialogState dialogState = dialog.getState();
             if (dialog.EARLY.equals(dialogState)) {
-                initialRequestManager.createCancel(originalRequest,
+                initialRequestManager.createCancel(inviteWithAuth,
                         midDialogRequestManager, profileUri);
             } else if (dialog.CONFIRMED.equals(dialogState)) {
                 midDialogRequestManager.generateMidDialogRequest(
@@ -147,7 +147,7 @@ public class UAC {
         } else {
             InviteClientTransaction inviteClientTransaction =
                 (InviteClientTransaction)transactionManager
-                    .getClientTransaction(originalRequest);
+                    .getClientTransaction(inviteWithAuth);
             if (inviteClientTransaction == null) {
                 Logger.error("cannot find invite client transaction" +
                         " for call " + callId);
@@ -157,7 +157,7 @@ public class UAC {
                 if (sipResponse != null) {
                     int statusCode = sipResponse.getStatusCode();
                     if (statusCode < RFC3261.CODE_200_OK) {
-                        initialRequestManager.createCancel(sipRequest,
+                        initialRequestManager.createCancel(inviteWithAuth,
                                 midDialogRequestManager, profileUri);
                     }
                 }
