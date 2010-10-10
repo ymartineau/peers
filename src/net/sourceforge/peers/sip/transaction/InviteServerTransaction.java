@@ -49,15 +49,11 @@ public class InviteServerTransaction extends InviteTransaction
     //private SipServerTransport sipServerTransport;
     private int port;
     
-    TransactionManager transactionManager;
-    
     InviteServerTransaction(String branchId, int port, String transport,
             SipResponse sipResponse, ServerTransactionUser serverTransactionUser,
             SipRequest sipRequest, Timer timer, TransactionManager transactionManager,
             TransportManager transportManager) {
-        super(branchId, timer, transportManager);
-        
-        this.transactionManager = transactionManager;
+        super(branchId, timer, transportManager, transactionManager);
         
         INIT = new InviteServerTransactionStateInit(getId(), this);
         state = INIT;

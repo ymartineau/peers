@@ -33,6 +33,7 @@ import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.core.useragent.handlers.InviteHandler;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldName;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldValue;
+import net.sourceforge.peers.sip.syntaxencoding.SipHeaderParamName;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaders;
 import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
 import net.sourceforge.peers.sip.transaction.ClientTransaction;
@@ -41,6 +42,7 @@ import net.sourceforge.peers.sip.transaction.TransactionManager;
 import net.sourceforge.peers.sip.transactionuser.Dialog;
 import net.sourceforge.peers.sip.transactionuser.DialogManager;
 import net.sourceforge.peers.sip.transactionuser.DialogState;
+import net.sourceforge.peers.sip.transport.SipMessage;
 import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.SipResponse;
 import net.sourceforge.peers.sip.transport.TransportManager;
@@ -63,7 +65,6 @@ public class UAC {
      * should be instanciated only once, it was a singleton.
      */
     public UAC(UserAgent userAgent,
-            String profileUri,
             InitialRequestManager initialRequestManager,
             MidDialogRequestManager midDialogRequestManager,
             DialogManager dialogManager,
@@ -74,7 +75,6 @@ public class UAC {
         this.midDialogRequestManager = midDialogRequestManager;
         this.dialogManager = dialogManager;
         this.transactionManager = transactionManager;
-        this.profileUri = profileUri;
         registerCallID = Utils.generateCallID(userAgent.getMyAddress());
         guiClosedCallIds = Collections.synchronizedList(new ArrayList<String>());
     }
@@ -84,14 +84,35 @@ public class UAC {
      * @throws SipUriSyntaxException 
      */
     public SipRequest register() throws SipUriSyntaxException {
+        String domain = userAgent.getDomain();
         String requestUri = RFC3261.SIP_SCHEME + RFC3261.SCHEME_SEPARATOR
-            + userAgent.getDomain();
+            + domain;
+        profileUri = RFC3261.SIP_SCHEME + RFC3261.SCHEME_SEPARATOR
+            + userAgent.getUserpart() + RFC3261.AT + domain;
         return initialRequestManager.createInitialRequest(requestUri,
                 RFC3261.METHOD_REGISTER, profileUri, registerCallID);
     }
     
-    public void unregister() {
-        initialRequestManager.registerHandler.unregister();
+    public void unregister() throws SipUriSyntaxException {
+        String requestUri = RFC3261.SIP_SCHEME + RFC3261.SCHEME_SEPARATOR
+            + userAgent.getDomain();
+        MessageInterceptor messageInterceptor = new MessageInterceptor() {
+            
+            @Override
+            public void postProcess(SipMessage sipMessage) {
+                initialRequestManager.registerHandler.unregister();
+                SipHeaders sipHeaders = sipMessage.getSipHeaders();
+                SipHeaderFieldValue contact = sipHeaders.get(
+                        new SipHeaderFieldName(RFC3261.HDR_CONTACT));
+                contact.addParam(new SipHeaderParamName(RFC3261.PARAM_EXPIRES),
+                        "0");
+            }
+            
+        };
+        initialRequestManager.createInitialRequest(requestUri,
+                RFC3261.METHOD_REGISTER, profileUri, registerCallID,
+                messageInterceptor);
+        //initialRequestManager.registerHandler.unregister();
     }
     
     public SipRequest invite(String requestUri, String callId)

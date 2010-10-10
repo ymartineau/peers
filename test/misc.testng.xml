@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="Peers Miscellaneous suite">
+  <test name="Miscellaneous">
+    <packages>
+      <package name="net.sourceforge.peers">
+        <include name=".*TestNG"/>
+      </package>
+    </packages>
+  </test>
+</suite>

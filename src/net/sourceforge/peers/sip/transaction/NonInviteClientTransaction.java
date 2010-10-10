@@ -58,8 +58,10 @@ public class NonInviteClientTransaction extends NonInviteTransaction
     NonInviteClientTransaction(String branchId, InetAddress inetAddress,
             int port, String transport, SipRequest sipRequest,
             ClientTransactionUser transactionUser, Timer timer,
-            TransportManager transportManager) {
-        super(branchId, sipRequest.getMethod(), timer, transportManager);
+            TransportManager transportManager,
+            TransactionManager transactionManager) {
+        super(branchId, sipRequest.getMethod(), timer, transportManager,
+                transactionManager);
         
         this.transport = transport;
         

@@ -68,11 +68,11 @@ public class TransactionManager {
         if (RFC3261.METHOD_INVITE.equals(method)) {
             clientTransaction = new InviteClientTransaction(branchId,
                     inetAddress, port, transport, sipRequest, clientTransactionUser,
-                    timer, transportManager);
+                    timer, transportManager, this);
         } else {
             clientTransaction = new NonInviteClientTransaction(branchId,
                     inetAddress, port, transport, sipRequest, clientTransactionUser,
-                    timer, transportManager);
+                    timer, transportManager, this);
         }
         clientTransactions.put(getTransactionId(branchId, method),
                 clientTransaction);
@@ -99,7 +99,7 @@ public class TransactionManager {
         } else {
             serverTransaction = new NonInviteServerTransaction(branchId, port,
                     transport, method, serverTransactionUser, sipRequest, timer,
-                    transportManager);
+                    transportManager, this);
         }
         serverTransactions.put(getTransactionId(branchId, method),
                 serverTransaction);
@@ -188,6 +188,10 @@ public class TransactionManager {
         serverTransactions.remove(getTransactionId(branchId, method));
     }
     
+    void removeClientTransaction(String branchId, String method) {
+        clientTransactions.remove(getTransactionId(branchId, method));
+    }
+
     private String getTransactionId(String branchId, String method) {
         StringBuffer buf = new StringBuffer();
         buf.append(branchId);

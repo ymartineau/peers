@@ -37,10 +37,10 @@ import net.sourceforge.peers.sip.transport.SipResponse;
 
 public class CallFrame implements ActionListener, WindowListener {
 
-    public static final String HANGUP_ACTION_COMMAND = "hangup";
-    public static final String PICKUP_ACTION_COMMAND = "pickup";
+    public static final String HANGUP_ACTION_COMMAND    = "hangup";
+    public static final String PICKUP_ACTION_COMMAND    = "pickup";
     public static final String BUSY_HERE_ACTION_COMMAND = "busyhere";
-    public static final String CLOSE_ACTION_COMMAND = "close";
+    public static final String CLOSE_ACTION_COMMAND     = "close";
 
     private CallFrameState state;
 
@@ -181,8 +181,6 @@ public class CallFrame implements ActionListener, WindowListener {
 
     @Override
     public void windowActivated(WindowEvent e) {
-        // TODO Auto-generated method stub
-        
     }
 
     @Override
@@ -192,32 +190,22 @@ public class CallFrame implements ActionListener, WindowListener {
 
     @Override
     public void windowClosing(WindowEvent e) {
-        // TODO Auto-generated method stub
-        
     }
 
     @Override
     public void windowDeactivated(WindowEvent e) {
-        // TODO Auto-generated method stub
-        
     }
 
     @Override
     public void windowDeiconified(WindowEvent e) {
-        // TODO Auto-generated method stub
-        
     }
 
     @Override
     public void windowIconified(WindowEvent e) {
-        // TODO Auto-generated method stub
-        
     }
 
     @Override
     public void windowOpened(WindowEvent e) {
-        // TODO Auto-generated method stub
-        
     }
 
 }

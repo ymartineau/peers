@@ -20,6 +20,7 @@
 package net.sourceforge.peers;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
@@ -30,6 +31,12 @@ import java.util.Enumeration;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 
 import net.sourceforge.peers.media.MediaMode;
 import net.sourceforge.peers.sip.RFC3261;
@@ -48,18 +55,30 @@ public class Config {
     public final static String MEDIA_DIR = "media";
     public final static int RTP_DEFAULT_PORT = 8000;
 
+    private File file;
+    private Document document;
+
     private InetAddress inetAddress;
+    private Node ipAddressNode;
     private String userPart;
+    private Node userPartNode;
     private String domain;
+    private Node domainNode;
     private String password;
+    private Node passwordNode;
     private SipURI outboundProxy;
+    private Node outboundProxyNode;
     private int sipPort;
+    private Node sipPortNode;
     private MediaMode mediaMode;
+    private Node mediaModeNode;
     private boolean mediaDebug;
+    private Node mediaDebugNode;
     private int rtpPort;
+    private Node rtpPortNode;
 
     public Config(String fileName) {
-        File file = new File(fileName);
+        file = new File(fileName);
         if (!file.exists()) {
             Logger.debug("config file " + fileName + " not found");
             return;
@@ -73,7 +92,6 @@ public class Config {
             Logger.error("parser configuration exception", e);
             return;
         }
-        Document document;
         try {
             document = documentBuilder.parse(file);
         } catch (SAXException e) {
@@ -88,7 +106,8 @@ public class Config {
         node = getFirstChild(node, "interfaces");
         node = getFirstChild(node, "interface");
         node = getFirstChild(node, "address");
-        if (node != null) {
+        ipAddressNode = node;
+        if (node != null && !"".equals(node.getTextContent().trim())) {
             String address = node.getTextContent();
             try {
                 inetAddress = InetAddress.getByName(address);
@@ -122,23 +141,27 @@ public class Config {
         node = getFirstChild(documentElement, "sip");
         Node parent = getFirstChild(node, "profile");
         node = getFirstChild(parent, "userpart");
-        if (node != null) {
+        userPartNode = node;
+        if (node != null && !"".equals(node.getTextContent().trim())) {
             userPart = node.getTextContent();
         } else {
             Logger.error("userpart not found in configuration file");
         }
         node = getFirstChild(parent, "domain");
-        if (node != null) {
+        domainNode = node;
+        if (node != null && !"".equals(node.getTextContent().trim())) {
             domain = node.getTextContent();
         } else {
             Logger.error("domain not found in configuration file");
         }
         node = getFirstChild(parent, "password");
-        if (node != null) {
+        passwordNode = node;
+        if (node != null && !"".equals(node.getTextContent().trim())) {
             password = node.getTextContent();
         }
         node = getFirstChild(parent, "outboundProxy");
-        if (node != null) {
+        outboundProxyNode = node;
+        if (node != null && !"".equals(node.getTextContent().trim())) {
             String uri = node.getTextContent();
             try {
                 outboundProxy = new SipURI(uri);
@@ -147,27 +170,31 @@ public class Config {
             }
         }
         node = getFirstChild(parent, "port");
-        if (node != null) {
+        sipPortNode = node;
+        if (node != null && !"".equals(node.getTextContent().trim())) {
             sipPort = Integer.parseInt(node.getTextContent());
         } else {
             sipPort = RFC3261.TRANSPORT_DEFAULT_PORT;
         }
         parent = getFirstChild(documentElement, "codecs");
         node = getFirstChild(parent, "mediaMode");
-        if (node != null) {
+        mediaModeNode = node;
+        if (node != null && !"".equals(node.getTextContent().trim())) {
             mediaMode = MediaMode.valueOf(node.getTextContent());
         } else {
             mediaMode = MediaMode.captureAndPlayback;
         }
         node = getFirstChild(parent, "mediaDebug");
-        if (node != null) {
+        mediaDebugNode = node;
+        if (node != null && !"".equals(node.getTextContent().trim())) {
             mediaDebug = Boolean.parseBoolean(node.getTextContent());
         } else {
             mediaDebug = false;
         }
         node = getFirstChild(documentElement, "rtp");
         node = getFirstChild(node, "port");
-        if (node != null) {
+        rtpPortNode = node;
+        if (node != null && !"".equals(node.getTextContent().trim())) {
             rtpPort = Integer.parseInt(node.getTextContent());
         } else {
             rtpPort = RTP_DEFAULT_PORT;
@@ -186,6 +213,33 @@ public class Config {
             }
         }
         return null;
+    }
+
+    public void save() {
+        TransformerFactory transformerFactory = TransformerFactory.newInstance();
+        Transformer transformer;
+        try {
+            transformer = transformerFactory.newTransformer();
+        } catch (TransformerConfigurationException e) {
+            Logger.error("cannot create transformer", e);
+            return;
+        }
+        FileWriter fileWriter;
+        try {
+            fileWriter = new FileWriter(file);
+        } catch (IOException e) {
+            Logger.error("cannot create file writer", e);
+            return;
+        }
+        StreamResult streamResult = new StreamResult(fileWriter);
+        DOMSource domSource = new DOMSource(document);
+        try {
+            transformer.transform(domSource, streamResult);
+        } catch (TransformerException e) {
+            Logger.error("cannot save config file", e);
+            return;
+        }
+        Logger.debug("config file saved");
     }
 
     public InetAddress getInetAddress() {
@@ -222,6 +276,51 @@ public class Config {
 
     public int getRtpPort() {
         return rtpPort;
+    }
+
+    public void setInetAddress(InetAddress inetAddress) {
+        this.inetAddress = inetAddress;
+        ipAddressNode.setTextContent(inetAddress.getHostAddress());
+    }
+
+    public void setUserPart(String userPart) {
+        this.userPart = userPart;
+        userPartNode.setTextContent(userPart);
+    }
+
+    public void setDomain(String domain) {
+        this.domain = domain;
+        domainNode.setTextContent(domain);
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+        passwordNode.setTextContent(password);
+    }
+
+    public void setOutboundProxy(SipURI outboundProxy) {
+        this.outboundProxy = outboundProxy;
+        outboundProxyNode.setTextContent(outboundProxy.toString());
+    }
+
+    public void setSipPort(int sipPort) {
+        this.sipPort = sipPort;
+        sipPortNode.setTextContent(Integer.toString(sipPort));
+    }
+
+    public void setMediaMode(MediaMode mediaMode) {
+        this.mediaMode = mediaMode;
+        mediaModeNode.setTextContent(mediaMode.toString());
+    }
+
+    public void setMediaDebug(boolean mediaDebug) {
+        this.mediaDebug = mediaDebug;
+        mediaDebugNode.setTextContent(Boolean.toString(mediaDebug));
+    }
+
+    public void setRtpPort(int rtpPort) {
+        this.rtpPort = rtpPort;
+        rtpPortNode.setTextContent(Integer.toString(rtpPort));
     }
 
 }

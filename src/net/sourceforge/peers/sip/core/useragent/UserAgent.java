@@ -32,7 +32,6 @@ import net.sourceforge.peers.media.IncomingRtpReader;
 import net.sourceforge.peers.media.MediaMode;
 import net.sourceforge.peers.media.SoundManager;
 import net.sourceforge.peers.sdp.SDPManager;
-import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.core.useragent.handlers.ByeHandler;
 import net.sourceforge.peers.sip.core.useragent.handlers.CancelHandler;
@@ -163,10 +162,7 @@ public class UserAgent {
                 dialogManager,
                 transactionManager,
                 transportManager);
-        String profileUri = RFC3261.SIP_SCHEME + RFC3261.SCHEME_SEPARATOR
-            + config.getUserPart() + RFC3261.AT + config.getDomain();
         uac = new UAC(this,
-                profileUri,
                 initialRequestManager,
                 midDialogRequestManager,
                 dialogManager,
@@ -174,10 +170,8 @@ public class UserAgent {
                 transportManager);
 
         if (config.getPassword() != null) {
-            challengeManager = new ChallengeManager(config.getUserPart(),
-                    config.getPassword(),
-                    initialRequestManager,
-                    profileUri);
+            challengeManager = new ChallengeManager(config,
+                    initialRequestManager);
             registerHandler.setChallengeManager(challengeManager);
             inviteHandler.setChallengeManager(challengeManager);
         }
@@ -196,6 +190,10 @@ public class UserAgent {
         inviteHandler.setSdpManager(sdpManager);
         optionsHandler.setSdpManager(sdpManager);
         soundManager = new SoundManager(config.isMediaDebug());
+    }
+
+    public void close() {
+        transportManager.close();
     }
 
     /**
@@ -331,6 +329,10 @@ public class UserAgent {
 
     public SoundManager getSoundManager() {
         return soundManager;
+    }
+
+    public Config getConfig() {
+        return config;
     }
 
 }

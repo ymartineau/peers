@@ -15,7 +15,7 @@
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
     Copyright 2010 Yohann Martineau 
-*/
+ */
 
 package net.sourceforge.peers.gui;
 
@@ -30,6 +30,9 @@ import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
@@ -47,19 +50,19 @@ public class MainFrame implements WindowListener, ActionListener {
             }
         });
     }
-    
+
     private static void createAndShowGUI() {
         JFrame.setDefaultLookAndFeelDecorated(true);
         new MainFrame();
     }
-    
+
     private JFrame mainFrame;
     private JPanel mainPanel;
     private JPanel dialerPanel;
     private JTextField uri;
     private JButton actionButton;
     private JLabel statusLabel;
-    
+
     private EventManager eventManager;
 
     public MainFrame() {
@@ -79,18 +82,18 @@ public class MainFrame implements WindowListener, ActionListener {
         mainFrame = new JFrame(title);
         mainFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         mainFrame.addWindowListener(this);
-        
+
         mainPanel = new JPanel();
         mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
-        
+
         dialerPanel = new JPanel();
-        
+
         uri = new JTextField("sip:", 15);
         uri.addActionListener(this);
-        
+
         actionButton = new JButton("Call");
         actionButton.addActionListener(this);
-        
+
         dialerPanel.add(uri);
         dialerPanel.add(actionButton);
         dialerPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -100,10 +103,42 @@ public class MainFrame implements WindowListener, ActionListener {
 
         mainPanel.add(dialerPanel);
         mainPanel.add(statusLabel);
-        
+
         Container contentPane = mainFrame.getContentPane();
         contentPane.add(mainPanel);
-        
+
+        JMenuBar menuBar = new JMenuBar();
+        JMenu menu = new JMenu("File");
+        menu.setMnemonic('F');
+        JMenuItem menuItem = new JMenuItem("Exit");
+        menuItem.setMnemonic('x');
+        menuItem.setActionCommand(EventManager.ACTION_EXIT);
+        try {
+            while (eventManager == null) {
+                Thread.sleep(50);
+            }
+        } catch (InterruptedException e) {
+            return;
+        }
+        menuItem.addActionListener(eventManager);
+        menu.add(menuItem);
+        menuBar.add(menu);
+        menu = new JMenu("Edit");
+        menu.setMnemonic('E');
+        menuItem = new JMenuItem("Account");
+        menuItem.setMnemonic('A');
+        menuItem.setActionCommand(EventManager.ACTION_ACCOUNT);
+        menuItem.addActionListener(eventManager);
+        menu.add(menuItem);
+        menuItem = new JMenuItem("Preferences");
+        menuItem.setMnemonic('P');
+        menuItem.setActionCommand(EventManager.ACTION_PREFERENCES);
+        menuItem.addActionListener(eventManager);
+        menu.add(menuItem);
+        menuBar.add(menu);
+
+        mainFrame.setJMenuBar(menuBar);
+
         mainFrame.pack();
         mainFrame.setVisible(true);
     }

@@ -41,14 +41,17 @@ public abstract class Transaction {
     
     protected Timer timer;
     protected TransportManager transportManager;
+    protected TransactionManager transactionManager;
 
     protected Transaction(String branchId, String method, Timer timer,
-            TransportManager transportManager) {
+            TransportManager transportManager,
+            TransactionManager transactionManager) {
         super();
         this.branchId = branchId;
         this.method = method;
         this.timer = timer;
         this.transportManager = transportManager;
+        this.transactionManager = transactionManager;
         responses = Collections.synchronizedList(new ArrayList<SipResponse>());
     }
 

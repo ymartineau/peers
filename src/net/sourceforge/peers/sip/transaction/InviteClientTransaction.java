@@ -61,8 +61,8 @@ public class InviteClientTransaction extends InviteTransaction
     InviteClientTransaction(String branchId, InetAddress inetAddress,
             int port, String transport, SipRequest sipRequest,
             ClientTransactionUser transactionUser, Timer timer,
-            TransportManager transportManager) {
-        super(branchId, timer, transportManager);
+            TransportManager transportManager, TransactionManager transactionManager) {
+        super(branchId, timer, transportManager, transactionManager);
         
         this.transport = transport;
         
@@ -100,6 +100,10 @@ public class InviteClientTransaction extends InviteTransaction
     public void setState(InviteClientTransactionState state) {
         this.state.log(state);
         this.state = state;
+        if(TERMINATED.equals(state)) {
+            transactionManager.removeClientTransaction(branchId, method);
+            transactionManager = null;
+        }
     }
     
     public void start() {
