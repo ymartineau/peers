@@ -104,29 +104,9 @@ public class RegisterHandler extends MethodHandler
     }
 
     public void unregister() {
-        if (requestUriStr == null) {
-            return;
-        }
-        SipRequest sipRequest;
-        try {
-            sipRequest = initialRequestManager.getGenericRequest(requestUriStr,
-                    RFC3261.METHOD_REGISTER, profileUriStr);
-        } catch (SipUriSyntaxException e) {
-            Logger.error("syntax error", e);
-            return;
-        }
-        SipHeaders sipHeaders = sipRequest.getSipHeaders();
-        SipHeaderFieldValue callID = sipHeaders.get(
-                new SipHeaderFieldName(RFC3261.HDR_CALLID));
-        callID.setValue(callIDStr);
-        ClientTransaction clientTransaction = preProcessRegister(sipRequest);
-        initialRequestManager.addContact(sipRequest,
-                clientTransaction.getContact(), profileUriStr);
-        SipHeaderFieldValue contact = sipHeaders.get(
-                new SipHeaderFieldName(RFC3261.HDR_CONTACT));
-        contact.addParam(new SipHeaderParamName(RFC3261.PARAM_EXPIRES), "0");
+        timer.cancel();
         unregistered = true;
-        clientTransaction.start();
+        challenged = false;
     }
 
     //////////////////////////////////////////////////////////
@@ -161,23 +141,38 @@ public class RegisterHandler extends MethodHandler
 
     public void successResponseReceived(SipResponse sipResponse,
             Transaction transaction) {
-        // each contact contains an expires parameter giving the expiration
-        // in seconds. Thus the binding must be refreshed before it expires.
-        SipHeaders sipHeaders = sipResponse.getSipHeaders();
-        SipHeaderFieldValue contact =
-            sipHeaders.get(new SipHeaderFieldName(RFC3261.HDR_CONTACT));
-        if (contact == null) {
-            return;
-        }
-        String expires =
-            contact.getParam(new SipHeaderParamName(RFC3261.PARAM_EXPIRES));
+        // 1. retrieve request corresponding to response
+        // 2. if request was register, extract contact and expires, and start
+        //    register refresh timer
+        // 3. notify sip listener of register success event.
+        SipRequest sipRequest = transaction.getRequest();
+        SipHeaderFieldName contactName = new SipHeaderFieldName(
+                RFC3261.HDR_CONTACT);
+        SipHeaderFieldValue registerContact = sipRequest.getSipHeaders()
+                .get(contactName);
+        SipHeaderParamName expiresParam = new SipHeaderParamName(
+                RFC3261.PARAM_EXPIRES);
+        String expires = registerContact.getParam(expiresParam);
         if (expires == null || "".equals(expires.trim())) {
             return;
         }
         challenged = false;
-        if (!unregistered) {
-            int delay = Integer.parseInt(expires) - REFRESH_MARGIN;
-            timer.schedule(new RefreshTimerTask(), delay * 1000);
+        if (!"0".equals(expires)) {
+            // each contact contains an expires parameter giving the expiration
+            // in seconds. Thus the binding must be refreshed before it expires.
+            SipHeaders sipHeaders = sipResponse.getSipHeaders();
+            SipHeaderFieldValue contact = sipHeaders.get(contactName);
+            if (contact == null) {
+                return;
+            }
+            expires = contact.getParam(expiresParam);
+            if (expires == null || "".equals(expires.trim())) {
+                return;
+            }
+            if (!unregistered) {
+                int delay = Integer.parseInt(expires) - REFRESH_MARGIN;
+                timer.schedule(new RefreshTimerTask(), delay * 1000);
+            }
         }
         SipListener sipListener = userAgent.getSipListener();
         if (sipListener != null) {

@@ -19,6 +19,8 @@
 
 package net.sourceforge.peers.gui;
 
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -39,11 +41,17 @@ import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.SipResponse;
 
 public class EventManager implements SipListener, MainFrameListener,
-        CallFrameListener {
+        CallFrameListener, ActionListener {
+
+    public static final String ACTION_EXIT        = "Exit";
+    public static final String ACTION_ACCOUNT     = "Account";
+    public static final String ACTION_PREFERENCES = "Preferences";
 
     private UserAgent userAgent;
     private MainFrame mainFrame;
+    private AccountFrame accountFrame;
     private Map<String, CallFrame> callFrames;
+    private boolean closed;
 
     public EventManager(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
@@ -52,19 +60,29 @@ public class EventManager implements SipListener, MainFrameListener,
         userAgent.setSipListener(EventManager.this);
         callFrames = Collections.synchronizedMap(
                 new HashMap<String, CallFrame>());
+        closed = false;
     }
 
     // sip events
 
     @Override
     public synchronized void registerFailed(SipResponse sipResponse) {
-        // TODO Auto-generated method stub
-        
+        if (accountFrame != null) {
+            accountFrame.registerFailed(sipResponse);
+        }
     }
 
     @Override
     public synchronized void registerSuccessful(SipResponse sipResponse) {
+        if (closed) {
+            userAgent.close();
+            System.exit(0);
+            return;
+        }
         mainFrame.setLabelText("Account registered");
+        if (accountFrame != null) {
+            accountFrame.registerSuccess(sipResponse);
+        }
     }
 
     @Override
@@ -140,8 +158,18 @@ public class EventManager implements SipListener, MainFrameListener,
         } catch (Exception e) {
             Logger.error("error while unregistering", e);
         }
-        //FIXME ugly exit
-        System.exit(0);
+        closed = true;
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(3 * RFC3261.TIMER_T1);
+                } catch (InterruptedException e) {
+                }
+                System.exit(0);
+            }
+        });
+        thread.start();
     }
 
     // call frame events
@@ -167,6 +195,19 @@ public class EventManager implements SipListener, MainFrameListener,
     private CallFrame getCallFrame(SipMessage sipMessage) {
         String callId = Utils.getMessageCallId(sipMessage);
         return callFrames.get(callId);
+    }
+
+    public void actionPerformed(ActionEvent e) {
+        String action = e.getActionCommand();
+        Logger.debug("gui actionPerformed() " + action);
+        if (ACTION_EXIT.equals(action)) {
+            windowClosed();
+        } else if (ACTION_ACCOUNT.equals(action)) {
+            accountFrame = new AccountFrame(this, userAgent);
+            accountFrame.setVisible(true);
+        } else if (ACTION_PREFERENCES.equals(action)) {
+            //TODO
+        }
     }
 
 }

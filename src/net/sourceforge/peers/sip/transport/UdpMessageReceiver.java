@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008, 2009 Yohann Martineau 
+    Copyright 2007, 2008, 2009, 2010 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip.transport;
@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
+import java.net.SocketTimeoutException;
 
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.transaction.TransactionManager;
@@ -43,7 +44,11 @@ public class UdpMessageReceiver extends MessageReceiver {
     protected void listen() throws IOException {
         byte[] buf = new byte[BUFFER_SIZE];
         DatagramPacket packet = new DatagramPacket(buf, buf.length);
-        datagramSocket.receive(packet);
+        try {
+            datagramSocket.receive(packet);
+        } catch (SocketTimeoutException e) {
+            return;
+        }
         byte[] trimmedPacket = new byte[packet.getLength()];
         System.arraycopy(packet.getData(), 0,
                 trimmedPacket, 0, trimmedPacket.length);

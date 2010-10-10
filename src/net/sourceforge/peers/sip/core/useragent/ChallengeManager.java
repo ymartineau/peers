@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2008, 2009 Yohann Martineau 
+    Copyright 2008, 2009, 2010 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip.core.useragent;
@@ -24,6 +24,7 @@ import java.io.PrintStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import net.sourceforge.peers.Config;
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.RFC2617;
 import net.sourceforge.peers.sip.RFC3261;
@@ -68,6 +69,8 @@ public class ChallengeManager implements MessageInterceptor {
     private String digest;
     private String profileUri;
 
+    private Config config;
+
     // FIXME what happens if a challenge is received for a register-refresh
     //       and another challenge is received in the mean time for an invite?
     private int statusCode;
@@ -75,18 +78,24 @@ public class ChallengeManager implements MessageInterceptor {
     
     private InitialRequestManager initialRequestManager;
     
-    public ChallengeManager(String username, String password,
-            InitialRequestManager initialRequestManager,
-            String profileUri) {
+    public ChallengeManager(Config config,
+            InitialRequestManager initialRequestManager) {
         super();
-        this.username = username;
-        this.password = password;
+        this.config = config;
         this.initialRequestManager = initialRequestManager;
-        this.profileUri = profileUri;
+        init();
+    }
+
+    private void init() {
+        username = config.getUserPart();
+        password = config.getPassword();
+        profileUri = RFC3261.SIP_SCHEME + RFC3261.SCHEME_SEPARATOR
+            + username + RFC3261.AT + config.getDomain();
     }
 
     public void handleChallenge(SipRequest sipRequest,
             SipResponse sipResponse) {
+        init();
         statusCode = sipResponse.getStatusCode();
         SipHeaders responseHeaders = sipResponse.getSipHeaders();
         SipHeaders requestHeaders = sipRequest.getSipHeaders();
@@ -234,10 +243,6 @@ public class ChallengeManager implements MessageInterceptor {
         buf.append(RFC2617.PARAM_VALUE_DELIMITER);
         buf.append(value);
         buf.append(RFC2617.PARAM_VALUE_DELIMITER);
-    }
-
-    public void setRequestUri(String requestUri) {
-        this.requestUri = requestUri;
     }
 
 }

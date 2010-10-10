@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008, 2009 Yohann Martineau 
+    Copyright 2007, 2008, 2009, 2010 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip.transaction;
@@ -26,8 +26,9 @@ import net.sourceforge.peers.sip.transport.TransportManager;
 public abstract class NonInviteTransaction extends Transaction {
 
     protected NonInviteTransaction(String branchId, String method, Timer timer,
-            TransportManager transportManager) {
-        super(branchId, method, timer, transportManager);
+            TransportManager transportManager,
+            TransactionManager transactionManager) {
+        super(branchId, method, timer, transportManager, transactionManager);
     }
 
 }

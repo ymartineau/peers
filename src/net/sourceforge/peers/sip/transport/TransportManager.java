@@ -53,6 +53,8 @@ import net.sourceforge.peers.sip.transaction.TransactionManager;
 
 public class TransportManager {
 
+    public static final int SOCKET_TIMEOUT = RFC3261.TIMER_T1;
+
     private static int NO_TTL = -1;
     
     //private UAS uas;
@@ -278,6 +280,7 @@ public class TransportManager {
             if (datagramSocket == null) {
                 datagramSocket = new DatagramSocket(conn.getLocalPort(),
                         conn.getLocalInetAddress());
+                datagramSocket.setSoTimeout(SOCKET_TIMEOUT);
                 datagramSockets.put(conn, datagramSocket);
                 Logger.info("added datagram socket " + conn);
             }
@@ -309,7 +312,6 @@ public class TransportManager {
             DatagramSocket datagramSocket = (DatagramSocket)socket;
             messageReceiver = new UdpMessageReceiver(datagramSocket, transactionManager,
                     this);
-            //messageReceiver.setUas(uas);
             messageReceiver.setSipServerTransportUser(sipServerTransportUser);
         }
         messageReceivers.put(conn, messageReceiver);
@@ -324,12 +326,12 @@ public class TransportManager {
             if (datagramSocket == null) {
                 datagramSocket = new DatagramSocket(conn.getLocalPort(),
                         conn.getLocalInetAddress());
+                datagramSocket.setSoTimeout(SOCKET_TIMEOUT);
                 datagramSockets.put(conn, datagramSocket);
                 Logger.info("added datagram socket " + conn);
             }
             messageReceiver = new UdpMessageReceiver(datagramSocket, transactionManager,
                     this);
-            //messageReceiver.setUas(uas);
             messageReceiver.setSipServerTransportUser(sipServerTransportUser);
             //TODO create also tcp receiver using a recursive call
         } else {
@@ -347,8 +349,10 @@ public class TransportManager {
         this.sipServerTransportUser = sipServerTransportUser;
     }
 
-//    public void setUas(UAS uas) {
-//        this.uas = uas;
-//    }
-    
+    public void close() {
+        for (MessageReceiver messageReceiver: messageReceivers.values()) {
+            messageReceiver.setListening(false);
+        }
+    }
+
 }
