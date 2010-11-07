@@ -83,7 +83,7 @@ public class UserAgent {
         this.sipListener = sipListener;
         config = new Config(Utils.getPeersHome() + CONFIG_FILE);
         
-        cseqCounter = 0;
+        cseqCounter = 1;
         
         StringBuffer buf = new StringBuffer();
         buf.append("starting user agent [");
