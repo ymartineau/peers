@@ -56,8 +56,7 @@ public class EventManager implements SipListener, MainFrameListener,
     public EventManager(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
         // create sip stack
-        userAgent = new UserAgent();
-        userAgent.setSipListener(EventManager.this);
+        userAgent = new UserAgent(this);
         callFrames = Collections.synchronizedMap(
                 new HashMap<String, CallFrame>());
         closed = false;
@@ -66,10 +65,20 @@ public class EventManager implements SipListener, MainFrameListener,
     // sip events
 
     @Override
+    public void registering(SipRequest sipRequest) {
+        if (accountFrame != null) {
+            accountFrame.registering(sipRequest);
+        }
+        mainFrame.registering(sipRequest);
+    }
+
+    @Override
     public synchronized void registerFailed(SipResponse sipResponse) {
+        //mainFrame.setLabelText("Registration failed");
         if (accountFrame != null) {
             accountFrame.registerFailed(sipResponse);
         }
+        mainFrame.registerFailed(sipResponse);
     }
 
     @Override
@@ -79,10 +88,10 @@ public class EventManager implements SipListener, MainFrameListener,
             System.exit(0);
             return;
         }
-        mainFrame.setLabelText("Account registered");
         if (accountFrame != null) {
             accountFrame.registerSuccess(sipResponse);
         }
+        mainFrame.registerSuccessful(sipResponse);
     }
 
     @Override

@@ -95,5 +95,9 @@ public abstract class RequestManager {
     public ByeHandler getByeHandler() {
         return byeHandler;
     }
+
+    public RegisterHandler getRegisterHandler() {
+        return registerHandler;
+    }
     
 }

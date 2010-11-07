@@ -25,6 +25,8 @@ import net.sourceforge.peers.sip.transport.SipResponse;
 
 public interface SipListener {
 
+    public void registering(SipRequest sipRequest);
+
     public void registerSuccessful(SipResponse sipResponse);
 
     public void registerFailed(SipResponse sipResponse);

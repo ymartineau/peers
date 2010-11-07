@@ -40,6 +40,8 @@ import javax.swing.UIManager;
 
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.Utils;
+import net.sourceforge.peers.sip.transport.SipRequest;
+import net.sourceforge.peers.sip.transport.SipResponse;
 
 public class MainFrame implements WindowListener, ActionListener {
 
@@ -64,14 +66,9 @@ public class MainFrame implements WindowListener, ActionListener {
     private JLabel statusLabel;
 
     private EventManager eventManager;
+    private Registration registration;
 
     public MainFrame() {
-        Thread thread = new Thread(new Runnable() {
-            public void run() {
-                eventManager = new EventManager(MainFrame.this);
-            }
-        });
-        thread.start();
         String lookAndFeelClassName = UIManager.getSystemLookAndFeelClassName();
         try {
             UIManager.setLookAndFeel(lookAndFeelClassName);
@@ -96,10 +93,10 @@ public class MainFrame implements WindowListener, ActionListener {
 
         dialerPanel.add(uri);
         dialerPanel.add(actionButton);
-        dialerPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        dialerPanel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         statusLabel = new JLabel(title);
-        statusLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        statusLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
 
         mainPanel.add(dialerPanel);
         mainPanel.add(statusLabel);
@@ -113,6 +110,16 @@ public class MainFrame implements WindowListener, ActionListener {
         JMenuItem menuItem = new JMenuItem("Exit");
         menuItem.setMnemonic('x');
         menuItem.setActionCommand(EventManager.ACTION_EXIT);
+
+        registration = new Registration(statusLabel);
+
+        Thread thread = new Thread(new Runnable() {
+            public void run() {
+                eventManager = new EventManager(MainFrame.this);
+            }
+        });
+        thread.start();
+
         try {
             while (eventManager == null) {
                 Thread.sleep(50);
@@ -185,6 +192,18 @@ public class MainFrame implements WindowListener, ActionListener {
     public void setLabelText(String text) {
         statusLabel.setText(text);
         mainFrame.pack();
+    }
+
+    public void registerFailed(SipResponse sipResponse) {
+        registration.registerFailed();
+    }
+
+    public void registerSuccessful(SipResponse sipResponse) {
+        registration.registerSuccessful();
+    }
+
+    public void registering(SipRequest sipRequest) {
+        registration.registerSent();
     }
 
 }

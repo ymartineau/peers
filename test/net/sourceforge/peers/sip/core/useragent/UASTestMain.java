@@ -26,7 +26,7 @@ public class UASTestMain {
      * @param args
      */
     public static void main(String[] args) {
-        new UserAgent();
+        new UserAgent(null);
     }
 
 }

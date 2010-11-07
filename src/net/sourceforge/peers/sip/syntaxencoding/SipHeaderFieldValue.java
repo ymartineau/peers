@@ -49,7 +49,7 @@ public class SipHeaderFieldValue {
         }
         params = new HashMap<SipHeaderParamName, String>();
         if (paramsString.contains(RFC3261.PARAM_SEPARATOR)) {
-            String[] arr = value.split(RFC3261.PARAM_SEPARATOR);
+            String[] arr = paramsString.split(RFC3261.PARAM_SEPARATOR);
             if (arr.length > 1) {
                 for (int i = 0; i < arr.length - 1; ++i) {
                     String[] paramNameValue = arr[i+1].split(RFC3261.PARAM_ASSIGNMENT);
