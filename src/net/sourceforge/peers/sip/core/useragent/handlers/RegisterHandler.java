@@ -59,18 +59,19 @@ public class RegisterHandler extends MethodHandler
     private String callIDStr;
     
     //FIXME should be on a profile based context
-    private boolean unregistered;
+    private boolean unregisterInvoked;
+    private boolean registered;
     
     public RegisterHandler(UserAgent userAgent,
             TransactionManager transactionManager,
             TransportManager transportManager) {
         super(userAgent, transactionManager, transportManager);
-        timer = new Timer();
-        unregistered = false;
     }
 
     //TODO factorize common code here and in invitehandler
-    public ClientTransaction preProcessRegister(SipRequest sipRequest) {
+    public synchronized ClientTransaction preProcessRegister(SipRequest sipRequest) {
+        registered = false;
+        unregisterInvoked = false;
         SipHeaders sipHeaders = sipRequest.getSipHeaders();
         SipURI destinationUri = RequestManager.getDestinationUri(sipRequest);
         int port = destinationUri.getPort();
@@ -105,7 +106,7 @@ public class RegisterHandler extends MethodHandler
 
     public void unregister() {
         timer.cancel();
-        unregistered = true;
+        unregisterInvoked = true;
         challenged = false;
     }
 
@@ -117,19 +118,18 @@ public class RegisterHandler extends MethodHandler
         int statusCode = sipResponse.getStatusCode();
         if ((statusCode == RFC3261.CODE_401_UNAUTHORIZED
                 || statusCode == RFC3261.CODE_407_PROXY_AUTHENTICATION_REQUIRED)
-                && challengeManager != null) {
-            if (!challenged) {
-                NonInviteClientTransaction nonInviteClientTransaction =
-                    (NonInviteClientTransaction)
-                    transactionManager.getClientTransaction(sipResponse);
-                SipRequest sipRequest = nonInviteClientTransaction.getRequest();
-                challengeManager.handleChallenge(sipRequest, sipResponse);
-                challenged = true;
-            } else {
-                SipListener sipListener = userAgent.getSipListener();
-                if (sipListener != null) {
-                    sipListener.registerFailed(sipResponse);
-                }
+            && challengeManager != null & !challenged) {
+            NonInviteClientTransaction nonInviteClientTransaction =
+                (NonInviteClientTransaction)
+                transactionManager.getClientTransaction(sipResponse);
+            SipRequest sipRequest = nonInviteClientTransaction.getRequest();
+            challengeManager.handleChallenge(sipRequest, sipResponse);
+            challenged = true;
+        } else {
+            challenged = false;
+            SipListener sipListener = userAgent.getSipListener();
+            if (sipListener != null) {
+                sipListener.registerFailed(sipResponse);
             }
         }
     }
@@ -139,38 +139,37 @@ public class RegisterHandler extends MethodHandler
         //meaningless
     }
 
-    public void successResponseReceived(SipResponse sipResponse,
+    public synchronized void successResponseReceived(SipResponse sipResponse,
             Transaction transaction) {
         // 1. retrieve request corresponding to response
-        // 2. if request was register, extract contact and expires, and start
-        //    register refresh timer
+        // 2. if request was not an unregister, extract contact and expires,
+        //    and start register refresh timer
         // 3. notify sip listener of register success event.
         SipRequest sipRequest = transaction.getRequest();
         SipHeaderFieldName contactName = new SipHeaderFieldName(
                 RFC3261.HDR_CONTACT);
-        SipHeaderFieldValue registerContact = sipRequest.getSipHeaders()
+        SipHeaderFieldValue requestContact = sipRequest.getSipHeaders()
                 .get(contactName);
         SipHeaderParamName expiresParam = new SipHeaderParamName(
                 RFC3261.PARAM_EXPIRES);
-        String expires = registerContact.getParam(expiresParam);
-        if (expires == null || "".equals(expires.trim())) {
-            return;
-        }
+        String expires = requestContact.getParam(expiresParam);
         challenged = false;
         if (!"0".equals(expires)) {
             // each contact contains an expires parameter giving the expiration
             // in seconds. Thus the binding must be refreshed before it expires.
             SipHeaders sipHeaders = sipResponse.getSipHeaders();
-            SipHeaderFieldValue contact = sipHeaders.get(contactName);
-            if (contact == null) {
+            SipHeaderFieldValue responseContact = sipHeaders.get(contactName);
+            if (responseContact == null) {
                 return;
             }
-            expires = contact.getParam(expiresParam);
+            expires = responseContact.getParam(expiresParam);
             if (expires == null || "".equals(expires.trim())) {
                 return;
             }
-            if (!unregistered) {
+            registered = true;
+            if (!unregisterInvoked) {
                 int delay = Integer.parseInt(expires) - REFRESH_MARGIN;
+                timer = new Timer();
                 timer.schedule(new RefreshTimerTask(), delay * 1000);
             }
         }
@@ -181,17 +180,24 @@ public class RegisterHandler extends MethodHandler
     }
 
     public void transactionTimeout(ClientTransaction clientTransaction) {
-        //TODO alert user
+        SipListener sipListener = userAgent.getSipListener();
+        if (sipListener != null) {
+            sipListener.registerFailed(null);
+        }
     }
 
     public void transactionTransportError() {
         //TODO alert user
     }
 
+    public boolean isRegistered() {
+        return registered;
+    }
+    
     //////////////////////////////////////////////////////////
     // TimerTask
     //////////////////////////////////////////////////////////
-    
+
     class RefreshTimerTask extends TimerTask {
         @Override
         public void run() {

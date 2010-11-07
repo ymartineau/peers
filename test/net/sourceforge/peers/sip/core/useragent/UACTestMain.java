@@ -29,7 +29,7 @@ public class UACTestMain {
         UserAgent userAgent;
         SipRequest sipRequest;
         try {
-            userAgent = new UserAgent();
+            userAgent = new UserAgent(null);
             requestUri = "sip:bob@" + userAgent.getMyAddress().getHostAddress()
                 + ":6060";
             sipRequest = userAgent.getUac().invite(requestUri,

@@ -79,7 +79,8 @@ public class UserAgent {
     private SDPManager sdpManager;
     private SoundManager soundManager;
 
-    public UserAgent() {
+    public UserAgent(SipListener sipListener) {
+        this.sipListener = sipListener;
         config = new Config(Utils.getPeersHome() + CONFIG_FILE);
         
         cseqCounter = 0;
@@ -251,6 +252,11 @@ public class UserAgent {
         return buf.toString();
     }
     
+    public boolean isRegistered() {
+        return uac.getInitialRequestManager().getRegisterHandler()
+            .isRegistered();
+    }
+
     public CaptureRtpSender getCaptureRtpSender() {
         return captureRtpSender;
     }
@@ -321,10 +327,6 @@ public class UserAgent {
 
     public SipListener getSipListener() {
         return sipListener;
-    }
-
-    public void setSipListener(SipListener sipListener) {
-        this.sipListener = sipListener;
     }
 
     public SoundManager getSoundManager() {

@@ -27,7 +27,7 @@ public class UACTestUasHangupMain {
     public static void main(String[] args) {
         String requestUri;
         try {
-            UserAgent userAgent = new UserAgent();
+            UserAgent userAgent = new UserAgent(null);
             requestUri = "sip:bob@"
                 + userAgent.getMyAddress().getHostAddress() + ":6060";
             userAgent.getUac().invite(requestUri,

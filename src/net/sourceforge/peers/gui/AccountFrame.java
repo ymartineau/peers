@@ -22,13 +22,13 @@ package net.sourceforge.peers.gui;
 import java.awt.event.ActionListener;
 
 import javax.swing.JOptionPane;
-import javax.swing.ProgressMonitor;
 
 import net.sourceforge.peers.Config;
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.core.useragent.UserAgent;
 import net.sourceforge.peers.sip.syntaxencoding.SipURI;
 import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
+import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.SipResponse;
 
 /**
@@ -45,6 +45,7 @@ public class AccountFrame extends javax.swing.JFrame {
         this.userAgent = userAgent;
         unregistering = false;
         initComponents();
+        registration = new Registration(jLabel6);
     }
 
     /** This method is called from within the constructor to
@@ -66,6 +67,7 @@ public class AccountFrame extends javax.swing.JFrame {
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
         jPasswordField1 = new javax.swing.JPasswordField();
+        jLabel6 = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Account");
@@ -108,128 +110,101 @@ public class AccountFrame extends javax.swing.JFrame {
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.TRAILING))
-                .addGap(18, 18, 18)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jPasswordField1, javax.swing.GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE)
-                    .addComponent(jTextField4, javax.swing.GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE))
-                .addContainerGap())
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(141, Short.MAX_VALUE)
-                .addComponent(jButton1)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jButton2)
-                .addGap(12, 12, 12))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(12, 12, 12)
-                .addComponent(jLabel5)
-                .addGap(85, 85, 85))
-        );
-        layout.setVerticalGroup(
-            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel2))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(jPasswordField1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel4))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(84, 84, 84)
+                    .addComponent(jLabel1)
+                    .addGap(18, 18, 18)
+                    .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 198, Short.MAX_VALUE)
+                    .addContainerGap())
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(12, 12, 12)
+                    .addComponent(jLabel5)
+                    .addGap(85, 85, 85))
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(jLabel6)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 144, Short.MAX_VALUE)
                     .addComponent(jButton1)
-                    .addComponent(jButton2))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addComponent(jButton2)
+                    .addGap(6, 6, 6))
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                    .addGap(64, 64, 64)
+                    .addComponent(jLabel2)
+                    .addGap(18, 18, 18)
+                    .addComponent(jTextField2, javax.swing.GroupLayout.DEFAULT_SIZE, 198, Short.MAX_VALUE)
+                    .addContainerGap())
+                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                    .addGap(54, 54, 54)
+                    .addComponent(jLabel3)
+                    .addGap(18, 18, 18)
+                    .addComponent(jPasswordField1, javax.swing.GroupLayout.DEFAULT_SIZE, 198, Short.MAX_VALUE)
+                    .addContainerGap())
+                .addGroup(layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(jLabel4)
+                    .addGap(18, 18, 18)
+                    .addComponent(jTextField4, javax.swing.GroupLayout.DEFAULT_SIZE, 198, Short.MAX_VALUE)
+                    .addContainerGap())
+            );
+            layout.setVerticalGroup(
+                layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addContainerGap()
+                    .addComponent(jLabel5, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel1))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jTextField2, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel2))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jLabel3)
+                        .addComponent(jPasswordField1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jTextField4, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jLabel4))
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 16, Short.MAX_VALUE)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                        .addComponent(jButton1)
+                        .addComponent(jButton2)
+                        .addComponent(jLabel6))
+                    .addGap(7, 7, 7))
+            );
 
         pack();
     }// </editor-fold>                        
 
-    public synchronized void registerSuccess(SipResponse sipResponse) {
-        if (progressMonitor != null) {
-            if (unregistering) {
-                Config config = userAgent.getConfig();
-                config.setUserPart(jTextField1.getText());
-                config.setDomain(jTextField2.getText());
-                config.setPassword(new String(jPasswordField1.getPassword()));
-                SipURI sipURI;
-                try {
-                    sipURI = new SipURI(jTextField4.getText());
-                    config.setOutboundProxy(sipURI);
-                } catch (SipUriSyntaxException e) {
-                    JOptionPane.showMessageDialog(this, "syntax error");
-                    Logger.error("sip uri syntax issue", e);
-                    return;
-                }
-                unregistering = false;
-                progressMonitor.setProgress(1);
-                progressMonitor.setNote("Registering new account");
-                Runnable runnable = new Runnable() {
-                    public void run() {
-                        try {
-                            userAgent.getUac().register();
-                        } catch (SipUriSyntaxException e) {
-                            JOptionPane.showMessageDialog(AccountFrame.this, "syntax error");
-                            Logger.error("sip uri syntax issue", e);
-                        }
-                    }
-                };
-                Thread thread = new Thread(runnable);
-                thread.start();
-            } else {
-                progressMonitor.setProgress(2);
-                progressMonitor.setNote("Account registered");
-                dispose();
-            }
+    private void applyNewConfig() {
+        Config config = userAgent.getConfig();
+        config.setUserPart(jTextField1.getText());
+        config.setDomain(jTextField2.getText());
+        config.setPassword(new String(jPasswordField1.getPassword()));
+        SipURI sipURI;
+        try {
+            sipURI = new SipURI(jTextField4.getText());
+            config.setOutboundProxy(sipURI);
+        } catch (SipUriSyntaxException e) {
+            JOptionPane.showMessageDialog(this, "syntax error");
+            Logger.error("sip uri syntax issue", e);
+            return;
         }
-    }
-
-    public synchronized void registerFailed(SipResponse sipResponse) {
-        if (unregistering) {
-            if (progressMonitor != null) {
-                progressMonitor.setNote("Unregister failed");
-            }
-        } else {
-            if (progressMonitor != null) {
-                progressMonitor.setNote("Register failed");
-            }
-        }
-    }
-
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {
-        progressMonitor = new ProgressMonitor(this, "Registration",
-                "Unregistering previous account", 0, 2);
-        progressMonitor.setProgress(0);
+        config.save();
+        unregistering = false;
+        // TODO update info label
         Runnable runnable = new Runnable() {
-            @Override
             public void run() {
-                synchronized (this) {
-                    unregistering = true;
-                    try {
-                        userAgent.getUac().unregister();
-                    } catch (SipUriSyntaxException e) {
-                        Logger.error("syntax error", e);
-                    }
+                try {
+                    userAgent.getUac().register();
+                } catch (SipUriSyntaxException e) {
+                    JOptionPane.showMessageDialog(AccountFrame.this,
+                            "syntax error");
+                    Logger.error("sip uri syntax issue", e);
                 }
             }
         };
@@ -237,9 +212,51 @@ public class AccountFrame extends javax.swing.JFrame {
         thread.start();
     }
 
+    public synchronized void registering(SipRequest sipRequest) {
+        registration.registerSent();
+    }
+
+    public synchronized void registerSuccess(SipResponse sipResponse) {
+        if (unregistering) {
+            applyNewConfig();
+        } else {
+            registration.registerSuccessful();
+        }
+    }
+
+    public synchronized void registerFailed(SipResponse sipResponse) {
+        if (unregistering) {
+            applyNewConfig();
+        } else {
+            registration.registerFailed();
+        }
+    }
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {
+        if (userAgent.isRegistered()) {
+            synchronized (this) {
+                unregistering = true;
+            }
+            Runnable runnable = new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        userAgent.getUac().unregister();
+                    } catch (SipUriSyntaxException e) {
+                        Logger.error("syntax error", e);
+                    }
+                }
+            };
+            Thread thread = new Thread(runnable);
+            thread.start();
+        } else {
+            applyNewConfig();
+        }
+    }
+
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {
         dispose();
-    }  
+    }
 
     // Variables declaration - do not modify                     
     private javax.swing.JButton jButton1;
@@ -249,6 +266,7 @@ public class AccountFrame extends javax.swing.JFrame {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JPasswordField jPasswordField1;
     private javax.swing.JTextField jTextField1;
     private javax.swing.JTextField jTextField2;
@@ -256,7 +274,8 @@ public class AccountFrame extends javax.swing.JFrame {
     // End of variables declaration                   
 
     private boolean unregistering;
-    private ProgressMonitor progressMonitor;
     private UserAgent userAgent;
+    private Registration registration;
+
 }
 

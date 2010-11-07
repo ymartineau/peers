@@ -30,7 +30,6 @@ import net.sourceforge.peers.media.IncomingRtpReader;
 import net.sourceforge.peers.media.SoundManager;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.Utils;
-import net.sourceforge.peers.sip.core.useragent.handlers.InviteHandler;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldName;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldValue;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderParamName;
@@ -89,30 +88,38 @@ public class UAC {
             + domain;
         profileUri = RFC3261.SIP_SCHEME + RFC3261.SCHEME_SEPARATOR
             + userAgent.getUserpart() + RFC3261.AT + domain;
-        return initialRequestManager.createInitialRequest(requestUri,
-                RFC3261.METHOD_REGISTER, profileUri, registerCallID);
+        SipListener sipListener = userAgent.getSipListener();
+        SipRequest sipRequest = initialRequestManager.createInitialRequest(
+                requestUri, RFC3261.METHOD_REGISTER, profileUri,
+                registerCallID);
+        if (sipListener != null) {
+            sipListener.registering(sipRequest);
+        }
+        return sipRequest;
     }
     
     public void unregister() throws SipUriSyntaxException {
-        String requestUri = RFC3261.SIP_SCHEME + RFC3261.SCHEME_SEPARATOR
-            + userAgent.getDomain();
-        MessageInterceptor messageInterceptor = new MessageInterceptor() {
-            
-            @Override
-            public void postProcess(SipMessage sipMessage) {
-                initialRequestManager.registerHandler.unregister();
-                SipHeaders sipHeaders = sipMessage.getSipHeaders();
-                SipHeaderFieldValue contact = sipHeaders.get(
-                        new SipHeaderFieldName(RFC3261.HDR_CONTACT));
-                contact.addParam(new SipHeaderParamName(RFC3261.PARAM_EXPIRES),
-                        "0");
-            }
-            
-        };
-        initialRequestManager.createInitialRequest(requestUri,
-                RFC3261.METHOD_REGISTER, profileUri, registerCallID,
-                messageInterceptor);
-        //initialRequestManager.registerHandler.unregister();
+        if (getInitialRequestManager().getRegisterHandler().isRegistered()) {
+            String requestUri = RFC3261.SIP_SCHEME + RFC3261.SCHEME_SEPARATOR
+                + userAgent.getDomain();
+            MessageInterceptor messageInterceptor = new MessageInterceptor() {
+                
+                @Override
+                public void postProcess(SipMessage sipMessage) {
+                    initialRequestManager.registerHandler.unregister();
+                    SipHeaders sipHeaders = sipMessage.getSipHeaders();
+                    SipHeaderFieldValue contact = sipHeaders.get(
+                            new SipHeaderFieldName(RFC3261.HDR_CONTACT));
+                    contact.addParam(new SipHeaderParamName(RFC3261.PARAM_EXPIRES),
+                            "0");
+                }
+                
+            };
+            initialRequestManager.createInitialRequest(requestUri,
+                    RFC3261.METHOD_REGISTER, profileUri, registerCallID,
+                    messageInterceptor);
+            //initialRequestManager.registerHandler.unregister();
+        }
     }
     
     public SipRequest invite(String requestUri, String callId)
@@ -220,8 +227,8 @@ public class UAC {
         }
     }
 
-    public InviteHandler getInviteHandler() {
-        return initialRequestManager.getInviteHandler();
+    public InitialRequestManager getInitialRequestManager() {
+        return initialRequestManager;
     }
 
     public List<String> getGuiClosedCallIds() {
