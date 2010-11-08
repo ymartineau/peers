@@ -74,13 +74,25 @@ public class AccountFrame extends javax.swing.JFrame {
 
         Config config = userAgent.getConfig();
 
-        jTextField1.setText(config.getUserPart());
+        String userPart = config.getUserPart();
+        if (userPart != null) {
+            jTextField1.setText(userPart);
+        }
 
-        jTextField2.setText(config.getDomain());
+        String domain = config.getDomain();
+        if (domain != null) {
+            jTextField2.setText(domain);
+        }
 
-        jPasswordField1.setText(config.getPassword());
+        String password = config.getPassword();
+        if (password != null) {
+            jPasswordField1.setText(password);
+        }
 
-        jTextField4.setText(config.getOutboundProxy().toString());
+        SipURI outboundProxy = config.getOutboundProxy();
+        if (outboundProxy != null) {
+            jTextField4.setText(outboundProxy.toString());
+        }
 
         jLabel1.setText("User");
 
