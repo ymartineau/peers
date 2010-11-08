@@ -31,19 +31,19 @@ public class SipURITestNG {
     public void testSipUri1() throws SipUriSyntaxException {
         SipURI sipUri = new SipURI("sip:alice@atlanta.com");
         assert "alice".equals(sipUri.getUserinfo());
-        assert "atlanta.com".equals(sipUri.getHost().getHostName());
+        assert "atlanta.com".equals(sipUri.getHost());
     }
     
     @Test
     public void testSipUri2() throws SipUriSyntaxException {
         SipURI sipUri = new SipURI("sip:atlanta.com");
-        assert "atlanta.com".equals(sipUri.getHost().getHostName());
+        assert "atlanta.com".equals(sipUri.getHost());
     }
     
     @Test
     public void testSipUri3() throws SipUriSyntaxException {
         SipURI sipUri = new SipURI("sip:atlanta.com;a");
-        assert "atlanta.com".equals(sipUri.getHost().getHostName());
+        assert "atlanta.com".equals(sipUri.getHost());
         Hashtable<String, String> params = sipUri.getUriParameters();
         assert params != null;
         assert 1 == params.size();
@@ -55,7 +55,7 @@ public class SipURITestNG {
     public void testSipUri4() throws SipUriSyntaxException {
         SipURI sipUri = new SipURI("sip:alice@atlanta.com;a;br=3");
         assert "alice".equals(sipUri.getUserinfo());
-        assert "atlanta.com".equals(sipUri.getHost().getHostName());
+        assert "atlanta.com".equals(sipUri.getHost());
         Hashtable<String, String> params = sipUri.getUriParameters();
         assert params != null;
         assert 2 == params.size();
@@ -69,7 +69,7 @@ public class SipURITestNG {
     public void testSipUri5() throws SipUriSyntaxException {
         SipURI sipUri = new SipURI("sip:alice@atlanta.com;br=3;a");
         assert "alice".equals(sipUri.getUserinfo());
-        assert "atlanta.com".equals(sipUri.getHost().getHostName());
+        assert "atlanta.com".equals(sipUri.getHost());
         Hashtable<String, String> params = sipUri.getUriParameters();
         assert params != null;
         assert 2 == params.size();
@@ -82,7 +82,7 @@ public class SipURITestNG {
     @Test
     public void testSipUri6() throws SipUriSyntaxException {
         SipURI sipUri = new SipURI("sip:atlanta.com:5060");
-        assert "atlanta.com".equals(sipUri.getHost().getHostName());
+        assert "atlanta.com".equals(sipUri.getHost());
         assert 5060 == sipUri.getPort();
     }
     
@@ -90,7 +90,7 @@ public class SipURITestNG {
     public void testSipUri7() throws SipUriSyntaxException {
         SipURI sipUri = new SipURI("sip:alice@atlanta.com:5060;transport=TCP;rport;otherParam=2");
         assert "alice".equals(sipUri.getUserinfo());
-        assert "atlanta.com".equals(sipUri.getHost().getHostName());
+        assert "atlanta.com".equals(sipUri.getHost());
         assert 5060 == sipUri.getPort();
         Hashtable<String, String> params = sipUri.getUriParameters();
         assert params != null;

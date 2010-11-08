@@ -1,6 +1,5 @@
 package net.sourceforge.peers.gui;
 
-import java.io.File;
 import java.net.URL;
 
 import javax.swing.ImageIcon;
@@ -45,10 +44,12 @@ public class Registration {
     }
 
     protected void displayRegistering() {
-        String folder = MainFrame.class.getPackage().getName().replace(".",
-                File.separator);
-        URL url = MainFrame.class.getClassLoader().getResource(
-                folder + File.separator + "working.gif");
+        URL url = getClass().getResource("working.gif");
+//        String folder = MainFrame.class.getPackage().getName().replace(".",
+//                File.separator);
+//        String filename = folder + File.separator + "working.gif";
+//        Logger.debug("filename: " + filename);
+//        URL url = MainFrame.class.getClassLoader().getResource(filename);
         ImageIcon imageIcon = new ImageIcon(url);
         label.setIcon(imageIcon);
         label.setText("Registering");

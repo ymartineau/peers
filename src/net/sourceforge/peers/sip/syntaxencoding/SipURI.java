@@ -14,13 +14,11 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008, 2009 Yohann Martineau 
+    Copyright 2007, 2008, 2009, 2010 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip.syntaxencoding;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Hashtable;
 
 import net.sourceforge.peers.sip.RFC3261;
@@ -36,7 +34,7 @@ public class SipURI {
      * telephone-subscriber and optional port are not managed
      */
     private String userinfo;
-    private InetAddress host;
+    private String host;
     private int port = DEFAULT_PORT;
     /**
      * Use empty strings in value if the parameter has no value
@@ -44,8 +42,9 @@ public class SipURI {
     private Hashtable<String, String> uriParameters;
     //headers not implemented
     //private Hashtable<String, String> headers;
-    
-    public SipURI(String sipUri) throws SipUriSyntaxException {
+
+    public SipURI(String sipUri)
+            throws SipUriSyntaxException {
         stringRepresentation = sipUri;
         StringBuffer buf = new StringBuffer(sipUri);
         String scheme = RFC3261.SIP_SCHEME + RFC3261.SCHEME_SEPARATOR;
@@ -79,11 +78,7 @@ public class SipURI {
         } else {
             colonPos = hostport.length();
         }
-        try {
-            host = InetAddress.getByName(hostport.substring(0, colonPos));
-        } catch (UnknownHostException e) {
-            throw new SipUriSyntaxException(e);
-        }
+        host = hostport.substring(0, colonPos);
         if (buf.length() == 1) {
             //if there is only one ';' at the end of the uri => do not
             //parse uri-parameters and headers
@@ -122,7 +117,7 @@ public class SipURI {
         return stringRepresentation;
     }
 
-    public InetAddress getHost() {
+    public String getHost() {
         return host;
     }
 

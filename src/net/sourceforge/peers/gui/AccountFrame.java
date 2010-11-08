@@ -124,41 +124,31 @@ public class AccountFrame extends javax.swing.JFrame {
         layout.setHorizontalGroup(
                 layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
-                    .addGap(84, 84, 84)
-                    .addComponent(jLabel1)
-                    .addGap(18, 18, 18)
-                    .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 198, Short.MAX_VALUE)
-                    .addContainerGap())
-                .addGroup(layout.createSequentialGroup()
                     .addGap(12, 12, 12)
-                    .addComponent(jLabel5)
-                    .addGap(85, 85, 85))
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.TRAILING)
+                        .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.TRAILING))
+                    .addGap(18, 18, 18)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(jTextField1, javax.swing.GroupLayout.DEFAULT_SIZE, 204, Short.MAX_VALUE)
+                        .addComponent(jTextField2, javax.swing.GroupLayout.DEFAULT_SIZE, 204, Short.MAX_VALUE)
+                        .addComponent(jPasswordField1, javax.swing.GroupLayout.DEFAULT_SIZE, 204, Short.MAX_VALUE)
+                        .addComponent(jTextField4, javax.swing.GroupLayout.DEFAULT_SIZE, 204, Short.MAX_VALUE))
+                    .addContainerGap())
                 .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                     .addContainerGap()
                     .addComponent(jLabel6)
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 144, Short.MAX_VALUE)
+                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 150, Short.MAX_VALUE)
                     .addComponent(jButton1)
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                     .addComponent(jButton2)
                     .addGap(6, 6, 6))
-                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                    .addGap(64, 64, 64)
-                    .addComponent(jLabel2)
-                    .addGap(18, 18, 18)
-                    .addComponent(jTextField2, javax.swing.GroupLayout.DEFAULT_SIZE, 198, Short.MAX_VALUE)
-                    .addContainerGap())
-                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                    .addGap(54, 54, 54)
-                    .addComponent(jLabel3)
-                    .addGap(18, 18, 18)
-                    .addComponent(jPasswordField1, javax.swing.GroupLayout.DEFAULT_SIZE, 198, Short.MAX_VALUE)
-                    .addContainerGap())
                 .addGroup(layout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(jLabel4)
-                    .addGap(18, 18, 18)
-                    .addComponent(jTextField4, javax.swing.GroupLayout.DEFAULT_SIZE, 198, Short.MAX_VALUE)
-                    .addContainerGap())
+                    .addGap(12, 12, 12)
+                    .addComponent(jLabel5)
+                    .addGap(168, 168, 168))
             );
             layout.setVerticalGroup(
                 layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -194,34 +184,51 @@ public class AccountFrame extends javax.swing.JFrame {
 
     private void applyNewConfig() {
         Config config = userAgent.getConfig();
-        config.setUserPart(jTextField1.getText());
-        config.setDomain(jTextField2.getText());
-        config.setPassword(new String(jPasswordField1.getPassword()));
-        SipURI sipURI;
-        try {
-            sipURI = new SipURI(jTextField4.getText());
-            config.setOutboundProxy(sipURI);
-        } catch (SipUriSyntaxException e) {
-            JOptionPane.showMessageDialog(this, "syntax error");
-            Logger.error("sip uri syntax issue", e);
-            return;
+        String userpart = jTextField1.getText();
+        if (userpart != null) {
+            config.setUserPart(userpart);
+        }
+        String domain = jTextField2.getText();
+        if (domain != null) {
+            config.setDomain(domain);
+        }
+        char[] password = jPasswordField1.getPassword();
+        if (password != null && password.length > 0) {
+            config.setPassword(new String(password));
+        }
+        String outboundProxy = jTextField4.getText();
+        if (outboundProxy != null) {
+            SipURI sipURI;
+            try {
+                if ("".equals(outboundProxy.trim())) {
+                    config.setOutboundProxy(null);
+                } else {
+                    sipURI = new SipURI(outboundProxy);
+                    config.setOutboundProxy(sipURI);
+                }
+            } catch (SipUriSyntaxException e) {
+                JOptionPane.showMessageDialog(this, e.getMessage());
+                Logger.error("sip uri syntax issue", e);
+                return;
+            }
         }
         config.save();
         unregistering = false;
-        // TODO update info label
-        Runnable runnable = new Runnable() {
-            public void run() {
-                try {
-                    userAgent.getUac().register();
-                } catch (SipUriSyntaxException e) {
-                    JOptionPane.showMessageDialog(AccountFrame.this,
-                            "syntax error");
-                    Logger.error("sip uri syntax issue", e);
+        if (password != null && password.length > 0) {
+            Runnable runnable = new Runnable() {
+                public void run() {
+                    try {
+                        userAgent.getUac().register();
+                    } catch (SipUriSyntaxException e) {
+                        JOptionPane.showMessageDialog(AccountFrame.this,
+                                e.getMessage());
+                        Logger.error("sip uri syntax issue", e);
+                    }
                 }
-            }
-        };
-        Thread thread = new Thread(runnable);
-        thread.start();
+            };
+            Thread thread = new Thread(runnable);
+            thread.start();
+        }
     }
 
     public synchronized void registering(SipRequest sipRequest) {

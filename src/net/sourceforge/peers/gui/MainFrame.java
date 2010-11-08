@@ -26,6 +26,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
+import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -37,9 +38,11 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.border.Border;
 
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.Utils;
+import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
 import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.SipResponse;
 
@@ -97,6 +100,8 @@ public class MainFrame implements WindowListener, ActionListener {
 
         statusLabel = new JLabel(title);
         statusLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        Border border = BorderFactory.createEmptyBorder(0, 2, 2, 2);
+        statusLabel.setBorder(border);
 
         mainPanel.add(dialerPanel);
         mainPanel.add(statusLabel);
@@ -116,6 +121,11 @@ public class MainFrame implements WindowListener, ActionListener {
         Thread thread = new Thread(new Runnable() {
             public void run() {
                 eventManager = new EventManager(MainFrame.this);
+                try {
+                    eventManager.register();
+                } catch (SipUriSyntaxException e) {
+                    statusLabel.setText(e.getMessage());
+                }
             }
         });
         thread.start();

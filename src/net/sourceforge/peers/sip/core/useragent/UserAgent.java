@@ -39,7 +39,6 @@ import net.sourceforge.peers.sip.core.useragent.handlers.InviteHandler;
 import net.sourceforge.peers.sip.core.useragent.handlers.OptionsHandler;
 import net.sourceforge.peers.sip.core.useragent.handlers.RegisterHandler;
 import net.sourceforge.peers.sip.syntaxencoding.SipURI;
-import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
 import net.sourceforge.peers.sip.transaction.Transaction;
 import net.sourceforge.peers.sip.transaction.TransactionManager;
 import net.sourceforge.peers.sip.transactionuser.DialogManager;
@@ -180,13 +179,6 @@ public class UserAgent {
         peers = new ArrayList<String>();
         //dialogs = new ArrayList<Dialog>();
 
-        if (config.getPassword() != null) {
-            try {
-                uac.register();
-            } catch (SipUriSyntaxException e) {
-                Logger.error("syntax error", e);
-            }
-        }
         sdpManager = new SDPManager(this);
         inviteHandler.setSdpManager(sdpManager);
         optionsHandler.setSdpManager(sdpManager);
