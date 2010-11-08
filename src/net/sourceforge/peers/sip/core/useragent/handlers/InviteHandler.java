@@ -20,6 +20,7 @@
 package net.sourceforge.peers.sip.core.useragent.handlers;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -45,6 +46,7 @@ import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldValue;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderParamName;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaders;
 import net.sourceforge.peers.sip.syntaxencoding.SipURI;
+import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
 import net.sourceforge.peers.sip.transaction.ClientTransaction;
 import net.sourceforge.peers.sip.transaction.ClientTransactionUser;
 import net.sourceforge.peers.sip.transaction.InviteClientTransaction;
@@ -274,7 +276,8 @@ public class InviteHandler extends DialogMethodHandler
     // UAC methods
     //////////////////////////////////////////////////////////
     
-    public ClientTransaction preProcessInvite(SipRequest sipRequest) {
+    public ClientTransaction preProcessInvite(SipRequest sipRequest)
+            throws SipUriSyntaxException {
         
         //8.1.2
         SipHeaders requestHeaders = sipRequest.getSipHeaders();
@@ -294,8 +297,19 @@ public class InviteHandler extends DialogMethodHandler
         if (port == SipURI.DEFAULT_PORT) {
             port = RFC3261.TRANSPORT_DEFAULT_PORT;
         }
+        SipURI sipUri = userAgent.getConfig().getOutboundProxy();
+        if (sipUri == null) {
+            sipUri = destinationUri;
+        }
+        InetAddress inetAddress;
+        try {
+            inetAddress = InetAddress.getByName(sipUri.getHost());
+        } catch (UnknownHostException e) {
+            throw new SipUriSyntaxException("unknown host: "
+                    + sipUri.getHost(), e);
+        }
         ClientTransaction clientTransaction = transactionManager
-                .createClientTransaction(sipRequest, destinationUri.getHost(),
+                .createClientTransaction(sipRequest, inetAddress,
                     port, transport, null, this);
         sipRequest.setBody(sdpManager.generateOffer().getBytes());
         requestHeaders.add(new SipHeaderFieldName(RFC3261.HDR_CONTENT_TYPE),
@@ -562,10 +576,20 @@ public class InviteHandler extends DialogMethodHandler
             port = RFC3261.TRANSPORT_DEFAULT_PORT;
         }
 
+        SipURI sipUri = userAgent.getConfig().getOutboundProxy();
+        if (sipUri == null) {
+            sipUri = destinationUri;
+        }
+        InetAddress inetAddress;
         try {
-            //FIXME remote address can be a proxy
+            inetAddress = InetAddress.getByName(sipUri.getHost());
+        } catch (UnknownHostException e) {
+            Logger.error("unknown host: " + sipUri.getHost(), e);
+            return;
+        }
+        try {
             MessageSender sender = transportManager.createClientTransport(
-                    ack, destinationUri.getHost(), port, transport);
+                    ack, inetAddress, port, transport);
             sender.sendMessage(ack);
         } catch (IOException e) {
             Logger.error("input/output error", e);

@@ -19,6 +19,8 @@
 
 package net.sourceforge.peers.sip.core.useragent.handlers;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Hashtable;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -69,7 +71,8 @@ public class RegisterHandler extends MethodHandler
     }
 
     //TODO factorize common code here and in invitehandler
-    public synchronized ClientTransaction preProcessRegister(SipRequest sipRequest) {
+    public synchronized ClientTransaction preProcessRegister(SipRequest sipRequest)
+            throws SipUriSyntaxException {
         registered = false;
         unregisterInvoked = false;
         SipHeaders sipHeaders = sipRequest.getSipHeaders();
@@ -87,8 +90,19 @@ public class RegisterHandler extends MethodHandler
                 transport = reqUriTransport; 
             }
         }
+        SipURI sipUri = userAgent.getConfig().getOutboundProxy();
+        if (sipUri == null) {
+            sipUri = destinationUri;
+        }
+        InetAddress inetAddress;
+        try {
+            inetAddress = InetAddress.getByName(sipUri.getHost());
+        } catch (UnknownHostException e) {
+            throw new SipUriSyntaxException("unknown host: "
+                    + sipUri.getHost(), e);
+        }
         ClientTransaction clientTransaction = transactionManager
-            .createClientTransaction(sipRequest, destinationUri.getHost(), port,
+            .createClientTransaction(sipRequest, inetAddress, port,
                     transport, null, this);
         //TODO 10.2
         SipHeaderFieldValue to = sipHeaders.get(

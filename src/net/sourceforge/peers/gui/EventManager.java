@@ -25,6 +25,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import net.sourceforge.peers.Config;
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.Utils;
@@ -55,11 +56,11 @@ public class EventManager implements SipListener, MainFrameListener,
 
     public EventManager(MainFrame mainFrame) {
         this.mainFrame = mainFrame;
-        // create sip stack
-        userAgent = new UserAgent(this);
         callFrames = Collections.synchronizedMap(
                 new HashMap<String, CallFrame>());
         closed = false;
+        // create sip stack
+        userAgent = new UserAgent(this);
     }
 
     // sip events
@@ -144,6 +145,14 @@ public class EventManager implements SipListener, MainFrameListener,
     // main frame events
 
     @Override
+    public void register() throws SipUriSyntaxException {
+        Config config = userAgent.getConfig();
+        if (config.getPassword() != null) {
+            userAgent.getUac().register();
+        }
+    }
+
+    @Override
     public synchronized void callClicked(String uri) {
         String callId = Utils.generateCallID(userAgent.getMyAddress());
         CallFrame callFrame = new CallFrame(uri, callId, this);
@@ -152,7 +161,7 @@ public class EventManager implements SipListener, MainFrameListener,
         try {
             sipRequest = userAgent.getUac().invite(uri, callId);
         } catch (SipUriSyntaxException e) {
-            Logger.error("SipUriSyntaxException", e);
+            Logger.error(e.getMessage(), e);
             mainFrame.setLabelText(e.getMessage());
             return;
         }

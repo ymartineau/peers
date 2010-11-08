@@ -19,8 +19,11 @@
 
 package net.sourceforge.peers.sip.core.useragent;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Hashtable;
 
+import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.core.useragent.handlers.ByeHandler;
 import net.sourceforge.peers.sip.core.useragent.handlers.CancelHandler;
@@ -116,9 +119,20 @@ public class MidDialogRequestManager extends RequestManager
         if (port == SipURI.DEFAULT_PORT) {
             port = RFC3261.TRANSPORT_DEFAULT_PORT;
         }
+        SipURI sipUri = userAgent.getConfig().getOutboundProxy();
+        if (sipUri == null) {
+            sipUri = destinationUri;
+        }
+        InetAddress inetAddress;
+        try {
+            inetAddress = InetAddress.getByName(sipUri.getHost());
+        } catch (UnknownHostException e) {
+            Logger.error("unknown host: " + sipUri.getHost(), e);
+            return null;
+        }
         ClientTransaction clientTransaction = transactionManager
-            .createClientTransaction(sipRequest,
-                    destinationUri.getHost(), port, transport, branchId, this);
+            .createClientTransaction(sipRequest, inetAddress, port, transport,
+                    branchId, this);
         return clientTransaction;
     }
     

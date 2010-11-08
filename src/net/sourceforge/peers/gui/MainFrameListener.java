@@ -19,9 +19,12 @@
 
 package net.sourceforge.peers.gui;
 
+import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
+
 public interface MainFrameListener {
 
     public void callClicked(String callee);
     public void windowClosed();
+    public void register() throws SipUriSyntaxException;
 
 }

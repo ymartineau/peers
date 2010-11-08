@@ -300,7 +300,12 @@ public class Config {
 
     public void setOutboundProxy(SipURI outboundProxy) {
         this.outboundProxy = outboundProxy;
-        outboundProxyNode.setTextContent(outboundProxy.toString());
+        if (outboundProxy == null) {
+            outboundProxyNode.setTextContent("");
+        } else {
+            outboundProxyNode.setTextContent(outboundProxy.toString());
+        }
+        
     }
 
     public void setSipPort(int sipPort) {
