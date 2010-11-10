@@ -299,9 +299,13 @@ public class TransportManager {
                 SipTransportConnection.EMPTY_PORT,
                 conn.getTransport());
         
-        MessageReceiver messageReceiver =
-            createMessageReceiver(serverConn, socket);
-        new Thread(messageReceiver).start();
+//        MessageReceiver messageReceiver =
+//            createMessageReceiver(serverConn, socket);
+        MessageReceiver messageReceiver = messageReceivers.get(serverConn);
+        if (messageReceiver == null) {
+        	messageReceiver = createMessageReceiver(serverConn, socket);
+        	new Thread(messageReceiver).start();
+        }
         return messageSender;
     }
     
@@ -349,10 +353,24 @@ public class TransportManager {
         this.sipServerTransportUser = sipServerTransportUser;
     }
 
-    public void close() {
+    public void closeTransports() {
         for (MessageReceiver messageReceiver: messageReceivers.values()) {
             messageReceiver.setListening(false);
         }
+        try
+		{
+			Thread.sleep(SOCKET_TIMEOUT);
+		}
+		catch (InterruptedException e)
+		{
+			return;
+		}
+		for (DatagramSocket datagramSocket: datagramSockets.values()) {
+			datagramSocket.close();
+		}
+		datagramSockets.clear();
+		messageReceivers.clear();
+		messageSenders.clear();
     }
 
 }

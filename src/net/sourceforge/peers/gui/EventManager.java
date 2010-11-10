@@ -85,7 +85,7 @@ public class EventManager implements SipListener, MainFrameListener,
     @Override
     public synchronized void registerSuccessful(SipResponse sipResponse) {
         if (closed) {
-            userAgent.close();
+            userAgent.closeTransports();
             System.exit(0);
             return;
         }

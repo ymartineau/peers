@@ -237,6 +237,7 @@ public class AccountFrame extends javax.swing.JFrame {
 
     public synchronized void registerSuccess(SipResponse sipResponse) {
         if (unregistering) {
+        	userAgent.closeTransports();
             applyNewConfig();
         } else {
             registration.registerSuccessful();
@@ -245,6 +246,7 @@ public class AccountFrame extends javax.swing.JFrame {
 
     public synchronized void registerFailed(SipResponse sipResponse) {
         if (unregistering) {
+        	userAgent.closeTransports();
             applyNewConfig();
         } else {
             registration.registerFailed();
@@ -269,6 +271,7 @@ public class AccountFrame extends javax.swing.JFrame {
             Thread thread = new Thread(runnable);
             thread.start();
         } else {
+        	userAgent.closeTransports();
             applyNewConfig();
         }
     }
