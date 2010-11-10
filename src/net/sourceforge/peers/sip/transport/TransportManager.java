@@ -40,6 +40,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Hashtable;
 
+import net.sourceforge.peers.Config;
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.Utils;
@@ -67,19 +68,17 @@ public class TransportManager {
     private Hashtable<SipTransportConnection, MessageReceiver> messageReceivers;
     
     private TransactionManager transactionManager;
-    
-    private InetAddress myAddress;
-    private int sipPort;
+
+    private Config config;
     
     public TransportManager(TransactionManager transactionManager,
-            InetAddress myAddress, int sipPort) {
+            Config config) {
         sipParser = new SipParser();
         datagramSockets = new Hashtable<SipTransportConnection, DatagramSocket>();
         messageSenders = new Hashtable<SipTransportConnection, MessageSender>();
         messageReceivers = new Hashtable<SipTransportConnection, MessageReceiver>();
         this.transactionManager = transactionManager;
-        this.myAddress = myAddress;
-        this.sipPort = sipPort;
+        this.config = config;
     }
     
     public MessageSender createClientTransport(SipRequest sipRequest,
@@ -114,6 +113,8 @@ public class TransportManager {
         
         //TODO user server connection
         
+        InetAddress myAddress = config.getInetAddress();
+        int sipPort = config.getSipPort();
 
         buf.append(myAddress.getHostAddress()); //TODO use getHostName if real DNS
         buf.append(TRANSPORT_PORT_SEP);
@@ -149,8 +150,8 @@ public class TransportManager {
     public void createServerTransport(String transportType, int port)
             throws IOException {
         SipTransportConnection conn = new SipTransportConnection(
-                    myAddress, port, null, SipTransportConnection.EMPTY_PORT,
-                    transportType);
+                    config.getInetAddress(), port, null,
+                    SipTransportConnection.EMPTY_PORT, transportType);
         
         MessageReceiver messageReceiver = messageReceivers.get(conn);
         if (messageReceiver == null) {
@@ -210,8 +211,8 @@ public class TransportManager {
         }
         SipTransportConnection connection;
         try {
-            connection = new SipTransportConnection(
-                    myAddress, sipPort, InetAddress.getByName(host),
+            connection = new SipTransportConnection(config.getInetAddress(),
+                    config.getSipPort(), InetAddress.getByName(host),
                     port, transport);
         } catch (UnknownHostException e) {
             Logger.error("unknwon host", e);
@@ -286,7 +287,8 @@ public class TransportManager {
             }
             socket = datagramSocket;
             messageSender = new UdpMessageSender(conn.getRemoteInetAddress(),
-                    conn.getRemotePort(), datagramSocket, myAddress, sipPort);
+                    conn.getRemotePort(), datagramSocket,
+                    config.getInetAddress(), config.getSipPort());
         } else {
             // TODO
             // messageReceiver = new TcpMessageReceiver(port);
@@ -295,7 +297,7 @@ public class TransportManager {
         //when a mesage is sent over a transport, the transport layer
         //must also be able to receive messages on this transport
         SipTransportConnection serverConn = new SipTransportConnection(
-                myAddress, messageSender.getLocalPort(), null,
+                config.getInetAddress(), messageSender.getLocalPort(), null,
                 SipTransportConnection.EMPTY_PORT,
                 conn.getTransport());
         

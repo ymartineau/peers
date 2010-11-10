@@ -26,10 +26,12 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import net.sourceforge.peers.Config;
+import net.sourceforge.peers.media.MediaMode;
 import net.sourceforge.peers.sip.PortProvider;
-import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.syntaxencoding.SipParser;
 import net.sourceforge.peers.sip.syntaxencoding.SipParserException;
+import net.sourceforge.peers.sip.syntaxencoding.SipURI;
 import net.sourceforge.peers.sip.transaction.TransactionManager;
 
 import org.testng.annotations.BeforeClass;
@@ -47,8 +49,67 @@ public class MessageSenderTestNG {
     @BeforeClass
     protected void init() throws UnknownHostException {
         //TODO interface between transport manager and transaction manager
+        final int localPort = PortProvider.getNextPort();
+        Config config = new Config() {
+            
+            @Override public void setUserPart(String userPart) {}
+            @Override public void setSipPort(int sipPort) {}
+            @Override public void setRtpPort(int rtpPort) {}
+            @Override public void setPassword(String password) {}
+            @Override public void setOutboundProxy(SipURI outboundProxy) {}
+            @Override public void setMediaMode(MediaMode mediaMode) {}
+            @Override public void setMediaDebug(boolean mediaDebug) {}
+            @Override public void setInetAddress(InetAddress inetAddress) {}
+            @Override public void setDomain(String domain) {}
+            @Override public void save() {}
+            @Override public boolean isMediaDebug() {
+                return false;
+            }
+            @Override public String getUserPart() {
+                return null;
+            }
+            @Override
+            public int getSipPort() {
+                return localPort;
+            }
+            @Override
+            public int getRtpPort() {
+                return 0;
+            }
+            @Override
+            public String getPassword() {
+                return null;
+            }
+            @Override
+            public SipURI getOutboundProxy() {
+                return null;
+            }
+            @Override
+            public MediaMode getMediaMode() {
+                return null;
+            }
+            @Override
+            public InetAddress getInetAddress() {
+                InetAddress inetAddress;
+                try {
+                    inetAddress = InetAddress.getLocalHost();
+                } catch (UnknownHostException e) {
+                    throw new AssertionError();
+                }
+                return inetAddress;
+            }
+            @Override
+            public String getDomain() {
+                return null;
+            }
+        };
+        SipServerTransportUser sipServerTransportUser =
+            new SipServerTransportUser() {
+            @Override public void messageReceived(SipMessage sipMessage) {}
+        };
         transportManager = new TransportManager(new TransactionManager(),
-                InetAddress.getLocalHost(), RFC3261.TRANSPORT_DEFAULT_PORT);
+                config);
+        transportManager.setSipServerTransportUser(sipServerTransportUser);
     }
     
     @Test(groups = "listen")
@@ -60,7 +121,8 @@ public class MessageSenderTestNG {
                 DatagramSocket datagramSocket;
                 try {
                     port = PortProvider.getNextPort();
-                    datagramSocket = new DatagramSocket(port);
+                    datagramSocket = new DatagramSocket(port,
+                            InetAddress.getLocalHost());
                     datagramSocket.receive(datagramPacket);
                     byte[] receivedBytes = datagramPacket.getData();
                     int nbReceivedBytes = datagramPacket.getLength();

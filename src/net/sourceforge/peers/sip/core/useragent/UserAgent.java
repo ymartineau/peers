@@ -26,6 +26,7 @@ import java.util.List;
 
 import net.sourceforge.peers.Config;
 import net.sourceforge.peers.Logger;
+import net.sourceforge.peers.XmlConfig;
 import net.sourceforge.peers.media.CaptureRtpSender;
 import net.sourceforge.peers.media.Echo;
 import net.sourceforge.peers.media.IncomingRtpReader;
@@ -80,7 +81,7 @@ public class UserAgent {
 
     public UserAgent(SipListener sipListener) {
         this.sipListener = sipListener;
-        config = new Config(Utils.getPeersHome() + CONFIG_FILE);
+        config = new XmlConfig(Utils.getPeersHome() + CONFIG_FILE);
         
         cseqCounter = 1;
         
@@ -106,9 +107,7 @@ public class UserAgent {
         
         //transport
         
-        transportManager = new TransportManager(transactionManager,
-                config.getInetAddress(),
-                config.getSipPort());
+        transportManager = new TransportManager(transactionManager, config);
         
         transactionManager.setTransportManager(transportManager);
         

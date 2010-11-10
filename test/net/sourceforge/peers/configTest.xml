@@ -25,7 +25,7 @@
              network interfaces, or several address on a specific interface,
              you can specify an address to bind on here. -->
         <!-- <address>192.168.1.20</address> -->
-        <address>127.0.1.1</address>
+        <address>192.168.2.135</address>
       </interface>
     </interfaces>
   </network>

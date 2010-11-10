@@ -28,7 +28,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Random;
 
-import net.sourceforge.peers.Config;
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.rtp.RtpPacket;
 import net.sourceforge.peers.rtp.RtpSession;
@@ -58,7 +57,8 @@ public class RtpSender implements Runnable {
                 new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
             String date = simpleDateFormat.format(new Date());
             String fileName = Utils.getPeersHome() + File.separator
-                + Config.MEDIA_DIR + File.separator + date + "_rtp_sender.input";
+                + SoundManager.MEDIA_DIR + File.separator + date
+                + "_rtp_sender.input";
             try {
                 rtpSenderInput = new FileOutputStream(fileName);
             } catch (FileNotFoundException e) {
