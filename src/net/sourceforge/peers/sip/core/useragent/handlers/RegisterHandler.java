@@ -25,6 +25,7 @@ import java.util.Hashtable;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import net.sourceforge.peers.Config;
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.core.useragent.InitialRequestManager;
@@ -63,6 +64,7 @@ public class RegisterHandler extends MethodHandler
     //FIXME should be on a profile based context
     private boolean unregisterInvoked;
     private boolean registered;
+    private boolean triedWithReceived;
     
     public RegisterHandler(UserAgent userAgent,
             TransactionManager transactionManager,
@@ -141,9 +143,40 @@ public class RegisterHandler extends MethodHandler
             challenged = true;
         } else {
             challenged = false;
-            SipListener sipListener = userAgent.getSipListener();
-            if (sipListener != null) {
-                sipListener.registerFailed(sipResponse);
+            boolean notifyListener = true;
+            if (!triedWithReceived) {
+                triedWithReceived = true;
+                userAgent.closeTransports();
+                SipHeaders sipHeaders = sipResponse.getSipHeaders();
+                SipHeaderFieldName viaName = new SipHeaderFieldName(
+                        RFC3261.HDR_VIA);
+                SipHeaderFieldValue via = sipHeaders.get(viaName);
+                SipHeaderParamName receivedName = new SipHeaderParamName(
+                        RFC3261.PARAM_RECEIVED);
+                String received = via.getParam(receivedName);
+                InetAddress inetAddress;
+                try {
+                    inetAddress = InetAddress.getByName(received);
+                    if (received != null) {
+                        Config config = userAgent.getConfig();
+                        config.setInetAddress(inetAddress);
+                        try {
+                            userAgent.getUac().register();
+                            notifyListener = false;
+                        } catch (SipUriSyntaxException e) {
+                            Logger.error(e.getMessage(), e);
+                        }
+                    }
+                } catch (UnknownHostException e) {
+                    Logger.error("unknown host: " + received, e);
+                }
+            }
+            triedWithReceived = false;
+            if (notifyListener) {
+                SipListener sipListener = userAgent.getSipListener();
+                if (sipListener != null) {
+                    sipListener.registerFailed(sipResponse);
+                }
             }
         }
     }

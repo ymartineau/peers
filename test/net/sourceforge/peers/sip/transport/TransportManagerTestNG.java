@@ -26,23 +26,81 @@ import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 
-import net.sourceforge.peers.sip.RFC3261;
+import net.sourceforge.peers.Config;
+import net.sourceforge.peers.media.MediaMode;
+import net.sourceforge.peers.sip.PortProvider;
 import net.sourceforge.peers.sip.syntaxencoding.SipParser;
 import net.sourceforge.peers.sip.syntaxencoding.SipParserException;
+import net.sourceforge.peers.sip.syntaxencoding.SipURI;
 import net.sourceforge.peers.sip.transaction.TransactionManager;
 
-import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 public class TransportManagerTestNG {
 
     private TransportManager transportManager;
+    private volatile int port;
     
-    @BeforeClass
+    @BeforeTest
     protected void init() throws UnknownHostException {
+        port = PortProvider.getNextPort();
         //TODO interface between transport manager and transaction manager
+        Config config = new Config() {
+            
+            @Override public void setUserPart(String userPart) {}
+            @Override public void setSipPort(int sipPort) {}
+            @Override public void setRtpPort(int rtpPort) {}
+            @Override public void setPassword(String password) {}
+            @Override public void setOutboundProxy(SipURI outboundProxy) {}
+            @Override public void setMediaMode(MediaMode mediaMode) {}
+            @Override public void setMediaDebug(boolean mediaDebug) {}
+            @Override public void setInetAddress(InetAddress inetAddress) {}
+            @Override public void setDomain(String domain) {}
+            @Override public void save() {}
+            @Override public boolean isMediaDebug() {
+                return false;
+            }
+            @Override public String getUserPart() {
+                return null;
+            }
+            @Override
+            public int getSipPort() {
+                return port;
+            }
+            @Override
+            public int getRtpPort() {
+                return 0;
+            }
+            @Override
+            public String getPassword() {
+                return null;
+            }
+            @Override
+            public SipURI getOutboundProxy() {
+                return null;
+            }
+            @Override
+            public MediaMode getMediaMode() {
+                return null;
+            }
+            @Override
+            public InetAddress getInetAddress() {
+                InetAddress inetAddress;
+                try {
+                    inetAddress = InetAddress.getLocalHost();
+                } catch (UnknownHostException e) {
+                    throw new AssertionError();
+                }
+                return inetAddress;
+            }
+            @Override
+            public String getDomain() {
+                return null;
+            }
+        };
         transportManager = new TransportManager(new TransactionManager(),
-                InetAddress.getLocalHost(), RFC3261.TRANSPORT_DEFAULT_PORT);
+                config);
     }
     
     /*
@@ -74,14 +132,15 @@ public class TransportManagerTestNG {
     //TODO test sendResponse
     
     @Test (expectedExceptions = SocketException.class)
-    public void checkServerConnection() throws SocketException {
+    public void checkServerConnection()
+        throws SocketException, UnknownHostException {
         try {
-            transportManager.createServerTransport("UDP", 6063);
+            transportManager.createServerTransport("UDP", port);
         } catch (IOException e) {
             e.printStackTrace();
             assert false;
         }
-        new DatagramSocket(6063);
+        new DatagramSocket(port, InetAddress.getLocalHost());
     }
 
     private SipMessage parse(String message) throws IOException, SipParserException {

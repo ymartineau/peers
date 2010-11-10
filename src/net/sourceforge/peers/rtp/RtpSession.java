@@ -35,8 +35,8 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import net.sourceforge.peers.Config;
 import net.sourceforge.peers.Logger;
+import net.sourceforge.peers.media.SoundManager;
 import net.sourceforge.peers.sip.Utils;
 
 /**
@@ -80,8 +80,8 @@ public class RtpSession {
             SimpleDateFormat simpleDateFormat =
                 new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
             String date = simpleDateFormat.format(new Date());
-            String dir = Utils.getPeersHome() + File.separator + Config.MEDIA_DIR
-                + File.separator;
+            String dir = Utils.getPeersHome() + File.separator
+                + SoundManager.MEDIA_DIR + File.separator;
             String fileName = dir + date + "_rtp_session.output";
             try {
                 rtpSessionOutput = new FileOutputStream(fileName);

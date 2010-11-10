@@ -50,9 +50,8 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 
-public class Config {
+public class XmlConfig implements Config {
 
-    public final static String MEDIA_DIR = "media";
     public final static int RTP_DEFAULT_PORT = 8000;
 
     private File file;
@@ -77,7 +76,7 @@ public class Config {
     private int rtpPort;
     private Node rtpPortNode;
 
-    public Config(String fileName) {
+    public XmlConfig(String fileName) {
         file = new File(fileName);
         if (!file.exists()) {
             Logger.debug("config file " + fileName + " not found");

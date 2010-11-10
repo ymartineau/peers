@@ -33,11 +33,12 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.TargetDataLine;
 
-import net.sourceforge.peers.Config;
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.Utils;
 
 public class SoundManager {
+
+    public final static String MEDIA_DIR = "media";
 
     private AudioFormat audioFormat;
     private TargetDataLine targetDataLine;
@@ -64,7 +65,7 @@ public class SoundManager {
             String date = simpleDateFormat.format(new Date());
             StringBuffer buf = new StringBuffer();
             buf.append(Utils.getPeersHome()).append(File.separator);
-            buf.append(Config.MEDIA_DIR).append(File.separator);
+            buf.append(MEDIA_DIR).append(File.separator);
             buf.append(date).append("_");
             buf.append(audioFormat.getEncoding()).append("_");
             buf.append(audioFormat.getSampleRate()).append("_");

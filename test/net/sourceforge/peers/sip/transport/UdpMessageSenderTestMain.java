@@ -24,13 +24,12 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 
-import net.sourceforge.peers.sip.RFC3261;
+import net.sourceforge.peers.Config;
+import net.sourceforge.peers.media.MediaMode;
+import net.sourceforge.peers.sip.PortProvider;
 import net.sourceforge.peers.sip.syntaxencoding.SipParser;
 import net.sourceforge.peers.sip.syntaxencoding.SipParserException;
-import net.sourceforge.peers.sip.transport.MessageSender;
-import net.sourceforge.peers.sip.transport.SipMessage;
-import net.sourceforge.peers.sip.transport.SipRequest;
-import net.sourceforge.peers.sip.transport.TransportManager;
+import net.sourceforge.peers.sip.syntaxencoding.SipURI;
 
 
 public class UdpMessageSenderTestMain implements Runnable {
@@ -50,14 +49,60 @@ public class UdpMessageSenderTestMain implements Runnable {
             e.printStackTrace();
             return;
         }
-        TransportManager transportManager;
-        try {
-            transportManager = new TransportManager(null,
-                    InetAddress.getLocalHost(), RFC3261.TRANSPORT_DEFAULT_PORT);
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
-            return;
-        }
+Config config = new Config() {
+            
+            @Override public void setUserPart(String userPart) {}
+            @Override public void setSipPort(int sipPort) {}
+            @Override public void setRtpPort(int rtpPort) {}
+            @Override public void setPassword(String password) {}
+            @Override public void setOutboundProxy(SipURI outboundProxy) {}
+            @Override public void setMediaMode(MediaMode mediaMode) {}
+            @Override public void setMediaDebug(boolean mediaDebug) {}
+            @Override public void setInetAddress(InetAddress inetAddress) {}
+            @Override public void setDomain(String domain) {}
+            @Override public void save() {}
+            @Override public boolean isMediaDebug() {
+                return false;
+            }
+            @Override public String getUserPart() {
+                return null;
+            }
+            @Override
+            public int getSipPort() {
+                return PortProvider.getNextPort();
+            }
+            @Override
+            public int getRtpPort() {
+                return 0;
+            }
+            @Override
+            public String getPassword() {
+                return null;
+            }
+            @Override
+            public SipURI getOutboundProxy() {
+                return null;
+            }
+            @Override
+            public MediaMode getMediaMode() {
+                return null;
+            }
+            @Override
+            public InetAddress getInetAddress() {
+                InetAddress inetAddress;
+                try {
+                    inetAddress = InetAddress.getLocalHost();
+                } catch (UnknownHostException e) {
+                    throw new AssertionError();
+                }
+                return inetAddress;
+            }
+            @Override
+            public String getDomain() {
+                return null;
+            }
+        };
+        TransportManager transportManager = new TransportManager(null, config);
         try {
             MessageSender messageSender = transportManager
                     .createClientTransport(sipRequest, inetAddress, 5060, "UDP");
