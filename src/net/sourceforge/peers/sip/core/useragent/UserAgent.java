@@ -185,8 +185,8 @@ public class UserAgent {
         soundManager = new SoundManager(config.isMediaDebug());
     }
 
-    public void close() {
-        transportManager.close();
+    public void closeTransports() {
+        transportManager.closeTransports();
     }
 
     /**

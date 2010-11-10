@@ -50,7 +50,7 @@ public class Logger {
             networkWriter = new PrintWriter(new BufferedWriter(
                     new FileWriter(NETWORK_FILE)));
         } catch (IOException e) {
-            Logger.error("input/output error", e);
+        	System.err.println(e);
         }
         logMutex = new Object();
         networkMutex = new Object();
