@@ -29,6 +29,7 @@ import net.sourceforge.peers.XmlConfig;
 import net.sourceforge.peers.media.CaptureRtpSender;
 import net.sourceforge.peers.media.Echo;
 import net.sourceforge.peers.media.IncomingRtpReader;
+import net.sourceforge.peers.media.MediaManager;
 import net.sourceforge.peers.media.MediaMode;
 import net.sourceforge.peers.media.SoundManager;
 import net.sourceforge.peers.sdp.SDPManager;
@@ -77,6 +78,7 @@ public class UserAgent {
     
     private SDPManager sdpManager;
     private SoundManager soundManager;
+    private MediaManager mediaManager;
 
     public UserAgent(SipListener sipListener) {
         this.sipListener = sipListener;
@@ -181,6 +183,7 @@ public class UserAgent {
         inviteHandler.setSdpManager(sdpManager);
         optionsHandler.setSdpManager(sdpManager);
         soundManager = new SoundManager(config.isMediaDebug());
+        mediaManager = new MediaManager(this);
     }
 
     public void close() {
@@ -318,6 +321,10 @@ public class UserAgent {
 
     public SoundManager getSoundManager() {
         return soundManager;
+    }
+
+    public MediaManager getMediaManager() {
+        return mediaManager;
     }
 
     public Config getConfig() {
