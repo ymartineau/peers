@@ -20,7 +20,6 @@
 package net.sourceforge.peers.sip.core.useragent;
 
 import java.io.File;
-import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -88,7 +87,7 @@ public class UserAgent {
         StringBuffer buf = new StringBuffer();
         buf.append("starting user agent [");
         buf.append("myAddress: ");
-        buf.append(config.getInetAddress().getHostAddress()).append(", ");
+        buf.append(config.getLocalInetAddress().getHostAddress()).append(", ");
         buf.append("sipPort: ");
         buf.append(config.getSipPort()).append(", ");
         buf.append("userpart: ");
@@ -184,8 +183,9 @@ public class UserAgent {
         soundManager = new SoundManager(config.isMediaDebug());
     }
 
-    public void closeTransports() {
+    public void close() {
         transportManager.closeTransports();
+        config.setPublicInetAddress(null);
     }
 
     /**
@@ -274,10 +274,6 @@ public class UserAgent {
 
     public DialogManager getDialogManager() {
         return dialogManager;
-    }
-    
-    public InetAddress getMyAddress() {
-        return config.getInetAddress();
     }
     
     public int getSipPort() {

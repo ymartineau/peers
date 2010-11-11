@@ -57,25 +57,35 @@ public class XmlConfig implements Config {
     private File file;
     private Document document;
 
-    private InetAddress inetAddress;
-    private Node ipAddressNode;
+    // persistent variables
+
+    private InetAddress localInetAddress;
     private String userPart;
-    private Node userPartNode;
     private String domain;
-    private Node domainNode;
     private String password;
-    private Node passwordNode;
     private SipURI outboundProxy;
-    private Node outboundProxyNode;
     private int sipPort;
-    private Node sipPortNode;
     private MediaMode mediaMode;
-    private Node mediaModeNode;
     private boolean mediaDebug;
-    private Node mediaDebugNode;
     private int rtpPort;
+    
+    // corresponding DOM nodes
+    
+    private Node ipAddressNode;
+    private Node userPartNode;
+    private Node domainNode;
+    private Node passwordNode;
+    private Node outboundProxyNode;
+    private Node sipPortNode;
+    private Node mediaModeNode;
+    private Node mediaDebugNode;
     private Node rtpPortNode;
 
+    // non-persistent variables
+
+    private InetAddress publicInetAddress;
+
+    //private InetAddress
     public XmlConfig(String fileName) {
         file = new File(fileName);
         if (!file.exists()) {
@@ -109,7 +119,7 @@ public class XmlConfig implements Config {
         if (node != null && !"".equals(node.getTextContent().trim())) {
             String address = node.getTextContent();
             try {
-                inetAddress = InetAddress.getByName(address);
+                localInetAddress = InetAddress.getByName(address);
             } catch (UnknownHostException e) {
                 Logger.error("unknown host: " + address, e);
             }
@@ -125,7 +135,7 @@ public class XmlConfig implements Config {
                     while (f.hasMoreElements() && !found) {
                         InetAddress inetAddress = f.nextElement();
                         if (inetAddress.isSiteLocalAddress()) {
-                            this.inetAddress = inetAddress;
+                            this.localInetAddress = inetAddress;
                             found = true;
                         }
                     }
@@ -133,7 +143,7 @@ public class XmlConfig implements Config {
             } catch (SocketException e) {
                 Logger.error("socket exception", e);
             }
-            if (inetAddress == null) {
+            if (localInetAddress == null) {
                 Logger.error("IP address not found, configure it manually");
             }
         }
@@ -214,6 +224,7 @@ public class XmlConfig implements Config {
         return null;
     }
 
+    @Override
     public void save() {
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
         Transformer transformer;
@@ -241,62 +252,86 @@ public class XmlConfig implements Config {
         Logger.debug("config file saved");
     }
 
-    public InetAddress getInetAddress() {
-        return inetAddress;
+    @Override
+    public InetAddress getLocalInetAddress() {
+        return localInetAddress;
     }
 
+    @Override
+    public InetAddress getPublicInetAddress() {
+        return publicInetAddress;
+    }
+
+    @Override
     public String getUserPart() {
         return userPart;
     }
 
+    @Override
     public String getDomain() {
         return domain;
     }
 
+    @Override
     public String getPassword() {
         return password;
     }
 
+    @Override
     public SipURI getOutboundProxy() {
         return outboundProxy;
     }
 
+    @Override
     public int getSipPort() {
         return sipPort;
     }
 
+    @Override
     public MediaMode getMediaMode() {
         return mediaMode;
     }
 
+    @Override
     public boolean isMediaDebug() {
         return mediaDebug;
     }
 
+    @Override
     public int getRtpPort() {
         return rtpPort;
     }
 
-    public void setInetAddress(InetAddress inetAddress) {
-        this.inetAddress = inetAddress;
+    @Override
+    public void setLocalInetAddress(InetAddress inetAddress) {
+        this.localInetAddress = inetAddress;
         ipAddressNode.setTextContent(inetAddress.getHostAddress());
     }
 
+    @Override
+    public void setPublicInetAddress(InetAddress inetAddress) {
+        this.publicInetAddress = inetAddress;
+    }
+
+    @Override
     public void setUserPart(String userPart) {
         this.userPart = userPart;
         userPartNode.setTextContent(userPart);
     }
 
+    @Override
     public void setDomain(String domain) {
         this.domain = domain;
         domainNode.setTextContent(domain);
     }
 
+    @Override
     public void setPassword(String password) {
         this.password = password;
         passwordNode.setTextContent(password);
     }
 
+    @Override
     public void setOutboundProxy(SipURI outboundProxy) {
         this.outboundProxy = outboundProxy;
         if (outboundProxy == null) {
@@ -307,21 +342,25 @@ public class XmlConfig implements Config {
         
     }
 
+    @Override
     public void setSipPort(int sipPort) {
         this.sipPort = sipPort;
         sipPortNode.setTextContent(Integer.toString(sipPort));
     }
 
+    @Override
     public void setMediaMode(MediaMode mediaMode) {
         this.mediaMode = mediaMode;
         mediaModeNode.setTextContent(mediaMode.toString());
     }
 
+    @Override
     public void setMediaDebug(boolean mediaDebug) {
         this.mediaDebug = mediaDebug;
         mediaDebugNode.setTextContent(Boolean.toString(mediaDebug));
     }
 
+    @Override
     public void setRtpPort(int rtpPort) {
         this.rtpPort = rtpPort;
         rtpPortNode.setTextContent(Integer.toString(rtpPort));

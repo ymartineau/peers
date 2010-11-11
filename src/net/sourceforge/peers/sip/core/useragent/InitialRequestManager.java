@@ -111,8 +111,8 @@ public class InitialRequestManager extends RequestManager {
         //Call-ID
         
         headers.add(new SipHeaderFieldName(RFC3261.HDR_CALLID),
-                new SipHeaderFieldValue(
-                        Utils.generateCallID(userAgent.getMyAddress())));
+                new SipHeaderFieldValue(Utils.generateCallID(
+                        userAgent.getConfig().getLocalInetAddress())));
         
         //CSeq
         

@@ -20,8 +20,10 @@
 package net.sourceforge.peers.sdp;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.UnknownHostException;
 
+import net.sourceforge.peers.Config;
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.media.CaptureRtpSender;
 import net.sourceforge.peers.media.Echo;
@@ -109,8 +111,8 @@ public class SDPManager {
             soundManager.closeLines();
             soundManager.openAndStartLines();
             try {
-                captureRtpSender = new CaptureRtpSender(
-                        userAgent.getMyAddress().getHostAddress(),
+                captureRtpSender = new CaptureRtpSender(userAgent.getConfig()
+                            .getLocalInetAddress().getHostAddress(),
                         userAgent.getRtpPort(), destAddress, destPort,
                         soundManager, userAgent.isMediaDebug());
             } catch (IOException e) {
@@ -142,12 +144,13 @@ public class SDPManager {
         case echo:
             Echo echo;
             try {
-                echo = new Echo(userAgent.getMyAddress().getHostAddress(),
+                echo = new Echo(userAgent.getConfig().getLocalInetAddress()
+                            .getHostAddress(),
                         userAgent.getRtpPort(), destAddress, destPort);
             } catch (UnknownHostException e) {
                 Logger.error("unknown host amongst "
-                        + userAgent.getMyAddress().getHostAddress()
-                        + " or " + destAddress);
+                        + userAgent.getConfig().getLocalInetAddress()
+                            .getHostAddress() + " or " + destAddress);
                 return null;
             }
             userAgent.setEcho(echo);
@@ -173,10 +176,16 @@ public class SDPManager {
     }
     
     private StringBuffer generateSdpBegining() {
-        String hostAddress = userAgent.getMyAddress().getHostAddress();
+        Config config = userAgent.getConfig();
+        InetAddress inetAddress = config.getPublicInetAddress();
+        if (inetAddress == null) {
+            inetAddress = config.getLocalInetAddress();
+        }
+        String hostAddress = inetAddress.getHostAddress();
         StringBuffer buf = new StringBuffer();
         buf.append("v=0\r\n");
-        buf.append("o=user1 53655765 2353687637 IN IP4 ").append(hostAddress).append("\r\n");
+        buf.append("o=user1 53655765 2353687637 IN IP4 ");
+        buf.append(hostAddress).append("\r\n");
         buf.append("s=-\r\n");
         buf.append("c=IN IP4 ").append(hostAddress).append("\r\n");
         buf.append("t=0 0\r\n");
@@ -184,8 +193,11 @@ public class SDPManager {
     }
     
     private String generateSdpEnd(StringBuffer buf) {
-        buf.append("m=audio ").append(userAgent.getRtpPort()).append(" RTP/AVP 0\r\n");
+        buf.append("m=audio ").append(userAgent.getRtpPort());
+        buf.append(" RTP/AVP 0 8\r\n");
+        buf.append("a=sendrecv\r\n");
         buf.append("a=rtpmap:0 PCMU/8000\r\n");
+        buf.append("a=rtpmap:8 PCMA/8000\r\n");
         return buf.toString();
     }
 

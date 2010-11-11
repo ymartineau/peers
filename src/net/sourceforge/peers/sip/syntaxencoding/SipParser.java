@@ -83,7 +83,12 @@ public class SipParser {
         if (!RFC3261.DEFAULT_SIP_VERSION.equals(params[0].toUpperCase())) {
             throw new SipParserException("unsupported SIP version");
         }
-        return new SipResponse(Integer.parseInt(params[1]), params[2]);
+        StringBuffer buf = new StringBuffer();
+        for (int i = 2; i < params.length; ++i) {
+            buf.append(params[i]).append(" ");
+        }
+        buf.deleteCharAt(buf.length() - 1);
+        return new SipResponse(Integer.parseInt(params[1]), buf.toString());
     }
     
     private void parseHeaders(SipMessage sipMessage) throws IOException, SipParserException {

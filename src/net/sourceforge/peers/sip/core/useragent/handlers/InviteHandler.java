@@ -456,7 +456,8 @@ public class InviteHandler extends DialogMethodHandler
             sdpManager.handleAnswer(sipResponse.getBody());
         String remoteAddress = sessionDescription.getIpAddress().getHostAddress();
         int remotePort = sessionDescription.getMedias().get(0).getPort();
-        String localAddress = userAgent.getMyAddress().getHostAddress();
+        String localAddress = userAgent.getConfig()
+            .getLocalInetAddress().getHostAddress();
 
         switch (userAgent.getMediaMode()) {
         case captureAndPlayback:
@@ -640,8 +641,8 @@ public class InviteHandler extends DialogMethodHandler
             soundManager.closeLines();
             soundManager.openAndStartLines();
             try {
-                captureRtpSender = new CaptureRtpSender(
-                        userAgent.getMyAddress().getHostAddress(),
+                captureRtpSender = new CaptureRtpSender(userAgent.getConfig()
+                            .getLocalInetAddress().getHostAddress(),
                         userAgent.getRtpPort(), destAddress, destPort,
                         soundManager, userAgent.isMediaDebug());
             } catch (IOException e) {
@@ -673,12 +674,13 @@ public class InviteHandler extends DialogMethodHandler
         case echo:
             Echo echo;
             try {
-                echo = new Echo(userAgent.getMyAddress().getHostAddress(),
+                echo = new Echo(userAgent.getConfig().getLocalInetAddress()
+                            .getHostAddress(),
                         userAgent.getRtpPort(), destAddress, destPort);
             } catch (UnknownHostException e) {
                 Logger.error("unknown host amongst "
-                        + userAgent.getMyAddress().getHostAddress()
-                        + " or " + destAddress);
+                        + userAgent.getConfig().getLocalInetAddress()
+                            .getHostAddress() + " or " + destAddress);
                 return;
             }
             userAgent.setEcho(echo);

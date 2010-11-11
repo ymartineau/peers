@@ -74,7 +74,8 @@ public class UAC {
         this.midDialogRequestManager = midDialogRequestManager;
         this.dialogManager = dialogManager;
         this.transactionManager = transactionManager;
-        registerCallID = Utils.generateCallID(userAgent.getMyAddress());
+        registerCallID = Utils.generateCallID(
+                userAgent.getConfig().getLocalInetAddress());
         guiClosedCallIds = Collections.synchronizedList(new ArrayList<String>());
     }
 
