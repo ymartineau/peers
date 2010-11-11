@@ -43,7 +43,8 @@ public class UdpMessageReceiverTestMain implements Runnable {
                 @Override public void setOutboundProxy(SipURI outboundProxy) {}
                 @Override public void setMediaMode(MediaMode mediaMode) {}
                 @Override public void setMediaDebug(boolean mediaDebug) {}
-                @Override public void setInetAddress(InetAddress inetAddress) {}
+                @Override public void setLocalInetAddress(InetAddress inetAddress) {}
+                @Override public void setPublicInetAddress(InetAddress inetAddress) {}
                 @Override public void setDomain(String domain) {}
                 @Override public void save() {}
                 @Override public boolean isMediaDebug() {
@@ -73,7 +74,7 @@ public class UdpMessageReceiverTestMain implements Runnable {
                     return null;
                 }
                 @Override
-                public InetAddress getInetAddress() {
+                public InetAddress getLocalInetAddress() {
                     InetAddress inetAddress;
                     try {
                         inetAddress = InetAddress.getLocalHost();
@@ -81,6 +82,10 @@ public class UdpMessageReceiverTestMain implements Runnable {
                         throw new AssertionError();
                     }
                     return inetAddress;
+                }
+                @Override
+                public InetAddress getPublicInetAddress() {
+                    return null;
                 }
                 @Override
                 public String getDomain() {

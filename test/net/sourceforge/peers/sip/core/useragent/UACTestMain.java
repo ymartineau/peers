@@ -30,10 +30,11 @@ public class UACTestMain {
         SipRequest sipRequest;
         try {
             userAgent = new UserAgent(null);
-            requestUri = "sip:bob@" + userAgent.getMyAddress().getHostAddress()
-                + ":6060";
+            requestUri = "sip:bob@" + userAgent.getConfig()
+                .getLocalInetAddress().getHostAddress() + ":6060";
             sipRequest = userAgent.getUac().invite(requestUri,
-                    userAgent.getMyAddress().getHostName());
+                    userAgent.getConfig()
+                        .getLocalInetAddress().getHostName());
         } catch (SipUriSyntaxException e) {
             e.printStackTrace();
             return;

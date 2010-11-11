@@ -113,7 +113,10 @@ public class TransportManager {
         
         //TODO user server connection
         
-        InetAddress myAddress = config.getInetAddress();
+        InetAddress myAddress = config.getPublicInetAddress();
+        if (myAddress == null) {
+            myAddress = config.getLocalInetAddress();
+        }
         int sipPort = config.getSipPort();
 
         buf.append(myAddress.getHostAddress()); //TODO use getHostName if real DNS
@@ -137,7 +140,8 @@ public class TransportManager {
         via.setValue(buf.toString());
         
         SipTransportConnection connection = new SipTransportConnection(
-                myAddress, sipPort, inetAddress, port, transport);
+                config.getLocalInetAddress(), sipPort, inetAddress, port,
+                transport);
 
         MessageSender messageSender = messageSenders.get(connection);
         if (messageSender == null) {
@@ -150,7 +154,7 @@ public class TransportManager {
     public void createServerTransport(String transportType, int port)
             throws IOException {
         SipTransportConnection conn = new SipTransportConnection(
-                    config.getInetAddress(), port, null,
+                    config.getLocalInetAddress(), port, null,
                     SipTransportConnection.EMPTY_PORT, transportType);
         
         MessageReceiver messageReceiver = messageReceivers.get(conn);
@@ -211,7 +215,7 @@ public class TransportManager {
         }
         SipTransportConnection connection;
         try {
-            connection = new SipTransportConnection(config.getInetAddress(),
+            connection = new SipTransportConnection(config.getLocalInetAddress(),
                     config.getSipPort(), InetAddress.getByName(host),
                     port, transport);
         } catch (UnknownHostException e) {
@@ -287,8 +291,7 @@ public class TransportManager {
             }
             socket = datagramSocket;
             messageSender = new UdpMessageSender(conn.getRemoteInetAddress(),
-                    conn.getRemotePort(), datagramSocket,
-                    config.getInetAddress(), config.getSipPort());
+                    conn.getRemotePort(), datagramSocket, config);
         } else {
             // TODO
             // messageReceiver = new TcpMessageReceiver(port);
@@ -297,7 +300,7 @@ public class TransportManager {
         //when a mesage is sent over a transport, the transport layer
         //must also be able to receive messages on this transport
         SipTransportConnection serverConn = new SipTransportConnection(
-                config.getInetAddress(), messageSender.getLocalPort(), null,
+                config.getLocalInetAddress(), messageSender.getLocalPort(), null,
                 SipTransportConnection.EMPTY_PORT,
                 conn.getTransport());
         

@@ -49,7 +49,7 @@ public class UdpMessageSenderTestMain implements Runnable {
             e.printStackTrace();
             return;
         }
-Config config = new Config() {
+        Config config = new Config() {
             
             @Override public void setUserPart(String userPart) {}
             @Override public void setSipPort(int sipPort) {}
@@ -58,7 +58,8 @@ Config config = new Config() {
             @Override public void setOutboundProxy(SipURI outboundProxy) {}
             @Override public void setMediaMode(MediaMode mediaMode) {}
             @Override public void setMediaDebug(boolean mediaDebug) {}
-            @Override public void setInetAddress(InetAddress inetAddress) {}
+            @Override public void setLocalInetAddress(InetAddress inetAddress) {}
+            @Override public void setPublicInetAddress(InetAddress inetAddress) {}
             @Override public void setDomain(String domain) {}
             @Override public void save() {}
             @Override public boolean isMediaDebug() {
@@ -88,7 +89,7 @@ Config config = new Config() {
                 return null;
             }
             @Override
-            public InetAddress getInetAddress() {
+            public InetAddress getLocalInetAddress() {
                 InetAddress inetAddress;
                 try {
                     inetAddress = InetAddress.getLocalHost();
@@ -96,6 +97,10 @@ Config config = new Config() {
                     throw new AssertionError();
                 }
                 return inetAddress;
+            }
+            @Override
+            public InetAddress getPublicInetAddress() {
+                return null;
             }
             @Override
             public String getDomain() {

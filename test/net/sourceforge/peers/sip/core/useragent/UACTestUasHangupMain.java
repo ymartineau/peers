@@ -28,10 +28,11 @@ public class UACTestUasHangupMain {
         String requestUri;
         try {
             UserAgent userAgent = new UserAgent(null);
-            requestUri = "sip:bob@"
-                + userAgent.getMyAddress().getHostAddress() + ":6060";
+            requestUri = "sip:bob@" + userAgent.getConfig()
+                .getLocalInetAddress().getHostAddress() + ":6060";
             userAgent.getUac().invite(requestUri,
-                    Utils.generateCallID(userAgent.getMyAddress()));
+                    Utils.generateCallID(userAgent.getConfig()
+                            .getLocalInetAddress()));
         } catch (SipUriSyntaxException e) {
             e.printStackTrace();
         }

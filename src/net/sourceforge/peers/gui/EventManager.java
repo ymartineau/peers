@@ -85,7 +85,7 @@ public class EventManager implements SipListener, MainFrameListener,
     @Override
     public synchronized void registerSuccessful(SipResponse sipResponse) {
         if (closed) {
-            userAgent.closeTransports();
+            userAgent.close();
             System.exit(0);
             return;
         }
@@ -154,7 +154,8 @@ public class EventManager implements SipListener, MainFrameListener,
 
     @Override
     public synchronized void callClicked(String uri) {
-        String callId = Utils.generateCallID(userAgent.getMyAddress());
+        String callId = Utils.generateCallID(
+                userAgent.getConfig().getLocalInetAddress());
         CallFrame callFrame = new CallFrame(uri, callId, this);
         callFrames.put(callId, callFrame);
         SipRequest sipRequest;

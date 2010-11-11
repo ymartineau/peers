@@ -25,6 +25,7 @@ import javax.swing.JOptionPane;
 
 import net.sourceforge.peers.Config;
 import net.sourceforge.peers.Logger;
+import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.core.useragent.UserAgent;
 import net.sourceforge.peers.sip.syntaxencoding.SipURI;
 import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
@@ -203,6 +204,10 @@ public class AccountFrame extends javax.swing.JFrame {
                 if ("".equals(outboundProxy.trim())) {
                     config.setOutboundProxy(null);
                 } else {
+                    if (!outboundProxy.startsWith(RFC3261.SIP_SCHEME)) {
+                        outboundProxy = RFC3261.SIP_SCHEME
+                            + RFC3261.SCHEME_SEPARATOR + outboundProxy;
+                    }
                     sipURI = new SipURI(outboundProxy);
                     config.setOutboundProxy(sipURI);
                 }
@@ -237,7 +242,7 @@ public class AccountFrame extends javax.swing.JFrame {
 
     public synchronized void registerSuccess(SipResponse sipResponse) {
         if (unregistering) {
-        	userAgent.closeTransports();
+        	userAgent.close();
             applyNewConfig();
         } else {
             registration.registerSuccessful();
@@ -246,7 +251,7 @@ public class AccountFrame extends javax.swing.JFrame {
 
     public synchronized void registerFailed(SipResponse sipResponse) {
         if (unregistering) {
-        	userAgent.closeTransports();
+        	userAgent.close();
             applyNewConfig();
         } else {
             registration.registerFailed();
@@ -271,7 +276,7 @@ public class AccountFrame extends javax.swing.JFrame {
             Thread thread = new Thread(runnable);
             thread.start();
         } else {
-        	userAgent.closeTransports();
+        	userAgent.close();
             applyNewConfig();
         }
     }

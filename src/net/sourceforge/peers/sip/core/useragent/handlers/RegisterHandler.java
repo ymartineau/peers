@@ -142,11 +142,10 @@ public class RegisterHandler extends MethodHandler
             challengeManager.handleChallenge(sipRequest, sipResponse);
             challenged = true;
         } else {
-            challenged = false;
+            //challenged = false;
             boolean notifyListener = true;
             if (!triedWithReceived) {
                 triedWithReceived = true;
-                userAgent.closeTransports();
                 SipHeaders sipHeaders = sipResponse.getSipHeaders();
                 SipHeaderFieldName viaName = new SipHeaderFieldName(
                         RFC3261.HDR_VIA);
@@ -157,9 +156,9 @@ public class RegisterHandler extends MethodHandler
                 InetAddress inetAddress;
                 try {
                     inetAddress = InetAddress.getByName(received);
-                    if (received != null) {
+                    if (inetAddress != null) {
                         Config config = userAgent.getConfig();
-                        config.setInetAddress(inetAddress);
+                        config.setPublicInetAddress(inetAddress);
                         try {
                             userAgent.getUac().register();
                             notifyListener = false;
