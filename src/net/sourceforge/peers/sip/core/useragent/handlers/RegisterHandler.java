@@ -64,7 +64,6 @@ public class RegisterHandler extends MethodHandler
     //FIXME should be on a profile based context
     private boolean unregisterInvoked;
     private boolean registered;
-    private boolean triedWithReceived;
     
     public RegisterHandler(UserAgent userAgent,
             TransactionManager transactionManager,
@@ -131,53 +130,77 @@ public class RegisterHandler extends MethodHandler
     //////////////////////////////////////////////////////////
     
     public void errResponseReceived(SipResponse sipResponse) {
-        int statusCode = sipResponse.getStatusCode();
-        if ((statusCode == RFC3261.CODE_401_UNAUTHORIZED
-                || statusCode == RFC3261.CODE_407_PROXY_AUTHENTICATION_REQUIRED)
-            && challengeManager != null & !challenged) {
-            NonInviteClientTransaction nonInviteClientTransaction =
-                (NonInviteClientTransaction)
-                transactionManager.getClientTransaction(sipResponse);
-            SipRequest sipRequest = nonInviteClientTransaction.getRequest();
-            challengeManager.handleChallenge(sipRequest, sipResponse);
-            challenged = true;
-        } else {
-            //challenged = false;
-            boolean notifyListener = true;
-            if (!triedWithReceived) {
-                triedWithReceived = true;
+        String password = userAgent.getConfig().getPassword();
+        if (password != null &&  !"".equals(password.trim())) {
+            int statusCode = sipResponse.getStatusCode();
+            if (statusCode == RFC3261.CODE_401_UNAUTHORIZED
+                    || statusCode ==
+                        RFC3261.CODE_407_PROXY_AUTHENTICATION_REQUIRED) {
+                if (challenged) {
+                    notifyListener(sipResponse);
+                } else {
+                    NonInviteClientTransaction nonInviteClientTransaction =
+                        (NonInviteClientTransaction)
+                        transactionManager.getClientTransaction(sipResponse);
+                    SipRequest sipRequest =
+                        nonInviteClientTransaction.getRequest();
+                    challengeManager.handleChallenge(sipRequest, sipResponse);
+                }
+            } else { // not 401 nor 407
                 SipHeaders sipHeaders = sipResponse.getSipHeaders();
                 SipHeaderFieldName viaName = new SipHeaderFieldName(
                         RFC3261.HDR_VIA);
                 SipHeaderFieldValue via = sipHeaders.get(viaName);
                 SipHeaderParamName receivedName = new SipHeaderParamName(
                         RFC3261.PARAM_RECEIVED);
+                String viaValue = via.getValue();
+                int pos = viaValue.indexOf(" ");
+                if (pos > -1) {
+                    viaValue = viaValue.substring(pos + 1);
+                    pos = viaValue.indexOf(RFC3261.TRANSPORT_PORT_SEP);
+                    if (pos > -1) {
+                        viaValue = viaValue.substring(0, pos);
+                    } else {
+                        pos = viaValue.indexOf(RFC3261.PARAM_SEPARATOR);
+                        if (pos > -1) {
+                            viaValue = viaValue.substring(0, pos);
+                        }
+                    }
+                }
                 String received = via.getParam(receivedName);
-                InetAddress inetAddress;
-                try {
-                    inetAddress = InetAddress.getByName(received);
-                    if (inetAddress != null) {
-                        Config config = userAgent.getConfig();
-                        config.setPublicInetAddress(inetAddress);
+                if (received != null && !"".equals(received.trim())) {
+                    if (viaValue.equals(received)) {
+                        notifyListener(sipResponse);
+                    } else { // received != via ip address
                         try {
+                            InetAddress receivedInetAddress =
+                                InetAddress.getByName(received);
+                            Config config = userAgent.getConfig();
+                            config.setPublicInetAddress(receivedInetAddress);
                             userAgent.getUac().register();
-                            notifyListener = false;
+                        } catch (UnknownHostException e) {
+                            notifyListener(sipResponse);
+                            Logger.error(e.getMessage(), e);
                         } catch (SipUriSyntaxException e) {
+                            notifyListener(sipResponse);
                             Logger.error(e.getMessage(), e);
                         }
                     }
-                } catch (UnknownHostException e) {
-                    Logger.error("unknown host: " + received, e);
+                } else { // received not provided
+                    notifyListener(sipResponse);
                 }
             }
-            triedWithReceived = false;
-            if (notifyListener) {
-                SipListener sipListener = userAgent.getSipListener();
-                if (sipListener != null) {
-                    sipListener.registerFailed(sipResponse);
-                }
-            }
+        } else { // no password configured 
+            notifyListener(sipResponse);
         }
+    }
+
+    private void notifyListener(SipResponse sipResponse) {
+        SipListener sipListener = userAgent.getSipListener();
+        if (sipListener != null) {
+            sipListener.registerFailed(sipResponse);
+        }
+        challenged = false;
     }
 
     public void provResponseReceived(SipResponse sipResponse,
