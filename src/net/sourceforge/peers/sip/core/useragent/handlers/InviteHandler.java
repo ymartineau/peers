@@ -329,7 +329,7 @@ public class InviteHandler extends DialogMethodHandler
         int statusCode = sipResponse.getStatusCode();
         if (statusCode == RFC3261.CODE_401_UNAUTHORIZED
                 || statusCode == RFC3261.CODE_407_PROXY_AUTHENTICATION_REQUIRED
-                && !challenged) { //TODO do the same as register
+                && !challenged) {
             InviteClientTransaction inviteClientTransaction =
                 (InviteClientTransaction)
                 transactionManager.getClientTransaction(sipResponse);
