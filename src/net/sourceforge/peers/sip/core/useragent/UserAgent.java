@@ -169,12 +169,10 @@ public class UserAgent {
                 transactionManager,
                 transportManager);
 
-        if (config.getPassword() != null) {
-            challengeManager = new ChallengeManager(config,
-                    initialRequestManager);
-            registerHandler.setChallengeManager(challengeManager);
-            inviteHandler.setChallengeManager(challengeManager);
-        }
+        challengeManager = new ChallengeManager(config,
+                initialRequestManager);
+        registerHandler.setChallengeManager(challengeManager);
+        inviteHandler.setChallengeManager(challengeManager);
 
         peers = new ArrayList<String>();
         //dialogs = new ArrayList<Dialog>();
