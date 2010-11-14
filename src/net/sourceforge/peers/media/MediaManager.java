@@ -23,9 +23,12 @@ import java.io.IOException;
 import java.net.UnknownHostException;
 
 import net.sourceforge.peers.Logger;
+import net.sourceforge.peers.sdp.Codec;
 import net.sourceforge.peers.sip.core.useragent.UserAgent;
 
 public class MediaManager {
+
+    public static final int DEFAULT_CLOCK = 8000; // Hz
 
     private UserAgent userAgent;
 
@@ -35,7 +38,7 @@ public class MediaManager {
     }
 
     public void successResponseReceived(String localAddress,
-            String remoteAddress, int remotePort) {
+            String remoteAddress, int remotePort, Codec codec) {
         switch (userAgent.getMediaMode()) {
         case captureAndPlayback:
             CaptureRtpSender captureRtpSender;
@@ -47,7 +50,7 @@ public class MediaManager {
                 captureRtpSender = new CaptureRtpSender(localAddress,
                         userAgent.getRtpPort(),
                         remoteAddress, remotePort, soundManager,
-                        userAgent.isMediaDebug());
+                        userAgent.isMediaDebug(), codec);
             } catch (IOException e) {
                 Logger.error("input/output error", e);
                 return;
@@ -67,7 +70,7 @@ public class MediaManager {
 //                            Utils.getInstance().getRtpPort(),
 //                            remoteAddress, remotePort);
                 incomingRtpReader = new IncomingRtpReader(
-                        captureRtpSender.getRtpSession(), soundManager);
+                        captureRtpSender.getRtpSession(), soundManager, codec);
             } catch (IOException e) {
                 Logger.error("input/output error", e);
                 return;
@@ -97,7 +100,7 @@ public class MediaManager {
         }
     }
 
-    public void handleAck(String destAddress, int destPort) {
+    public void handleAck(String destAddress, int destPort, Codec codec) {
         switch (userAgent.getMediaMode()) {
         case captureAndPlayback:
             //TODO this could be optimized, create captureRtpSender at stack init
@@ -126,7 +129,7 @@ public class MediaManager {
                 captureRtpSender = new CaptureRtpSender(userAgent.getConfig()
                             .getLocalInetAddress().getHostAddress(),
                         userAgent.getRtpPort(), destAddress, destPort,
-                        soundManager, userAgent.isMediaDebug());
+                        soundManager, userAgent.isMediaDebug(), codec);
             } catch (IOException e) {
                 Logger.error("input/output error", e);
                 return;
@@ -144,7 +147,7 @@ public class MediaManager {
 //                                remoteAddress, remotePort);
                 //FIXME RTP sessions can be different !
                 incomingRtpReader = new IncomingRtpReader(
-                        captureRtpSender.getRtpSession(), soundManager);
+                        captureRtpSender.getRtpSession(), soundManager, codec);
             } catch (IOException e) {
                 Logger.error("input/output error", e);
                 return;

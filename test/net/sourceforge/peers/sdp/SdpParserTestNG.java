@@ -21,8 +21,8 @@ package net.sourceforge.peers.sdp;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 
 import org.testng.annotations.Test;
 
@@ -60,8 +60,8 @@ public class SdpParserTestNG {
         assert 1 == sessionAttributes.size();
         assert "".equals(sessionAttributes.get("recvonly"));
         
-        ArrayList<MediaDescription> mediaDescriptions =
-            sessionDescription.getMedias();
+        List<MediaDescription> mediaDescriptions =
+            sessionDescription.getMediaDescriptions();
         assert mediaDescriptions != null;
         assert mediaDescriptions.size() == 2;
         

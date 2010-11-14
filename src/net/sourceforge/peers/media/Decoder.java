@@ -14,39 +14,13 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2010 Yohann Martineau 
+    Copyright 2010 Yohann Martineau
 */
 
-package net.sourceforge.peers.sdp;
+package net.sourceforge.peers.media;
 
-public class MediaDestination {
+public abstract class Decoder {
 
-    private String destination;
-    private int port;
-    private Codec codec;
-
-    public String getDestination() {
-        return destination;
-    }
-
-    public void setDestination(String destination) {
-        this.destination = destination;
-    }
-
-    public int getPort() {
-        return port;
-    }
-
-    public void setPort(int port) {
-        this.port = port;
-    }
-
-    public Codec getCodec() {
-        return codec;
-    }
-
-    public void setCodec(Codec codec) {
-        this.codec = codec;
-    }
+    public abstract byte[] process(byte[] media);
 
 }

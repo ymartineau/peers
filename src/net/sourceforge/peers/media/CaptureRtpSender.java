@@ -25,7 +25,9 @@ import java.io.PipedOutputStream;
 import java.net.InetAddress;
 
 import net.sourceforge.peers.Logger;
+import net.sourceforge.peers.rtp.RFC3551;
 import net.sourceforge.peers.rtp.RtpSession;
+import net.sourceforge.peers.sdp.Codec;
 
 
 
@@ -38,7 +40,7 @@ public class CaptureRtpSender {
 
     public CaptureRtpSender(String localAddress, int localPort,
             String remoteAddress, int remotePort, SoundManager soundManager,
-            boolean mediaDebug)
+            boolean mediaDebug, Codec codec)
             throws IOException {
         super();
         InetAddress inetAddress = InetAddress.getByName(localAddress);
@@ -64,8 +66,20 @@ public class CaptureRtpSender {
             return;
         }
         capture = new Capture(rawDataOutput, soundManager);
-        encoder = new Encoder(rawDataInput, encodedDataOutput, mediaDebug);
-        rtpSender = new RtpSender(encodedDataInput, rtpSession, mediaDebug);
+        switch (codec.getPayloadType()) {
+        case RFC3551.PAYLOAD_TYPE_PCMU:
+            encoder = new PcmuEncoder(rawDataInput, encodedDataOutput,
+                    mediaDebug);
+            break;
+        case RFC3551.PAYLOAD_TYPE_PCMA:
+            encoder = new PcmaEncoder(rawDataInput, encodedDataOutput,
+                    mediaDebug);
+            break;
+        default:
+            throw new RuntimeException("unknown payload type");
+        }
+        rtpSender = new RtpSender(encodedDataInput, rtpSession, mediaDebug,
+                codec);
     }
 
     public void start() throws IOException {

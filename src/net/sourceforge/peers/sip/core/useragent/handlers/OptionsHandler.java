@@ -19,6 +19,10 @@
 
 package net.sourceforge.peers.sip.core.useragent.handlers;
 
+import java.io.IOException;
+
+import net.sourceforge.peers.Logger;
+import net.sourceforge.peers.sdp.SessionDescription;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.core.useragent.UserAgent;
@@ -44,7 +48,13 @@ public class OptionsHandler extends MethodHandler
     public void handleOptions(SipRequest sipRequest) {
         SipResponse sipResponse = buildGenericResponse(sipRequest,
                 RFC3261.CODE_200_OK, RFC3261.REASON_200_OK);
-        sipResponse.setBody(sdpManager.generateOffer().getBytes());
+        try {
+            SessionDescription sessionDescription =
+                sdpManager.createSessionDescription(null);
+            sipResponse.setBody(sessionDescription.toString().getBytes());
+        } catch (IOException e) {
+            Logger.error(e.getMessage(), e);
+        }
         SipHeaders sipHeaders = sipResponse.getSipHeaders();
         sipHeaders.add(new SipHeaderFieldName(RFC3261.HDR_CONTENT_TYPE),
                 new SipHeaderFieldValue(RFC3261.CONTENT_TYPE_SDP));

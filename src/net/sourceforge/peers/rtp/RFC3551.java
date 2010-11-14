@@ -17,36 +17,18 @@
     Copyright 2010 Yohann Martineau 
 */
 
-package net.sourceforge.peers.sdp;
+package net.sourceforge.peers.rtp;
 
-public class MediaDestination {
+public class RFC3551 {
 
-    private String destination;
-    private int port;
-    private Codec codec;
+    // payload types
 
-    public String getDestination() {
-        return destination;
-    }
+    public static final int PAYLOAD_TYPE_PCMU = 0;
+    public static final int PAYLOAD_TYPE_PCMA = 8;
 
-    public void setDestination(String destination) {
-        this.destination = destination;
-    }
+    // encoding names
 
-    public int getPort() {
-        return port;
-    }
-
-    public void setPort(int port) {
-        this.port = port;
-    }
-
-    public Codec getCodec() {
-        return codec;
-    }
-
-    public void setCodec(Codec codec) {
-        this.codec = codec;
-    }
+    public static final String PCMU = "PCMU";
+    public static final String PCMA = "PCMA";
 
 }

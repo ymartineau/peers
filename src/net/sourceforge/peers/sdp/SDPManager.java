@@ -21,184 +21,114 @@ package net.sourceforge.peers.sdp;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.Random;
 
 import net.sourceforge.peers.Config;
 import net.sourceforge.peers.Logger;
-import net.sourceforge.peers.media.CaptureRtpSender;
-import net.sourceforge.peers.media.Echo;
-import net.sourceforge.peers.media.IncomingRtpReader;
-import net.sourceforge.peers.media.SoundManager;
+import net.sourceforge.peers.rtp.RFC3551;
 import net.sourceforge.peers.sip.core.useragent.UserAgent;
 
-//TODO ekiga -d 4 > ekiga-debug.txt 2>&1
 public class SDPManager {
     
     private SdpParser sdpParser;
     private UserAgent userAgent;
+    private List<Codec> supportedCodecs;
+    private Random random;
     
     public SDPManager(UserAgent userAgent) {
         this.userAgent = userAgent;
         sdpParser = new SdpParser();
+        supportedCodecs = new ArrayList<Codec>();
+        random = new Random();
+        //TODO retrieve codecs from configuration file
+        Codec codec = new Codec();
+        codec.setPayloadType(RFC3551.PAYLOAD_TYPE_PCMU);
+        codec.setName(RFC3551.PCMU);
+        supportedCodecs.add(codec);
+        codec = new Codec();
+        codec.setPayloadType(RFC3551.PAYLOAD_TYPE_PCMA);
+        codec.setName(RFC3551.PCMA);
+        supportedCodecs.add(codec);
     }
     
-    public SessionDescription handleAnswer(byte[] answer) {
+    public SessionDescription parse(byte[] sdp) {
         try {
-            return sdpParser.parse(answer);
+            return sdpParser.parse(sdp);
         } catch (IOException e) {
-            Logger.error("input/output error", e);
+            Logger.error(e.getMessage(), e);
         }
         return null;
     }
-    
-    public String generateResponse(byte[] offer) throws NoCodecException {
-        // TODO use real offer content to generate answer.
-        return generateOffer();
-    }
 
-    public MediaDestination getMediaDestination(byte[] offer) throws NoCodecException {
-        SessionDescription sessionDescription;
-        try {
-            sessionDescription = sdpParser.parse(offer);
-        } catch (IOException e) {
-            Logger.error("input/output error", e);
-            return null;
-        }
-        String destAddress = sessionDescription.getIpAddress().getHostAddress();
-        int destPort = sessionDescription.getMedias().get(0).getPort();
-        MediaDestination mediaDestination = new MediaDestination();
-        mediaDestination.setDestination(destAddress);
-        mediaDestination.setPort(destPort);
-        return mediaDestination;
-    }
-    
-    public String handleOffer(byte[] offer)
-            throws NoCodecException {
-        // TODO generate dynamic content
-        SessionDescription sessionDescription;
-        try {
-            sessionDescription = sdpParser.parse(offer);
-        } catch (IOException e) {
-            Logger.error("input/output error", e);
-            return null;
-        }
-        String destAddress = sessionDescription.getIpAddress().getHostAddress();
-        int destPort = sessionDescription.getMedias().get(0).getPort();
-
-        switch (userAgent.getMediaMode()) {
-        case captureAndPlayback:
-          //FIXME move this to InviteHandler
-            //TODO this could be optimized, create captureRtpSender at stack init
-            //     and just retrieve it here
-            CaptureRtpSender captureRtpSender;
-            captureRtpSender = userAgent.getCaptureRtpSender();
-            IncomingRtpReader incomingRtpReader =
-                userAgent.getIncomingRtpReader();
-            if (incomingRtpReader != null) {
-                incomingRtpReader.stop();
-            }
-            if (captureRtpSender != null) {
-                captureRtpSender.stop();
-                while (!captureRtpSender.isTerminated()) {
-                    try {
-                        Thread.sleep(15);
-                    } catch (InterruptedException e) {
-                        Logger.debug("sleep interrupted");
-                    }
+    public MediaDestination getMediaDestination(
+            SessionDescription sessionDescription) throws NoCodecException {
+        InetAddress destAddress = sessionDescription.getIpAddress();
+        List<MediaDescription> mediaDescriptions = sessionDescription.getMediaDescriptions();
+        for (MediaDescription mediaDescription: mediaDescriptions) {
+            if (RFC4566.MEDIA_AUDIO.equals(mediaDescription.getType())) {
+                Codec codec = mediaDescription.getCodecs().get(0);
+                if (codec == null) {
+                    throw new NoCodecException();
                 }
+                int destPort = mediaDescription.getPort();
+                if (mediaDescription.getIpAddress() != null) {
+                    destAddress = mediaDescription.getIpAddress();
+                }
+                MediaDestination mediaDestination = new MediaDestination();
+                mediaDestination.setDestination(destAddress.getHostAddress());
+                mediaDestination.setPort(destPort);
+                mediaDestination.setCodec(codec);
+                return mediaDestination;
             }
-            SoundManager soundManager = userAgent.getSoundManager();
-            soundManager.closeLines();
-            soundManager.openAndStartLines();
-            try {
-                captureRtpSender = new CaptureRtpSender(userAgent.getConfig()
-                            .getLocalInetAddress().getHostAddress(),
-                        userAgent.getRtpPort(), destAddress, destPort,
-                        soundManager, userAgent.isMediaDebug());
-            } catch (IOException e) {
-                Logger.error("input/output error", e);
-                return null;
-            }
-            userAgent.setCaptureRtpSender(captureRtpSender);
-            try {
-                captureRtpSender.start();
-            } catch (IOException e) {
-                Logger.error("input/output error", e);
-            }
-            try {
-                //TODO retrieve port from SDP offer
-//                        incomingRtpReader = new IncomingRtpReader(localAddress,
-//                                Utils.getInstance().getRtpPort(),
-//                                remoteAddress, remotePort);
-                //FIXME RTP sessions can be different !
-                incomingRtpReader = new IncomingRtpReader(
-                        captureRtpSender.getRtpSession(), soundManager);
-            } catch (IOException e1) {
-                Logger.error("input/output error", e1);
-                return null;
-            }
-            userAgent.setIncomingRtpReader(incomingRtpReader);
-
-            incomingRtpReader.start();
-            break;
-        case echo:
-            Echo echo;
-            try {
-                echo = new Echo(userAgent.getConfig().getLocalInetAddress()
-                            .getHostAddress(),
-                        userAgent.getRtpPort(), destAddress, destPort);
-            } catch (UnknownHostException e) {
-                Logger.error("unknown host amongst "
-                        + userAgent.getConfig().getLocalInetAddress()
-                            .getHostAddress() + " or " + destAddress);
-                return null;
-            }
-            userAgent.setEcho(echo);
-            Thread echoThread = new Thread(echo);
-            echoThread.start();
-            break;
-        case none:
-        default:
-            break;
         }
-        
-        return generateOffer();
+        throw new NoCodecException();
     }
 
-    public String generateErrorResponse() {
-        StringBuffer buf = generateSdpBegining();
-        buf.append("a=inactive\r\n");
-        return generateSdpEnd(buf);
-    }
-    
-    public String generateOffer() {
-        return generateSdpEnd(generateSdpBegining());
-    }
-    
-    private StringBuffer generateSdpBegining() {
+    public SessionDescription createSessionDescription(SessionDescription offer)
+            throws IOException {
+        SessionDescription sessionDescription = new SessionDescription();
+        sessionDescription.setUsername("user1");
+        sessionDescription.setId(random.nextInt(Integer.MAX_VALUE));
+        sessionDescription.setVersion(random.nextInt(Integer.MAX_VALUE));
         Config config = userAgent.getConfig();
         InetAddress inetAddress = config.getPublicInetAddress();
         if (inetAddress == null) {
             inetAddress = config.getLocalInetAddress();
         }
-        String hostAddress = inetAddress.getHostAddress();
-        StringBuffer buf = new StringBuffer();
-        buf.append("v=0\r\n");
-        buf.append("o=user1 53655765 2353687637 IN IP4 ");
-        buf.append(hostAddress).append("\r\n");
-        buf.append("s=-\r\n");
-        buf.append("c=IN IP4 ").append(hostAddress).append("\r\n");
-        buf.append("t=0 0\r\n");
-        return buf;
-    }
-    
-    private String generateSdpEnd(StringBuffer buf) {
-        buf.append("m=audio ").append(userAgent.getRtpPort());
-        buf.append(" RTP/AVP 0 8\r\n");
-        buf.append("a=sendrecv\r\n");
-        buf.append("a=rtpmap:0 PCMU/8000\r\n");
-        buf.append("a=rtpmap:8 PCMA/8000\r\n");
-        return buf.toString();
+        sessionDescription.setIpAddress(inetAddress);
+        sessionDescription.setName("-");
+        sessionDescription.setAttributes(new Hashtable<String, String>());
+        List<Codec> codecs;
+        if (offer == null) {
+            codecs = supportedCodecs;
+        } else {
+            codecs = new ArrayList<Codec>();
+            for (MediaDescription mediaDescription:
+                    offer.getMediaDescriptions()) {
+                if (RFC4566.MEDIA_AUDIO.equals(mediaDescription.getType())) {
+                    for (Codec codec: mediaDescription.getCodecs()) {
+                        if (supportedCodecs.contains(codec)) {
+                            codecs.add(codec);
+                        }
+                    }
+                }
+            }
+        }
+        MediaDescription mediaDescription = new MediaDescription();
+        Hashtable<String, String> attributes = new Hashtable<String, String>();
+        attributes.put(RFC4566.ATTR_SENDRECV, "");
+        mediaDescription.setAttributes(attributes);
+        mediaDescription.setType(RFC4566.MEDIA_AUDIO);
+        mediaDescription.setPort(config.getRtpPort());
+        mediaDescription.setCodecs(codecs);
+        List<MediaDescription> mediaDescriptions =
+            new ArrayList<MediaDescription>();
+        mediaDescriptions.add(mediaDescription);
+        sessionDescription.setMediaDescriptions(mediaDescriptions);
+        return sessionDescription;
     }
 
 }
