@@ -31,6 +31,7 @@ import java.util.Random;
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.rtp.RtpPacket;
 import net.sourceforge.peers.rtp.RtpSession;
+import net.sourceforge.peers.sdp.Codec;
 import net.sourceforge.peers.sip.Utils;
 
 public class RtpSender implements Runnable {
@@ -41,12 +42,14 @@ public class RtpSender implements Runnable {
     private boolean isTerminated;
     private FileOutputStream rtpSenderInput;
     private boolean mediaDebug;
+    private Codec codec;
     
     public RtpSender(PipedInputStream encodedData, RtpSession rtpSession,
-            boolean mediaDebug) {
+            boolean mediaDebug, Codec codec) {
         this.encodedData = encodedData;
         this.rtpSession = rtpSession;
         this.mediaDebug = mediaDebug;
+        this.codec = codec;
         isStopped = false;
         isTerminated = false;
     }
@@ -72,7 +75,7 @@ public class RtpSender implements Runnable {
         rtpPacket.setExtension(false);
         rtpPacket.setCsrcCount(0);
         rtpPacket.setMarker(false);
-        rtpPacket.setPayloadType(0);
+        rtpPacket.setPayloadType(codec.getPayloadType());
         Random random = new Random();
         int sequenceNumber = random.nextInt();
         rtpPacket.setSequenceNumber(sequenceNumber);

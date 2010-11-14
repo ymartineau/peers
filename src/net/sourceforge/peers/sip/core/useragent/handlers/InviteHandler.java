@@ -27,6 +27,7 @@ import java.util.Hashtable;
 import java.util.List;
 
 import net.sourceforge.peers.Logger;
+import net.sourceforge.peers.sdp.Codec;
 import net.sourceforge.peers.sdp.MediaDestination;
 import net.sourceforge.peers.sdp.NoCodecException;
 import net.sourceforge.peers.sdp.SessionDescription;
@@ -167,22 +168,28 @@ public class InviteHandler extends DialogMethodHandler
         
         // TODO 486 or 600
         
-        String body;
-        byte[] offer = sipRequest.getBody();
-        if (offer != null && RFC3261.CONTENT_TYPE_SDP.equals(
-                contentType.getValue())) {
-            // create response in 200
-            try {
-                mediaDestination = sdpManager.getMediaDestination(offer);
-                body = sdpManager.generateResponse(offer);
-            } catch (NoCodecException e) {
-                body = sdpManager.generateErrorResponse();
+        byte[] offerBytes = sipRequest.getBody();
+        SessionDescription answer;
+        try {
+            if (offerBytes != null && RFC3261.CONTENT_TYPE_SDP.equals(
+                    contentType.getValue())) {
+                // create response in 200
+                try {
+                    SessionDescription offer = sdpManager.parse(offerBytes);
+                    answer = sdpManager.createSessionDescription(offer);
+                    mediaDestination = sdpManager.getMediaDestination(offer);
+                } catch (NoCodecException e) {
+                    answer = sdpManager.createSessionDescription(null);
+                }
+            } else {
+                // create offer in 200 (never tested...)
+                answer = sdpManager.createSessionDescription(null);
             }
-        } else {
-            // create offer in 200
-            body = sdpManager.generateOffer();
+            sipResponse.setBody(answer.toString().getBytes());
+        } catch (IOException e) {
+            Logger.error(e.getMessage(), e);
         }
-        sipResponse.setBody(body.getBytes());
+        
         SipHeaders respHeaders = sipResponse.getSipHeaders();
         respHeaders.add(new SipHeaderFieldName(RFC3261.HDR_CONTENT_TYPE),
                 new SipHeaderFieldValue(RFC3261.CONTENT_TYPE_SDP));
@@ -307,7 +314,13 @@ public class InviteHandler extends DialogMethodHandler
         ClientTransaction clientTransaction = transactionManager
                 .createClientTransaction(sipRequest, inetAddress,
                     port, transport, null, this);
-        sipRequest.setBody(sdpManager.generateOffer().getBytes());
+        try {
+            SessionDescription sessionDescription =
+                sdpManager.createSessionDescription(null);
+            sipRequest.setBody(sessionDescription.toString().getBytes());
+        } catch (IOException e) {
+            Logger.error(e.getMessage(), e);
+        }
         requestHeaders.add(new SipHeaderFieldName(RFC3261.HDR_CONTENT_TYPE),
                 new SipHeaderFieldValue(RFC3261.CONTENT_TYPE_SDP));
         return clientTransaction;
@@ -450,14 +463,20 @@ public class InviteHandler extends DialogMethodHandler
 
         //added for media
         SessionDescription sessionDescription =
-            sdpManager.handleAnswer(sipResponse.getBody());
-        String remoteAddress = sessionDescription.getIpAddress().getHostAddress();
-        int remotePort = sessionDescription.getMedias().get(0).getPort();
+            sdpManager.parse(sipResponse.getBody());
+        try {
+            mediaDestination = sdpManager.getMediaDestination(sessionDescription);
+        } catch (NoCodecException e) {
+            Logger.error(e.getMessage(), e);
+        }
+        String remoteAddress = mediaDestination.getDestination();
+        int remotePort = mediaDestination.getPort();
+        Codec codec = mediaDestination.getCodec();
         String localAddress = userAgent.getConfig()
             .getLocalInetAddress().getHostAddress();
 
         userAgent.getMediaManager().successResponseReceived(localAddress,
-                remoteAddress, remotePort);
+                remoteAddress, remotePort, codec);
         
         //switch to confirmed state
         dialog.receivedOrSent2xx();
@@ -552,8 +571,9 @@ public class InviteHandler extends DialogMethodHandler
 
         String destAddress = mediaDestination.getDestination();
         int destPort = mediaDestination.getPort();
+        Codec codec = mediaDestination.getCodec();
         
-        userAgent.getMediaManager().handleAck(destAddress, destPort);
+        userAgent.getMediaManager().handleAck(destAddress, destPort, codec);
     }
 
     public void transactionTimeout(ClientTransaction clientTransaction) {

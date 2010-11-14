@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008, 2009 Yohann Martineau 
+    Copyright 2007, 2008, 2009, 2010 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sdp;
@@ -26,6 +26,7 @@ import java.io.InputStreamReader;
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Hashtable;
+import java.util.List;
 
 public class SdpParser {
 
@@ -99,7 +100,14 @@ public class SdpParser {
 			} else if (line.length() > 3
                     && line.charAt(0) == RFC4566.TYPE_ATTRIBUTE
                     && line.charAt(1) == RFC4566.SEPARATOR) {
-                parseAttribute(line.substring(2), sessionAttributes);
+                String value = line.substring(2);
+                int pos = value.indexOf(RFC4566.ATTR_SEPARATOR);
+                if (pos > -1) {
+                    sessionAttributes.put(value.substring(0, pos),
+                            value.substring(pos + 1));
+                } else {
+                    sessionAttributes.put(value, "");
+                }
             }
 		}
 		if (line == null) {
@@ -123,87 +131,73 @@ public class SdpParser {
         while ((line = reader.readLine()) != null);
         
         ArrayList<MediaDescription> mediaDescriptions = new ArrayList<MediaDescription>();
-        sessionDescription.setMedias(mediaDescriptions);
+        sessionDescription.setMediaDescriptions(mediaDescriptions);
         
-        for (SdpLine mediaLine : mediaLines) {
+        for (SdpLine sdpLine : mediaLines) {
             MediaDescription mediaDescription;
-            if (mediaLine.getType() == RFC4566.TYPE_MEDIA) {
-                String[] mediaArr = mediaLine.getValue().split(" ");
+            if (sdpLine.getType() == RFC4566.TYPE_MEDIA) {
+                String[] mediaArr = sdpLine.getValue().split(" ");
                 if (mediaArr == null || mediaArr.length < 4) {
                     return null;
                 }
                 mediaDescription = new MediaDescription();
+                mediaDescription.setType(mediaArr[0]);
                 //TODO manage port range
                 mediaDescription.setPort(Integer.parseInt(mediaArr[1]));
-                mediaDescriptions.add(mediaDescription);
                 mediaDescription.setAttributes(new Hashtable<String, String>());
+                List<Codec> codecs = new ArrayList<Codec>();
+                for (int i = 3; i < mediaArr.length; ++i) {
+                    int payloadType = Integer.parseInt(mediaArr[i]);
+                    Codec codec = new Codec();
+                    codec.setPayloadType(payloadType);
+                    codecs.add(codec);
+                    //TODO check that sdp offer without rtpmap works
+                }
+                mediaDescription.setCodecs(codecs);
+                mediaDescriptions.add(mediaDescription);
             } else {
                 mediaDescription = mediaDescriptions.get(mediaDescriptions.size() - 1);
-                String mediaValue = mediaLine.getValue();
-                if (mediaLine.getType() == RFC4566.TYPE_CONNECTION) {
-                    String ipAddress = parseConnection(mediaValue);
+                String sdpLineValue = sdpLine.getValue();
+                if (sdpLine.getType() == RFC4566.TYPE_CONNECTION) {
+                    String ipAddress = parseConnection(sdpLineValue);
                     mediaDescription.setIpAddress(InetAddress.getByName(ipAddress));
-                }
-                if (mediaLine.getType() == RFC4566.TYPE_ATTRIBUTE) {
+                } else if (sdpLine.getType() == RFC4566.TYPE_ATTRIBUTE) {
                     Hashtable<String, String> attributes = mediaDescription.getAttributes();
-                    parseAttribute(mediaValue, attributes);
+                    int pos = sdpLineValue.indexOf(RFC4566.ATTR_SEPARATOR);
+                    if (pos > -1) {
+                        String name = sdpLineValue.substring(0, pos);
+                        String value = sdpLineValue.substring(pos + 1);
+                        pos = value.indexOf(" ");
+                        if (pos > -1) {
+                            int payloadType;
+                            try {
+                                payloadType = Integer.parseInt(value.substring(0, pos));
+                                List<Codec> codecs = mediaDescription.getCodecs();
+                                for (Codec codec: codecs) {
+                                    if (codec.getPayloadType() == payloadType) {
+                                        value = value.substring(pos + 1);
+                                        pos = value.indexOf("/");
+                                        if (pos > -1) {
+                                            value = value.substring(0, pos);
+                                            codec.setName(value);
+                                        }
+                                        break;
+                                    }
+                                }
+                            } catch (NumberFormatException e) {
+                                attributes.put(name, value);
+                            }
+                        } else {
+                            attributes.put(name, value);
+                        }
+                    } else {
+                        attributes.put(sdpLineValue, "");
+                    }
                 }
             }
         }
-        sessionDescription.setMedias(mediaDescriptions);
-        
-//		ArrayList<MediaDescription> mediaDescriptions = new ArrayList<MediaDescription>();
-//		sessionDescription.setMedias(mediaDescriptions);
-//		do {
-//            
-//			if (line.length() < 3) {
-//				return null;
-//			}
-//            
-//			if (line.charAt(0) != RFC4566.TYPE_MEDIA
-//					|| line.charAt(1) != RFC4566.SEPARATOR) {
-//				return null;
-//			}
-//			String[] mediaArr = line.split(" ");
-//			if (mediaArr == null || mediaArr.length < 4) {
-//				return null;
-//			}
-//			MediaDescription mediaDescription = new MediaDescription();
-//			//TODO manage port range
-//			mediaDescription.setPort(Integer.parseInt(mediaArr[1]));
-//			mediaDescriptions.add(mediaDescription);
-//			Hashtable<String, String> attributes = new Hashtable<String, String>();
-//			mediaDescription.setAttributes(attributes);
-//            
-//            //FIXME:
-//            //m=
-//            //m=
-//            //a=
-//            
-//			while ((line = reader.readLine()) != null
-//					&& line.charAt(0) != RFC4566.TYPE_MEDIA) {
-//				if (line.length() < 3) {
-//                    return null;
-//                }
-//                if (line.charAt(0) == RFC4566.TYPE_ATTRIBUTE
-//						&& line.charAt(1) == RFC4566.SEPARATOR) {
-//					line = line.substring(2);
-//					int columnPos = line.indexOf(RFC4566.ATTR_SEPARATOR);
-//					if (columnPos > 0 && line.length() > columnPos + 1) {
-//                        attributes.put(line.substring(0, columnPos),
-//                                line.substring(columnPos + 1));
-//					} else {
-//						attributes.put(line, "");
-//					}
-//				} else if (line.charAt(0) == RFC4566.TYPE_CONNECTION
-//                        && line.charAt(1) == RFC4566.SEPARATOR) {
-//                    String connection = parseConnection(line.substring(2));
-//                    if (connection != null) {
-//                        mediaDescription.setIpAddress(InetAddress.getByName(connection));
-//                    }
-//                }
-//			}
-//		} while ((line = reader.readLine()) != null);
+        sessionDescription.setMediaDescriptions(mediaDescriptions);
+
         for (MediaDescription description : mediaDescriptions) {
             if (description.getIpAddress() == null) {
                 InetAddress sessionAddress = sessionDescription.getIpAddress();
@@ -224,16 +218,4 @@ public class SdpParser {
 		return connectionArr[2];
 	}
 	
-    private void parseAttribute(String value, Hashtable<String, String> attributes) {
-        int colonPos = value.indexOf(RFC4566.ATTR_SEPARATOR);
-        if (colonPos > -1) {
-            //warning:
-            //m=
-            //a=test:     (colon in last position in line)
-            attributes.put(value.substring(0, colonPos),
-                    value.substring(colonPos + 1));
-        } else {
-            attributes.put(value, "");
-        }
-    }
 }

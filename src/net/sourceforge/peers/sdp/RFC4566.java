@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008, 2009 Yohann Martineau 
+    Copyright 2007, 2008, 2009, 2010 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sdp;
@@ -39,6 +39,11 @@ public class RFC4566 {
     public static final char TYPE_ATTRIBUTE  = 'a';
     public static final char TYPE_MEDIA      = 'm';
     
-    public static final char SEPARATOR = '=';
-    public static final char ATTR_SEPARATOR = ':';
+    public static final char SEPARATOR       = '=';
+    public static final char ATTR_SEPARATOR  = ':';
+
+    public static final String MEDIA_AUDIO   = "audio";
+
+    public static final String ATTR_RTPMAP   = "rtpmap";
+    public static final String ATTR_SENDRECV = "sendrecv";
 }

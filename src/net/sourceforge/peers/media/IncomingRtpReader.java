@@ -21,20 +21,33 @@ package net.sourceforge.peers.media;
 
 import java.io.IOException;
 
+import net.sourceforge.peers.rtp.RFC3551;
 import net.sourceforge.peers.rtp.RtpListener;
 import net.sourceforge.peers.rtp.RtpPacket;
 import net.sourceforge.peers.rtp.RtpSession;
+import net.sourceforge.peers.sdp.Codec;
 
 public class IncomingRtpReader implements RtpListener {
 
     private RtpSession rtpSession;
     private SoundManager soundManager;
+    private Decoder decoder;
 
     public IncomingRtpReader(RtpSession rtpSession,
-            SoundManager soundManager) throws IOException { 
+            SoundManager soundManager, Codec codec) throws IOException { 
         super();
         this.rtpSession = rtpSession;
         this.soundManager = soundManager;
+        switch (codec.getPayloadType()) {
+        case RFC3551.PAYLOAD_TYPE_PCMU:
+            decoder = new PcmuDecoder();
+            break;
+        case RFC3551.PAYLOAD_TYPE_PCMA:
+            decoder = new PcmaDecoder();
+            break;
+        default:
+            throw new RuntimeException("unsupported payload type");
+        }
         rtpSession.addRtpListener(this);
     }
     
@@ -48,14 +61,7 @@ public class IncomingRtpReader implements RtpListener {
 
     @Override
     public void receivedRtpPacket(RtpPacket rtpPacket) {
-        byte[] data = rtpPacket.getData();
-
-        byte[] rawBuf = new byte[data.length * 2];
-        for (int i = 0; i < data.length; ++i) {
-            short decoded = AudioUlawEncodeDecode02.decode(data[i]);
-            rawBuf[2 * i] = (byte)(decoded & 0xFF);
-            rawBuf[2 * i + 1] = (byte)(decoded >>> 8);
-        }
+        byte[] rawBuf = decoder.process(rtpPacket.getData());
         soundManager.writeData(rawBuf, 0, rawBuf.length);
     }
 
