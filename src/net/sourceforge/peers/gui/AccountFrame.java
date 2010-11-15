@@ -22,6 +22,7 @@ package net.sourceforge.peers.gui;
 import java.awt.event.ActionListener;
 
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 import net.sourceforge.peers.Config;
 import net.sourceforge.peers.Logger;
@@ -259,11 +260,12 @@ public class AccountFrame extends javax.swing.JFrame {
     }
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {
+        Runnable runnable;
         if (userAgent.isRegistered()) {
             synchronized (this) {
                 unregistering = true;
             }
-            Runnable runnable = new Runnable() {
+            runnable = new Runnable() {
                 @Override
                 public void run() {
                     try {
@@ -273,12 +275,16 @@ public class AccountFrame extends javax.swing.JFrame {
                     }
                 }
             };
-            Thread thread = new Thread(runnable);
-            thread.start();
         } else {
-        	userAgent.close();
-            applyNewConfig();
+            runnable = new Runnable() {
+                @Override
+                public void run() {
+                    userAgent.close();
+                    applyNewConfig();
+                }
+            };
         }
+        SwingUtilities.invokeLater(runnable);
     }
 
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {

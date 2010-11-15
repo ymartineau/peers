@@ -25,6 +25,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.swing.SwingUtilities;
+
 import net.sourceforge.peers.Config;
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.RFC3261;
@@ -219,13 +221,28 @@ public class EventManager implements SipListener, MainFrameListener,
     public void actionPerformed(ActionEvent e) {
         String action = e.getActionCommand();
         Logger.debug("gui actionPerformed() " + action);
+        Runnable runnable = null;
         if (ACTION_EXIT.equals(action)) {
-            windowClosed();
+            runnable = new Runnable() {
+                @Override
+                public void run() {
+                    windowClosed();
+                }
+            };
         } else if (ACTION_ACCOUNT.equals(action)) {
-            accountFrame = new AccountFrame(this, userAgent);
-            accountFrame.setVisible(true);
+            runnable = new Runnable() {
+                @Override
+                public void run() {
+                    accountFrame = new AccountFrame(EventManager.this,
+                            userAgent);
+                    accountFrame.setVisible(true);
+                }
+            };
         } else if (ACTION_PREFERENCES.equals(action)) {
             //TODO
+        }
+        if (runnable != null) {
+            SwingUtilities.invokeLater(runnable);
         }
     }
 
