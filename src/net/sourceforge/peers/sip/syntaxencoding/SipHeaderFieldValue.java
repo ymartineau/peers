@@ -20,7 +20,6 @@
 package net.sourceforge.peers.sip.syntaxencoding;
 
 import java.util.HashMap;
-import java.util.Iterator;
 
 import net.sourceforge.peers.sip.RFC3261;
 
@@ -89,11 +88,12 @@ public class SipHeaderFieldValue {
             return value;
         }
         StringBuffer buf = new StringBuffer(value);
-        Iterator<SipHeaderParamName> names = params.keySet().iterator();
-        Iterator<String> values = params.values().iterator();
-        for (int i = 0; i < params.size(); ++i) {
-            buf.append(RFC3261.PARAM_SEPARATOR).append(names.next()
-                    ).append(RFC3261.PARAM_ASSIGNMENT).append(values.next());
+        for (SipHeaderParamName name: params.keySet()) {
+            buf.append(RFC3261.PARAM_SEPARATOR).append(name);
+            String value = params.get(name);
+            if (!"".equals(value.trim())) {
+                buf.append(RFC3261.PARAM_ASSIGNMENT).append(value);
+            }
         }
         return buf.toString();
     }

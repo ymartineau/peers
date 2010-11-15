@@ -30,6 +30,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 
 import net.sourceforge.peers.sip.transport.SipRequest;
@@ -166,14 +167,37 @@ public class CallFrame implements ActionListener, WindowListener {
     @Override
     public void actionPerformed(ActionEvent e) {
         String actionCommand = e.getActionCommand();
+        Runnable runnable = null;
         if (HANGUP_ACTION_COMMAND.equals(actionCommand)) {
-            state.hangupClicked();
+            runnable = new Runnable() {
+                @Override
+                public void run() {
+                    state.hangupClicked();
+                }
+            };
         } else if (CLOSE_ACTION_COMMAND.equals(actionCommand)) {
-            state.closeClicked();
+            runnable = new Runnable() {
+                @Override
+                public void run() {
+                    state.closeClicked();
+                }
+            };
         } else if (PICKUP_ACTION_COMMAND.equals(actionCommand)) {
-            state.pickupClicked();
+            runnable = new Runnable() {
+                public void run() {
+                    state.pickupClicked();
+                }
+            };
         } else if (BUSY_HERE_ACTION_COMMAND.equals(actionCommand)) {
-            state.busyHereClicked();
+            runnable = new Runnable() {
+                @Override
+                public void run() {
+                    state.busyHereClicked();
+                }
+            };
+        }
+        if (runnable != null) {
+            SwingUtilities.invokeLater(runnable);
         }
     }
 
