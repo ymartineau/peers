@@ -25,7 +25,10 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PipedInputStream;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Random;
 
 import net.sourceforge.peers.Logger;
@@ -43,6 +46,7 @@ public class RtpSender implements Runnable {
     private FileOutputStream rtpSenderInput;
     private boolean mediaDebug;
     private Codec codec;
+    private List<RtpPacket> pushedPackets;
     
     public RtpSender(PipedInputStream encodedData, RtpSession rtpSession,
             boolean mediaDebug, Codec codec) {
@@ -52,8 +56,10 @@ public class RtpSender implements Runnable {
         this.codec = codec;
         isStopped = false;
         isTerminated = false;
+        pushedPackets = Collections.synchronizedList(
+                new ArrayList<RtpPacket>());
     }
-    
+
     public void run() {
         if (mediaDebug) {
             SimpleDateFormat simpleDateFormat =
@@ -107,9 +113,22 @@ public class RtpSender implements Runnable {
                     break;
                 }
             }
+            if (pushedPackets.size() > 0) {
+                RtpPacket pushedPacket = pushedPackets.remove(0);
+                rtpPacket.setMarker(pushedPacket.isMarker());
+                rtpPacket.setPayloadType(pushedPacket.getPayloadType());
+                byte[] data = pushedPacket.getData();
+                rtpPacket.setData(data);
+            } else {
+                if (rtpPacket.getPayloadType() != codec.getPayloadType()) {
+                    rtpPacket.setPayloadType(codec.getPayloadType());
+                    rtpPacket.setMarker(false);
+                }
+                rtpPacket.setData(trimmedBuffer);
+            }
+            
             rtpPacket.setSequenceNumber(sequenceNumber + (int)counter);
             rtpPacket.setTimestamp(buf_size * counter++);
-            rtpPacket.setData(trimmedBuffer);
             
             rtpSession.send(rtpPacket);
             try {
@@ -136,6 +155,10 @@ public class RtpSender implements Runnable {
 
     public boolean isTerminated() {
         return isTerminated;
+    }
+
+    public void pushPackets(List<RtpPacket> rtpPackets) {
+        this.pushedPackets.addAll(rtpPackets);
     }
 
 }

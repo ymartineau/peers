@@ -29,6 +29,7 @@ import java.util.Random;
 import net.sourceforge.peers.Config;
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.rtp.RFC3551;
+import net.sourceforge.peers.rtp.RFC4733;
 import net.sourceforge.peers.sip.core.useragent.UserAgent;
 
 public class SDPManager {
@@ -51,6 +52,11 @@ public class SDPManager {
         codec = new Codec();
         codec.setPayloadType(RFC3551.PAYLOAD_TYPE_PCMA);
         codec.setName(RFC3551.PCMA);
+        supportedCodecs.add(codec);
+        codec = new Codec();
+        codec.setPayloadType(RFC4733.PAYLOAD_TYPE_TELEPHONE_EVENT);
+        codec.setName(RFC4733.TELEPHONE_EVENT);
+        //TODO add fmtp:101 0-15 attribute
         supportedCodecs.add(codec);
     }
     

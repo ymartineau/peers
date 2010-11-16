@@ -26,9 +26,7 @@ import java.util.List;
 import net.sourceforge.peers.Config;
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.XmlConfig;
-import net.sourceforge.peers.media.CaptureRtpSender;
 import net.sourceforge.peers.media.Echo;
-import net.sourceforge.peers.media.IncomingRtpReader;
 import net.sourceforge.peers.media.MediaManager;
 import net.sourceforge.peers.media.MediaMode;
 import net.sourceforge.peers.media.SoundManager;
@@ -59,8 +57,6 @@ public class UserAgent {
     private List<String> peers;
     //private List<Dialog> dialogs;
     
-    private CaptureRtpSender captureRtpSender;
-    private IncomingRtpReader incomingRtpReader;
     //TODO factorize echo and captureRtpSender
     private Echo echo;
     
@@ -247,22 +243,6 @@ public class UserAgent {
     public boolean isRegistered() {
         return uac.getInitialRequestManager().getRegisterHandler()
             .isRegistered();
-    }
-
-    public CaptureRtpSender getCaptureRtpSender() {
-        return captureRtpSender;
-    }
-
-    public void setCaptureRtpSender(CaptureRtpSender captureRtpSender) {
-        this.captureRtpSender = captureRtpSender;
-    }
-
-    public IncomingRtpReader getIncomingRtpReader() {
-        return incomingRtpReader;
-    }
-
-    public void setIncomingRtpReader(IncomingRtpReader incomingRtpReader) {
-        this.incomingRtpReader = incomingRtpReader;
     }
 
     public UAS getUas() {

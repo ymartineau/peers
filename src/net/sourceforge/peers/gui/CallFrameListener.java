@@ -26,5 +26,6 @@ public interface CallFrameListener {
     public void hangupClicked(SipRequest sipRequest);
     public void pickupClicked(SipRequest sipRequest);
     public void busyHereClicked(SipRequest sipRequest);
+    public void dtmf(char digit);
 
 }

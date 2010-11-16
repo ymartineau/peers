@@ -29,6 +29,7 @@ import javax.swing.SwingUtilities;
 
 import net.sourceforge.peers.Config;
 import net.sourceforge.peers.Logger;
+import net.sourceforge.peers.media.MediaManager;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.core.useragent.SipListener;
@@ -211,6 +212,12 @@ public class EventManager implements SipListener, MainFrameListener,
     @Override
     public synchronized void busyHereClicked(SipRequest sipRequest) {
         userAgent.getUas().rejectCall(sipRequest);
+    }
+    
+    @Override
+    public void dtmf(char digit) {
+        MediaManager mediaManager = userAgent.getMediaManager();
+        mediaManager.sendDtmf(digit);
     }
 
     private CallFrame getCallFrame(SipMessage sipMessage) {

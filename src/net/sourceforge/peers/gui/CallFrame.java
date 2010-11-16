@@ -19,7 +19,7 @@
 
 package net.sourceforge.peers.gui;
 
-import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Container;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -27,6 +27,7 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 
 import javax.swing.BorderFactory;
+import javax.swing.BoxLayout;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -56,6 +57,7 @@ public class CallFrame implements ActionListener, WindowListener {
 
     private JFrame frame;
     private JPanel callPanel;
+    private JPanel callPanelContainer;
     private CallFrameListener callFrameListener;
     private SipRequest sipRequest;
 
@@ -72,11 +74,17 @@ public class CallFrame implements ActionListener, WindowListener {
         state = INIT;
         this.callFrameListener = callFrameListener;
         frame = new JFrame(remoteParty);
+        Container contentPane = frame.getContentPane();
+        contentPane.setLayout(new BoxLayout(contentPane, BoxLayout.Y_AXIS));
         JLabel remotePartyLabel = new JLabel(remoteParty);
         Border remotePartyBorder = BorderFactory.createEmptyBorder(5, 5, 0, 5);
         remotePartyLabel.setBorder(remotePartyBorder);
-        Container contentPane = frame.getContentPane();
-        contentPane.add(remotePartyLabel, BorderLayout.PAGE_START);
+        remotePartyLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        contentPane.add(remotePartyLabel);
+        Keypad keypad = new Keypad(this);
+        contentPane.add(keypad);
+        callPanelContainer = new JPanel();
+        contentPane.add(callPanelContainer);
         frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         frame.addWindowListener(this);
     }
@@ -139,12 +147,10 @@ public class CallFrame implements ActionListener, WindowListener {
     }
 
     public void setCallPanel(JPanel callPanel) {
-        Container contentPane = frame.getContentPane();
         if (this.callPanel != null) {
-            contentPane.remove(this.callPanel);
-            frame.remove(this.callPanel);
+            callPanelContainer.remove(this.callPanel);
         }
-        contentPane.add(callPanel, BorderLayout.CENTER);
+        callPanelContainer.add(callPanel);
         frame.pack();
         this.callPanel = callPanel;
     }
@@ -154,7 +160,8 @@ public class CallFrame implements ActionListener, WindowListener {
         JLabel label = new JLabel(text);
         Border labelBorder = BorderFactory.createEmptyBorder(0, 5, 0, 5);
         label.setBorder(labelBorder);
-        container.add(label, BorderLayout.PAGE_END);
+        label.setAlignmentX(Component.CENTER_ALIGNMENT);
+        container.add(label);
         frame.pack();
     }
 
@@ -230,6 +237,10 @@ public class CallFrame implements ActionListener, WindowListener {
 
     @Override
     public void windowOpened(WindowEvent e) {
+    }
+
+    public void keypadEvent(char c) {
+        callFrameListener.dtmf(c);
     }
 
 }

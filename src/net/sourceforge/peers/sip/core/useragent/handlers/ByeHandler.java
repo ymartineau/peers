@@ -23,6 +23,7 @@ import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.media.CaptureRtpSender;
 import net.sourceforge.peers.media.Echo;
 import net.sourceforge.peers.media.IncomingRtpReader;
+import net.sourceforge.peers.media.MediaManager;
 import net.sourceforge.peers.media.SoundManager;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.core.useragent.MidDialogRequestManager;
@@ -82,7 +83,9 @@ public class ByeHandler extends DialogMethodHandler
         Logger.debug("removed dialog " + dialog.getId());
         switch (userAgent.getMediaMode()) {
         case captureAndPlayback:
-            CaptureRtpSender captureRtpSender = userAgent.getCaptureRtpSender();
+            MediaManager mediaManager = userAgent.getMediaManager();
+            CaptureRtpSender captureRtpSender =
+                mediaManager.getCaptureRtpSender();
             if (captureRtpSender != null) {
                 captureRtpSender.stop();
                 while (!captureRtpSender.isTerminated()) {
@@ -92,12 +95,13 @@ public class ByeHandler extends DialogMethodHandler
                         Logger.debug("sleep interrupted");
                     }
                 }
-                userAgent.setCaptureRtpSender(null);
+                userAgent.getMediaManager().setCaptureRtpSender(null);
             }
-            IncomingRtpReader incomingRtpReader = userAgent.getIncomingRtpReader();
+            IncomingRtpReader incomingRtpReader =
+                mediaManager.getIncomingRtpReader();
             if (incomingRtpReader != null) {
                 incomingRtpReader.stop();
-                userAgent.setIncomingRtpReader(null);
+                mediaManager.setIncomingRtpReader(null);
             }
             SoundManager soundManager = userAgent.getSoundManager();
             if (soundManager != null) {

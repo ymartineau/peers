@@ -120,4 +120,9 @@ public class CaptureRtpSender {
         }
         return rtpSender.isTerminated();
     }
+
+    public RtpSender getRtpSender() {
+        return rtpSender;
+    }
+
 }
