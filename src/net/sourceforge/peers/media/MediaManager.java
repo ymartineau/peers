@@ -21,8 +21,10 @@ package net.sourceforge.peers.media;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
+import java.util.List;
 
 import net.sourceforge.peers.Logger;
+import net.sourceforge.peers.rtp.RtpPacket;
 import net.sourceforge.peers.sdp.Codec;
 import net.sourceforge.peers.sip.core.useragent.UserAgent;
 
@@ -31,17 +33,20 @@ public class MediaManager {
     public static final int DEFAULT_CLOCK = 8000; // Hz
 
     private UserAgent userAgent;
+    private CaptureRtpSender captureRtpSender;
+    private IncomingRtpReader incomingRtpReader;
+    private DtmfFactory dtmfFactory;
 
     public MediaManager(UserAgent userAgent) {
         super();
         this.userAgent = userAgent;
+        dtmfFactory = new DtmfFactory();
     }
 
     public void successResponseReceived(String localAddress,
             String remoteAddress, int remotePort, Codec codec) {
         switch (userAgent.getMediaMode()) {
         case captureAndPlayback:
-            CaptureRtpSender captureRtpSender;
             //TODO this could be optimized, create captureRtpSender at stack init
             //     and just retrieve it here
             SoundManager soundManager = userAgent.getSoundManager();
@@ -55,7 +60,6 @@ public class MediaManager {
                 Logger.error("input/output error", e);
                 return;
             }
-            userAgent.setCaptureRtpSender(captureRtpSender);
 
             try {
                 captureRtpSender.start();
@@ -63,7 +67,6 @@ public class MediaManager {
                 Logger.error("input/output error", e);
             }
             
-            IncomingRtpReader incomingRtpReader;
             try {
                 //TODO retrieve port from SDP offer
 //                    incomingRtpReader = new IncomingRtpReader(localAddress,
@@ -75,7 +78,6 @@ public class MediaManager {
                 Logger.error("input/output error", e);
                 return;
             }
-            userAgent.setIncomingRtpReader(incomingRtpReader);
 
             incomingRtpReader.start();
             break;
@@ -105,10 +107,6 @@ public class MediaManager {
         case captureAndPlayback:
             //TODO this could be optimized, create captureRtpSender at stack init
             //     and just retrieve it here
-            CaptureRtpSender captureRtpSender;
-            captureRtpSender = userAgent.getCaptureRtpSender();
-            IncomingRtpReader incomingRtpReader =
-                userAgent.getIncomingRtpReader();
             if (incomingRtpReader != null) {
                 incomingRtpReader.stop();
             }
@@ -134,7 +132,6 @@ public class MediaManager {
                 Logger.error("input/output error", e);
                 return;
             }
-            userAgent.setCaptureRtpSender(captureRtpSender);
             try {
                 captureRtpSender.start();
             } catch (IOException e) {
@@ -152,7 +149,6 @@ public class MediaManager {
                 Logger.error("input/output error", e);
                 return;
             }
-            userAgent.setIncomingRtpReader(incomingRtpReader);
 
             incomingRtpReader.start();
             break;
@@ -176,5 +172,27 @@ public class MediaManager {
         default:
             break;
         }
+    }
+
+    public void sendDtmf(char digit) {
+        List<RtpPacket> rtpPackets = dtmfFactory.createDtmfPackets(digit);
+        RtpSender rtpSender = captureRtpSender.getRtpSender();
+        rtpSender.pushPackets(rtpPackets);
+    }
+
+    public CaptureRtpSender getCaptureRtpSender() {
+        return captureRtpSender;
+    }
+
+    public void setCaptureRtpSender(CaptureRtpSender captureRtpSender) {
+        this.captureRtpSender = captureRtpSender;
+    }
+
+    public IncomingRtpReader getIncomingRtpReader() {
+        return incomingRtpReader;
+    }
+
+    public void setIncomingRtpReader(IncomingRtpReader incomingRtpReader) {
+        this.incomingRtpReader = incomingRtpReader;
     }
 }
