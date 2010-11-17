@@ -19,11 +19,14 @@
 
 package net.sourceforge.peers.sip.transport;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
 
+import net.sourceforge.peers.Config;
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.Utils;
@@ -46,13 +49,15 @@ public abstract class MessageReceiver implements Runnable {
     private SipServerTransportUser sipServerTransportUser;
     private TransactionManager transactionManager;
     private TransportManager transportManager;
+    private Config config;
 
     public MessageReceiver(int port, TransactionManager transactionManager,
-            TransportManager transportManager) {
+            TransportManager transportManager, Config config) {
         super();
         this.port = port;
         this.transactionManager = transactionManager;
         this.transportManager = transportManager;
+        this.config = config;
         isListening = true;
     }
     
@@ -82,8 +87,29 @@ public abstract class MessageReceiver implements Runnable {
         return true;
     }
     
-    protected void processMessage(byte[] message, InetAddress sourceIp)
-            throws IOException {
+    protected void processMessage(byte[] message, InetAddress sourceIp,
+            int sourcePort, String transport) throws IOException {
+        ByteArrayInputStream byteArrayInputStream =
+            new ByteArrayInputStream(message);
+        InputStreamReader inputStreamReader = new InputStreamReader(
+                byteArrayInputStream);
+        BufferedReader reader = new BufferedReader(inputStreamReader);
+        String startLine = reader.readLine();
+        while (startLine == null || startLine.equals("")) {
+            startLine = reader.readLine();
+        }
+        if (!startLine.contains(RFC3261.DEFAULT_SIP_VERSION)) {
+            // keep-alive, send back to sender
+            SipTransportConnection sipTransportConnection =
+                new SipTransportConnection(config.getLocalInetAddress(),
+                        port, sourceIp, sourcePort, transport);
+            MessageSender messageSender = transportManager.getMessageSender(
+                    sipTransportConnection);
+            if (messageSender != null) {
+                messageSender.sendBytes(message);
+            }
+            return;
+        }
         SipMessage sipMessage = null;
         try {
             sipMessage = transportManager.sipParser.parse(

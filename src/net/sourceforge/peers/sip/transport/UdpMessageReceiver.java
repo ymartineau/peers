@@ -25,7 +25,9 @@ import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 
+import net.sourceforge.peers.Config;
 import net.sourceforge.peers.Logger;
+import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.transaction.TransactionManager;
 
 
@@ -35,8 +37,10 @@ public class UdpMessageReceiver extends MessageReceiver {
     
     public UdpMessageReceiver(DatagramSocket datagramSocket,
             TransactionManager transactionManager,
-            TransportManager transportManager) throws SocketException {
-        super(datagramSocket.getLocalPort(), transactionManager, transportManager);
+            TransportManager transportManager, Config config)
+            throws SocketException {
+        super(datagramSocket.getLocalPort(), transactionManager,
+                transportManager, config);
         this.datagramSocket = datagramSocket;
     }
 
@@ -59,7 +63,8 @@ public class UdpMessageReceiver extends MessageReceiver {
         // ignore keep-alive empty packets (4 NUL bytes = 4 0x00 bytes)
         // here we just check the packet length, may it be 0x00 bytes or not
         if (packet.getLength() != 4) {
-            processMessage(trimmedPacket, packet.getAddress());
+            processMessage(trimmedPacket, packet.getAddress(),
+                    packet.getPort(), RFC3261.TRANSPORT_UDP);
         }
     }
 
