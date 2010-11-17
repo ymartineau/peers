@@ -82,7 +82,7 @@ public abstract class MessageSender {
 
         @Override
         public void run() {
-            byte[] bytes = {0, 0, 0, 0};
+            byte[] bytes = (RFC3261.CRLF + RFC3261.CRLF).getBytes();
             try {
                 sendBytes(bytes);
             } catch (IOException e) {
