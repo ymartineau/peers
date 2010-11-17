@@ -19,6 +19,7 @@
 
 package net.sourceforge.peers.gui;
 
+import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -52,6 +53,9 @@ public class Keypad extends JPanel implements ActionListener {
             add(button);
         }
         setBorder(BorderFactory.createEmptyBorder(5, 10, 0, 10));
+        Dimension dimension = new Dimension(180, 115);
+        setMinimumSize(dimension);
+        setMaximumSize(dimension);
     }
 
     @Override
