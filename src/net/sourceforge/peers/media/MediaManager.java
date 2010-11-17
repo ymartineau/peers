@@ -175,9 +175,11 @@ public class MediaManager {
     }
 
     public void sendDtmf(char digit) {
-        List<RtpPacket> rtpPackets = dtmfFactory.createDtmfPackets(digit);
-        RtpSender rtpSender = captureRtpSender.getRtpSender();
-        rtpSender.pushPackets(rtpPackets);
+        if (captureRtpSender != null) {
+            List<RtpPacket> rtpPackets = dtmfFactory.createDtmfPackets(digit);
+            RtpSender rtpSender = captureRtpSender.getRtpSender();
+            rtpSender.pushPackets(rtpPackets);
+        }
     }
 
     public CaptureRtpSender getCaptureRtpSender() {
