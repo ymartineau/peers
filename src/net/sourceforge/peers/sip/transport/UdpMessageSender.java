@@ -49,13 +49,18 @@ public class UdpMessageSender extends MessageSender {
             return;
         }
         byte[] buf = sipMessage.toString().getBytes();
-        DatagramPacket packet = new DatagramPacket(buf, buf.length, inetAddress,
-                port);
-        datagramSocket.send(packet);
+        sendBytes(buf);
         StringBuffer direction = new StringBuffer();
         direction.append("SENT to ").append(inetAddress.getHostAddress());
         direction.append("/").append(port);
-        Logger.traceNetwork(new String(packet.getData()), direction.toString());
+        Logger.traceNetwork(new String(buf), direction.toString());
+    }
+
+    @Override
+    public synchronized void sendBytes(byte[] bytes) throws IOException {
+        DatagramPacket packet = new DatagramPacket(bytes, bytes.length,
+                inetAddress, port);
+        datagramSocket.send(packet);
     }
 
 }

@@ -319,8 +319,8 @@ public class TransportManager {
         MessageReceiver messageReceiver = null;
         if (RFC3261.TRANSPORT_UDP.equalsIgnoreCase(conn.getTransport())) {
             DatagramSocket datagramSocket = (DatagramSocket)socket;
-            messageReceiver = new UdpMessageReceiver(datagramSocket, transactionManager,
-                    this);
+            messageReceiver = new UdpMessageReceiver(datagramSocket,
+                    transactionManager, this, config);
             messageReceiver.setSipServerTransportUser(sipServerTransportUser);
         }
         messageReceivers.put(conn, messageReceiver);
@@ -339,8 +339,8 @@ public class TransportManager {
                 datagramSockets.put(conn, datagramSocket);
                 Logger.info("added datagram socket " + conn);
             }
-            messageReceiver = new UdpMessageReceiver(datagramSocket, transactionManager,
-                    this);
+            messageReceiver = new UdpMessageReceiver(datagramSocket,
+                    transactionManager, this, config);
             messageReceiver.setSipServerTransportUser(sipServerTransportUser);
             //TODO create also tcp receiver using a recursive call
         } else {
@@ -376,6 +376,11 @@ public class TransportManager {
 		datagramSockets.clear();
 		messageReceivers.clear();
 		messageSenders.clear();
+    }
+
+    public MessageSender getMessageSender(
+            SipTransportConnection sipTransportConnection) {
+        return messageSenders.get(sipTransportConnection);
     }
 
 }

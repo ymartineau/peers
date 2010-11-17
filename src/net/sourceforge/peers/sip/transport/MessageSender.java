@@ -21,18 +21,24 @@ package net.sourceforge.peers.sip.transport;
 
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import net.sourceforge.peers.Config;
+import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.RFC3261;
 
 
 public abstract class MessageSender {
+
+    public static final int KEEY_ALIVE_INTERVAL = 25; // seconds
 
     protected InetAddress inetAddress;
     protected int port;
     protected int localPort;
     private Config config;
     private String transportName;
+    private Timer timer;
     
     public MessageSender(InetAddress inetAddress, int port, Config config,
             String transportName) {
@@ -41,9 +47,14 @@ public abstract class MessageSender {
         this.port = port;
         this.config = config;
         this.transportName = transportName;
+        timer = new Timer();
+        //TODO check config
+        timer.scheduleAtFixedRate(new KeepAlive(), 0,
+                1000 * KEEY_ALIVE_INTERVAL);
     }
     
     public abstract void sendMessage(SipMessage sipMessage) throws IOException;
+    public abstract void sendBytes(byte[] bytes) throws IOException;
 
     public String getContact() {
         StringBuffer buf = new StringBuffer();
@@ -66,5 +77,19 @@ public abstract class MessageSender {
     public int getLocalPort() {
         return localPort;
     }
-    
+
+    class KeepAlive extends TimerTask {
+
+        @Override
+        public void run() {
+            byte[] bytes = {0, 0, 0, 0};
+            try {
+                sendBytes(bytes);
+            } catch (IOException e) {
+                Logger.error(e.getMessage(), e);
+            }
+        }
+
+    }
+
 }
