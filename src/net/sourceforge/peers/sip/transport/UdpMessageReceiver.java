@@ -56,10 +56,6 @@ public class UdpMessageReceiver extends MessageReceiver {
         byte[] trimmedPacket = new byte[packet.getLength()];
         System.arraycopy(packet.getData(), 0,
                 trimmedPacket, 0, trimmedPacket.length);
-        StringBuffer direction = new StringBuffer();
-        direction.append("RECEIVED from ").append(packet.getAddress().getHostAddress());
-        direction.append("/").append(packet.getPort());
-        Logger.traceNetwork(new String(trimmedPacket), direction.toString());
         processMessage(trimmedPacket, packet.getAddress(),
                 packet.getPort(), RFC3261.TRANSPORT_UDP);
     }

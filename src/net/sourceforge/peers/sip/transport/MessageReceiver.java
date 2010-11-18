@@ -110,6 +110,11 @@ public abstract class MessageReceiver implements Runnable {
             }
             return;
         }
+        StringBuffer direction = new StringBuffer();
+        direction.append("RECEIVED from ").append(sourceIp.getHostAddress());
+        direction.append("/").append(sourcePort);
+        Logger.traceNetwork(new String(message),
+                direction.toString());
         SipMessage sipMessage = null;
         try {
             sipMessage = transportManager.sipParser.parse(
