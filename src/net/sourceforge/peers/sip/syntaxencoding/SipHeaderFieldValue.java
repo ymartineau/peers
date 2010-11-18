@@ -50,18 +50,20 @@ public class SipHeaderFieldValue {
         if (paramsString.contains(RFC3261.PARAM_SEPARATOR)) {
             String[] arr = paramsString.split(RFC3261.PARAM_SEPARATOR);
             if (arr.length > 1) {
-                for (int i = 0; i < arr.length - 1; ++i) {
-                    String[] paramNameValue = arr[i+1].split(RFC3261.PARAM_ASSIGNMENT);
-                    if (paramNameValue.length != 2) {
-                        continue;
+                for (int i = 1; i < arr.length; ++i) {
+                    String paramName = arr[i];
+                    String paramValue = "";
+                    pos = paramName.indexOf(RFC3261.PARAM_ASSIGNMENT);
+                    if (pos > -1) {
+                        paramName = arr[i].substring(0, pos);
+                        paramValue = arr[i].substring(pos + 1);
                     }
-                    params.put(new SipHeaderParamName(paramNameValue[0]),
-                            paramNameValue[1]);
+                    params.put(new SipHeaderParamName(paramName), paramValue);
                 }
             }
         }
     }
-    
+
     public String getParam(SipHeaderParamName name) {
         return params.get(name);
     }

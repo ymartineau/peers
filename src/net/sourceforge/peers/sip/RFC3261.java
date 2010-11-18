@@ -71,18 +71,21 @@ public final class RFC3261 {
     
         //Parameters
     
-    public static final String PARAM_SEPARATOR  = ";";
-    public static final String PARAM_ASSIGNMENT = "=";
-    public static final String PARAM_MADDR      = "maddr";
-    public static final String PARAM_TTL        = "ttl";
-    public static final String PARAM_SENTBY     = "sent-by";
     public static final String PARAM_BRANCH     = "branch";
+    public static final String PARAM_EXPIRES    = "expires";
+    public static final String PARAM_MADDR      = "maddr";
+    public static final String PARAM_RECEIVED   = "received";
+    public static final String PARAM_RPORT      = "rport";
+    public static final String PARAM_SENTBY     = "sent-by";
     public static final String PARAM_TAG        = "tag";
     public static final String PARAM_TRANSPORT  = "transport";
-    public static final String PARAM_RECEIVED   = "received";
-    public static final String PARAM_EXPIRES    = "expires";
-    
+    public static final String PARAM_TTL        = "ttl";
+
+    public static final String PARAM_SEPARATOR  = ";";
+    public static final String PARAM_ASSIGNMENT = "=";
+
         //Miscellaneous
+
     public static final char   FIELD_NAME_SEPARATOR = ':';
     public static final String DEFAULT_SIP_VERSION  = "SIP/2.0";
     public static final String CRLF                 = "\r\n";
