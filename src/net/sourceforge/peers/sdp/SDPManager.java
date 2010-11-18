@@ -75,19 +75,25 @@ public class SDPManager {
         List<MediaDescription> mediaDescriptions = sessionDescription.getMediaDescriptions();
         for (MediaDescription mediaDescription: mediaDescriptions) {
             if (RFC4566.MEDIA_AUDIO.equals(mediaDescription.getType())) {
-                Codec codec = mediaDescription.getCodecs().get(0);
-                if (codec == null) {
-                    throw new NoCodecException();
+                for (Codec offerCodec: mediaDescription.getCodecs()) {
+                    if (supportedCodecs.contains(offerCodec)) {
+                        String offerCodecName = offerCodec.getName();
+                        if (offerCodecName.equalsIgnoreCase(RFC3551.PCMU) ||
+                                offerCodecName.equalsIgnoreCase(RFC3551.PCMA)) {
+                            int destPort = mediaDescription.getPort();
+                            if (mediaDescription.getIpAddress() != null) {
+                                destAddress = mediaDescription.getIpAddress();
+                            }
+                            MediaDestination mediaDestination =
+                                new MediaDestination();
+                            mediaDestination.setDestination(
+                                    destAddress.getHostAddress());
+                            mediaDestination.setPort(destPort);
+                            mediaDestination.setCodec(offerCodec);
+                            return mediaDestination;
+                        }
+                    }
                 }
-                int destPort = mediaDescription.getPort();
-                if (mediaDescription.getIpAddress() != null) {
-                    destAddress = mediaDescription.getIpAddress();
-                }
-                MediaDestination mediaDestination = new MediaDestination();
-                mediaDestination.setDestination(destAddress.getHostAddress());
-                mediaDestination.setPort(destPort);
-                mediaDestination.setCodec(codec);
-                return mediaDestination;
             }
         }
         throw new NoCodecException();

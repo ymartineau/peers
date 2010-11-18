@@ -51,8 +51,7 @@ public class Codec {
         if (codec.getName() == null) {
             return name == null;
         }
-        return codec.getPayloadType() == payloadType
-            && codec.getName().equalsIgnoreCase(name);
+        return codec.getName().equalsIgnoreCase(name);
     }
 
     @Override
