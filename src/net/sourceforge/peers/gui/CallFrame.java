@@ -149,6 +149,7 @@ public class CallFrame implements ActionListener, WindowListener {
     public void setCallPanel(JPanel callPanel) {
         if (this.callPanel != null) {
             callPanelContainer.remove(this.callPanel);
+            frame.pack();
         }
         callPanelContainer.add(callPanel);
         frame.pack();
