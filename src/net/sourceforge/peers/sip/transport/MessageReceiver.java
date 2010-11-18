@@ -122,6 +122,9 @@ public abstract class MessageReceiver implements Runnable {
         if (sipMessage == null) {
             return;
         }
+
+        // RFC3261 18.2
+
         if (sipMessage instanceof SipRequest) {
             SipRequest sipRequest = (SipRequest)sipMessage;
             
@@ -135,13 +138,21 @@ public abstract class MessageReceiver implements Runnable {
                     colonPos = sentBy.length();
                 }
                 sentBy = sentBy.substring(0, colonPos);
+                if (!InetAddress.getByName(sentBy).equals(sourceIp)) {
+                    topVia.addParam(new SipHeaderParamName(
+                            RFC3261.PARAM_RECEIVED),
+                            sourceIp.getHostAddress());
+                }
             }
-            if (InetAddress.getByName(sentBy).equals(sourceIp)) {
-                topVia.addParam(new SipHeaderParamName(RFC3261.PARAM_RECEIVED),
-                        sourceIp.getHostAddress());
+            //RFC3581
+            //TODO check rport configuration
+            SipHeaderParamName rportName = new SipHeaderParamName(
+                    RFC3261.PARAM_RPORT);
+            String rport = topVia.getParam(rportName);
+            if (rport != null && "".equals(rport)) {
+                topVia.removeParam(rportName);
+                topVia.addParam(rportName, String.valueOf(sourcePort));
             }
-            
-            
             
             ServerTransaction serverTransaction =
                 transactionManager.getServerTransaction(sipRequest);

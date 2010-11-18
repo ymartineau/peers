@@ -58,7 +58,6 @@ public abstract class MessageSender {
 
     public String getContact() {
         StringBuffer buf = new StringBuffer();
-        //buf.append(datagramSocket.getLocalAddress().getHostAddress());
         InetAddress myAddress = config.getPublicInetAddress();
         if (myAddress == null) {
             myAddress = config.getLocalInetAddress();
@@ -66,7 +65,6 @@ public abstract class MessageSender {
         buf.append(myAddress.getHostAddress());
         buf.append(RFC3261.TRANSPORT_PORT_SEP);
         buf.append(config.getSipPort());
-        //buf.append(datagramSocket.getLocalPort());
         buf.append(RFC3261.PARAM_SEPARATOR);
         buf.append(RFC3261.PARAM_TRANSPORT);
         buf.append(RFC3261.PARAM_ASSIGNMENT);

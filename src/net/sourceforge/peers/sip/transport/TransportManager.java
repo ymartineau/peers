@@ -109,6 +109,10 @@ public class TransportManager {
                 via.addParam(ttlName, IPV4_TTL);
             }
         }
+        //RFC3581
+        //TODO check config
+        via.addParam(new SipHeaderParamName(RFC3261.PARAM_RPORT), "");
+
         buf.append(TRANSPORT_VIA_SEP2);//space
         
         //TODO user server connection
@@ -212,6 +216,13 @@ public class TransportManager {
             topVia.getParam(new SipHeaderParamName(RFC3261.PARAM_RECEIVED));
         if (received != null) {
             host = received;
+        }
+        //RFC3581
+        //TODO check config
+        String rport = topVia.getParam(new SipHeaderParamName(
+                RFC3261.PARAM_RPORT));
+        if (rport != null) {
+            port = Integer.parseInt(rport);
         }
         SipTransportConnection connection;
         try {

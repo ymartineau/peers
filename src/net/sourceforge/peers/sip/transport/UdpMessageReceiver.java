@@ -60,12 +60,8 @@ public class UdpMessageReceiver extends MessageReceiver {
         direction.append("RECEIVED from ").append(packet.getAddress().getHostAddress());
         direction.append("/").append(packet.getPort());
         Logger.traceNetwork(new String(trimmedPacket), direction.toString());
-        // ignore keep-alive empty packets (4 NUL bytes = 4 0x00 bytes)
-        // here we just check the packet length, may it be 0x00 bytes or not
-        if (packet.getLength() != 4) {
-            processMessage(trimmedPacket, packet.getAddress(),
-                    packet.getPort(), RFC3261.TRANSPORT_UDP);
-        }
+        processMessage(trimmedPacket, packet.getAddress(),
+                packet.getPort(), RFC3261.TRANSPORT_UDP);
     }
 
 
