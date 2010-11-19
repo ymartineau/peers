@@ -34,6 +34,7 @@ import net.sourceforge.peers.sip.transport.SipMessage;
 public class Utils {
 
     public static final String PEERSHOME_SYSTEM_PROPERTY = "peers.home";
+    public static final String DEFAULT_PEERS_HOME = ".";
 
     public final static SipHeaderFieldValue getTopVia(SipMessage sipMessage) {
         SipHeaders sipHeaders = sipMessage.getSipHeaders();
@@ -130,6 +131,6 @@ public class Utils {
         if (peersHome != null && !"".equals(peersHome.trim())) {
             return peersHome + File.separator;
         }
-        return "";
+        return DEFAULT_PEERS_HOME;
     }
 }

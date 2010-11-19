@@ -21,6 +21,9 @@ package net.sourceforge.peers.gui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -47,9 +50,14 @@ import net.sourceforge.peers.sip.transport.SipResponse;
 public class EventManager implements SipListener, MainFrameListener,
         CallFrameListener, ActionListener {
 
-    public static final String ACTION_EXIT        = "Exit";
-    public static final String ACTION_ACCOUNT     = "Account";
-    public static final String ACTION_PREFERENCES = "Preferences";
+    public static final String PEERS_URL = "http://peers.sourceforge.net/";
+    public static final String PEERS_USER_MANUAL = PEERS_URL + "user_manual";
+
+    public static final String ACTION_EXIT          = "Exit";
+    public static final String ACTION_ACCOUNT       = "Account";
+    public static final String ACTION_PREFERENCES   = "Preferences";
+    public static final String ACTION_ABOUT         = "About";
+    public static final String ACTION_DOCUMENTATION = "Documentation";
 
     private UserAgent userAgent;
     private MainFrame mainFrame;
@@ -247,6 +255,28 @@ public class EventManager implements SipListener, MainFrameListener,
             };
         } else if (ACTION_PREFERENCES.equals(action)) {
             //TODO
+        } else if (ACTION_ABOUT.equals(action)) {
+            runnable = new Runnable() {
+                @Override
+                public void run() {
+                    AboutFrame aboutFrame = new AboutFrame();
+                    aboutFrame.setVisible(true);
+                }
+            };
+        } else if (ACTION_DOCUMENTATION.equals(action)) {
+            runnable = new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        URI uri = new URI(PEERS_USER_MANUAL);
+                        java.awt.Desktop.getDesktop().browse(uri);
+                    } catch (URISyntaxException e) {
+                        Logger.error(e.getMessage(), e);
+                    } catch (IOException e) {
+                        Logger.error(e.getMessage(), e);
+                    }
+                }
+            };
         }
         if (runnable != null) {
             SwingUtilities.invokeLater(runnable);

@@ -78,7 +78,12 @@ public class MainFrame implements WindowListener, ActionListener {
         } catch (Exception e) {
             Logger.error("cannot change look and feel", e);
         }
-        String title = Utils.getPeersHome() + "Peers: SIP User-Agent";
+        String peersHome = Utils.getPeersHome();
+        String title = "";
+        if (!Utils.DEFAULT_PEERS_HOME.equals(peersHome)) {
+            title = peersHome;
+        }
+        title += "Peers: SIP User-Agent";
         mainFrame = new JFrame(title);
         mainFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         mainFrame.addWindowListener(this);
@@ -140,6 +145,7 @@ public class MainFrame implements WindowListener, ActionListener {
         menuItem.addActionListener(eventManager);
         menu.add(menuItem);
         menuBar.add(menu);
+
         menu = new JMenu("Edit");
         menu.setMnemonic('E');
         menuItem = new JMenuItem("Account");
@@ -150,6 +156,20 @@ public class MainFrame implements WindowListener, ActionListener {
         menuItem = new JMenuItem("Preferences");
         menuItem.setMnemonic('P');
         menuItem.setActionCommand(EventManager.ACTION_PREFERENCES);
+        menuItem.addActionListener(eventManager);
+        menu.add(menuItem);
+        menuBar.add(menu);
+
+        menu = new JMenu("Help");
+        menu.setMnemonic('H');
+        menuItem = new JMenuItem("User manual");
+        menuItem.setMnemonic('D');
+        menuItem.setActionCommand(EventManager.ACTION_DOCUMENTATION);
+        menuItem.addActionListener(eventManager);
+        menu.add(menuItem);
+        menuItem = new JMenuItem("About");
+        menuItem.setMnemonic('A');
+        menuItem.setActionCommand(EventManager.ACTION_ABOUT);
         menuItem.addActionListener(eventManager);
         menu.add(menuItem);
         menuBar.add(menu);
