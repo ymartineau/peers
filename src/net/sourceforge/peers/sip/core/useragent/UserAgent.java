@@ -78,7 +78,8 @@ public class UserAgent {
 
     public UserAgent(SipListener sipListener) {
         this.sipListener = sipListener;
-        config = new XmlConfig(Utils.getPeersHome() + CONFIG_FILE);
+        config = new XmlConfig(Utils.getPeersHome() + File.separator
+                + CONFIG_FILE);
         
         cseqCounter = 1;
         

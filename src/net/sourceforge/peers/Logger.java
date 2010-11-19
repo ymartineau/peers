@@ -31,10 +31,10 @@ import net.sourceforge.peers.sip.Utils;
 
 public class Logger {
 
-    public final static String LOG_FILE =
-        Utils.getPeersHome() + "logs" + File.separator + "peers.log";
-    public final static String NETWORK_FILE =
-        Utils.getPeersHome() + "logs" + File.separator + "transport.log";
+    public final static String LOG_FILE = Utils.getPeersHome()
+        + File.separator + "logs" + File.separator + "peers.log";
+    public final static String NETWORK_FILE = Utils.getPeersHome()
+        + File.separator + "logs" + File.separator + "transport.log";
     
     private static PrintWriter logWriter;
     private static PrintWriter networkWriter;

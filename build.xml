@@ -19,6 +19,7 @@
   -->
 <project name="peers" default="dist">
 
+  <property name="main.class" value="net.sourceforge.peers.gui.MainFrame"/>
   <property name="build.dir" value="build"/>
   <property name="classes.dir" value="${build.dir}/classes"/>
   <property name="lib.dir" value="lib"/>
@@ -70,7 +71,15 @@
 
   <target name="jar" depends="compile">
     <jar destfile="${build.dir}/${ant.project.name}.jar"
-         basedir="${classes.dir}"/>
+         basedir="${classes.dir}">
+      <fileset dir="${src.dir}">
+        <include name="**/*.png"/>
+        <include name="**/*.gif"/>
+      </fileset>
+      <manifest>
+        <attribute name="Main-Class" value="${main.class}"/>
+      </manifest>
+    </jar>
   </target>
 
   <target name="dist" depends="jar">
