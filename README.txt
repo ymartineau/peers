@@ -15,9 +15,17 @@ not already done.
 SPECIFICATION
 
 
-Peers is a SIP User-Agent compatible with RFC3261, you can
-retrieve this specification here:
-  http://www.ietf.org/rfc/rfc3261.txt
+Peers is a software phone (softphone) compatible with the
+following specifications:
+ - RFC 3261 (SIP),
+ - RFC 4566 (SDP),
+ - RFC 3550 (RTP),
+ - RFC 3551 (RTP Audio/Video profile),
+ - RFC 2617 (Digest Authentication),
+ - RFC 2833 (DTMF),
+ - ITU-T G.711 (PCMU, PCMA)
+You should easilly retrieve those specifications on internet with
+your favorite search engine.
 
 
 PREREQUISITES
@@ -28,7 +36,7 @@ version 6. You should install the latest Java Runtime Environment
 on your computer if you just want to run the application. If you
 want to compile the sources yourself, you should use the JDK. In
 both cases, you can download the installation files here:
-  http://java.sun.com/javase/downloads/index.jsp
+  http://www.oracle.com/technetwork/java/javase/downloads/index.html
 
 
 CONFIGURATION
@@ -42,6 +50,8 @@ plugins. You can download jEdit here:
   http://www.jedit.org/index.php?page=download
 This provides xml completion and grammar checking which can be
 very useful to avoid simple configuration errors.
+You can also configure your SIP account using graphical user
+interface.
 
 
 RUNNING
@@ -49,16 +59,16 @@ RUNNING
 
 If you are a Windows user you can use the .bat batch script in root
 directory, if you use any Unix compatible sytem, you can use the
-.sh script. You can then call any IP address using SIP protocol,
-if the remote host does not listen on the default SIP port (5060),
-you can use the following example URI:
+.sh script. You can also double click .jar file. You can then call
+any IP address using SIP protocol, if the remote host does not listen
+on the default SIP port (5060), you can use the following example URI:
   sip:192.168.1.2:6060
 For some softphones, it is necessary to add a userpart to the called
 sip uri, for example:
   sip:alice@192.168.1.2:6060
 
-If you configured a sip account in configuration file, you can also
-place calls with usual sip uris:
+If you configured a sip account in configuration file or using gui,
+you can also place calls with usual sip uris:
   sip:bob@biloxi.com
 
 Advanced users can run several peers instances on the same computer.
@@ -69,7 +79,8 @@ instance. peers.xml will need to be updated with this instance
 parameters, peers.xsd can be copied from root conf directory. You will
 need to do this for each instance. <media> parameter in configuration file
 should be activated for at most one peers instance, this avoids comfusion
-in microphone capture and sound playback.
+in microphone capture and sound playback. You should also check that
+SIP and RTP ports are not the same in each configuration file.
 
 Here is an example configuration:
 

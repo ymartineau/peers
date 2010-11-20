@@ -28,6 +28,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import net.sourceforge.peers.Config;
@@ -254,7 +255,12 @@ public class EventManager implements SipListener, MainFrameListener,
                 }
             };
         } else if (ACTION_PREFERENCES.equals(action)) {
-            //TODO
+            runnable = new Runnable() {
+                @Override
+                public void run() {
+                    JOptionPane.showMessageDialog(null, "Not implemented yet");
+                }
+            };
         } else if (ACTION_ABOUT.equals(action)) {
             runnable = new Runnable() {
                 @Override
