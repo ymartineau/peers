@@ -21,6 +21,9 @@ package net.sourceforge.peers.sip.syntaxencoding;
 
 public class SipHeaderFieldName {
 
+    private final static SipHeadersTable SIP_HEADER_TABLE =
+        new SipHeadersTable();
+
     private String name;
     public SipHeaderFieldName(String name) {
         super();
@@ -35,8 +38,8 @@ public class SipHeaderFieldName {
         if (name.equalsIgnoreCase(objName)) {
             return true;
         }
-        SipHeadersTable sipHeadersTable = new SipHeadersTable();
-        return name.equalsIgnoreCase(sipHeadersTable.getLongForm(objName.charAt(0)));
+        return name.equalsIgnoreCase(
+                SIP_HEADER_TABLE.getLongForm(objName.charAt(0)));
     }
 
     @Override

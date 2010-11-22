@@ -19,26 +19,26 @@
 
 package net.sourceforge.peers.sip.syntaxencoding;
 
-import java.util.ArrayList;
+import java.util.List;
 
 public class SipHeaderFieldMultiValue extends SipHeaderFieldValue {
 
-    private ArrayList<SipHeaderFieldValue> values;
+    private List<SipHeaderFieldValue> values;
     
-    private static String toString(ArrayList<SipHeaderFieldValue> arr) {
-        if (arr == null) {
+    private static String toString(List<SipHeaderFieldValue> list) {
+        if (list == null) {
             return null;
         }
-        String arrToString = arr.toString();
+        String arrToString = list.toString();
         return arrToString.substring(1, arrToString.length() - 1);
     }
     
-    public SipHeaderFieldMultiValue(ArrayList<SipHeaderFieldValue> values) {
+    public SipHeaderFieldMultiValue(List<SipHeaderFieldValue> values) {
         super(toString(values));
         this.values = values;
     }
 
-    public ArrayList<SipHeaderFieldValue> getValues() {
+    public List<SipHeaderFieldValue> getValues() {
         return values;
     }
     

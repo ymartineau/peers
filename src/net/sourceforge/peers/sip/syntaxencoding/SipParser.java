@@ -23,6 +23,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.transport.SipMessage;
@@ -36,6 +38,20 @@ public class SipParser {
     
     private final static int BUFF_SIZE = 1024;
     
+    private List<SipHeaderFieldName> singleValueHeaders;
+
+    public SipParser() {
+        singleValueHeaders = new ArrayList<SipHeaderFieldName>();
+        singleValueHeaders.add(new SipHeaderFieldName(
+                RFC3261.HDR_WWW_AUTHENTICATE));
+        singleValueHeaders.add(new SipHeaderFieldName(
+                RFC3261.HDR_AUTHORIZATION));
+        singleValueHeaders.add(new SipHeaderFieldName(
+                RFC3261.HDR_PROXY_AUTHENTICATE));
+        singleValueHeaders.add(new SipHeaderFieldName(
+                RFC3261.HDR_PROXY_AUTHORIZATION));
+    }
+
     public synchronized SipMessage parse(InputStream in)
             throws IOException, SipParserException {
         
@@ -119,8 +135,20 @@ public class SipParser {
             }
             SipHeaderFieldName sipHeaderName = new SipHeaderFieldName(
                     headerLine.substring(0, columnPos).trim());
-            SipHeaderFieldValue sipHeaderValue = new SipHeaderFieldValue(
-                    headerLine.substring(columnPos + 1).trim());
+            String value = headerLine.substring(columnPos + 1).trim();
+            SipHeaderFieldValue sipHeaderValue;
+            if (!singleValueHeaders.contains(sipHeaderName) &&
+                    value.indexOf(RFC3261.HEADER_SEPARATOR) > -1) {
+                String[] values = value.split(RFC3261.HEADER_SEPARATOR);
+                List<SipHeaderFieldValue> list =
+                    new ArrayList<SipHeaderFieldValue>();
+                for (String s: values) {
+                    list.add(new SipHeaderFieldValue(s));
+                }
+                sipHeaderValue = new SipHeaderFieldMultiValue(list);
+            } else {
+                sipHeaderValue = new SipHeaderFieldValue(value);
+            }
             sipHeaders.add(sipHeaderName, sipHeaderValue);
             headerLine = nextLine;
         }

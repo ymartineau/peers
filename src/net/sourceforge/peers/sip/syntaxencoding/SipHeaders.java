@@ -48,15 +48,13 @@ public class SipHeaders {
             if (oldValue instanceof SipHeaderFieldMultiValue) {
                 SipHeaderFieldMultiValue oldMultiVal = (SipHeaderFieldMultiValue) oldValue;
                 oldMultiVal.getValues().add(value);
-            }
-            else {
+            } else {
                 ArrayList<SipHeaderFieldValue> arr = new ArrayList<SipHeaderFieldValue>();
                 arr.add(oldValue);
                 arr.add(value);
                 header.setValue(new SipHeaderFieldMultiValue(arr));
             }
-        }
-        else {
+        } else {
             if (index == -1) {
                 headers.add(header);
             } else {
