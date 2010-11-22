@@ -94,6 +94,7 @@ public final class RFC3261 {
     public static final String LOOSE_ROUTING        = "lr";
     public static final char   LEFT_ANGLE_BRACKET   = '<';
     public static final char   RIGHT_ANGLE_BRACKET  = '>';
+    public static final String HEADER_SEPARATOR     = ",";
     
       //STATUS CODES
     public static final int CODE_MIN_PROV                            = 100;

@@ -21,6 +21,7 @@ package net.sourceforge.peers.sip.core.useragent.handlers;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -238,7 +239,7 @@ public abstract class DialogMethodHandler extends MethodHandler {
         ArrayList<String> routeSet = new ArrayList<String>();
         if (recordRoute != null) {
             if (recordRoute instanceof SipHeaderFieldMultiValue) {
-                ArrayList<SipHeaderFieldValue> values =
+                List<SipHeaderFieldValue> values =
                     ((SipHeaderFieldMultiValue)recordRoute).getValues();
                 for (SipHeaderFieldValue value : values) {
                     //reverse order

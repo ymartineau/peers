@@ -21,7 +21,7 @@ package net.sourceforge.peers.sip.syntaxencoding;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.transport.SipMessage;
@@ -176,13 +176,48 @@ public class SipParserTestNG {
         SipHeaderFieldMultiValue via = (SipHeaderFieldMultiValue)
             sipHeaders.get(new SipHeaderFieldName(RFC3261.HDR_VIA));
         assert via != null;
-        ArrayList<SipHeaderFieldValue> values = via.getValues();
+        List<SipHeaderFieldValue> values = via.getValues();
         assert values.get(0).getValue().indexOf("SIP/2.0/UDP 192.168.20.2") > -1;
         assert values.get(1).getValue().indexOf("SIP/2.0/UDP 172.20.2.168") > -1;
         assert values.get(2).getValue().indexOf("SIP/2.0/UDP 10.1.5.7") > -1;
         assert values.get(3).getValue().indexOf("SIP/2.0/UDP 64.32.165.46") > -1;
     }
     
+    @Test
+    public void testMultiValueHeader() throws IOException, SipParserException {
+        SipMessage sipMessage = parse("SIP/2.0 200 OK\r\n"
+                + "From: <sip:ymartineau@ippi.fr>;tag=MMnvBY6R\r\n"
+                + "Call-ID: 2Lb6Uyyx-1290462442914@192.168.1.23\r\n"
+                + "CSeq: 4 INVITE\r\n"
+                + "Via: SIP/2.0/UDP 192.168.1.23:6060;rport=6060;branch=z9hG4bKnksFOe9ut;received=77.193.94.155\r\n"
+                + "To: <sip:2233400543@sip2sip.info>;tag=rZPsRkLoKg\r\n"
+                + "Content-Length: 234\r\n"
+                + "Content-Type: application/sdp\r\n"
+                + "Record-Route: <sip:81.23.228.129;lr;ftag=MMnvBY6R;did=1a1.f7c24a35>, <sip:85.17.186.7;lr;ftag=MMnvBY6R;did=1a1.c11e9535>, <sip:213.215.45.230;lr=on>\r\n"
+                + "Contact: <sip:77.193.94.155:6062;transport=UDP>\r\n"
+                + "\r\n"
+                + "v=0\r\n"
+                + "o=user1 881398656 1035667908 IN IP4 213.215.45.245\r\n"
+                + "s=-\r\n"
+                + "c=IN IP4 213.215.45.245\r\n"
+                + "t=0 0\r\n"
+                + "m=audio 53452 RTP/AVP 0 8 101\r\n"
+                + "a=rtpmap:0 PCMU/8000\r\n"
+                + "a=rtpmap:8 PCMA/8000\r\n"
+                + "a=rtpmap:101 telephone-event/8000\r\n"
+                + "a=sendrecv\r\n"
+                + "a=nortpproxy:yes\r\n");
+        SipHeaders sipHeaders = sipMessage.getSipHeaders();
+        SipHeaderFieldValue recordRoute = sipHeaders.get(
+                new SipHeaderFieldName(RFC3261.HDR_RECORD_ROUTE));
+        assert recordRoute instanceof SipHeaderFieldMultiValue;
+        SipHeaderFieldMultiValue recordRouteMulti = (SipHeaderFieldMultiValue)recordRoute;
+        List<SipHeaderFieldValue> values = recordRouteMulti.getValues();
+        assert "<sip:81.23.228.129;lr;ftag=MMnvBY6R;did=1a1.f7c24a35>" == values.get(0).getValue();
+        assert "<sip:85.17.186.7;lr;ftag=MMnvBY6R;did=1a1.c11e9535>" == values.get(1).getValue();
+        assert "<sip:213.215.45.230;lr=on>" == values.get(2).getValue();
+    }
+
     @Test
     public void testParseBody() throws SipParserException, IOException {
         SipMessage sipMessage = parse("INVITE sip:UAB@example.com SIP/2.0\r\n"
