@@ -237,7 +237,7 @@ public class AccountFrame extends javax.swing.JFrame {
         }
     }
 
-    public synchronized void registering(SipRequest sipRequest) {
+    public void registering(SipRequest sipRequest) {
         registration.registerSent();
     }
 
@@ -250,7 +250,7 @@ public class AccountFrame extends javax.swing.JFrame {
         }
     }
 
-    public synchronized void registerFailed(SipResponse sipResponse) {
+    public void registerFailed(SipResponse sipResponse) {
         if (unregistering) {
         	userAgent.close();
             applyNewConfig();

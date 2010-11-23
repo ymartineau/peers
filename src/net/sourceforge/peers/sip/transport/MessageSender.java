@@ -76,6 +76,10 @@ public abstract class MessageSender {
         return localPort;
     }
 
+    public void stopKeepAlives() {
+        timer.cancel();
+    }
+
     class KeepAlive extends TimerTask {
 
         @Override
