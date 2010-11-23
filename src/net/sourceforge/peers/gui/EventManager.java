@@ -249,9 +249,14 @@ public class EventManager implements SipListener, MainFrameListener,
             runnable = new Runnable() {
                 @Override
                 public void run() {
-                    accountFrame = new AccountFrame(EventManager.this,
-                            userAgent);
-                    accountFrame.setVisible(true);
+                    if (accountFrame == null ||
+                            !accountFrame.isDisplayable()) {
+                        accountFrame = new AccountFrame(EventManager.this,
+                                userAgent);
+                        accountFrame.setVisible(true);
+                    } else {
+                        accountFrame.requestFocus();
+                    }
                 }
             };
         } else if (ACTION_PREFERENCES.equals(action)) {

@@ -139,6 +139,7 @@ public class RegisterHandler extends MethodHandler
                 if (challenged) {
                     notifyListener(sipResponse);
                 } else {
+                    challenged = true;
                     NonInviteClientTransaction nonInviteClientTransaction =
                         (NonInviteClientTransaction)
                         transactionManager.getClientTransaction(sipResponse);

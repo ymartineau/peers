@@ -373,6 +373,9 @@ public class TransportManager {
         for (MessageReceiver messageReceiver: messageReceivers.values()) {
             messageReceiver.setListening(false);
         }
+        for (MessageSender messageSender: messageSenders.values()) {
+            messageSender.stopKeepAlives();
+        }
         try
 		{
 			Thread.sleep(SOCKET_TIMEOUT);

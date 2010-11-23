@@ -21,6 +21,7 @@ package net.sourceforge.peers.media;
 
 import java.io.IOException;
 
+import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.rtp.RFC3551;
 import net.sourceforge.peers.rtp.RtpListener;
 import net.sourceforge.peers.rtp.RtpPacket;
@@ -36,6 +37,7 @@ public class IncomingRtpReader implements RtpListener {
     public IncomingRtpReader(RtpSession rtpSession,
             SoundManager soundManager, Codec codec) throws IOException { 
         super();
+        Logger.debug("playback codec:" + codec);
         this.rtpSession = rtpSession;
         this.soundManager = soundManager;
         switch (codec.getPayloadType()) {
