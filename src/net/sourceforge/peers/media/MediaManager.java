@@ -20,11 +20,13 @@
 package net.sourceforge.peers.media;
 
 import java.io.IOException;
+import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
 
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.rtp.RtpPacket;
+import net.sourceforge.peers.rtp.RtpSession;
 import net.sourceforge.peers.sdp.Codec;
 import net.sourceforge.peers.sip.core.useragent.UserAgent;
 
@@ -35,6 +37,7 @@ public class MediaManager {
     private UserAgent userAgent;
     private CaptureRtpSender captureRtpSender;
     private IncomingRtpReader incomingRtpReader;
+    private RtpSession rtpSession;
     private DtmfFactory dtmfFactory;
 
     public MediaManager(UserAgent userAgent) {
@@ -51,11 +54,30 @@ public class MediaManager {
             //     and just retrieve it here
             SoundManager soundManager = userAgent.getSoundManager();
             soundManager.openAndStartLines();
+            
+            InetAddress inetAddress;
             try {
-                captureRtpSender = new CaptureRtpSender(localAddress,
-                        userAgent.getRtpPort(),
-                        remoteAddress, remotePort, soundManager,
-                        userAgent.isMediaDebug(), codec);
+                inetAddress = InetAddress.getByName(localAddress);
+            } catch (UnknownHostException e) {
+                Logger.error("unknown host: " + localAddress, e);
+                return;
+            }
+            
+            rtpSession = new RtpSession(inetAddress, userAgent.getRtpPort(),
+                    userAgent.isMediaDebug());
+            
+            try {
+                inetAddress = InetAddress.getByName(remoteAddress);
+                rtpSession.setRemoteAddress(inetAddress);
+            } catch (UnknownHostException e) {
+                Logger.error("unknown host: " + remoteAddress, e);
+            }
+            rtpSession.setRemotePort(remotePort);
+            
+            
+            try {
+                captureRtpSender = new CaptureRtpSender(rtpSession,
+                        soundManager, userAgent.isMediaDebug(), codec);
             } catch (IOException e) {
                 Logger.error("input/output error", e);
                 return;
@@ -107,12 +129,9 @@ public class MediaManager {
         case captureAndPlayback:
             //TODO this could be optimized, create captureRtpSender at stack init
             //     and just retrieve it here
-            if (incomingRtpReader != null) {
-                incomingRtpReader.stop();
-            }
-            if (captureRtpSender != null) {
-                captureRtpSender.stop();
-                while (!captureRtpSender.isTerminated()) {
+            if (rtpSession != null) {
+                rtpSession.stop();
+                while (!rtpSession.isSocketClosed()) {
                     try {
                         Thread.sleep(15);
                     } catch (InterruptedException e) {
@@ -120,13 +139,28 @@ public class MediaManager {
                     }
                 }
             }
+            if (captureRtpSender != null) {
+                captureRtpSender.stop();
+            }
             SoundManager soundManager = userAgent.getSoundManager();
             soundManager.closeLines();
             soundManager.openAndStartLines();
+            
+            
+            rtpSession = new RtpSession(userAgent.getConfig()
+                    .getLocalInetAddress(), userAgent.getRtpPort(),
+                    userAgent.isMediaDebug());
+            
             try {
-                captureRtpSender = new CaptureRtpSender(userAgent.getConfig()
-                            .getLocalInetAddress().getHostAddress(),
-                        userAgent.getRtpPort(), destAddress, destPort,
+                InetAddress inetAddress = InetAddress.getByName(destAddress);
+                rtpSession.setRemoteAddress(inetAddress);
+            } catch (UnknownHostException e) {
+                Logger.error("unknown host: " + destAddress, e);
+            }
+            rtpSession.setRemotePort(destPort);
+            
+            try {
+                captureRtpSender = new CaptureRtpSender(rtpSession,
                         soundManager, userAgent.isMediaDebug(), codec);
             } catch (IOException e) {
                 Logger.error("input/output error", e);
@@ -143,8 +177,8 @@ public class MediaManager {
 //                                Utils.getInstance().getRtpPort(),
 //                                remoteAddress, remotePort);
                 //FIXME RTP sessions can be different !
-                incomingRtpReader = new IncomingRtpReader(
-                        captureRtpSender.getRtpSession(), soundManager, codec);
+                incomingRtpReader = new IncomingRtpReader(rtpSession,
+                        soundManager, codec);
             } catch (IOException e) {
                 Logger.error("input/output error", e);
                 return;
@@ -182,19 +216,25 @@ public class MediaManager {
         }
     }
 
-    public CaptureRtpSender getCaptureRtpSender() {
-        return captureRtpSender;
+    public void stopSession() {
+        if (rtpSession != null) {
+            rtpSession.stop();
+            while (!rtpSession.isSocketClosed()) {
+                try {
+                    Thread.sleep(15);
+                } catch (InterruptedException e) {
+                    Logger.debug("sleep interrupted");
+                }
+            }
+            rtpSession = null;
+        }
+        if (incomingRtpReader != null) {
+            incomingRtpReader = null;
+        }
+        if (captureRtpSender != null) {
+            captureRtpSender.stop();
+            captureRtpSender = null;
+        }
     }
 
-    public void setCaptureRtpSender(CaptureRtpSender captureRtpSender) {
-        this.captureRtpSender = captureRtpSender;
-    }
-
-    public IncomingRtpReader getIncomingRtpReader() {
-        return incomingRtpReader;
-    }
-
-    public void setIncomingRtpReader(IncomingRtpReader incomingRtpReader) {
-        this.incomingRtpReader = incomingRtpReader;
-    }
 }

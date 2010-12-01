@@ -37,7 +37,7 @@ public class IncomingRtpReader implements RtpListener {
     public IncomingRtpReader(RtpSession rtpSession,
             SoundManager soundManager, Codec codec) throws IOException { 
         super();
-        Logger.debug("playback codec:" + codec);
+        Logger.debug("playback codec:" + codec.toString().trim());
         this.rtpSession = rtpSession;
         this.soundManager = soundManager;
         switch (codec.getPayloadType()) {
@@ -55,10 +55,6 @@ public class IncomingRtpReader implements RtpListener {
     
     public void start() {
         rtpSession.start();
-    }
-    
-    public synchronized void stop() {
-        rtpSession.stop();
     }
 
     @Override

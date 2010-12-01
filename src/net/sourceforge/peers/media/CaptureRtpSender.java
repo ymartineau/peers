@@ -22,7 +22,6 @@ package net.sourceforge.peers.media;
 import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
-import java.net.InetAddress;
 
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.rtp.RFC3551;
@@ -38,16 +37,10 @@ public class CaptureRtpSender {
     private Encoder encoder;
     private RtpSender rtpSender;
 
-    public CaptureRtpSender(String localAddress, int localPort,
-            String remoteAddress, int remotePort, SoundManager soundManager,
-            boolean mediaDebug, Codec codec)
-            throws IOException {
+    public CaptureRtpSender(RtpSession rtpSession, SoundManager soundManager,
+            boolean mediaDebug, Codec codec) throws IOException {
         super();
-        InetAddress inetAddress = InetAddress.getByName(localAddress);
-        rtpSession = new RtpSession(inetAddress, localPort, mediaDebug);
-        inetAddress = InetAddress.getByName(remoteAddress);
-        rtpSession.setRemoteAddress(inetAddress);
-        rtpSession.setRemotePort(remotePort);
+        this.rtpSession = rtpSession;
         PipedOutputStream rawDataOutput = new PipedOutputStream();
         PipedInputStream rawDataInput;
         try {
@@ -112,13 +105,6 @@ public class CaptureRtpSender {
 
     public synchronized RtpSession getRtpSession() {
         return rtpSession;
-    }
-
-    public boolean isTerminated() {
-        if (rtpSender == null) {
-            return true;
-        }
-        return rtpSender.isTerminated();
     }
 
     public RtpSender getRtpSender() {
