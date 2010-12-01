@@ -42,7 +42,6 @@ public class RtpSender implements Runnable {
     private PipedInputStream encodedData;
     private RtpSession rtpSession;
     private boolean isStopped;
-    private boolean isTerminated;
     private FileOutputStream rtpSenderInput;
     private boolean mediaDebug;
     private Codec codec;
@@ -55,7 +54,6 @@ public class RtpSender implements Runnable {
         this.mediaDebug = mediaDebug;
         this.codec = codec;
         isStopped = false;
-        isTerminated = false;
         pushedPackets = Collections.synchronizedList(
                 new ArrayList<RtpPacket>());
     }
@@ -138,7 +136,6 @@ public class RtpSender implements Runnable {
                 return;
             }
         }
-        isTerminated = true;
         if (mediaDebug) {
             try {
                 rtpSenderInput.close();
@@ -151,10 +148,6 @@ public class RtpSender implements Runnable {
 
     public synchronized void setStopped(boolean isStopped) {
         this.isStopped = isStopped;
-    }
-
-    public boolean isTerminated() {
-        return isTerminated;
     }
 
     public void pushPackets(List<RtpPacket> rtpPackets) {

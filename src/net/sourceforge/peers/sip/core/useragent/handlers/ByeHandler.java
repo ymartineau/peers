@@ -20,10 +20,7 @@
 package net.sourceforge.peers.sip.core.useragent.handlers;
 
 import net.sourceforge.peers.Logger;
-import net.sourceforge.peers.media.CaptureRtpSender;
 import net.sourceforge.peers.media.Echo;
-import net.sourceforge.peers.media.IncomingRtpReader;
-import net.sourceforge.peers.media.MediaManager;
 import net.sourceforge.peers.media.SoundManager;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.core.useragent.MidDialogRequestManager;
@@ -83,26 +80,7 @@ public class ByeHandler extends DialogMethodHandler
         Logger.debug("removed dialog " + dialog.getId());
         switch (userAgent.getMediaMode()) {
         case captureAndPlayback:
-            MediaManager mediaManager = userAgent.getMediaManager();
-            CaptureRtpSender captureRtpSender =
-                mediaManager.getCaptureRtpSender();
-            if (captureRtpSender != null) {
-                captureRtpSender.stop();
-                while (!captureRtpSender.isTerminated()) {
-                    try {
-                        Thread.sleep(15);
-                    } catch (InterruptedException e) {
-                        Logger.debug("sleep interrupted");
-                    }
-                }
-                userAgent.getMediaManager().setCaptureRtpSender(null);
-            }
-            IncomingRtpReader incomingRtpReader =
-                mediaManager.getIncomingRtpReader();
-            if (incomingRtpReader != null) {
-                incomingRtpReader.stop();
-                mediaManager.setIncomingRtpReader(null);
-            }
+            userAgent.getMediaManager().stopSession();
             SoundManager soundManager = userAgent.getSoundManager();
             if (soundManager != null) {
                 soundManager.closeLines();

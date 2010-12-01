@@ -108,7 +108,9 @@ public class RtpSession {
         DatagramPacket datagramPacket = new DatagramPacket(buf, buf.length,
                 remoteAddress, remotePort);
         try {
-            datagramSocket.send(datagramPacket);
+            if (!datagramSocket.isClosed()) {
+                datagramSocket.send(datagramPacket);
+            }
         } catch (IOException e) {
             Logger.error("cannot send rtp packet", e);
         }
@@ -194,6 +196,10 @@ public class RtpSession {
             executorService.execute(this);
         }
 
+    }
+
+    public boolean isSocketClosed() {
+        return datagramSocket.isClosed();
     }
 
 }
