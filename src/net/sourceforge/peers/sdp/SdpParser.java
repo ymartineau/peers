@@ -28,6 +28,8 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
+import net.sourceforge.peers.rtp.RFC3551;
+
 public class SdpParser {
 
 	public SessionDescription parse(byte[] body) throws IOException {
@@ -150,6 +152,19 @@ public class SdpParser {
                     int payloadType = Integer.parseInt(mediaArr[i]);
                     Codec codec = new Codec();
                     codec.setPayloadType(payloadType);
+                    String name;
+                    switch (payloadType) {
+                    case RFC3551.PAYLOAD_TYPE_PCMU:
+                        name = RFC3551.PCMU;
+                        break;
+                    case RFC3551.PAYLOAD_TYPE_PCMA:
+                        name = RFC3551.PCMA;
+                        break;
+                    default:
+                        name = "unsupported";
+                        break;
+                    }
+                    codec.setName(name);
                     codecs.add(codec);
                     //TODO check that sdp offer without rtpmap works
                 }

@@ -87,20 +87,8 @@ public class DialogManager {
         }
         return dialogs.get(getDialogId(callID, toTag, fromTag));
     }
-    
-    public synchronized Dialog getDialog(String peer) {
-        for (Dialog dialog : dialogs.values()) {
-            String remoteUri = dialog.getRemoteUri();
-            if (remoteUri != null) {
-                if (remoteUri.contains(peer)) {
-                    return dialog;
-                }
-            }
-        }
-        return null;
-    }
 
-    public synchronized Dialog getDialogFromCallId(String callId) {
+    public synchronized Dialog getDialog(String callId) {
         for (Dialog dialog : dialogs.values()) {
             if (dialog.getCallId().equals(callId)) {
                 return dialog;

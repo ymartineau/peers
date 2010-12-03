@@ -159,7 +159,7 @@ public class UAC {
         if (!guiClosedCallIds.contains(callId)) {
             guiClosedCallIds.add(callId);
         }
-        Dialog dialog = dialogManager.getDialogFromCallId(callId);
+        Dialog dialog = dialogManager.getDialog(callId);
         SipRequest inviteWithAuth = getInviteWithAuth(callId);
         if (dialog != null) {
             DialogState dialogState = dialog.getState();
