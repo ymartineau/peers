@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.net.DatagramSocket;
 import java.net.Inet4Address;
 import java.net.InetAddress;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.Hashtable;
 
@@ -156,7 +157,7 @@ public class TransportManager {
     
     
     public void createServerTransport(String transportType, int port)
-            throws IOException {
+            throws SocketException {
         SipTransportConnection conn = new SipTransportConnection(
                     config.getLocalInetAddress(), port, null,
                     SipTransportConnection.EMPTY_PORT, transportType);
@@ -339,7 +340,7 @@ public class TransportManager {
     }
     
     private MessageReceiver createMessageReceiver(SipTransportConnection conn)
-            throws IOException {
+            throws SocketException {
         MessageReceiver messageReceiver = null;
         if (RFC3261.TRANSPORT_UDP.equals(conn.getTransport())) {
             DatagramSocket datagramSocket = datagramSockets.get(conn);

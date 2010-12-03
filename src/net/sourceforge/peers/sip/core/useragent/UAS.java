@@ -19,10 +19,9 @@
 
 package net.sourceforge.peers.sip.core.useragent;
 
-import java.io.IOException;
+import java.net.SocketException;
 import java.util.ArrayList;
 
-import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldName;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldValue;
@@ -63,18 +62,13 @@ public class UAS implements SipServerTransportUser {
             MidDialogRequestManager midDialogRequestManager,
             DialogManager dialogManager,
             TransactionManager transactionManager,
-            TransportManager transportManager) {
+            TransportManager transportManager) throws SocketException {
         this.initialRequestManager = initialRequestManager;
         this.midDialogRequestManager = midDialogRequestManager;
         this.dialogManager = dialogManager;
-        try {
-            //transportManager.setUas(this);
-            transportManager.setSipServerTransportUser(this);
-            transportManager.createServerTransport(
-                    RFC3261.TRANSPORT_UDP, userAgent.getSipPort());
-        } catch (IOException e) {
-            Logger.error("input/output error", e);
-        }
+        transportManager.setSipServerTransportUser(this);
+        transportManager.createServerTransport(
+                RFC3261.TRANSPORT_UDP, userAgent.getSipPort());
     }
     
     public void messageReceived(SipMessage sipMessage) {

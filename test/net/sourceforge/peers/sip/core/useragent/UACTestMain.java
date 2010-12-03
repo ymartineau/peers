@@ -19,6 +19,8 @@
 
 package net.sourceforge.peers.sip.core.useragent;
 
+import java.net.SocketException;
+
 import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
 import net.sourceforge.peers.sip.transport.SipRequest;
 
@@ -36,6 +38,9 @@ public class UACTestMain {
                     userAgent.getConfig()
                         .getLocalInetAddress().getHostName());
         } catch (SipUriSyntaxException e) {
+            e.printStackTrace();
+            return;
+        } catch (SocketException e) {
             e.printStackTrace();
             return;
         }
