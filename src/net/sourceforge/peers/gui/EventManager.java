@@ -22,6 +22,7 @@ package net.sourceforge.peers.gui;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.net.SocketException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Collections;
@@ -72,7 +73,19 @@ public class EventManager implements SipListener, MainFrameListener,
                 new HashMap<String, CallFrame>());
         closed = false;
         // create sip stack
-        userAgent = new UserAgent(this);
+        try {
+            userAgent = new UserAgent(this);
+        } catch (SocketException e) {
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    JOptionPane.showMessageDialog(null, "Peers sip port " +
+                    		"unavailable, about to leave", "Error",
+                            JOptionPane.ERROR_MESSAGE);
+                    System.exit(1);
+                }
+            });
+        }
     }
 
     // sip events
@@ -158,6 +171,11 @@ public class EventManager implements SipListener, MainFrameListener,
 
     @Override
     public void register() throws SipUriSyntaxException {
+        if (userAgent == null) {
+            // if several peers instances are launched concurrently,
+            // display error message and exit
+            return;
+        }
         Config config = userAgent.getConfig();
         if (config.getPassword() != null) {
             userAgent.getUac().register();

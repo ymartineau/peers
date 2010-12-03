@@ -20,6 +20,7 @@
 package net.sourceforge.peers.sip.core.useragent;
 
 import java.io.File;
+import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -76,7 +77,7 @@ public class UserAgent {
     private SoundManager soundManager;
     private MediaManager mediaManager;
 
-    public UserAgent(SipListener sipListener) {
+    public UserAgent(SipListener sipListener) throws SocketException {
         this.sipListener = sipListener;
         config = new XmlConfig(Utils.getPeersHome() + File.separator
                 + CONFIG_FILE);

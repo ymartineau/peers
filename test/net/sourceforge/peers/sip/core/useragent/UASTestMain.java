@@ -19,6 +19,8 @@
 
 package net.sourceforge.peers.sip.core.useragent;
 
+import java.net.SocketException;
+
 
 public class UASTestMain {
 
@@ -26,7 +28,11 @@ public class UASTestMain {
      * @param args
      */
     public static void main(String[] args) {
-        new UserAgent(null);
+        try {
+            new UserAgent(null);
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
     }
 
 }
