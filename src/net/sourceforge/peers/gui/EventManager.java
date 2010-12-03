@@ -214,7 +214,7 @@ public class EventManager implements SipListener, MainFrameListener,
     public synchronized void pickupClicked(SipRequest sipRequest) {
         String callId = Utils.getMessageCallId(sipRequest);
         DialogManager dialogManager = userAgent.getDialogManager();
-        Dialog dialog = dialogManager.getDialogFromCallId(callId);
+        Dialog dialog = dialogManager.getDialog(callId);
         userAgent.getUas().acceptCall(sipRequest, dialog);
     }
     

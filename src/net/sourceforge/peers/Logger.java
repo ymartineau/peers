@@ -81,7 +81,7 @@ public class Logger {
     
     public final static void error(String message, Exception exception) {
         synchronized (logMutex) {
-            logWriter.write(genericLog(message.toString(), "ERROR"));
+            logWriter.write(genericLog(message, "ERROR"));
             exception.printStackTrace(logWriter);
             logWriter.flush();
         }

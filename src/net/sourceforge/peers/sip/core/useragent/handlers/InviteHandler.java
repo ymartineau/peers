@@ -241,13 +241,10 @@ public class InviteHandler extends DialogMethodHandler
     public void rejectCall(SipRequest sipRequest) {
         //TODO generate 486, etc.
         SipHeaders reqHeaders = sipRequest.getSipHeaders();
-        SipHeaderFieldValue to = reqHeaders.get(
-                new SipHeaderFieldName(RFC3261.HDR_FROM));
-        String remoteUri = to.getValue();
-        if (remoteUri.indexOf(RFC3261.LEFT_ANGLE_BRACKET) > -1) {
-            remoteUri = NameAddress.nameAddressToUri(remoteUri);
-        }
-        Dialog dialog = dialogManager.getDialog(remoteUri);
+        SipHeaderFieldValue callId = reqHeaders.get(
+                new SipHeaderFieldName(RFC3261.HDR_CALLID));
+        
+        Dialog dialog = dialogManager.getDialog(callId.getValue());
         
         //TODO manage auto reject Do not disturb (DND)
         SipResponse sipResponse =
