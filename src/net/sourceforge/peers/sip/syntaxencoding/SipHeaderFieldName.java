@@ -25,10 +25,16 @@ public class SipHeaderFieldName {
         new SipHeadersTable();
 
     private String name;
+
     public SipHeaderFieldName(String name) {
         super();
-        this.name = name;
+        if (name.length() == 1) {
+            this.name = SIP_HEADER_TABLE.getLongForm(name.charAt(0));
+        } else {
+            this.name = name;
+        }
     }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -38,8 +44,7 @@ public class SipHeaderFieldName {
         if (name.equalsIgnoreCase(objName)) {
             return true;
         }
-        return name.equalsIgnoreCase(
-                SIP_HEADER_TABLE.getLongForm(objName.charAt(0)));
+        return false;
     }
 
     @Override
