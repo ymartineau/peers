@@ -118,7 +118,7 @@ public class MessageSenderTestNG {
     }
     
     @Test(groups = "listen")
-    public void listen() {
+    public void listen() throws InterruptedException {
         Thread thread = new Thread(new Runnable() {
             public void run() {
                 DatagramPacket datagramPacket = new DatagramPacket(
@@ -128,13 +128,15 @@ public class MessageSenderTestNG {
                     port = PortProvider.getNextPort();
                     datagramSocket = new DatagramSocket(port,
                             InetAddress.getLocalHost());
-                    datagramSocket.receive(datagramPacket);
-                    byte[] receivedBytes = datagramPacket.getData();
-                    int nbReceivedBytes = datagramPacket.getLength();
-                    byte[] trimmedBytes = new byte[nbReceivedBytes];
-                    System.arraycopy(receivedBytes, 0,
-                            trimmedBytes, 0, nbReceivedBytes);
-                    message = new String(trimmedBytes);
+                    while (message == null || "".equals(message.trim())) {
+                        datagramSocket.receive(datagramPacket);
+                        byte[] receivedBytes = datagramPacket.getData();
+                        int nbReceivedBytes = datagramPacket.getLength();
+                        byte[] trimmedBytes = new byte[nbReceivedBytes];
+                        System.arraycopy(receivedBytes, 0,
+                                trimmedBytes, 0, nbReceivedBytes);
+                        message = new String(trimmedBytes);
+                    }
                     messageReceived = true;
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -142,6 +144,9 @@ public class MessageSenderTestNG {
             }
         });
         thread.start();
+        while (port == 0) {
+            Thread.sleep(50);
+        }
     }
     
     @Test(dependsOnGroups = {"listen"}, groups = "send")
@@ -164,7 +169,7 @@ public class MessageSenderTestNG {
     @Test(timeOut = 10000, dependsOnGroups = {"send"})
     public void checkAnswer() throws InterruptedException {
         while (!messageReceived) {
-            Thread.sleep(1000);
+            Thread.sleep(50);
         }
         assert message != null : "message is null";
         assert expectedMessage != null : "expected message is null";

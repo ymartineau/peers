@@ -77,6 +77,7 @@ public class SipParserTestNG {
         SipHeaders sipHeaders = sipMessage.getSipHeaders();
         assert 2 == sipHeaders.getCount();
         SipHeaderFieldValue value = sipHeaders.get(new SipHeaderFieldName("Subject"));
+        assert !(value instanceof SipHeaderFieldMultiValue);
         assert "I know you're there, pick up the phone and talk to me!".equals(
                 value.toString());
     }
@@ -213,9 +214,11 @@ public class SipParserTestNG {
         assert recordRoute instanceof SipHeaderFieldMultiValue;
         SipHeaderFieldMultiValue recordRouteMulti = (SipHeaderFieldMultiValue)recordRoute;
         List<SipHeaderFieldValue> values = recordRouteMulti.getValues();
-        assert "<sip:81.23.228.129;lr;ftag=MMnvBY6R;did=1a1.f7c24a35>" == values.get(0).getValue();
-        assert "<sip:85.17.186.7;lr;ftag=MMnvBY6R;did=1a1.c11e9535>" == values.get(1).getValue();
-        assert "<sip:213.215.45.230;lr=on>" == values.get(2).getValue();
+        assert "<sip:81.23.228.129;lr;ftag=MMnvBY6R;did=1a1.f7c24a35>".equals(
+                values.get(0).getValue().trim());
+        assert "<sip:85.17.186.7;lr;ftag=MMnvBY6R;did=1a1.c11e9535>".equals(
+                values.get(1).getValue().trim());
+        assert "<sip:213.215.45.230;lr=on>".equals(values.get(2).getValue().trim());
     }
 
     @Test

@@ -76,8 +76,13 @@ public class SdpParserTestNG {
         assert 51372 == videoMedia.getPort();
         Hashtable<String, String> videoAttributes = videoMedia.getAttributes();
         assert videoAttributes != null;
-        assert 1 == videoAttributes.size();
-        assert "99 h263-1998/90000".equals(videoAttributes.get("rtpmap"));
+        assert 0 == videoAttributes.size();
+        List<Codec> codecs = videoMedia.getCodecs();
+        assert codecs != null;
+        assert codecs.size() == 1;
+        Codec codec = codecs.get(0);
+        assert codec.getPayloadType() == 99;
+        assert "h263-1998".equals(codec.getName());
     }
 
 }

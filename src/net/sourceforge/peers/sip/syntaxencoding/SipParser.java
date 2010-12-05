@@ -50,6 +50,10 @@ public class SipParser {
                 RFC3261.HDR_PROXY_AUTHENTICATE));
         singleValueHeaders.add(new SipHeaderFieldName(
                 RFC3261.HDR_PROXY_AUTHORIZATION));
+        singleValueHeaders.add(new SipHeaderFieldName(
+                RFC3261.HDR_SUPPORTED));
+        singleValueHeaders.add(new SipHeaderFieldName(
+                RFC3261.HDR_SUBJECT));
     }
 
     public synchronized SipMessage parse(InputStream in)
