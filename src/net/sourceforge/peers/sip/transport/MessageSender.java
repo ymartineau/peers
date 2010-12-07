@@ -39,15 +39,17 @@ public abstract class MessageSender {
     private Config config;
     private String transportName;
     private Timer timer;
+    protected Logger logger;
     
     public MessageSender(InetAddress inetAddress, int port, Config config,
-            String transportName) {
+            String transportName, Logger logger) {
         super();
         this.inetAddress = inetAddress;
         this.port = port;
         this.config = config;
         this.transportName = transportName;
         timer = new Timer();
+        this.logger = logger;
         //TODO check config
         timer.scheduleAtFixedRate(new KeepAlive(), 0,
                 1000 * KEEY_ALIVE_INTERVAL);
@@ -88,7 +90,7 @@ public abstract class MessageSender {
             try {
                 sendBytes(bytes);
             } catch (IOException e) {
-                Logger.error(e.getMessage(), e);
+                logger.error(e.getMessage(), e);
             }
         }
 

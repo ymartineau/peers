@@ -35,9 +35,9 @@ public class UdpMessageSender extends MessageSender {
     private DatagramSocket datagramSocket;
     
     public UdpMessageSender(InetAddress inetAddress, int port,
-            DatagramSocket datagramSocket, Config config)
-            throws SocketException {
-        super(inetAddress, port, config, RFC3261.TRANSPORT_UDP);
+            DatagramSocket datagramSocket, Config config,
+            Logger logger) throws SocketException {
+        super(inetAddress, port, config, RFC3261.TRANSPORT_UDP, logger);
 
         this.datagramSocket = datagramSocket;
         localPort = datagramSocket.getLocalPort();
@@ -53,7 +53,7 @@ public class UdpMessageSender extends MessageSender {
         StringBuffer direction = new StringBuffer();
         direction.append("SENT to ").append(inetAddress.getHostAddress());
         direction.append("/").append(port);
-        Logger.traceNetwork(new String(buf), direction.toString());
+        logger.traceNetwork(new String(buf), direction.toString());
     }
 
     @Override

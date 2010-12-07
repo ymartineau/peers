@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008, 2009 Yohann Martineau 
+    Copyright 2007, 2008, 2009, 2010 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip.core.useragent;
@@ -40,7 +40,8 @@ import net.sourceforge.peers.sip.transport.TransportManager;
 
 public abstract class RequestManager {
 
-    public static SipURI getDestinationUri(SipRequest sipRequest) {
+    public static SipURI getDestinationUri(SipRequest sipRequest,
+            Logger logger) {
         SipHeaders requestHeaders = sipRequest.getSipHeaders();
         SipURI destinationUri = null;
         SipHeaderFieldValue route = requestHeaders.get(
@@ -50,7 +51,7 @@ public abstract class RequestManager {
                 destinationUri = new SipURI(
                         NameAddress.nameAddressToUri(route.toString()));
             } catch (SipUriSyntaxException e) {
-                Logger.error("syntax error", e);
+                logger.error("syntax error", e);
             }
         }
         if (destinationUri == null) {
@@ -68,6 +69,7 @@ public abstract class RequestManager {
     protected UserAgent userAgent;
     protected TransactionManager transactionManager;
     protected TransportManager transportManager;
+    protected Logger logger;
     
     public RequestManager(UserAgent userAgent,
             InviteHandler inviteHandler,
@@ -77,7 +79,8 @@ public abstract class RequestManager {
             RegisterHandler registerHandler,
             DialogManager dialogManager,
             TransactionManager transactionManager,
-            TransportManager transportManager) {
+            TransportManager transportManager,
+            Logger logger) {
         this.userAgent = userAgent;
         this.inviteHandler = inviteHandler;
         this.cancelHandler = cancelHandler;
@@ -86,6 +89,7 @@ public abstract class RequestManager {
         this.registerHandler = registerHandler;
         this.transactionManager = transactionManager;
         this.transportManager = transportManager;
+        this.logger = logger;
     }
 
     public InviteHandler getInviteHandler() {

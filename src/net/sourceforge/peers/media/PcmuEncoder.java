@@ -22,6 +22,8 @@ package net.sourceforge.peers.media;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 
+import net.sourceforge.peers.Logger;
+
 public class PcmuEncoder extends Encoder {
 
     private final static int cBias = 0x84;
@@ -100,8 +102,8 @@ public class PcmuEncoder extends Encoder {
     }
 
     public PcmuEncoder(PipedInputStream rawData, PipedOutputStream encodedData,
-            boolean mediaDebug) {
-        super(rawData, encodedData, mediaDebug);
+            boolean mediaDebug, Logger logger, String peersHome) {
+        super(rawData, encodedData, mediaDebug, logger, peersHome);
     }
 
     /**

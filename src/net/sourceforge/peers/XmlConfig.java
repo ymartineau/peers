@@ -54,6 +54,8 @@ public class XmlConfig implements Config {
 
     public final static int RTP_DEFAULT_PORT = 8000;
 
+    private Logger logger;
+
     private File file;
     private Document document;
 
@@ -86,10 +88,11 @@ public class XmlConfig implements Config {
     private InetAddress publicInetAddress;
 
     //private InetAddress
-    public XmlConfig(String fileName) {
+    public XmlConfig(String fileName, Logger logger) {
         file = new File(fileName);
+        this.logger = logger;
         if (!file.exists()) {
-            Logger.debug("config file " + fileName + " not found");
+            logger.debug("config file " + fileName + " not found");
             return;
         }
         DocumentBuilderFactory documentBuilderFactory =
@@ -98,16 +101,16 @@ public class XmlConfig implements Config {
         try {
             documentBuilder = documentBuilderFactory.newDocumentBuilder();
         } catch (ParserConfigurationException e) {
-            Logger.error("parser configuration exception", e);
+            logger.error("parser configuration exception", e);
             return;
         }
         try {
             document = documentBuilder.parse(file);
         } catch (SAXException e) {
-            Logger.error("cannot parse " + fileName,e );
+            logger.error("cannot parse " + fileName,e );
             return;
         } catch (IOException e) {
-            Logger.error("IOException", e);
+            logger.error("IOException", e);
             return;
         }
         Element documentElement = document.getDocumentElement();
@@ -121,7 +124,7 @@ public class XmlConfig implements Config {
             try {
                 localInetAddress = InetAddress.getByName(address);
             } catch (UnknownHostException e) {
-                Logger.error("unknown host: " + address, e);
+                logger.error("unknown host: " + address, e);
             }
         } else {
             try {
@@ -141,10 +144,10 @@ public class XmlConfig implements Config {
                     }
                 }
             } catch (SocketException e) {
-                Logger.error("socket exception", e);
+                logger.error("socket exception", e);
             }
             if (localInetAddress == null) {
-                Logger.error("IP address not found, configure it manually");
+                logger.error("IP address not found, configure it manually");
             }
         }
         node = getFirstChild(documentElement, "sip");
@@ -154,14 +157,14 @@ public class XmlConfig implements Config {
         if (node != null && !"".equals(node.getTextContent().trim())) {
             userPart = node.getTextContent();
         } else {
-            Logger.error("userpart not found in configuration file");
+            logger.error("userpart not found in configuration file");
         }
         node = getFirstChild(parent, "domain");
         domainNode = node;
         if (node != null && !"".equals(node.getTextContent().trim())) {
             domain = node.getTextContent();
         } else {
-            Logger.error("domain not found in configuration file");
+            logger.error("domain not found in configuration file");
         }
         node = getFirstChild(parent, "password");
         passwordNode = node;
@@ -175,7 +178,7 @@ public class XmlConfig implements Config {
             try {
                 outboundProxy = new SipURI(uri);
             } catch (SipUriSyntaxException e) {
-                Logger.error("sip uri syntax exception: " + uri, e);
+                logger.error("sip uri syntax exception: " + uri, e);
             }
         }
         node = getFirstChild(parent, "port");
@@ -231,14 +234,14 @@ public class XmlConfig implements Config {
         try {
             transformer = transformerFactory.newTransformer();
         } catch (TransformerConfigurationException e) {
-            Logger.error("cannot create transformer", e);
+            logger.error("cannot create transformer", e);
             return;
         }
         FileWriter fileWriter;
         try {
             fileWriter = new FileWriter(file);
         } catch (IOException e) {
-            Logger.error("cannot create file writer", e);
+            logger.error("cannot create file writer", e);
             return;
         }
         StreamResult streamResult = new StreamResult(fileWriter);
@@ -246,10 +249,10 @@ public class XmlConfig implements Config {
         try {
             transformer.transform(domSource, streamResult);
         } catch (TransformerException e) {
-            Logger.error("cannot save config file", e);
+            logger.error("cannot save config file", e);
             return;
         }
-        Logger.debug("config file saved");
+        logger.debug("config file saved");
     }
 
     @Override

@@ -41,12 +41,46 @@ public class ChallengeManager implements MessageInterceptor {
 
     public static final String ALGORITHM_MD5 = "MD5";
     
-    public static String md5hash(String message) {
+    private String username;
+    private String password;
+    private String realm;
+    private String nonce;
+    private String requestUri;
+    private String digest;
+    private String profileUri;
+
+    private Config config;
+    private Logger logger;
+
+    // FIXME what happens if a challenge is received for a register-refresh
+    //       and another challenge is received in the mean time for an invite?
+    private int statusCode;
+    private SipHeaderFieldValue contact;
+    
+    private InitialRequestManager initialRequestManager;
+    
+    public ChallengeManager(Config config,
+            InitialRequestManager initialRequestManager, Logger logger) {
+        super();
+        this.config = config;
+        this.initialRequestManager = initialRequestManager;
+        this.logger = logger;
+        init();
+    }
+
+    private void init() {
+        username = config.getUserPart();
+        password = config.getPassword();
+        profileUri = RFC3261.SIP_SCHEME + RFC3261.SCHEME_SEPARATOR
+            + username + RFC3261.AT + config.getDomain();
+    }
+
+    private String md5hash(String message) {
         MessageDigest messageDigest;
         try {
             messageDigest = MessageDigest.getInstance(ALGORITHM_MD5);
         } catch (NoSuchAlgorithmException e) {
-            Logger.error("no such algorithm " + ALGORITHM_MD5, e);
+            logger.error("no such algorithm " + ALGORITHM_MD5, e);
             return null;
         }
         byte[] messageBytes = message.getBytes();
@@ -58,39 +92,6 @@ public class ChallengeManager implements MessageInterceptor {
             printStream.printf("%02x", u_b);
         }
         return out.toString();
-    }
-
-
-    private String username;
-    private String password;
-    private String realm;
-    private String nonce;
-    private String requestUri;
-    private String digest;
-    private String profileUri;
-
-    private Config config;
-
-    // FIXME what happens if a challenge is received for a register-refresh
-    //       and another challenge is received in the mean time for an invite?
-    private int statusCode;
-    private SipHeaderFieldValue contact;
-    
-    private InitialRequestManager initialRequestManager;
-    
-    public ChallengeManager(Config config,
-            InitialRequestManager initialRequestManager) {
-        super();
-        this.config = config;
-        this.initialRequestManager = initialRequestManager;
-        init();
-    }
-
-    private void init() {
-        username = config.getUserPart();
-        password = config.getPassword();
-        profileUri = RFC3261.SIP_SCHEME + RFC3261.SCHEME_SEPARATOR
-            + username + RFC3261.AT + config.getDomain();
     }
 
     public void handleChallenge(SipRequest sipRequest,
@@ -117,7 +118,7 @@ public class ChallengeManager implements MessageInterceptor {
             return;
         }
         if (!authenticate.getValue().startsWith(RFC2617.SCHEME_DIGEST)) {
-            Logger.info("unsupported challenge scheme in header: "
+            logger.info("unsupported challenge scheme in header: "
                     + authenticate);
             return;
         }
@@ -136,7 +137,7 @@ public class ChallengeManager implements MessageInterceptor {
             initialRequestManager.createInitialRequest(
                     requestUri, method, profileUri, callId, this);
         } catch (SipUriSyntaxException e) {
-            Logger.error("syntax error", e);
+            logger.error("syntax error", e);
         }
     }
     
@@ -169,23 +170,23 @@ public class ChallengeManager implements MessageInterceptor {
         }
         int paramNameLength = paramName.length();
         if (paramPos + paramNameLength + 3 > header.length()) {
-            Logger.info("Malformed " + RFC3261.HDR_WWW_AUTHENTICATE + " header");
+            logger.info("Malformed " + RFC3261.HDR_WWW_AUTHENTICATE + " header");
             return null;
         }
         if (header.charAt(paramPos + paramNameLength) !=
                     RFC2617.PARAM_VALUE_SEPARATOR) {
-            Logger.info("Malformed " + RFC3261.HDR_WWW_AUTHENTICATE + " header");
+            logger.info("Malformed " + RFC3261.HDR_WWW_AUTHENTICATE + " header");
             return null;
         }
         if (header.charAt(paramPos + paramNameLength + 1) !=
                     RFC2617.PARAM_VALUE_DELIMITER) {
-            Logger.info("Malformed " + RFC3261.HDR_WWW_AUTHENTICATE + " header");
+            logger.info("Malformed " + RFC3261.HDR_WWW_AUTHENTICATE + " header");
             return null;
         }
         header = header.substring(paramPos + paramNameLength + 2);
         int endDelimiter = header.indexOf(RFC2617.PARAM_VALUE_DELIMITER);
         if (endDelimiter < 0) {
-            Logger.info("Malformed " + RFC3261.HDR_WWW_AUTHENTICATE + " header");
+            logger.info("Malformed " + RFC3261.HDR_WWW_AUTHENTICATE + " header");
             return null;
         }
         return header.substring(0, endDelimiter);

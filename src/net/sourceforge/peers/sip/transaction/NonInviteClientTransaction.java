@@ -59,9 +59,9 @@ public class NonInviteClientTransaction extends NonInviteTransaction
             int port, String transport, SipRequest sipRequest,
             ClientTransactionUser transactionUser, Timer timer,
             TransportManager transportManager,
-            TransactionManager transactionManager) {
+            TransactionManager transactionManager, Logger logger) {
         super(branchId, sipRequest.getMethod(), timer, transportManager,
-                transactionManager);
+                transactionManager, logger);
         
         this.transport = transport;
         
@@ -71,12 +71,16 @@ public class NonInviteClientTransaction extends NonInviteTransaction
         
         nbRetrans = 0;
         
-        INIT = new NonInviteClientTransactionStateInit(getId(), this);
+        INIT = new NonInviteClientTransactionStateInit(getId(), this, logger);
         state = INIT;
-        TRYING = new NonInviteClientTransactionStateTrying(getId(), this);
-        PROCEEDING = new NonInviteClientTransactionStateProceeding(getId(), this);
-        COMPLETED = new NonInviteClientTransactionStateCompleted(getId(), this);
-        TERMINATED = new NonInviteClientTransactionStateTerminated(getId(), this);
+        TRYING = new NonInviteClientTransactionStateTrying(getId(), this,
+                logger);
+        PROCEEDING = new NonInviteClientTransactionStateProceeding(getId(),
+                this, logger);
+        COMPLETED = new NonInviteClientTransactionStateCompleted(getId(),
+                this, logger);
+        TERMINATED = new NonInviteClientTransactionStateTerminated(getId(),
+                this, logger);
         
         request = sipRequest;
         this.transactionUser = transactionUser;
@@ -88,7 +92,7 @@ public class NonInviteClientTransaction extends NonInviteTransaction
             messageSender = transportManager.createClientTransport(
                     request, remoteInetAddress, remotePort, transport);
         } catch (IOException e) {
-            Logger.error("input/output error", e);
+            logger.error("input/output error", e);
             transportError();
         }
         //TODO send request
@@ -116,7 +120,7 @@ public class NonInviteClientTransaction extends NonInviteTransaction
         try {
             messageSender.sendMessage(request);
         } catch (IOException e) {
-            Logger.error("input/output error", e);
+            logger.error("input/output error", e);
             transportError();
         }
         
@@ -133,7 +137,7 @@ public class NonInviteClientTransaction extends NonInviteTransaction
         try {
             messageSender.sendMessage(request);
         } catch (IOException e) {
-            Logger.error("input/output error", e);
+            logger.error("input/output error", e);
             transportError();
         }
         timer.schedule(new TimerE(), delay);
@@ -148,13 +152,13 @@ public class NonInviteClientTransaction extends NonInviteTransaction
         // 17.1.1
         int statusCode = sipResponse.getStatusCode();
         if (statusCode < RFC3261.CODE_MIN_PROV) {
-            Logger.error("invalid response code");
+            logger.error("invalid response code");
         } else if (statusCode < RFC3261.CODE_MIN_SUCCESS) {
             state.received1xx();
         } else if (statusCode <= RFC3261.CODE_MAX) {
             state.received200To699();
         } else {
-            Logger.error("invalid response code");
+            logger.error("invalid response code");
         }
     }
     

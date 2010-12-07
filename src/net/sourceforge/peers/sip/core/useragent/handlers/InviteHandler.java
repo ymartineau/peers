@@ -67,8 +67,9 @@ public class InviteHandler extends DialogMethodHandler
     public InviteHandler(UserAgent userAgent,
             DialogManager dialogManager,
             TransactionManager transactionManager,
-            TransportManager transportManager) {
-        super(userAgent, dialogManager, transactionManager, transportManager);
+            TransportManager transportManager, Logger logger) {
+        super(userAgent, dialogManager, transactionManager, transportManager,
+                logger);
     }
     
     
@@ -187,7 +188,7 @@ public class InviteHandler extends DialogMethodHandler
             }
             sipResponse.setBody(answer.toString().getBytes());
         } catch (IOException e) {
-            Logger.error(e.getMessage(), e);
+            logger.error(e.getMessage(), e);
         }
         
         SipHeaders respHeaders = sipResponse.getSipHeaders();
@@ -223,16 +224,16 @@ public class InviteHandler extends DialogMethodHandler
         // until ACK arrives, if no ACK is received within 64*T1, confirm dialog
         // and terminate it with a BYE
 
-//        Logger.getInstance().debug("before dialog.receivedOrSent2xx();");
-//        Logger.getInstance().debug("dialog state: " + dialog.getState());
+//        logger.getInstance().debug("before dialog.receivedOrSent2xx();");
+//        logger.getInstance().debug("dialog state: " + dialog.getState());
     }
 
     public void acceptCall(SipRequest sipRequest, Dialog dialog) {
         sendSuccessfulResponse(sipRequest, dialog);
         
         dialog.receivedOrSent2xx();
-//        Logger.getInstance().debug("dialog state: " + dialog.getState());
-//        Logger.getInstance().debug("after dialog.receivedOrSent2xx();");
+//        logger.getInstance().debug("dialog state: " + dialog.getState());
+//        logger.getInstance().debug("after dialog.receivedOrSent2xx();");
         
 //        setChanged();
 //        notifyObservers(sipRequest);
@@ -281,7 +282,8 @@ public class InviteHandler extends DialogMethodHandler
         
         //8.1.2
         SipHeaders requestHeaders = sipRequest.getSipHeaders();
-        SipURI destinationUri = RequestManager.getDestinationUri(sipRequest);
+        SipURI destinationUri = RequestManager.getDestinationUri(sipRequest,
+                logger);
 
         //TODO if header route is present, addrspec = toproute.nameaddress.addrspec
 
@@ -316,7 +318,7 @@ public class InviteHandler extends DialogMethodHandler
                 sdpManager.createSessionDescription(null);
             sipRequest.setBody(sessionDescription.toString().getBytes());
         } catch (IOException e) {
-            Logger.error(e.getMessage(), e);
+            logger.error(e.getMessage(), e);
         }
         requestHeaders.add(new SipHeaderFieldName(RFC3261.HDR_CONTENT_TYPE),
                 new SipHeaderFieldValue(RFC3261.CONTENT_TYPE_SDP));
@@ -388,7 +390,7 @@ public class InviteHandler extends DialogMethodHandler
         
 //        
 //        if (dialog == null && sipResponse.getStatusCode() != RFC3261.CODE_100_TRYING) {
-//            Logger.debug("dialog not found for prov response");
+//            logger.debug("dialog not found for prov response");
 //            isFirstProvRespWithToTag = true;
 //            SipHeaderFieldValue to = sipResponse.getSipHeaders()
 //                .get(new SipHeaderFieldName(RFC3261.HDR_TO));
@@ -410,7 +412,7 @@ public class InviteHandler extends DialogMethodHandler
         String callId = Utils.getMessageCallId(sipResponse);
         if (guiClosedCallIds.contains(callId)) {
             SipRequest sipRequest = transaction.getRequest();
-            Logger.debug("cancel after prov response: sipRequest " + sipRequest
+            logger.debug("cancel after prov response: sipRequest " + sipRequest
                     + ", sipResponse " + sipResponse);
             userAgent.getUac().terminate(sipRequest);
         }
@@ -464,7 +466,7 @@ public class InviteHandler extends DialogMethodHandler
         try {
             mediaDestination = sdpManager.getMediaDestination(sessionDescription);
         } catch (NoCodecException e) {
-            Logger.error(e.getMessage(), e);
+            logger.error(e.getMessage(), e);
         }
         String remoteAddress = mediaDestination.getDestination();
         int remotePort = mediaDestination.getPort();
@@ -513,7 +515,7 @@ public class InviteHandler extends DialogMethodHandler
 
         //TODO check if sdp is acceptable
 
-        SipURI destinationUri = RequestManager.getDestinationUri(ack);
+        SipURI destinationUri = RequestManager.getDestinationUri(ack, logger);
 
         //TODO if header route is present, addrspec = toproute.nameaddress.addrspec
         
@@ -538,7 +540,7 @@ public class InviteHandler extends DialogMethodHandler
         try {
             inetAddress = InetAddress.getByName(sipUri.getHost());
         } catch (UnknownHostException e) {
-            Logger.error("unknown host: " + sipUri.getHost(), e);
+            logger.error("unknown host: " + sipUri.getHost(), e);
             return;
         }
         try {
@@ -546,7 +548,7 @@ public class InviteHandler extends DialogMethodHandler
                     ack, inetAddress, port, transport);
             sender.sendMessage(ack);
         } catch (IOException e) {
-            Logger.error("input/output error", e);
+            logger.error("input/output error", e);
         }
         
         
@@ -564,7 +566,7 @@ public class InviteHandler extends DialogMethodHandler
         // TODO determine if ACK is ACK of an initial INVITE or a re-INVITE
         // in first case, captureRtpSender and incomingRtpReader must be
         // created, in the second case, they must be updated.
-        Logger.debug("handleAck");
+        logger.debug("handleAck");
 
         String destAddress = mediaDestination.getDestination();
         int destPort = mediaDestination.getPort();

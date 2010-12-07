@@ -34,7 +34,6 @@ import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.TargetDataLine;
 
 import net.sourceforge.peers.Logger;
-import net.sourceforge.peers.sip.Utils;
 
 public class SoundManager {
 
@@ -48,23 +47,27 @@ public class SoundManager {
     private FileOutputStream microphoneOutput;
     private FileOutputStream speakerInput;
     private boolean mediaDebug;
+    private Logger logger;
+    private String peersHome;
     
-    public SoundManager(boolean mediaDebug) {
+    public SoundManager(boolean mediaDebug, Logger logger, String peersHome) {
+        this.mediaDebug = mediaDebug;
+        this.logger = logger;
+        this.peersHome = peersHome;
         // linear PCM 8kHz, 16 bits signed, mono-channel, little endian
         audioFormat = new AudioFormat(8000, 16, 1, true, false);
         targetInfo = new DataLine.Info(TargetDataLine.class, audioFormat);
         sourceInfo = new DataLine.Info(SourceDataLine.class, audioFormat);
-        this.mediaDebug = mediaDebug;
     }
 
     public void openAndStartLines() {
-        Logger.debug("openAndStartLines");
+        logger.debug("openAndStartLines");
         if (mediaDebug) {
             SimpleDateFormat simpleDateFormat =
                 new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
             String date = simpleDateFormat.format(new Date());
             StringBuffer buf = new StringBuffer();
-            buf.append(Utils.getPeersHome()).append(File.separator);
+            buf.append(peersHome).append(File.separator);
             buf.append(MEDIA_DIR).append(File.separator);
             buf.append(date).append("_");
             buf.append(audioFormat.getEncoding()).append("_");
@@ -78,7 +81,7 @@ public class SoundManager {
                 speakerInput = new FileOutputStream(buf.toString()
                         + "_speaker.input");
             } catch (FileNotFoundException e) {
-                Logger.error("cannot create file", e);
+                logger.error("cannot create file", e);
                 return;
             }
         }
@@ -86,7 +89,7 @@ public class SoundManager {
             targetDataLine = (TargetDataLine) AudioSystem.getLine(targetInfo);
             targetDataLine.open(audioFormat);
         } catch (LineUnavailableException e) {
-            Logger.error("target line unavailable", e);
+            logger.error("target line unavailable", e);
             return;
         }
         targetDataLine.start();
@@ -94,19 +97,19 @@ public class SoundManager {
             sourceDataLine = (SourceDataLine) AudioSystem.getLine(sourceInfo);
             sourceDataLine.open(audioFormat);
         } catch (LineUnavailableException e) {
-            Logger.error("source line unavailable", e);
+            logger.error("source line unavailable", e);
             return;
         }
         sourceDataLine.start();
     }
 
     public synchronized void closeLines() {
-        Logger.debug("closeLines");
+        logger.debug("closeLines");
         if (microphoneOutput != null) {
             try {
                 microphoneOutput.close();
             } catch (IOException e) {
-                Logger.error("cannot close file", e);
+                logger.error("cannot close file", e);
             }
             microphoneOutput = null;
         }
@@ -114,7 +117,7 @@ public class SoundManager {
             try {
                 speakerInput.close();
             } catch (IOException e) {
-                Logger.error("cannot close file", e);
+                logger.error("cannot close file", e);
             }
             speakerInput = null;
         }
@@ -136,7 +139,7 @@ public class SoundManager {
             try {
                 microphoneOutput.write(buffer, offset, numberOfBytesRead);
             } catch (IOException e) {
-                Logger.error("cannot write to file", e);
+                logger.error("cannot write to file", e);
                 return -1;
             }
         }
@@ -149,7 +152,7 @@ public class SoundManager {
             try {
                 speakerInput.write(buffer, offset, numberOfBytesWritten);
             } catch (IOException e) {
-                Logger.error("cannot write to file", e);
+                logger.error("cannot write to file", e);
                 return -1;
             }
         }

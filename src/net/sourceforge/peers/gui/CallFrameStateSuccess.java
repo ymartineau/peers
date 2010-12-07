@@ -23,10 +23,12 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import net.sourceforge.peers.Logger;
+
 public class CallFrameStateSuccess extends CallFrameState {
 
-    public CallFrameStateSuccess(String id, CallFrame callFrame) {
-        super(id, callFrame);
+    public CallFrameStateSuccess(String id, CallFrame callFrame, Logger logger) {
+        super(id, callFrame, logger);
         callPanel = new JPanel();
         callPanel.add(new JLabel("Talking"));
         JButton hangupButton = new JButton("Hangup");

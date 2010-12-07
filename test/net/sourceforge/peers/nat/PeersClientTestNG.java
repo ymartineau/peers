@@ -14,17 +14,17 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008, 2009 Yohann Martineau 
+    Copyright 2007, 2008, 2009, 2010 Yohann Martineau 
 */
 
 package net.sourceforge.peers.nat;
 
-import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.nat.api.DataReceiver;
 import net.sourceforge.peers.nat.api.PeersClient;
 import net.sourceforge.peers.nat.api.TCPTransport;
 import net.sourceforge.peers.nat.api.UDPTransport;
 
+import org.testng.Reporter;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 
@@ -36,7 +36,7 @@ public class PeersClientTestNG {
     public void init() {
         peersClient = new PeersClientStub("alice@atlanta.com", new DataReceiver() {
             public void dataReceived(byte[] data, String peerId) {
-                Logger.debug("received bytes from " + peerId + ": "
+                Reporter.log("received bytes from " + peerId + ": "
                                         + new String(data));
             }
         });

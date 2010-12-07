@@ -49,17 +49,17 @@ import net.sourceforge.peers.sip.transport.SipResponse;
 
 public class MainFrame implements WindowListener, ActionListener {
 
-    public static void main(String[] args) {
+    public static void main(final String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                createAndShowGUI();
+                createAndShowGUI(args);
             }
         });
     }
 
-    private static void createAndShowGUI() {
+    private static void createAndShowGUI(String[] args) {
         JFrame.setDefaultLookAndFeelDecorated(true);
-        new MainFrame();
+        new MainFrame(args);
     }
 
     private JFrame mainFrame;
@@ -71,20 +71,25 @@ public class MainFrame implements WindowListener, ActionListener {
 
     private EventManager eventManager;
     private Registration registration;
+    private Logger logger;
 
-    public MainFrame() {
+    public MainFrame(final String[] args) {
+        String peersHome = Utils.DEFAULT_PEERS_HOME;
+        if (args.length > 0) {
+            peersHome = args[0];
+        }
+        logger = new Logger(peersHome);
         String lookAndFeelClassName = UIManager.getSystemLookAndFeelClassName();
         try {
             UIManager.setLookAndFeel(lookAndFeelClassName);
         } catch (Exception e) {
-            Logger.error("cannot change look and feel", e);
+            logger.error("cannot change look and feel", e);
         }
-        String peersHome = Utils.getPeersHome();
         String title = "";
         if (!Utils.DEFAULT_PEERS_HOME.equals(peersHome)) {
             title = peersHome;
         }
-        title += "Peers: SIP User-Agent";
+        title += "/Peers: SIP User-Agent";
         mainFrame = new JFrame(title);
         mainFrame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         mainFrame.addWindowListener(this);
@@ -122,11 +127,16 @@ public class MainFrame implements WindowListener, ActionListener {
         menuItem.setMnemonic('x');
         menuItem.setActionCommand(EventManager.ACTION_EXIT);
 
-        registration = new Registration(statusLabel);
+        registration = new Registration(statusLabel, logger);
 
         Thread thread = new Thread(new Runnable() {
             public void run() {
-                eventManager = new EventManager(MainFrame.this);
+                String peersHome = Utils.DEFAULT_PEERS_HOME;
+                if (args.length > 0) {
+                    peersHome = args[0];
+                }
+                eventManager = new EventManager(MainFrame.this,
+                        peersHome, logger);
                 try {
                     eventManager.register();
                 } catch (SipUriSyntaxException e) {

@@ -28,8 +28,9 @@ import net.sourceforge.peers.Logger;
 
 public class RegistrationStateRegistering extends RegistrationState {
 
-    public RegistrationStateRegistering(String id, Registration registration) {
-        super(id, registration);
+    public RegistrationStateRegistering(String id, Registration registration,
+            Logger logger) {
+        super(id, registration, logger);
     }
 
     @Override
@@ -40,7 +41,7 @@ public class RegistrationStateRegistering extends RegistrationState {
 //        String folder = MainFrame.class.getPackage().getName().replace(".",
 //                File.separator);
 //        String filename = folder + File.separator + "green.png";
-//        Logger.debug("filename: " + filename);
+//        logger.debug("filename: " + filename);
 //        URL url = MainFrame.class.getClassLoader().getResource(filename);
         ImageIcon imageIcon = new ImageIcon(url);
         label.setIcon(imageIcon);
@@ -56,7 +57,7 @@ public class RegistrationStateRegistering extends RegistrationState {
 //                File.separator);
 //        URL url = MainFrame.class.getClassLoader().getResource(
 //                folder + File.separator + "red.png");
-        Logger.debug("image url: " + url);
+        logger.debug("image url: " + url);
         ImageIcon imageIcon = new ImageIcon(url);
         label.setIcon(imageIcon);
         label.setText("Registration failed");

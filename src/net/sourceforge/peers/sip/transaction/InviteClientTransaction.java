@@ -61,8 +61,10 @@ public class InviteClientTransaction extends InviteTransaction
     InviteClientTransaction(String branchId, InetAddress inetAddress,
             int port, String transport, SipRequest sipRequest,
             ClientTransactionUser transactionUser, Timer timer,
-            TransportManager transportManager, TransactionManager transactionManager) {
-        super(branchId, timer, transportManager, transactionManager);
+            TransportManager transportManager,
+            TransactionManager transactionManager, Logger logger) {
+        super(branchId, timer, transportManager, transactionManager,
+                logger);
         
         this.transport = transport;
         
@@ -72,12 +74,16 @@ public class InviteClientTransaction extends InviteTransaction
         
         nbRetrans = 0;
         
-        INIT = new InviteClientTransactionStateInit(getId(), this);
+        INIT = new InviteClientTransactionStateInit(getId(), this, logger);
         state = INIT;
-        CALLING = new InviteClientTransactionStateCalling(getId(), this);
-        PROCEEDING = new InviteClientTransactionStateProceeding(getId(), this);
-        COMPLETED = new InviteClientTransactionStateCompleted(getId(), this);
-        TERMINATED = new InviteClientTransactionStateTerminated(getId(), this);
+        CALLING = new InviteClientTransactionStateCalling(getId(), this,
+                logger);
+        PROCEEDING = new InviteClientTransactionStateProceeding(getId(), this,
+                logger);
+        COMPLETED = new InviteClientTransactionStateCompleted(getId(), this,
+                logger);
+        TERMINATED = new InviteClientTransactionStateTerminated(getId(), this,
+                logger);
 
         //17.1.1.2
         
@@ -91,7 +97,7 @@ public class InviteClientTransaction extends InviteTransaction
             messageSender = transportManager.createClientTransport(
                     request, remoteInetAddress, remotePort, transport);
         } catch (IOException e) {
-            Logger.error("input/output error", e);
+            logger.error("input/output error", e);
             transportError();
         }
 
@@ -122,7 +128,7 @@ public class InviteClientTransaction extends InviteTransaction
         try {
             messageSender.sendMessage(request);
         } catch (IOException e) {
-            Logger.error("input/output error", e);
+            logger.error("input/output error", e);
             transportError();
         }
         
@@ -141,7 +147,7 @@ public class InviteClientTransaction extends InviteTransaction
         // 17.1.1
         int statusCode = sipResponse.getStatusCode();
         if (statusCode < RFC3261.CODE_MIN_PROV) {
-            Logger.error("invalid response code");
+            logger.error("invalid response code");
         } else if (statusCode < RFC3261.CODE_MIN_SUCCESS) {
             state.received1xx();
         } else if (statusCode < RFC3261.CODE_MIN_REDIR) {
@@ -149,7 +155,7 @@ public class InviteClientTransaction extends InviteTransaction
         } else if (statusCode <= RFC3261.CODE_MAX) {
             state.received300To699();
         } else {
-            Logger.error("invalid response code");
+            logger.error("invalid response code");
         }
     }
     
@@ -187,7 +193,7 @@ public class InviteClientTransaction extends InviteTransaction
         try {
             messageSender.sendMessage(ack);
         } catch (IOException e) {
-            Logger.error("input/output error", e);
+            logger.error("input/output error", e);
             transportError();
         }
     }
@@ -198,7 +204,7 @@ public class InviteClientTransaction extends InviteTransaction
         try {
             messageSender.sendMessage(request);
         } catch (IOException e) {
-            Logger.error("input/output error", e);
+            logger.error("input/output error", e);
             transportError();
         }
         timer.schedule(new TimerA(), (long)Math.pow(2, nbRetrans) * RFC3261.TIMER_T1);

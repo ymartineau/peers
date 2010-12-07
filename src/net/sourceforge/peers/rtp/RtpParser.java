@@ -24,9 +24,15 @@ import net.sourceforge.peers.Logger;
 // RFC 3550
 public class RtpParser {
 
+    private Logger logger;
+
+    public RtpParser(Logger logger) {
+        this.logger = logger;
+    }
+
     public RtpPacket decode(byte[] packet) {
         if (packet.length < 12) {
-            Logger.error("RTP packet too short");
+            logger.error("RTP packet too short");
             return null;
         }
         RtpPacket rtpPacket = new RtpPacket();

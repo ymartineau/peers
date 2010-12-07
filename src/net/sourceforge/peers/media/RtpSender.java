@@ -35,7 +35,6 @@ import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.rtp.RtpPacket;
 import net.sourceforge.peers.rtp.RtpSession;
 import net.sourceforge.peers.sdp.Codec;
-import net.sourceforge.peers.sip.Utils;
 
 public class RtpSender implements Runnable {
 
@@ -46,13 +45,16 @@ public class RtpSender implements Runnable {
     private boolean mediaDebug;
     private Codec codec;
     private List<RtpPacket> pushedPackets;
+    private Logger logger;
+    private String peersHome;
     
     public RtpSender(PipedInputStream encodedData, RtpSession rtpSession,
-            boolean mediaDebug, Codec codec) {
+            boolean mediaDebug, Codec codec, Logger logger, String peersHome) {
         this.encodedData = encodedData;
         this.rtpSession = rtpSession;
         this.mediaDebug = mediaDebug;
         this.codec = codec;
+        this.peersHome = peersHome;
         isStopped = false;
         pushedPackets = Collections.synchronizedList(
                 new ArrayList<RtpPacket>());
@@ -63,13 +65,13 @@ public class RtpSender implements Runnable {
             SimpleDateFormat simpleDateFormat =
                 new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
             String date = simpleDateFormat.format(new Date());
-            String fileName = Utils.getPeersHome() + File.separator
+            String fileName = peersHome + File.separator
                 + SoundManager.MEDIA_DIR + File.separator + date
                 + "_rtp_sender.input";
             try {
                 rtpSenderInput = new FileOutputStream(fileName);
             } catch (FileNotFoundException e) {
-                Logger.error("cannot create file", e);
+                logger.error("cannot create file", e);
                 return;
             }
         }
@@ -93,7 +95,7 @@ public class RtpSender implements Runnable {
             try {
                 numBytesRead = encodedData.read(buffer, 0, buf_size);
             } catch (IOException e) {
-                Logger.error("input/output error", e);
+                logger.error("input/output error", e);
                 return;
             }
             byte[] trimmedBuffer;
@@ -107,7 +109,7 @@ public class RtpSender implements Runnable {
                 try {
                     rtpSenderInput.write(trimmedBuffer);
                 } catch (IOException e) {
-                    Logger.error("cannot write to file", e);
+                    logger.error("cannot write to file", e);
                     break;
                 }
             }
@@ -132,7 +134,7 @@ public class RtpSender implements Runnable {
             try {
                 Thread.sleep(15);
             } catch (InterruptedException e) {
-                Logger.error("Thread interrupted", e);
+                logger.error("Thread interrupted", e);
                 return;
             }
         }
@@ -140,7 +142,7 @@ public class RtpSender implements Runnable {
             try {
                 rtpSenderInput.close();
             } catch (IOException e) {
-                Logger.error("cannot close file", e);
+                logger.error("cannot close file", e);
                 return;
             }
         }

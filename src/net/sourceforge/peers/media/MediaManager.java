@@ -39,10 +39,11 @@ public class MediaManager {
     private IncomingRtpReader incomingRtpReader;
     private RtpSession rtpSession;
     private DtmfFactory dtmfFactory;
+    private Logger logger;
 
-    public MediaManager(UserAgent userAgent) {
-        super();
+    public MediaManager(UserAgent userAgent, Logger logger) {
         this.userAgent = userAgent;
+        this.logger = logger;
         dtmfFactory = new DtmfFactory();
     }
 
@@ -59,34 +60,35 @@ public class MediaManager {
             try {
                 inetAddress = InetAddress.getByName(localAddress);
             } catch (UnknownHostException e) {
-                Logger.error("unknown host: " + localAddress, e);
+                logger.error("unknown host: " + localAddress, e);
                 return;
             }
             
             rtpSession = new RtpSession(inetAddress, userAgent.getRtpPort(),
-                    userAgent.isMediaDebug());
+                    userAgent.isMediaDebug(), logger, userAgent.getPeersHome());
             
             try {
                 inetAddress = InetAddress.getByName(remoteAddress);
                 rtpSession.setRemoteAddress(inetAddress);
             } catch (UnknownHostException e) {
-                Logger.error("unknown host: " + remoteAddress, e);
+                logger.error("unknown host: " + remoteAddress, e);
             }
             rtpSession.setRemotePort(remotePort);
             
             
             try {
                 captureRtpSender = new CaptureRtpSender(rtpSession,
-                        soundManager, userAgent.isMediaDebug(), codec);
+                        soundManager, userAgent.isMediaDebug(), codec, logger,
+                        userAgent.getPeersHome());
             } catch (IOException e) {
-                Logger.error("input/output error", e);
+                logger.error("input/output error", e);
                 return;
             }
 
             try {
                 captureRtpSender.start();
             } catch (IOException e) {
-                Logger.error("input/output error", e);
+                logger.error("input/output error", e);
             }
             
             try {
@@ -95,9 +97,10 @@ public class MediaManager {
 //                            Utils.getInstance().getRtpPort(),
 //                            remoteAddress, remotePort);
                 incomingRtpReader = new IncomingRtpReader(
-                        captureRtpSender.getRtpSession(), soundManager, codec);
+                        captureRtpSender.getRtpSession(), soundManager, codec,
+                        logger);
             } catch (IOException e) {
-                Logger.error("input/output error", e);
+                logger.error("input/output error", e);
                 return;
             }
 
@@ -108,9 +111,9 @@ public class MediaManager {
             Echo echo;
             try {
                 echo = new Echo(localAddress, userAgent.getRtpPort(),
-                            remoteAddress, remotePort);
+                            remoteAddress, remotePort, logger);
             } catch (UnknownHostException e) {
-                Logger.error("unknown host amongst "
+                logger.error("unknown host amongst "
                         + localAddress + " or " + remoteAddress);
                 return;
             }
@@ -135,7 +138,7 @@ public class MediaManager {
                     try {
                         Thread.sleep(15);
                     } catch (InterruptedException e) {
-                        Logger.debug("sleep interrupted");
+                        logger.debug("sleep interrupted");
                     }
                 }
             }
@@ -149,27 +152,28 @@ public class MediaManager {
             
             rtpSession = new RtpSession(userAgent.getConfig()
                     .getLocalInetAddress(), userAgent.getRtpPort(),
-                    userAgent.isMediaDebug());
+                    userAgent.isMediaDebug(), logger, userAgent.getPeersHome());
             
             try {
                 InetAddress inetAddress = InetAddress.getByName(destAddress);
                 rtpSession.setRemoteAddress(inetAddress);
             } catch (UnknownHostException e) {
-                Logger.error("unknown host: " + destAddress, e);
+                logger.error("unknown host: " + destAddress, e);
             }
             rtpSession.setRemotePort(destPort);
             
             try {
                 captureRtpSender = new CaptureRtpSender(rtpSession,
-                        soundManager, userAgent.isMediaDebug(), codec);
+                        soundManager, userAgent.isMediaDebug(), codec, logger,
+                        userAgent.getPeersHome());
             } catch (IOException e) {
-                Logger.error("input/output error", e);
+                logger.error("input/output error", e);
                 return;
             }
             try {
                 captureRtpSender.start();
             } catch (IOException e) {
-                Logger.error("input/output error", e);
+                logger.error("input/output error", e);
             }
             try {
                 //TODO retrieve port from SDP offer
@@ -178,9 +182,9 @@ public class MediaManager {
 //                                remoteAddress, remotePort);
                 //FIXME RTP sessions can be different !
                 incomingRtpReader = new IncomingRtpReader(rtpSession,
-                        soundManager, codec);
+                        soundManager, codec, logger);
             } catch (IOException e) {
-                Logger.error("input/output error", e);
+                logger.error("input/output error", e);
                 return;
             }
 
@@ -191,9 +195,9 @@ public class MediaManager {
             try {
                 echo = new Echo(userAgent.getConfig().getLocalInetAddress()
                             .getHostAddress(),
-                        userAgent.getRtpPort(), destAddress, destPort);
+                        userAgent.getRtpPort(), destAddress, destPort, logger);
             } catch (UnknownHostException e) {
-                Logger.error("unknown host amongst "
+                logger.error("unknown host amongst "
                         + userAgent.getConfig().getLocalInetAddress()
                             .getHostAddress() + " or " + destAddress);
                 return;
@@ -223,7 +227,7 @@ public class MediaManager {
                 try {
                     Thread.sleep(15);
                 } catch (InterruptedException e) {
-                    Logger.debug("sleep interrupted");
+                    logger.debug("sleep interrupted");
                 }
             }
             rtpSession = null;

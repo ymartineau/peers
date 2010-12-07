@@ -25,6 +25,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import net.sourceforge.peers.Config;
+import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.media.MediaMode;
 import net.sourceforge.peers.sip.PortProvider;
 import net.sourceforge.peers.sip.syntaxencoding.SipParser;
@@ -107,7 +108,8 @@ public class UdpMessageSenderTestMain implements Runnable {
                 return null;
             }
         };
-        TransportManager transportManager = new TransportManager(null, config);
+        TransportManager transportManager = new TransportManager(null, config,
+                new Logger(null));
         try {
             MessageSender messageSender = transportManager
                     .createClientTransport(sipRequest, inetAddress, 5060, "UDP");

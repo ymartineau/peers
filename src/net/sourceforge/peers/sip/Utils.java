@@ -20,7 +20,6 @@
 package net.sourceforge.peers.sip;
 
 
-import java.io.File;
 import java.net.InetAddress;
 
 import net.sourceforge.peers.sip.core.useragent.UAS;
@@ -126,11 +125,4 @@ public class Utils {
         return buf.toString();
     }
 
-    public final static String getPeersHome() {
-        String peersHome = System.getProperty(PEERSHOME_SYSTEM_PROPERTY);
-        if (peersHome != null && !"".equals(peersHome.trim())) {
-            return peersHome + File.separator;
-        }
-        return DEFAULT_PEERS_HOME;
-    }
 }

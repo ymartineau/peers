@@ -27,6 +27,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import net.sourceforge.peers.Config;
+import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.media.MediaMode;
 import net.sourceforge.peers.sip.PortProvider;
 import net.sourceforge.peers.sip.syntaxencoding.SipParser;
@@ -112,8 +113,9 @@ public class MessageSenderTestNG {
             new SipServerTransportUser() {
             @Override public void messageReceived(SipMessage sipMessage) {}
         };
-        transportManager = new TransportManager(new TransactionManager(),
-                config);
+        Logger logger = new Logger(null);
+        transportManager = new TransportManager(new TransactionManager(logger),
+                config, logger);
         transportManager.setSipServerTransportUser(sipServerTransportUser);
     }
     

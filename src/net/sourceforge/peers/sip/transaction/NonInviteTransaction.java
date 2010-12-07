@@ -21,14 +21,16 @@ package net.sourceforge.peers.sip.transaction;
 
 import java.util.Timer;
 
+import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.transport.TransportManager;
 
 public abstract class NonInviteTransaction extends Transaction {
 
     protected NonInviteTransaction(String branchId, String method, Timer timer,
             TransportManager transportManager,
-            TransactionManager transactionManager) {
-        super(branchId, method, timer, transportManager, transactionManager);
+            TransactionManager transactionManager, Logger logger) {
+        super(branchId, method, timer, transportManager, transactionManager,
+                logger);
     }
 
 }

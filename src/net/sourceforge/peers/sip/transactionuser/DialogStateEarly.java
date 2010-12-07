@@ -23,8 +23,8 @@ import net.sourceforge.peers.Logger;
 
 public class DialogStateEarly extends DialogState {
     
-    public DialogStateEarly(String id, Dialog dialog) {
-        super(id, dialog);
+    public DialogStateEarly(String id, Dialog dialog, Logger logger) {
+        super(id, dialog, logger);
     }
     
     @Override
@@ -47,7 +47,7 @@ public class DialogStateEarly extends DialogState {
     
     @Override
     public void receivedOrSentBye() {
-        Logger.error(id + " invalid transition");
+        logger.error(id + " invalid transition");
         throw new IllegalStateException();
     }
 }

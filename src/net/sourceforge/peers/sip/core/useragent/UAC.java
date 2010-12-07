@@ -57,6 +57,7 @@ public class UAC {
     private TransactionManager transactionManager;
     private DialogManager dialogManager;
     private List<String> guiClosedCallIds;
+    private Logger logger;
     
     /**
      * should be instanciated only once, it was a singleton.
@@ -66,12 +67,14 @@ public class UAC {
             MidDialogRequestManager midDialogRequestManager,
             DialogManager dialogManager,
             TransactionManager transactionManager,
-            TransportManager transportManager) {
+            TransportManager transportManager,
+            Logger logger) {
         this.userAgent = userAgent;
         this.initialRequestManager = initialRequestManager;
         this.midDialogRequestManager = midDialogRequestManager;
         this.dialogManager = dialogManager;
         this.transactionManager = transactionManager;
+        this.logger = logger;
         registerCallID = Utils.generateCallID(
                 userAgent.getConfig().getLocalInetAddress());
         guiClosedCallIds = Collections.synchronizedList(new ArrayList<String>());
@@ -176,7 +179,7 @@ public class UAC {
                 (InviteClientTransaction)transactionManager
                     .getClientTransaction(inviteWithAuth);
             if (inviteClientTransaction == null) {
-                Logger.error("cannot find invite client transaction" +
+                logger.error("cannot find invite client transaction" +
                         " for call " + callId);
             } else {
                 SipResponse sipResponse =

@@ -14,11 +14,12 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008, 2009 Yohann Martineau 
+    Copyright 2007, 2008, 2009, 2010 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip.transaction;
 
+import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.AbstractState;
 
 public abstract class NonInviteClientTransactionState extends AbstractState {
@@ -26,8 +27,9 @@ public abstract class NonInviteClientTransactionState extends AbstractState {
     protected NonInviteClientTransaction nonInviteClientTransaction;
     
     public NonInviteClientTransactionState(String id,
-            NonInviteClientTransaction nonInviteClientTransaction) {
-        super(id);
+            NonInviteClientTransaction nonInviteClientTransaction,
+            Logger logger) {
+        super(id, logger);
         this.nonInviteClientTransaction = nonInviteClientTransaction;
     }
     

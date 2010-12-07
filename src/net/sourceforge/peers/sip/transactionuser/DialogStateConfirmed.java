@@ -23,25 +23,25 @@ import net.sourceforge.peers.Logger;
 
 public class DialogStateConfirmed extends DialogState {
 
-    public DialogStateConfirmed(String id, Dialog dialog) {
-        super(id, dialog);
+    public DialogStateConfirmed(String id, Dialog dialog, Logger logger) {
+        super(id, dialog, logger);
     }
 
     @Override
     public void receivedOrSent101To199() {
-        Logger.error(id + " invalid transition");
+        logger.error(id + " invalid transition");
         throw new IllegalStateException();
     }
 
     @Override
     public void receivedOrSent2xx() {
-        Logger.error(id + " invalid transition");
+        logger.error(id + " invalid transition");
         throw new IllegalStateException();
     }
 
     @Override
     public void receivedOrSent300To699() {
-        Logger.error(id + " invalid transition");
+        logger.error(id + " invalid transition");
         throw new IllegalStateException();
     }
 

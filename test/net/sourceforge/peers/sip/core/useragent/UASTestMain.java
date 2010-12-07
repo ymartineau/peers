@@ -14,12 +14,14 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008, 2009 Yohann Martineau 
+    Copyright 2007, 2008, 2009, 2010 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip.core.useragent;
 
 import java.net.SocketException;
+
+import net.sourceforge.peers.Logger;
 
 
 public class UASTestMain {
@@ -29,7 +31,7 @@ public class UASTestMain {
      */
     public static void main(String[] args) {
         try {
-            new UserAgent(null);
+            new UserAgent(null, null, new Logger(null));
         } catch (SocketException e) {
             e.printStackTrace();
         }

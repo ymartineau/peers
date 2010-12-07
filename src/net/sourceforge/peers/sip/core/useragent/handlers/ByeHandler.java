@@ -40,8 +40,9 @@ public class ByeHandler extends DialogMethodHandler
 
     public ByeHandler(UserAgent userAgent, DialogManager dialogManager,
             TransactionManager transactionManager,
-            TransportManager transportManager) {
-        super(userAgent, dialogManager, transactionManager, transportManager);
+            TransportManager transportManager, Logger logger) {
+        super(userAgent, dialogManager, transactionManager, transportManager,
+                logger);
     }
 
     ////////////////////////////////////////////////
@@ -58,7 +59,7 @@ public class ByeHandler extends DialogMethodHandler
         dialog.receivedOrSentBye();
         
         dialogManager.removeDialog(dialog.getId());
-        Logger.debug("removed dialog " + dialog.getId());
+        logger.debug("removed dialog " + dialog.getId());
     }
     
     
@@ -77,7 +78,7 @@ public class ByeHandler extends DialogMethodHandler
         String addrSpec = sipRequest.getRequestUri().toString();
         userAgent.getPeers().remove(addrSpec);
         dialogManager.removeDialog(dialog.getId());
-        Logger.debug("removed dialog " + dialog.getId());
+        logger.debug("removed dialog " + dialog.getId());
         switch (userAgent.getMediaMode()) {
         case captureAndPlayback:
             userAgent.getMediaManager().stopSession();

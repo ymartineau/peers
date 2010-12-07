@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008, 2009 Yohann Martineau 
+    Copyright 2007, 2008, 2009, 2010 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip.transactionuser;
@@ -23,31 +23,31 @@ import net.sourceforge.peers.Logger;
 
 public class DialogStateTerminated extends DialogState {
 
-    public DialogStateTerminated(String id, Dialog dialog) {
-        super(id, dialog);
+    public DialogStateTerminated(String id, Dialog dialog, Logger logger) {
+        super(id, dialog, logger);
     }
 
     @Override
     public void receivedOrSent101To199() {
-        Logger.error(id + " invalid transition");
+        logger.error(id + " invalid transition");
         throw new IllegalStateException();
     }
     
     @Override
     public void receivedOrSent2xx() {
-        Logger.error(id + " invalid transition");
+        logger.error(id + " invalid transition");
         throw new IllegalStateException();
     }
     
     @Override
     public void receivedOrSent300To699() {
-        Logger.error(id + " invalid transition");
+        logger.error(id + " invalid transition");
         throw new IllegalStateException();
     }
     
     @Override
     public void receivedOrSentBye() {
-        Logger.error(id + " invalid transition");
+        logger.error(id + " invalid transition");
         throw new IllegalStateException();
     }
 }

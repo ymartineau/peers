@@ -38,9 +38,12 @@ public class SDPManager {
     private UserAgent userAgent;
     private List<Codec> supportedCodecs;
     private Random random;
+
+    private Logger logger;
     
-    public SDPManager(UserAgent userAgent) {
+    public SDPManager(UserAgent userAgent, Logger logger) {
         this.userAgent = userAgent;
+        this.logger = logger;
         sdpParser = new SdpParser();
         supportedCodecs = new ArrayList<Codec>();
         random = new Random();
@@ -64,7 +67,7 @@ public class SDPManager {
         try {
             return sdpParser.parse(sdp);
         } catch (IOException e) {
-            Logger.error(e.getMessage(), e);
+            logger.error(e.getMessage(), e);
         }
         return null;
     }

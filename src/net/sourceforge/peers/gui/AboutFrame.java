@@ -43,17 +43,17 @@ import javax.swing.event.HyperlinkListener;
 import javax.swing.event.HyperlinkEvent.EventType;
 
 import net.sourceforge.peers.Logger;
-import net.sourceforge.peers.sip.Utils;
 
 public class AboutFrame extends JFrame implements ActionListener,
         HyperlinkListener {
 
-    public static final String LICENSE_FILE = Utils.getPeersHome()
-        + File.separator + "gpl.txt";
+    public static final String LICENSE_FILE = File.separator + "gpl.txt";
 
     private static final long serialVersionUID = 1L;
 
-    public AboutFrame() {
+    private Logger logger;
+
+    public AboutFrame(String peersHome, Logger logger) {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("About");
 
@@ -71,7 +71,7 @@ public class AboutFrame extends JFrame implements ActionListener,
         add(textPane, BorderLayout.PAGE_START);
         String gpl = null;
         try {
-            FileReader fileReader = new FileReader(LICENSE_FILE);
+            FileReader fileReader = new FileReader(peersHome + LICENSE_FILE);
             BufferedReader bufferedReader = new BufferedReader(fileReader);
             StringBuffer buf = new StringBuffer();
             String line;
@@ -82,7 +82,7 @@ public class AboutFrame extends JFrame implements ActionListener,
             }
             gpl = buf.toString();
         } catch (IOException e) {
-            Logger.error(e.getMessage(), e);
+            logger.error(e.getMessage(), e);
         }
         JTextArea textArea = new JTextArea();
         textArea.setEditable(false);
@@ -126,9 +126,9 @@ public class AboutFrame extends JFrame implements ActionListener,
                 URI uri = hyperlinkEvent.getURL().toURI();
                 java.awt.Desktop.getDesktop().browse(uri);
             } catch (URISyntaxException e) {
-                Logger.error(e.getMessage(), e);
+                logger.error(e.getMessage(), e);
             } catch (IOException e) {
-                Logger.error(e.getMessage(), e);
+                logger.error(e.getMessage(), e);
             }
         }
     }

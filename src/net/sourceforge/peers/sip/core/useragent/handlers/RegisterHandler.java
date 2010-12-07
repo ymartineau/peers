@@ -67,8 +67,8 @@ public class RegisterHandler extends MethodHandler
     
     public RegisterHandler(UserAgent userAgent,
             TransactionManager transactionManager,
-            TransportManager transportManager) {
-        super(userAgent, transactionManager, transportManager);
+            TransportManager transportManager, Logger logger) {
+        super(userAgent, transactionManager, transportManager, logger);
     }
 
     //TODO factorize common code here and in invitehandler
@@ -77,7 +77,8 @@ public class RegisterHandler extends MethodHandler
         registered = false;
         unregisterInvoked = false;
         SipHeaders sipHeaders = sipRequest.getSipHeaders();
-        SipURI destinationUri = RequestManager.getDestinationUri(sipRequest);
+        SipURI destinationUri = RequestManager.getDestinationUri(sipRequest,
+                logger);
         int port = destinationUri.getPort();
         if (port == SipURI.DEFAULT_PORT) {
             port = RFC3261.TRANSPORT_DEFAULT_PORT;
@@ -181,10 +182,10 @@ public class RegisterHandler extends MethodHandler
                             userAgent.getUac().register();
                         } catch (UnknownHostException e) {
                             notifyListener(sipResponse);
-                            Logger.error(e.getMessage(), e);
+                            logger.error(e.getMessage(), e);
                         } catch (SipUriSyntaxException e) {
                             notifyListener(sipResponse);
-                            Logger.error(e.getMessage(), e);
+                            logger.error(e.getMessage(), e);
                         }
                     }
                 } else { // received not provided
@@ -275,7 +276,7 @@ public class RegisterHandler extends MethodHandler
                 initialRequestManager.createInitialRequest(requestUriStr,
                         RFC3261.METHOD_REGISTER, profileUriStr, callIDStr);
             } catch (SipUriSyntaxException e) {
-                Logger.error("syntax error", e);
+                logger.error("syntax error", e);
             }
         }
     }

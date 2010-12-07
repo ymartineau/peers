@@ -59,7 +59,8 @@ public class MidDialogRequestManager extends RequestManager
             RegisterHandler registerHandler,
             DialogManager dialogManager,
             TransactionManager transactionManager,
-            TransportManager transportManager) {
+            TransportManager transportManager,
+            Logger logger) {
         super(userAgent,
                 inviteHandler,
                 cancelHandler,
@@ -68,7 +69,8 @@ public class MidDialogRequestManager extends RequestManager
                 registerHandler,
                 dialogManager,
                 transactionManager,
-                transportManager);
+                transportManager,
+                logger);
     }
 
 
@@ -104,7 +106,8 @@ public class MidDialogRequestManager extends RequestManager
     public ClientTransaction createNonInviteClientTransaction(
             SipRequest sipRequest, String branchId) {
         //8.1.2
-        SipURI destinationUri = RequestManager.getDestinationUri(sipRequest);
+        SipURI destinationUri = RequestManager.getDestinationUri(sipRequest,
+                logger);
 
         //TODO if header route is present, addrspec = toproute.nameaddress.addrspec
         String transport = RFC3261.TRANSPORT_UDP;
@@ -127,7 +130,7 @@ public class MidDialogRequestManager extends RequestManager
         try {
             inetAddress = InetAddress.getByName(sipUri.getHost());
         } catch (UnknownHostException e) {
-            Logger.error("unknown host: " + sipUri.getHost(), e);
+            logger.error("unknown host: " + sipUri.getHost(), e);
             return null;
         }
         ClientTransaction clientTransaction = transactionManager

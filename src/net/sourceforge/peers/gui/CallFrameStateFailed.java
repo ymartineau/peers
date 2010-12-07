@@ -23,10 +23,12 @@ import javax.swing.JButton;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import net.sourceforge.peers.Logger;
+
 public class CallFrameStateFailed extends CallFrameState {
 
-    public CallFrameStateFailed(String id, CallFrame callFrame) {
-        super(id, callFrame);
+    public CallFrameStateFailed(String id, CallFrame callFrame, Logger logger) {
+        super(id, callFrame, logger);
         callPanel = new JPanel();
         callPanel.add(new JLabel("Failed"));
         JButton closeButton = new JButton("Close");

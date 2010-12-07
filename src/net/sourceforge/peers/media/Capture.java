@@ -33,10 +33,13 @@ public class Capture implements Runnable {
     private PipedOutputStream rawData;
     private boolean isStopped;
     private SoundManager soundManager;
+    private Logger logger;
     
-    public Capture(PipedOutputStream rawData, SoundManager soundManager) {
+    public Capture(PipedOutputStream rawData, SoundManager soundManager,
+            Logger logger) {
         this.rawData = rawData;
         this.soundManager = soundManager;
+        this.logger = logger;
         isStopped = false;
     }
 
@@ -53,7 +56,7 @@ public class Capture implements Runnable {
             try {
                 rawData.write(buffer, 0, numBytesRead);
             } catch (IOException e) {
-                Logger.error("input/output error", e);
+                logger.error("input/output error", e);
                 return;
             }
         }

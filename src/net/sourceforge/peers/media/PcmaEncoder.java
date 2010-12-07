@@ -22,6 +22,8 @@ package net.sourceforge.peers.media;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 
+import net.sourceforge.peers.Logger;
+
 public class PcmaEncoder extends Encoder {
 
     private final static int cClip = 32635;
@@ -45,8 +47,8 @@ public class PcmaEncoder extends Encoder {
     };
 
     public PcmaEncoder(PipedInputStream rawData, PipedOutputStream encodedData,
-            boolean mediaDebug) {
-        super(rawData, encodedData, mediaDebug);
+            boolean mediaDebug, Logger logger, String peersHome) {
+        super(rawData, encodedData, mediaDebug, logger, peersHome);
     }
 
     @Override

@@ -41,8 +41,8 @@ public class OptionsHandler extends MethodHandler
 
     public OptionsHandler(UserAgent userAgent,
             TransactionManager transactionManager,
-            TransportManager transportManager) {
-        super(userAgent, transactionManager, transportManager);
+            TransportManager transportManager, Logger logger) {
+        super(userAgent, transactionManager, transportManager, logger);
     }
 
     public void handleOptions(SipRequest sipRequest) {
@@ -53,7 +53,7 @@ public class OptionsHandler extends MethodHandler
                 sdpManager.createSessionDescription(null);
             sipResponse.setBody(sessionDescription.toString().getBytes());
         } catch (IOException e) {
-            Logger.error(e.getMessage(), e);
+            logger.error(e.getMessage(), e);
         }
         SipHeaders sipHeaders = sipResponse.getSipHeaders();
         sipHeaders.add(new SipHeaderFieldName(RFC3261.HDR_CONTENT_TYPE),

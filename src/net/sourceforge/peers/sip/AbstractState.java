@@ -24,10 +24,11 @@ import net.sourceforge.peers.Logger;
 public abstract class AbstractState {
     
     protected String id;
+    protected Logger logger;
     
-    public AbstractState(String id) {
-        super();
+    public AbstractState(String id, Logger logger) {
         this.id = id;
+        this.logger = logger;
     }
 
     public void log(AbstractState state) {
@@ -36,7 +37,7 @@ public abstract class AbstractState {
         buf.append(JavaUtils.getShortClassName(this.getClass())).append(" -> ");
         buf.append(JavaUtils.getShortClassName(state.getClass())).append("] ");
         buf.append(new Exception().getStackTrace()[1].getMethodName());
-        Logger.debug(buf.toString());
+        logger.debug(buf.toString());
     }
     
 }
