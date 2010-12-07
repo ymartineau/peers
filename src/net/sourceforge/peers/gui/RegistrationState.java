@@ -19,14 +19,16 @@
 
 package net.sourceforge.peers.gui;
 
+import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.AbstractState;
 
 public abstract class RegistrationState extends AbstractState {
 
     protected Registration registration;
 
-    public RegistrationState(String id, Registration registration) {
-        super(id);
+    public RegistrationState(String id, Registration registration,
+            Logger logger) {
+        super(id, logger);
         this.registration = registration;
     }
 

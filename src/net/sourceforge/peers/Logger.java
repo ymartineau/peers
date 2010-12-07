@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008, 2009 Yohann Martineau 
+    Copyright 2007, 2008, 2009, 2010 Yohann Martineau 
 */
 
 package net.sourceforge.peers;
@@ -31,55 +31,58 @@ import net.sourceforge.peers.sip.Utils;
 
 public class Logger {
 
-    public final static String LOG_FILE = Utils.getPeersHome()
-        + File.separator + "logs" + File.separator + "peers.log";
-    public final static String NETWORK_FILE = Utils.getPeersHome()
-        + File.separator + "logs" + File.separator + "transport.log";
-    
-    private static PrintWriter logWriter;
-    private static PrintWriter networkWriter;
-    private final static Object logMutex;
-    private final static Object networkMutex;
-    private final static SimpleDateFormat logFormatter;
-    private final static SimpleDateFormat networkFormatter;
-    
-    static {
+    public final static String LOG_FILE = File.separator + "logs"
+        + File.separator + "peers.log";
+    public final static String NETWORK_FILE = File.separator + "logs"
+        + File.separator + "transport.log";
+
+    private PrintWriter logWriter;
+    private PrintWriter networkWriter;
+    private Object logMutex;
+    private Object networkMutex;
+    private SimpleDateFormat logFormatter;
+    private SimpleDateFormat networkFormatter;
+
+    public Logger(String peersHome) {
+        if (peersHome == null) {
+            peersHome = Utils.DEFAULT_PEERS_HOME;
+        }
         try {
             logWriter = new PrintWriter(new BufferedWriter(
-                    new FileWriter(LOG_FILE)));
+                    new FileWriter(peersHome + LOG_FILE)));
             networkWriter = new PrintWriter(new BufferedWriter(
-                    new FileWriter(NETWORK_FILE)));
+                    new FileWriter(peersHome + NETWORK_FILE)));
         } catch (IOException e) {
-        	System.err.println(e);
+            System.err.println(e);
         }
         logMutex = new Object();
         networkMutex = new Object();
         logFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS");
         networkFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS");
     }
-    
-    public final static void debug(String message) {
+
+    public final void debug(String message) {
         synchronized (logMutex) {
             logWriter.write(genericLog(message.toString(), "DEBUG"));
             logWriter.flush();
         }
     }
     
-    public final static void info(String message) {
+    public final void info(String message) {
         synchronized (logMutex) {
             logWriter.write(genericLog(message.toString(), "INFO "));
             logWriter.flush();
         }
     }
     
-    public final static void error(String message) {
+    public final void error(String message) {
         synchronized (logMutex) {
             logWriter.write(genericLog(message.toString(), "ERROR"));
             logWriter.flush();
         }
     }
     
-    public final static void error(String message, Exception exception) {
+    public final void error(String message, Exception exception) {
         synchronized (logMutex) {
             logWriter.write(genericLog(message, "ERROR"));
             exception.printStackTrace(logWriter);
@@ -87,7 +90,7 @@ public class Logger {
         }
     }
     
-    private final static String genericLog(String message, String level) {
+    private final String genericLog(String message, String level) {
         StringBuffer buf = new StringBuffer();
         buf.append(logFormatter.format(new Date()));
         buf.append(" ");
@@ -100,7 +103,7 @@ public class Logger {
         return buf.toString();
     }
     
-    public final static void traceNetwork(String message, String direction) {
+    public final void traceNetwork(String message, String direction) {
         synchronized (networkMutex) {
             StringBuffer buf = new StringBuffer();
             buf.append(networkFormatter.format(new Date()));
@@ -115,5 +118,5 @@ public class Logger {
             networkWriter.flush();
         }
     }
-    
+
 }

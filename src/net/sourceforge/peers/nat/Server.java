@@ -34,8 +34,6 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import net.sourceforge.peers.Logger;
-
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -72,7 +70,7 @@ public class Server {
         try {
             encodedEmail = URLEncoder.encode(email, "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            Logger.error("unsupported encoding", e);
+            e.printStackTrace();
             return;
         }
         StringBuffer urlEnd = new StringBuffer();
@@ -87,7 +85,7 @@ public class Server {
         try {
             encodedEmail = URLEncoder.encode(email, "UTF-8");
         } catch (UnsupportedEncodingException e) {
-            Logger.error("unsupported encoding", e);
+            e.printStackTrace();
             return null;
         }
         StringBuffer urlBuf = new StringBuffer();
@@ -100,17 +98,17 @@ public class Server {
         try {
             url = new URL(urlBuf.toString());
         } catch (MalformedURLException e) {
-            Logger.error("malformed url", e);
+            e.printStackTrace();
             return null;
         }
-        Logger.debug("retrieved peers");
+        System.out.println("retrieved peers");
         DocumentBuilderFactory documentBuilderFactory
             = DocumentBuilderFactory.newInstance();
         DocumentBuilder documentBuilder;
         try {
             documentBuilder = documentBuilderFactory.newDocumentBuilder();
         } catch (ParserConfigurationException e) {
-            Logger.error("parser configuration exception", e);
+            e.printStackTrace();
             return null;
         }
         try {
@@ -118,9 +116,9 @@ public class Server {
             InputStream inputStream = urlConnection.getInputStream();
             return documentBuilder.parse(inputStream);
         } catch (IOException e) {
-            Logger.error("IOException", e);
+            e.printStackTrace();
         } catch (SAXException e) {
-            Logger.error("SAXException", e);
+            e.printStackTrace();
         }
         return null;
     }
@@ -140,10 +138,10 @@ public class Server {
         try {
             socket.getOutputStream().write(get.toString().getBytes());
         } catch (IOException e) {
-            Logger.error("input/output error", e);
+            e.printStackTrace();
             return null;
         }
-        Logger.debug("> sent:\n" + get.toString());
+        System.out.println("> sent:\n" + get.toString());
         
         StringBuffer result = new StringBuffer();
         try {
@@ -155,13 +153,13 @@ public class Server {
                 result.append(new String(exactBuf));
             }
         } catch (SocketTimeoutException e) {
-            Logger.debug("socket timeout");
+            System.out.println("socket timeout");
             return null;
         } catch (IOException e) {
-            Logger.error("input/output error", e);
+            e.printStackTrace();
             return null;
         }
-        Logger.debug("< received:\n" + result.toString());
+        System.out.println("< received:\n" + result.toString());
         return result.toString();
     }
     
@@ -170,7 +168,7 @@ public class Server {
             try {
                 socket.close();
             } catch (IOException e) {
-                Logger.error("input/output error", e);
+                e.printStackTrace();
             }
         }
     }

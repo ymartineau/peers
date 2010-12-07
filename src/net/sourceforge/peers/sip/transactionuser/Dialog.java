@@ -58,18 +58,20 @@ public class Dialog {
     private String remoteTarget;
     private boolean secure;
     private ArrayList<String> routeSet;
+    private Logger logger;
     
-    Dialog(String callId, String localTag, String remoteTag) {
+    Dialog(String callId, String localTag, String remoteTag, Logger logger) {
         super();
         this.callId = callId;
         this.localTag = localTag;
         this.remoteTag = remoteTag;
+        this.logger = logger;
         
-        INIT = new DialogStateInit(getId(), this);
+        INIT = new DialogStateInit(getId(), this, logger);
         state = INIT;
-        EARLY = new DialogStateEarly(getId(), this);
-        CONFIRMED = new DialogStateConfirmed(getId(), this);
-        TERMINATED = new DialogStateTerminated(getId(), this);
+        EARLY = new DialogStateEarly(getId(), this, logger);
+        CONFIRMED = new DialogStateConfirmed(getId(), this, logger);
+        TERMINATED = new DialogStateTerminated(getId(), this, logger);
         
         localCSeq = EMPTY_CSEQ;
         remoteCSeq = EMPTY_CSEQ;
@@ -152,7 +154,7 @@ public class Dialog {
                 headers.add(new SipHeaderFieldName(RFC3261.HDR_ROUTE),
                         new SipHeaderFieldMultiValue(routes));
             } else {
-                Logger.error("Trying to forward to a strict router, forbidden in this implementation");
+                logger.error("Trying to forward to a strict router, forbidden in this implementation");
             }
         }
         

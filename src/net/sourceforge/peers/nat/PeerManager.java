@@ -25,8 +25,6 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 
-import net.sourceforge.peers.Logger;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -52,7 +50,7 @@ public class PeerManager extends Thread {
         try {
             datagramSocket = new DatagramSocket(localPort, localAddress);
         } catch (SocketException e) {
-            Logger.error("socket error", e);
+            e.printStackTrace();
             return;
         }
 //        UDPReceiver udpReceiver = new UDPReceiver(datagramSocket);
@@ -69,7 +67,7 @@ public class PeerManager extends Thread {
             try {
                 Thread.sleep(30000);
             } catch (InterruptedException e) {
-                Logger.error("Thread interrupted", e);
+                e.printStackTrace();
                 return;
             }
         }
@@ -101,18 +99,18 @@ public class PeerManager extends Thread {
                 DatagramPacket datagramPacket =
                     new DatagramPacket(buf, buf.length, remoteAddress, remotePort);
                 datagramSocket.send(datagramPacket);
-                Logger.debug("> sent:\n" + message);
+                System.out.println("> sent:\n" + message);
                 try {
                     Thread.sleep(5000);
                 } catch (InterruptedException e) {
-                    Logger.error("Thread interrupted", e);
+                    e.printStackTrace();
                     return;
                 }
             }
 
             //datagramSocket.close();
         } catch (IOException e) {
-            Logger.error("input/output error", e);
+            e.printStackTrace();
             return;
         }
     }

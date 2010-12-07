@@ -29,7 +29,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import net.sourceforge.peers.Logger;
-import net.sourceforge.peers.sip.Utils;
 
 
 public abstract class Encoder implements Runnable {
@@ -40,12 +39,16 @@ public abstract class Encoder implements Runnable {
     private FileOutputStream encoderOutput;
     private FileOutputStream encoderInput;
     private boolean mediaDebug;
+    private Logger logger;
+    private String peersHome;
 
     public Encoder(PipedInputStream rawData, PipedOutputStream encodedData,
-            boolean mediaDebug) {
+            boolean mediaDebug, Logger logger, String peersHome) {
         this.rawData = rawData;
         this.encodedData = encodedData;
         this.mediaDebug = mediaDebug;
+        this.logger = logger;
+        this.peersHome = peersHome;
         isStopped = false;
     }
     
@@ -55,15 +58,15 @@ public abstract class Encoder implements Runnable {
             SimpleDateFormat simpleDateFormat =
                 new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
             String date = simpleDateFormat.format(new Date());
-            String dir = Utils.getPeersHome() + File.separator
-                + SoundManager.MEDIA_DIR + File.separator;
+            String dir = peersHome + File.separator + SoundManager.MEDIA_DIR
+                + File.separator;
             String fileName = dir + date + "_g711_encoder.output";
             try {
                 encoderOutput = new FileOutputStream(fileName);
                 fileName = dir + date + "_g711_encoder.input";
                 encoderInput = new FileOutputStream(fileName);
             } catch (FileNotFoundException e) {
-                Logger.error("cannot create file", e);
+                logger.error("cannot create file", e);
                 return;
             }
         }
@@ -72,7 +75,7 @@ public abstract class Encoder implements Runnable {
             try {
                 numBytesRead = rawData.read(buffer, 0, buffer.length);
             } catch (IOException e) {
-                Logger.error("input/output error", e);
+                logger.error("input/output error", e);
                 return;
             }
             
@@ -88,7 +91,7 @@ public abstract class Encoder implements Runnable {
                 try {
                     encoderInput.write(trimmedBuffer);
                 } catch (IOException e) {
-                    Logger.error("cannot write to file", e);
+                    logger.error("cannot write to file", e);
                     break;
                 }
             }
@@ -97,14 +100,14 @@ public abstract class Encoder implements Runnable {
                 try {
                     encoderOutput.write(ulawData);
                 } catch (IOException e) {
-                    Logger.error("cannot write to file", e);
+                    logger.error("cannot write to file", e);
                     break;
                 }
             }
             try {
                 encodedData.write(ulawData);
             } catch (IOException e) {
-                Logger.error("input/output error", e);
+                logger.error("input/output error", e);
                 return;
             }
         }
@@ -113,7 +116,7 @@ public abstract class Encoder implements Runnable {
                 encoderOutput.close();
                 encoderInput.close();
             } catch (IOException e) {
-                Logger.error("cannot close file", e);
+                logger.error("cannot close file", e);
                 return;
             }
         }

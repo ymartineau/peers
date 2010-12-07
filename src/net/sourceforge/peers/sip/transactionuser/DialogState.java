@@ -14,19 +14,20 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008, 2009 Yohann Martineau 
+    Copyright 2007, 2008, 2009, 2010 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip.transactionuser;
 
+import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.AbstractState;
 
 public abstract class DialogState extends AbstractState {
 
     protected Dialog dialog;
 
-    public DialogState(String id, Dialog dialog) {
-        super(id);
+    public DialogState(String id, Dialog dialog, Logger logger) {
+        super(id, logger);
         this.dialog = dialog;
     }
     

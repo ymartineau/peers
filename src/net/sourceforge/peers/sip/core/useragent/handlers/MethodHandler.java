@@ -19,6 +19,7 @@
 
 package net.sourceforge.peers.sip.core.useragent.handlers;
 
+import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sdp.SDPManager;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.Utils;
@@ -41,13 +42,15 @@ public abstract class MethodHandler {
     protected ChallengeManager challengeManager;
     protected SDPManager sdpManager;
     protected boolean challenged;
+    protected Logger logger;
     
     public MethodHandler(UserAgent userAgent,
             TransactionManager transactionManager,
-            TransportManager transportManager) {
+            TransportManager transportManager, Logger logger) {
         this.userAgent = userAgent;
         this.transactionManager = transactionManager;
         this.transportManager = transportManager;
+        this.logger = logger;
         challenged = false;
     }
     

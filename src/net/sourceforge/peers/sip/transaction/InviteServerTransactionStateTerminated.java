@@ -14,16 +14,19 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008, 2009 Yohann Martineau 
+    Copyright 2007, 2008, 2009, 2010 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip.transaction;
 
+import net.sourceforge.peers.Logger;
+
 public class InviteServerTransactionStateTerminated extends
         InviteServerTransactionState {
 
-    public InviteServerTransactionStateTerminated(String id, InviteServerTransaction inviteServerTransaction) {
-        super(id, inviteServerTransaction);
+    public InviteServerTransactionStateTerminated(String id,
+            InviteServerTransaction inviteServerTransaction, Logger logger) {
+        super(id, inviteServerTransaction, logger);
     }
 
 }

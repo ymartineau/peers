@@ -38,7 +38,8 @@ public class CaptureRtpSender {
     private RtpSender rtpSender;
 
     public CaptureRtpSender(RtpSession rtpSession, SoundManager soundManager,
-            boolean mediaDebug, Codec codec) throws IOException {
+            boolean mediaDebug, Codec codec, Logger logger, String peersHome)
+            throws IOException {
         super();
         this.rtpSession = rtpSession;
         PipedOutputStream rawDataOutput = new PipedOutputStream();
@@ -46,7 +47,7 @@ public class CaptureRtpSender {
         try {
             rawDataInput = new PipedInputStream(rawDataOutput);
         } catch (IOException e) {
-            Logger.error("input/output error", e);
+            logger.error("input/output error", e);
             return;
         }
         
@@ -55,24 +56,24 @@ public class CaptureRtpSender {
         try {
             encodedDataInput = new PipedInputStream(encodedDataOutput);
         } catch (IOException e) {
-            Logger.error("input/output error");
+            logger.error("input/output error");
             return;
         }
-        capture = new Capture(rawDataOutput, soundManager);
+        capture = new Capture(rawDataOutput, soundManager, logger);
         switch (codec.getPayloadType()) {
         case RFC3551.PAYLOAD_TYPE_PCMU:
             encoder = new PcmuEncoder(rawDataInput, encodedDataOutput,
-                    mediaDebug);
+                    mediaDebug, logger, peersHome);
             break;
         case RFC3551.PAYLOAD_TYPE_PCMA:
             encoder = new PcmaEncoder(rawDataInput, encodedDataOutput,
-                    mediaDebug);
+                    mediaDebug, logger, peersHome);
             break;
         default:
             throw new RuntimeException("unknown payload type");
         }
         rtpSender = new RtpSender(encodedDataInput, rtpSession, mediaDebug,
-                codec);
+                codec, logger, peersHome);
     }
 
     public void start() throws IOException {

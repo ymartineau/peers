@@ -26,6 +26,7 @@ import java.net.SocketException;
 import java.net.SocketTimeoutException;
 
 import net.sourceforge.peers.Config;
+import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.transaction.TransactionManager;
 
@@ -36,10 +37,11 @@ public class UdpMessageReceiver extends MessageReceiver {
     
     public UdpMessageReceiver(DatagramSocket datagramSocket,
             TransactionManager transactionManager,
-            TransportManager transportManager, Config config)
+            TransportManager transportManager, Config config,
+            Logger logger)
             throws SocketException {
         super(datagramSocket.getLocalPort(), transactionManager,
-                transportManager, config);
+                transportManager, config, logger);
         this.datagramSocket = datagramSocket;
     }
 

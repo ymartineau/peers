@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2009 Yohann Martineau 
+    Copyright 2009, 2010 Yohann Martineau 
 */
 
 package net.sourceforge.peers.media;
@@ -38,13 +38,15 @@ public class Echo implements Runnable {
     private InetAddress remoteAddress;
     private int remotePort;
     private boolean isRunning;
+    private Logger logger;
 
     public Echo(String localAddress, int localPort, String remoteAddress,
-            int remotePort) throws UnknownHostException {
+            int remotePort, Logger logger) throws UnknownHostException {
         this.localAddress = InetAddress.getByName(localAddress);
         this.localPort = localPort;
         this.remoteAddress = InetAddress.getByName(remoteAddress);
         this.remotePort = remotePort;
+        this.logger = logger;
         isRunning = true;
     }
 
@@ -55,7 +57,7 @@ public class Echo implements Runnable {
             datagramSocket = new DatagramSocket(localPort, localAddress);
             datagramSocket.setSoTimeout(1000);
         } catch (SocketException e) {
-            Logger.error("cannot create datagram socket "
+            logger.error("cannot create datagram socket "
                     + localAddress.getHostAddress() + ":" + localPort);
             return;
         }
@@ -67,7 +69,7 @@ public class Echo implements Runnable {
                 try {
                     datagramSocket.receive(datagramPacket);
                 } catch (SocketTimeoutException e) {
-                    Logger.debug("echo socket timeout");
+                    logger.debug("echo socket timeout");
                     continue;
                 }
                 datagramPacket = new DatagramPacket(buf,
@@ -75,7 +77,7 @@ public class Echo implements Runnable {
                 datagramSocket.send(datagramPacket);
             }
         } catch (IOException e) {
-            Logger.error("input/output error", e);
+            logger.error("input/output error", e);
         } finally {
             datagramSocket.close();
         }

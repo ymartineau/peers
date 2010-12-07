@@ -46,8 +46,9 @@ public class CancelHandler extends DialogMethodHandler
 
     public CancelHandler(UserAgent userAgent, DialogManager dialogManager,
             TransactionManager transactionManager,
-            TransportManager transportManager) {
-        super(userAgent, dialogManager, transactionManager, transportManager);
+            TransportManager transportManager, Logger logger) {
+        super(userAgent, dialogManager, transactionManager, transportManager,
+                logger);
     }
 
     //////////////////////////////////////////////////////////
@@ -157,7 +158,7 @@ public class CancelHandler extends DialogMethodHandler
                 return null;
             }
         } else {
-            Logger.error("cannot retrieve invite client transaction for"
+            logger.error("cannot retrieve invite client transaction for"
                     + " request " + inviteRequest);
         }
 

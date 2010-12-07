@@ -25,6 +25,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Timer;
 
+import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldName;
@@ -46,8 +47,10 @@ public class TransactionManager {
     private Hashtable<String, ServerTransaction> serverTransactions;
 
     private TransportManager transportManager;
+    private Logger logger;
     
-    public TransactionManager() {
+    public TransactionManager(Logger logger) {
+        this.logger = logger;
         clientTransactions = new Hashtable<String, ClientTransaction>();
         serverTransactions = new Hashtable<String, ServerTransaction>();
         timer = new Timer("Transaction timer");
@@ -68,11 +71,11 @@ public class TransactionManager {
         if (RFC3261.METHOD_INVITE.equals(method)) {
             clientTransaction = new InviteClientTransaction(branchId,
                     inetAddress, port, transport, sipRequest, clientTransactionUser,
-                    timer, transportManager, this);
+                    timer, transportManager, this, logger);
         } else {
             clientTransaction = new NonInviteClientTransaction(branchId,
                     inetAddress, port, transport, sipRequest, clientTransactionUser,
-                    timer, transportManager, this);
+                    timer, transportManager, this, logger);
         }
         clientTransactions.put(getTransactionId(branchId, method),
                 clientTransaction);
@@ -94,12 +97,12 @@ public class TransactionManager {
         if (RFC3261.METHOD_INVITE.equals(method)) {
             serverTransaction = new InviteServerTransaction(branchId, port,
                     transport, sipResponse, serverTransactionUser, sipRequest,
-                    timer, this, transportManager);
+                    timer, this, transportManager, logger);
             // serverTransaction = new InviteServerTransaction(branchId);
         } else {
             serverTransaction = new NonInviteServerTransaction(branchId, port,
                     transport, method, serverTransactionUser, sipRequest, timer,
-                    transportManager, this);
+                    transportManager, this, logger);
         }
         serverTransactions.put(getTransactionId(branchId, method),
                 serverTransaction);

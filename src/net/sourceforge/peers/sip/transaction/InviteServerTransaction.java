@@ -52,15 +52,19 @@ public class InviteServerTransaction extends InviteTransaction
     InviteServerTransaction(String branchId, int port, String transport,
             SipResponse sipResponse, ServerTransactionUser serverTransactionUser,
             SipRequest sipRequest, Timer timer, TransactionManager transactionManager,
-            TransportManager transportManager) {
-        super(branchId, timer, transportManager, transactionManager);
+            TransportManager transportManager, Logger logger) {
+        super(branchId, timer, transportManager, transactionManager, logger);
         
-        INIT = new InviteServerTransactionStateInit(getId(), this);
+        INIT = new InviteServerTransactionStateInit(getId(), this, logger);
         state = INIT;
-        PROCEEDING = new InviteServerTransactionStateProceeding(getId(), this);
-        COMPLETED = new InviteServerTransactionStateCompleted(getId(), this);
-        CONFIRMED = new InviteServerTransactionStateConfirmed(getId(), this);
-        TERMINATED = new InviteServerTransactionStateTerminated(getId(), this);
+        PROCEEDING = new InviteServerTransactionStateProceeding(getId(), this,
+                logger);
+        COMPLETED = new InviteServerTransactionStateCompleted(getId(), this,
+                logger);
+        CONFIRMED = new InviteServerTransactionStateConfirmed(getId(), this,
+                logger);
+        TERMINATED = new InviteServerTransactionStateTerminated(getId(), this,
+                logger);
         
         this.request = sipRequest;
         this.port = port;
@@ -79,7 +83,7 @@ public class InviteServerTransaction extends InviteTransaction
         try {
             transportManager.createServerTransport(transport, port);
         } catch (IOException e) {
-            Logger.error("input/output error", e);
+            logger.error("input/output error", e);
         }
     }
     
@@ -111,7 +115,7 @@ public class InviteServerTransaction extends InviteTransaction
         } else if (statusCode <= RFC3261.CODE_MAX) {
             state.received300To699();
         } else {
-            Logger.error("invalid response code");
+            logger.error("invalid response code");
         }
     }
 
@@ -132,7 +136,7 @@ public class InviteServerTransaction extends InviteTransaction
             try {
                 transportManager.sendResponse(responses.get(nbOfResponses - 1));
             } catch (IOException e) {
-                Logger.error("input/output error", e);
+                logger.error("input/output error", e);
             }
         }
     }

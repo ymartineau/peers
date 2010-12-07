@@ -66,15 +66,18 @@ public class EventManager implements SipListener, MainFrameListener,
     private AccountFrame accountFrame;
     private Map<String, CallFrame> callFrames;
     private boolean closed;
+    private Logger logger;
 
-    public EventManager(MainFrame mainFrame) {
+    public EventManager(MainFrame mainFrame, String peersHome,
+            Logger logger) {
         this.mainFrame = mainFrame;
+        this.logger = logger;
         callFrames = Collections.synchronizedMap(
                 new HashMap<String, CallFrame>());
         closed = false;
         // create sip stack
         try {
-            userAgent = new UserAgent(this);
+            userAgent = new UserAgent(this, peersHome, logger);
         } catch (SocketException e) {
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
@@ -145,7 +148,7 @@ public class EventManager implements SipListener, MainFrameListener,
         SipHeaderFieldValue from = sipHeaders.get(sipHeaderFieldName);
         final String fromValue = from.getValue();
         String callId = Utils.getMessageCallId(sipRequest);
-        CallFrame callFrame = new CallFrame(fromValue, callId, this);
+        CallFrame callFrame = new CallFrame(fromValue, callId, this, logger);
         callFrames.put(callId, callFrame);
         callFrame.setSipRequest(sipRequest);
         callFrame.incomingCall();
@@ -186,13 +189,13 @@ public class EventManager implements SipListener, MainFrameListener,
     public synchronized void callClicked(String uri) {
         String callId = Utils.generateCallID(
                 userAgent.getConfig().getLocalInetAddress());
-        CallFrame callFrame = new CallFrame(uri, callId, this);
+        CallFrame callFrame = new CallFrame(uri, callId, this, logger);
         callFrames.put(callId, callFrame);
         SipRequest sipRequest;
         try {
             sipRequest = userAgent.getUac().invite(uri, callId);
         } catch (SipUriSyntaxException e) {
-            Logger.error(e.getMessage(), e);
+            logger.error(e.getMessage(), e);
             mainFrame.setLabelText(e.getMessage());
             return;
         }
@@ -205,7 +208,7 @@ public class EventManager implements SipListener, MainFrameListener,
         try {
             userAgent.getUac().unregister();
         } catch (Exception e) {
-            Logger.error("error while unregistering", e);
+            logger.error("error while unregistering", e);
         }
         closed = true;
         Thread thread = new Thread(new Runnable() {
@@ -254,7 +257,7 @@ public class EventManager implements SipListener, MainFrameListener,
 
     public void actionPerformed(ActionEvent e) {
         String action = e.getActionCommand();
-        Logger.debug("gui actionPerformed() " + action);
+        logger.debug("gui actionPerformed() " + action);
         Runnable runnable = null;
         if (ACTION_EXIT.equals(action)) {
             runnable = new Runnable() {
@@ -270,7 +273,7 @@ public class EventManager implements SipListener, MainFrameListener,
                     if (accountFrame == null ||
                             !accountFrame.isDisplayable()) {
                         accountFrame = new AccountFrame(EventManager.this,
-                                userAgent);
+                                userAgent, logger);
                         accountFrame.setVisible(true);
                     } else {
                         accountFrame.requestFocus();
@@ -288,7 +291,8 @@ public class EventManager implements SipListener, MainFrameListener,
             runnable = new Runnable() {
                 @Override
                 public void run() {
-                    AboutFrame aboutFrame = new AboutFrame();
+                    AboutFrame aboutFrame = new AboutFrame(
+                            userAgent.getPeersHome(), logger);
                     aboutFrame.setVisible(true);
                 }
             };
@@ -300,9 +304,9 @@ public class EventManager implements SipListener, MainFrameListener,
                         URI uri = new URI(PEERS_USER_MANUAL);
                         java.awt.Desktop.getDesktop().browse(uri);
                     } catch (URISyntaxException e) {
-                        Logger.error(e.getMessage(), e);
+                        logger.error(e.getMessage(), e);
                     } catch (IOException e) {
-                        Logger.error(e.getMessage(), e);
+                        logger.error(e.getMessage(), e);
                     }
                 }
             };

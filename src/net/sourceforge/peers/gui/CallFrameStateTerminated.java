@@ -19,10 +19,13 @@
 
 package net.sourceforge.peers.gui;
 
+import net.sourceforge.peers.Logger;
+
 public class CallFrameStateTerminated extends CallFrameState {
 
-    public CallFrameStateTerminated(String id, CallFrame callFrame) {
-        super(id, callFrame);
+    public CallFrameStateTerminated(String id, CallFrame callFrame,
+            Logger logger) {
+        super(id, callFrame, logger);
     }
 
     @Override

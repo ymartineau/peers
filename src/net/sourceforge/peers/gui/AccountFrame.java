@@ -42,12 +42,16 @@ public class AccountFrame extends javax.swing.JFrame {
 
     private static final long serialVersionUID = 1L;
 
+    private Logger logger;
+
     /** Creates new form AccountFrame */
-    public AccountFrame(ActionListener actionListener, UserAgent userAgent) {
+    public AccountFrame(ActionListener actionListener, UserAgent userAgent,
+            Logger logger) {
         this.userAgent = userAgent;
+        this.logger = logger;
         unregistering = false;
         initComponents();
-        registration = new Registration(jLabel6);
+        registration = new Registration(jLabel6, logger);
     }
 
     /** This method is called from within the constructor to
@@ -214,7 +218,7 @@ public class AccountFrame extends javax.swing.JFrame {
                 }
             } catch (SipUriSyntaxException e) {
                 JOptionPane.showMessageDialog(this, e.getMessage());
-                Logger.error("sip uri syntax issue", e);
+                logger.error("sip uri syntax issue", e);
                 return;
             }
         }
@@ -228,7 +232,7 @@ public class AccountFrame extends javax.swing.JFrame {
                     } catch (SipUriSyntaxException e) {
                         JOptionPane.showMessageDialog(AccountFrame.this,
                                 e.getMessage());
-                        Logger.error("sip uri syntax issue", e);
+                        logger.error("sip uri syntax issue", e);
                     }
                 }
             };
@@ -271,7 +275,7 @@ public class AccountFrame extends javax.swing.JFrame {
                     try {
                         userAgent.getUac().unregister();
                     } catch (SipUriSyntaxException e) {
-                        Logger.error("syntax error", e);
+                        logger.error("syntax error", e);
                     }
                 }
             };

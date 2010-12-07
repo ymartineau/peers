@@ -19,10 +19,13 @@
 
 package net.sourceforge.peers.sip.transaction;
 
+import net.sourceforge.peers.Logger;
+
 public class InviteClientTransactionStateInit extends InviteClientTransactionState {
 
-    public InviteClientTransactionStateInit(String id, InviteClientTransaction inviteClientTransaction) {
-        super(id, inviteClientTransaction);
+    public InviteClientTransactionStateInit(String id,
+            InviteClientTransaction inviteClientTransaction, Logger logger) {
+        super(id, inviteClientTransaction, logger);
     }
 
     @Override

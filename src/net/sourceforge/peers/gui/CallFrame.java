@@ -34,6 +34,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 
+import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.SipResponse;
 
@@ -62,15 +63,15 @@ public class CallFrame implements ActionListener, WindowListener {
     private SipRequest sipRequest;
 
     CallFrame(String remoteParty, String id,
-            CallFrameListener callFrameListener) {
-        INIT = new CallFrameStateInit(id, this);
-        UAC = new CallFrameStateUac(id, this);
-        UAS = new CallFrameStateUas(id, this);
-        RINGING = new CallFrameStateRinging(id, this);
-        SUCCESS = new CallFrameStateSuccess(id, this);
-        FAILED = new CallFrameStateFailed(id, this);
-        REMOTE_HANGUP = new CallFrameStateRemoteHangup(id, this);
-        TERMINATED = new CallFrameStateTerminated(id, this);
+            CallFrameListener callFrameListener, Logger logger) {
+        INIT = new CallFrameStateInit(id, this, logger);
+        UAC = new CallFrameStateUac(id, this, logger);
+        UAS = new CallFrameStateUas(id, this, logger);
+        RINGING = new CallFrameStateRinging(id, this, logger);
+        SUCCESS = new CallFrameStateSuccess(id, this, logger);
+        FAILED = new CallFrameStateFailed(id, this, logger);
+        REMOTE_HANGUP = new CallFrameStateRemoteHangup(id, this, logger);
+        TERMINATED = new CallFrameStateTerminated(id, this, logger);
         state = INIT;
         this.callFrameListener = callFrameListener;
         frame = new JFrame(remoteParty);

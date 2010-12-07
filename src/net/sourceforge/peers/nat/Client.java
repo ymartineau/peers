@@ -22,8 +22,6 @@ package net.sourceforge.peers.nat;
 import java.io.IOException;
 import java.net.InetAddress;
 
-import net.sourceforge.peers.Logger;
-
 import org.w3c.dom.Document;
 
 public class Client {
@@ -40,7 +38,7 @@ public class Client {
             server = new Server(localAddress, localPort);
             peerManager = new PeerManager(localAddress, localPort);
         } catch (IOException e) {
-            Logger.error("input/output error", e);
+            e.printStackTrace();
             return;
         }
         server.update(email);
@@ -53,9 +51,9 @@ public class Client {
      * @param args
      */
     public static void main(String[] args) {
-        
         if (args.length != 3) {
-            Logger.error("usage: java ... <email> <localAddress> <localPort>");
+            System.err.println("usage: java ... <email> <localAddress>" +
+            		" <localPort>");
             System.exit(1);
         }
         

@@ -24,6 +24,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import net.sourceforge.peers.Config;
+import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.media.MediaMode;
 import net.sourceforge.peers.sip.PortProvider;
 import net.sourceforge.peers.sip.RFC3261;
@@ -93,7 +94,7 @@ public class UdpMessageReceiverTestMain implements Runnable {
                 }
             };
             TransportManager transportManager = new TransportManager(null,
-                    config);
+                    config, new Logger(null));
             transportManager.createServerTransport("UDP", RFC3261.TRANSPORT_DEFAULT_PORT);
         } catch (IOException e) {
             e.printStackTrace();

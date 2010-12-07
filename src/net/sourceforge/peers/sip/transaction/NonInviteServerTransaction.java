@@ -48,14 +48,19 @@ public class NonInviteServerTransaction extends NonInviteTransaction
     NonInviteServerTransaction(String branchId, int port, String transport,
             String method, ServerTransactionUser serverTransactionUser,
             SipRequest sipRequest, Timer timer, TransportManager transportManager,
-            TransactionManager transactionManager) {
-        super(branchId, method, timer, transportManager, transactionManager);
+            TransactionManager transactionManager, Logger logger) {
+        super(branchId, method, timer, transportManager, transactionManager,
+                logger);
         
-        TRYING = new NonInviteServerTransactionStateTrying(getId(), this);
+        TRYING = new NonInviteServerTransactionStateTrying(getId(), this,
+                logger);
         state = TRYING;
-        PROCEEDING = new NonInviteServerTransactionStateProceeding(getId(), this);
-        COMPLETED = new NonInviteServerTransactionStateCompleted(getId(), this);
-        TERMINATED = new NonInviteServerTransactionStateTerminated(getId(), this);
+        PROCEEDING = new NonInviteServerTransactionStateProceeding(getId(),
+                this, logger);
+        COMPLETED = new NonInviteServerTransactionStateCompleted(getId(), this,
+                logger);
+        TERMINATED = new NonInviteServerTransactionStateTerminated(getId(),
+                this, logger);
         
         //this.port = port;
         this.transport = transport;
@@ -66,7 +71,7 @@ public class NonInviteServerTransaction extends NonInviteTransaction
         try {
             transportManager.createServerTransport(transport, port);
         } catch (IOException e) {
-            Logger.error("input/output error", e);
+            logger.error("input/output error", e);
         }
         
         //TODO pass request to TU
@@ -98,7 +103,7 @@ public class NonInviteServerTransaction extends NonInviteTransaction
             try {
                 transportManager.sendResponse(responses.get(nbOfResponses - 1));
             } catch (IOException e) {
-                Logger.error("input/output error", e);
+                logger.error("input/output error", e);
             }
         }
     }

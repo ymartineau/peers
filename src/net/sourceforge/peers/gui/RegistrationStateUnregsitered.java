@@ -19,10 +19,13 @@
 
 package net.sourceforge.peers.gui;
 
+import net.sourceforge.peers.Logger;
+
 public class RegistrationStateUnregsitered extends RegistrationState {
 
-    public RegistrationStateUnregsitered(String id, Registration registration) {
-        super(id, registration);
+    public RegistrationStateUnregsitered(String id, Registration registration,
+            Logger logger) {
+        super(id, registration, logger);
     }
 
     @Override

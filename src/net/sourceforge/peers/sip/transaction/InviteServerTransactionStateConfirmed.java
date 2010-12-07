@@ -19,23 +19,27 @@
 
 package net.sourceforge.peers.sip.transaction;
 
+import net.sourceforge.peers.Logger;
+
 public class InviteServerTransactionStateConfirmed extends
         InviteServerTransactionState {
 
     public InviteServerTransactionStateConfirmed(String id,
-            InviteServerTransaction inviteServerTransaction) {
-        super(id, inviteServerTransaction);
+            InviteServerTransaction inviteServerTransaction, Logger logger) {
+        super(id, inviteServerTransaction, logger);
     }
 
     @Override
     public void timerIFires() {
-        InviteServerTransactionState nextState = inviteServerTransaction.TERMINATED;
+        InviteServerTransactionState nextState =
+            inviteServerTransaction.TERMINATED;
         inviteServerTransaction.setState(nextState);
         // TODO destroy invite server transaction immediately
         // (dereference it in transaction manager serverTransactions hashtable)
         
         inviteServerTransaction.transactionManager.removeServerTransaction(
-                inviteServerTransaction.branchId, inviteServerTransaction.method);
+                inviteServerTransaction.branchId,
+                inviteServerTransaction.method);
     }
     
 }

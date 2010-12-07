@@ -19,30 +19,35 @@
 
 package net.sourceforge.peers.sip.transaction;
 
+import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.RFC3261;
 
 public class NonInviteServerTransactionStateProceeding extends
         NonInviteServerTransactionState {
 
     public NonInviteServerTransactionStateProceeding(String id,
-            NonInviteServerTransaction nonInviteServerTransaction) {
-        super(id, nonInviteServerTransaction);
+            NonInviteServerTransaction nonInviteServerTransaction,
+            Logger logger) {
+        super(id, nonInviteServerTransaction, logger);
     }
 
     @Override
     public void received1xx() {
-        NonInviteServerTransactionState nextState = nonInviteServerTransaction.PROCEEDING;
+        NonInviteServerTransactionState nextState =
+            nonInviteServerTransaction.PROCEEDING;
         nonInviteServerTransaction.setState(nextState);
         nonInviteServerTransaction.sendLastResponse();
     }
     
     @Override
     public void received200To699() {
-        NonInviteServerTransactionState nextState = nonInviteServerTransaction.COMPLETED;
+        NonInviteServerTransactionState nextState =
+            nonInviteServerTransaction.COMPLETED;
         nonInviteServerTransaction.setState(nextState);
         nonInviteServerTransaction.sendLastResponse();
         int timeout;
-        if (RFC3261.TRANSPORT_UDP.equals(nonInviteServerTransaction.transport)) {
+        if (RFC3261.TRANSPORT_UDP.equals(
+                nonInviteServerTransaction.transport)) {
             timeout = 64 * RFC3261.TIMER_T1;
         } else {
             timeout = 0;
@@ -53,13 +58,15 @@ public class NonInviteServerTransactionStateProceeding extends
     
     @Override
     public void transportError() {
-        NonInviteServerTransactionState nextState = nonInviteServerTransaction.TERMINATED;
+        NonInviteServerTransactionState nextState =
+            nonInviteServerTransaction.TERMINATED;
         nonInviteServerTransaction.setState(nextState);
     }
     
     @Override
     public void receivedRequest() {
-        NonInviteServerTransactionState nextState = nonInviteServerTransaction.PROCEEDING;
+        NonInviteServerTransactionState nextState =
+            nonInviteServerTransaction.PROCEEDING;
         nonInviteServerTransaction.setState(nextState);
     }
     

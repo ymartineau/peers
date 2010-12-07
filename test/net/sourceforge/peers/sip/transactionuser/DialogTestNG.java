@@ -14,10 +14,12 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2008, 2009 Yohann Martineau 
+    Copyright 2008, 2009, 2010 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip.transactionuser;
+
+import net.sourceforge.peers.Logger;
 
 import org.testng.annotations.Test;
 
@@ -25,7 +27,7 @@ public class DialogTestNG {
     
     @Test
     public void initialState() {
-        Dialog dialog = new Dialog("", "", "");
+        Dialog dialog = new Dialog("", "", "", new Logger(null));
         assert dialog.getState() instanceof DialogStateInit;
     }
 
@@ -33,28 +35,28 @@ public class DialogTestNG {
     
     @Test
     public void transitionInitEarly() {
-        Dialog dialog = new Dialog("", "", "");
+        Dialog dialog = new Dialog("", "", "", new Logger(null));
         dialog.receivedOrSent1xx();
         assert dialog.getState() instanceof DialogStateEarly;
     }
 
     @Test
     public void transitionInitConfirmed() {
-        Dialog dialog = new Dialog("", "", "");
+        Dialog dialog = new Dialog("", "", "", new Logger(null));
         dialog.receivedOrSent2xx();
         assert dialog.getState() instanceof DialogStateConfirmed;
     }
     
     @Test
     public void transitionInitTerminated() {
-        Dialog dialog = new Dialog("", "", "");
+        Dialog dialog = new Dialog("", "", "", new Logger(null));
         dialog.receivedOrSent300To699();
         assert dialog.getState() instanceof DialogStateTerminated;
     }
     
     @Test(expectedExceptions = IllegalStateException.class)
     public void shouldThrowIfByeOnInit() {
-        Dialog dialog = new Dialog("", "", "");
+        Dialog dialog = new Dialog("", "", "", new Logger(null));
         dialog.receivedOrSentBye();
     }
 
@@ -62,7 +64,7 @@ public class DialogTestNG {
     
     @Test
     public void transitionEarlyEarly(){
-        Dialog dialog = new Dialog("", "", "");
+        Dialog dialog = new Dialog("", "", "", new Logger(null));
         dialog.receivedOrSent1xx();
         dialog.receivedOrSent1xx();
         assert dialog.getState() instanceof DialogStateEarly;
@@ -70,7 +72,7 @@ public class DialogTestNG {
     
     @Test
     public void transitionEarlyConfirmed() {
-        Dialog dialog = new Dialog("", "", "");
+        Dialog dialog = new Dialog("", "", "", new Logger(null));
         dialog.receivedOrSent1xx();
         dialog.receivedOrSent2xx();
         assert dialog.getState() instanceof DialogStateConfirmed;
@@ -78,7 +80,7 @@ public class DialogTestNG {
     
     @Test
     public void transitionEarlyTerminated() {
-        Dialog dialog = new Dialog("", "", "");
+        Dialog dialog = new Dialog("", "", "", new Logger(null));
         dialog.receivedOrSent1xx();
         dialog.receivedOrSent300To699();
         assert dialog.getState() instanceof DialogStateTerminated;
@@ -86,7 +88,7 @@ public class DialogTestNG {
     
     @Test(expectedExceptions = IllegalStateException.class)
     public void shouldThrowIfByeOnEarly() {
-        Dialog dialog = new Dialog("", "", "");
+        Dialog dialog = new Dialog("", "", "", new Logger(null));
         dialog.receivedOrSent1xx();
         dialog.receivedOrSentBye();
     }
@@ -95,28 +97,28 @@ public class DialogTestNG {
     
     @Test(expectedExceptions = IllegalStateException.class)
     public void shouldThrowIf1xxOnConfirmed() {
-        Dialog dialog = new Dialog("", "", "");
+        Dialog dialog = new Dialog("", "", "", new Logger(null));
         dialog.receivedOrSent2xx();
         dialog.receivedOrSent1xx();
     }
     
     @Test(expectedExceptions = IllegalStateException.class)
     public void shouldThrowIf2xxOnConfirmed() {
-        Dialog dialog = new Dialog("", "", "");
+        Dialog dialog = new Dialog("", "", "", new Logger(null));
         dialog.receivedOrSent2xx();
         dialog.receivedOrSent2xx();
     }
     
     @Test(expectedExceptions = IllegalStateException.class)
     public void shouldThrowIfErrOnConfirmed() {
-        Dialog dialog = new Dialog("", "", "");
+        Dialog dialog = new Dialog("", "", "", new Logger(null));
         dialog.receivedOrSent2xx();
         dialog.receivedOrSent300To699();
     }
     
     @Test
     public void transitionConfirmedTerminated() {
-        Dialog dialog = new Dialog("", "", "");
+        Dialog dialog = new Dialog("", "", "", new Logger(null));
         dialog.receivedOrSent2xx();
         dialog.receivedOrSentBye();
         assert dialog.getState() instanceof DialogStateTerminated;
@@ -126,7 +128,7 @@ public class DialogTestNG {
     
     @Test(expectedExceptions = IllegalStateException.class)
     public void shouldThrowIf1xxOnTerminated() {
-        Dialog dialog = new Dialog("", "", "");
+        Dialog dialog = new Dialog("", "", "", new Logger(null));
         dialog.receivedOrSent2xx();
         dialog.receivedOrSentBye();
         dialog.receivedOrSent1xx();
@@ -134,7 +136,7 @@ public class DialogTestNG {
     
     @Test(expectedExceptions = IllegalStateException.class)
     public void shouldThrowIf2xxOnTerminated() {
-        Dialog dialog = new Dialog("", "", "");
+        Dialog dialog = new Dialog("", "", "", new Logger(null));
         dialog.receivedOrSent2xx();
         dialog.receivedOrSentBye();
         dialog.receivedOrSent2xx();
@@ -142,7 +144,7 @@ public class DialogTestNG {
     
     @Test(expectedExceptions = IllegalStateException.class)
     public void shouldThrowIfErrOnTerminated() {
-        Dialog dialog = new Dialog("", "", "");
+        Dialog dialog = new Dialog("", "", "", new Logger(null));
         dialog.receivedOrSent2xx();
         dialog.receivedOrSentBye();
         dialog.receivedOrSent300To699();
@@ -150,7 +152,7 @@ public class DialogTestNG {
     
     @Test(expectedExceptions = IllegalStateException.class)
     public void shouldThrowIfByeOnTerminated() {
-        Dialog dialog = new Dialog("", "", "");
+        Dialog dialog = new Dialog("", "", "", new Logger(null));
         dialog.receivedOrSent2xx();
         dialog.receivedOrSentBye();
         dialog.receivedOrSentBye();

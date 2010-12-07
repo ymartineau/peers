@@ -50,7 +50,8 @@ public class InitialRequestManager extends RequestManager {
             RegisterHandler registerHandler,
             DialogManager dialogManager,
             TransactionManager transactionManager,
-            TransportManager transportManager) {
+            TransportManager transportManager,
+            Logger logger) {
         super(userAgent,
                 inviteHandler,
                 cancelHandler,
@@ -59,7 +60,8 @@ public class InitialRequestManager extends RequestManager {
                 registerHandler,
                 dialogManager,
                 transactionManager,
-                transportManager);
+                transportManager,
+                logger);
         registerHandler.setInitialRequestManager(this);
     }
 
@@ -185,7 +187,7 @@ public class InitialRequestManager extends RequestManager {
         if (clientTransaction != null) {
             clientTransaction.start();
         } else {
-            Logger.error("method not supported");
+            logger.error("method not supported");
         }
     }
     
@@ -200,7 +202,7 @@ public class InitialRequestManager extends RequestManager {
                     inviteRequest.getRequestUri().toString(), RFC3261.METHOD_CANCEL,
                     profileUri, callId.getValue());
         } catch (SipUriSyntaxException e) {
-            Logger.error("syntax error", e);
+            logger.error("syntax error", e);
             return;
         }
         

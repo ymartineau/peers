@@ -25,6 +25,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import net.sourceforge.peers.Config;
+import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.media.MediaMode;
 import net.sourceforge.peers.sip.PortProvider;
 import net.sourceforge.peers.sip.RFC3261;
@@ -45,7 +46,8 @@ public class TransactionManagerTestNG {
     
     @BeforeClass
     public void init() throws UnknownHostException {
-        transactionManager = new TransactionManager();
+        Logger logger = new Logger(null);
+        transactionManager = new TransactionManager(logger);
         Config config = new Config() {
             
             @Override public void setUserPart(String userPart) {}
@@ -105,7 +107,7 @@ public class TransactionManagerTestNG {
             }
         };
         TransportManager transportManager = new TransportManager(
-                transactionManager, config);
+                transactionManager, config, logger);
         transactionManager.setTransportManager(transportManager);
     }
     

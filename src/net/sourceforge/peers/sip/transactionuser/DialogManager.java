@@ -22,6 +22,7 @@ package net.sourceforge.peers.sip.transactionuser;
 import java.util.Collection;
 import java.util.Hashtable;
 
+import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldName;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldValue;
@@ -34,8 +35,10 @@ import net.sourceforge.peers.sip.transport.SipResponse;
 public class DialogManager {
     
     private Hashtable<String, Dialog> dialogs;
+    private Logger logger;
     
-    public DialogManager() {
+    public DialogManager(Logger logger) {
+        this.logger = logger;
         dialogs = new Hashtable<String, Dialog>();
     }
 
@@ -57,10 +60,10 @@ public class DialogManager {
         Dialog dialog;
         if (sipHeaders.get(new SipHeaderFieldName(RFC3261.HDR_VIA)) == null) {
             //createDialog is called from UAS side, in layer Transaction User
-            dialog = new Dialog(callID, toTag, fromTag);
+            dialog = new Dialog(callID, toTag, fromTag, logger);
         } else {
             //createDialog is called from UAC side, in syntax encoding layer
-            dialog = new Dialog(callID, fromTag, toTag);
+            dialog = new Dialog(callID, fromTag, toTag, logger);
         }
         dialogs.put(dialog.getId(), dialog);
         return dialog;

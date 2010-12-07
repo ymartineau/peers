@@ -51,8 +51,8 @@ public abstract class DialogMethodHandler extends MethodHandler {
     public DialogMethodHandler(UserAgent userAgent,
             DialogManager dialogManager,
             TransactionManager transactionManager,
-            TransportManager transportManager) {
-        super(userAgent, transactionManager, transportManager);
+            TransportManager transportManager, Logger logger) {
+        super(userAgent, transactionManager, transportManager, logger);
         ackTimer = new Timer();
         this.dialogManager = dialogManager;
     }
@@ -174,7 +174,7 @@ public abstract class DialogMethodHandler extends MethodHandler {
         //remote target
         
         SipHeaderFieldValue contact = headers.get(new SipHeaderFieldName(RFC3261.HDR_CONTACT));
-        Logger.debug("Contact: " + contact);
+        logger.debug("Contact: " + contact);
         if (contact != null) {
             String remoteTarget = NameAddress.nameAddressToUri(contact.toString());
             dialog.setRemoteTarget(remoteTarget);

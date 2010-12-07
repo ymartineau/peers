@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2008, 2009 Yohann Martineau 
+    Copyright 2008, 2009, 2010 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip.transactionuser;
@@ -22,6 +22,7 @@ package net.sourceforge.peers.sip.transactionuser;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
+import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.syntaxencoding.SipParser;
 import net.sourceforge.peers.sip.syntaxencoding.SipParserException;
 import net.sourceforge.peers.sip.transport.SipMessage;
@@ -36,7 +37,7 @@ public class DialogManagerTestNG {
     
     @BeforeClass
     public void createDialogManager() {
-        dialogManager = new DialogManager();
+        dialogManager = new DialogManager(new Logger(null));
     }
     
     @Test

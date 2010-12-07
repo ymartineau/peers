@@ -24,6 +24,8 @@ import java.net.URL;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 
+import net.sourceforge.peers.Logger;
+
 public class Registration {
 
     public final RegistrationState UNREGISTERED;
@@ -34,15 +36,15 @@ public class Registration {
     protected JLabel label;
     private RegistrationState state;
 
-    public Registration(JLabel label) {
+    public Registration(JLabel label, Logger logger) {
         this.label = label;
 
         String id = String.valueOf(hashCode());
-        UNREGISTERED = new RegistrationStateUnregsitered(id, this);
+        UNREGISTERED = new RegistrationStateUnregsitered(id, this, logger);
         state = UNREGISTERED;
-        REGISTERING = new RegistrationStateRegistering(id, this);
-        SUCCESS = new RegistrationStateSuccess(id, this);
-        FAILED = new RegistrationStateFailed(id, this);
+        REGISTERING = new RegistrationStateRegistering(id, this, logger);
+        SUCCESS = new RegistrationStateSuccess(id, this, logger);
+        FAILED = new RegistrationStateFailed(id, this, logger);
 
     }
 

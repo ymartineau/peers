@@ -37,7 +37,6 @@ import java.util.concurrent.Executors;
 
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.media.SoundManager;
-import net.sourceforge.peers.sip.Utils;
 
 /**
  * can be instantiated on UAC INVITE sending or on UAS 200 OK sending 
@@ -56,21 +55,25 @@ public class RtpSession {
     private FileOutputStream rtpSessionOutput;
     private FileOutputStream rtpSessionInput;
     private boolean mediaDebug;
+    private Logger logger;
+    private String peersHome;
 
     public RtpSession(InetAddress localAddress, int localPort,
-            boolean mediaDebug) {
-        running = false;
+            boolean mediaDebug, Logger logger, String peersHome) {
         this.mediaDebug = mediaDebug;
+        this.logger = logger;
+        this.peersHome = peersHome;
+        running = false;
         try {
             datagramSocket = new DatagramSocket(localPort, localAddress);
             datagramSocket.setSoTimeout(TIMEOUT);
         } catch (SocketException e) {
-            Logger.error("cannot create datagram socket on port " + localPort,
+            logger.error("cannot create datagram socket on port " + localPort,
                     e);
             return;
         }
         rtpListeners = new ArrayList<RtpListener>();
-        rtpParser = new RtpParser();
+        rtpParser = new RtpParser(logger);
         executorService = Executors.newSingleThreadExecutor();
     }
 
@@ -80,15 +83,15 @@ public class RtpSession {
             SimpleDateFormat simpleDateFormat =
                 new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
             String date = simpleDateFormat.format(new Date());
-            String dir = Utils.getPeersHome() + File.separator
-                + SoundManager.MEDIA_DIR + File.separator;
+            String dir = peersHome + File.separator + SoundManager.MEDIA_DIR
+                + File.separator;
             String fileName = dir + date + "_rtp_session.output";
             try {
                 rtpSessionOutput = new FileOutputStream(fileName);
                 fileName = dir + date + "_rtp_session.input";
                 rtpSessionInput = new FileOutputStream(fileName);
             } catch (FileNotFoundException e) {
-                Logger.error("cannot create file", e);
+                logger.error("cannot create file", e);
                 return;
             }
         }
@@ -112,13 +115,13 @@ public class RtpSession {
                 datagramSocket.send(datagramPacket);
             }
         } catch (IOException e) {
-            Logger.error("cannot send rtp packet", e);
+            logger.error("cannot send rtp packet", e);
         }
         if (mediaDebug) {
             try {
                 rtpSessionOutput.write(buf);
             } catch (IOException e) {
-                Logger.error("cannot write to file", e);
+                logger.error("cannot write to file", e);
             }
         }
     }
@@ -141,7 +144,7 @@ public class RtpSession {
                         rtpSessionOutput.close();
                         rtpSessionInput.close();
                     } catch (IOException e) {
-                        Logger.error("cannot close file", e);
+                        logger.error("cannot close file", e);
                     }
                 }
                 datagramSocket.close();
@@ -151,7 +154,7 @@ public class RtpSession {
             try {
                 receiveBufferSize = datagramSocket.getReceiveBufferSize();
             } catch (SocketException e) {
-                Logger.error("cannot get datagram socket receive buffer size",
+                logger.error("cannot get datagram socket receive buffer size",
                         e);
                 return;
             }
@@ -164,7 +167,7 @@ public class RtpSession {
                 executorService.execute(this);
                 return;
             } catch (IOException e) {
-                Logger.error("cannot receive packet", e);
+                logger.error("cannot receive packet", e);
                 return;
             }
             InetAddress remoteAddress = datagramPacket.getAddress();
@@ -185,7 +188,7 @@ public class RtpSession {
                 try {
                     rtpSessionInput.write(trimmedData);
                 } catch (IOException e) {
-                    Logger.error("cannot write to file", e);
+                    logger.error("cannot write to file", e);
                     return;
                 }
             }
