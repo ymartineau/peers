@@ -78,6 +78,8 @@ public class UAC {
         registerCallID = Utils.generateCallID(
                 userAgent.getConfig().getLocalInetAddress());
         guiClosedCallIds = Collections.synchronizedList(new ArrayList<String>());
+        profileUri = RFC3261.SIP_SCHEME + RFC3261.SCHEME_SEPARATOR
+            + userAgent.getUserpart() + RFC3261.AT + userAgent.getDomain();
     }
 
     /**
@@ -88,8 +90,6 @@ public class UAC {
         String domain = userAgent.getDomain();
         String requestUri = RFC3261.SIP_SCHEME + RFC3261.SCHEME_SEPARATOR
             + domain;
-        profileUri = RFC3261.SIP_SCHEME + RFC3261.SCHEME_SEPARATOR
-            + userAgent.getUserpart() + RFC3261.AT + domain;
         SipListener sipListener = userAgent.getSipListener();
         SipRequest sipRequest = initialRequestManager.createInitialRequest(
                 requestUri, RFC3261.METHOD_REGISTER, profileUri,
