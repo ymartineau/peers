@@ -22,7 +22,7 @@ following specifications:
  - RFC 3550 (RTP),
  - RFC 3551 (RTP Audio/Video profile),
  - RFC 2617 (Digest Authentication),
- - RFC 2833 (DTMF),
+ - RFC 4733 (DTMF),
  - ITU-T G.711 (PCMU, PCMA)
 You should easilly retrieve those specifications on internet with
 your favorite search engine.
@@ -103,6 +103,10 @@ be run providing a java system property giving peers home directory:
 
   java -classpath build/classes -Dpeers.home=user1 net.sourceforge.peers.gui.MainFrame
 
+As a Main-Class has been defined in jar manifest, you can also use the following
+command line:
+
+  java -jar build/peers.jar -Dpeers.home=user1 net.sourceforge.peers.gui.MainFrame
 
 
 HISTORY
@@ -170,6 +174,27 @@ Improved features:
  - transport log file now contains real remote ip address and port
  - fixed media sending issue (replaced encoder with mobicents media server
    g711 encoder)
+
+
+2010-12-13 0.4 Peers GUI
+
+
+New features:
+ - GUI:
+   - update sip account settings in account frame with no modification in files
+ - SIP:
+   - 3102136 keep-alives sent and answered
+   - 3109472 added rport management based on RFC 3581
+   - 3031364 added OPTIONS method management
+ - RTP:
+   - 2934223 support RFC 4733 outgoing telephone-events (DTMF)
+   - 3107231 added PCMA (G711 A-law) codec
+Improved features:
+ - gui complete refactoring, now using clean events between sip core and gui
+Bugs fixed:
+   - 3032080 no media on pickup
+   - 2864885 multiple challenged calls
+   - 3098214 start CSeq at 1 instead of 0
 
 
 AUTHOR
