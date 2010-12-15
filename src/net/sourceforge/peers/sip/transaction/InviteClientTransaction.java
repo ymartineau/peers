@@ -142,7 +142,7 @@ public class InviteClientTransaction extends InviteTransaction
         timer.schedule(new TimerB(), 64 * RFC3261.TIMER_T1);
     }
     
-    public void receivedResponse(SipResponse sipResponse) {
+    public synchronized void receivedResponse(SipResponse sipResponse) {
         responses.add(sipResponse);
         // 17.1.1
         int statusCode = sipResponse.getStatusCode();

@@ -147,7 +147,7 @@ public class NonInviteClientTransaction extends NonInviteTransaction
         state.transportError();
     }
     
-    public void receivedResponse(SipResponse sipResponse) {
+    public synchronized void receivedResponse(SipResponse sipResponse) {
         responses.add(sipResponse);
         // 17.1.1
         int statusCode = sipResponse.getStatusCode();
