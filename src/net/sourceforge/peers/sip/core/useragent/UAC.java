@@ -91,6 +91,8 @@ public class UAC {
         String requestUri = RFC3261.SIP_SCHEME + RFC3261.SCHEME_SEPARATOR
             + domain;
         SipListener sipListener = userAgent.getSipListener();
+        profileUri = RFC3261.SIP_SCHEME + RFC3261.SCHEME_SEPARATOR
+        	+ userAgent.getUserpart() + RFC3261.AT + domain;
         SipRequest sipRequest = initialRequestManager.createInitialRequest(
                 requestUri, RFC3261.METHOD_REGISTER, profileUri,
                 registerCallID);
