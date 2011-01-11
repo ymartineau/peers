@@ -97,12 +97,12 @@ public class InviteHandler extends DialogMethodHandler
         //TODO send 180 more than once
         inviteServerTransaction.sendReponse(sipResponse);
 
+        dialog.receivedOrSent1xx();
+
         SipListener sipListener = userAgent.getSipListener();
         if (sipListener != null) {
             sipListener.incomingCall(sipRequest, sipResponse);
         }
-
-        dialog.receivedOrSent1xx();
 
         List<String> peers = userAgent.getPeers();
         String responseTo = sipRequest.getSipHeaders().get(
