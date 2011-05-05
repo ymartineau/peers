@@ -191,9 +191,12 @@ public class UserAgent {
 
         challengeManager = new ChallengeManager(config,
                 initialRequestManager,
+                midDialogRequestManager,
+                dialogManager,
                 logger);
         registerHandler.setChallengeManager(challengeManager);
         inviteHandler.setChallengeManager(challengeManager);
+        byeHandler.setChallengeManager(challengeManager);
 
         peers = new ArrayList<String>();
         //dialogs = new ArrayList<Dialog>();

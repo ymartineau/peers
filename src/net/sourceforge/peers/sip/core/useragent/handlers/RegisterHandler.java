@@ -234,12 +234,16 @@ public class RegisterHandler extends MethodHandler
                 return;
             }
             expires = responseContact.getParam(expiresParam);
-            if (expires == null || "".equals(expires.trim())) {
-                return;
-            }
+        	// patch mobicents simple application
             registered = true;
+            int delay = -1;
+            if (expires == null || "".equals(expires.trim())) {
+                delay = 3600;
+            }
             if (!unregisterInvoked) {
-                int delay = Integer.parseInt(expires) - REFRESH_MARGIN;
+            	if (delay == -1) {
+            		delay = Integer.parseInt(expires) - REFRESH_MARGIN;
+            	}
                 timer = new Timer();
                 timer.schedule(new RefreshTimerTask(), delay * 1000);
             }

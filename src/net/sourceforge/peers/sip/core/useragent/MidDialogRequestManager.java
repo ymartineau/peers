@@ -79,19 +79,22 @@ public class MidDialogRequestManager extends RequestManager
     ////////////////////////////////////////////////
 
     public void generateMidDialogRequest(Dialog dialog,
-            String method) {
+            String method, MessageInterceptor messageInterceptor) {
         
 
-        SipRequest subRequest = dialog.buildSubsequentRequest(RFC3261.METHOD_BYE);
+        SipRequest sipRequest = dialog.buildSubsequentRequest(RFC3261.METHOD_BYE);
 
         if (RFC3261.METHOD_BYE.equals(method)) {
-            byeHandler.preprocessBye(subRequest, dialog);
+            byeHandler.preprocessBye(sipRequest, dialog);
         }
         //TODO check that subsequent request is supported before client
         //transaction creation
         if (!RFC3261.METHOD_INVITE.equals(method)) {
-            ClientTransaction clientTransaction = createNonInviteClientTransaction(subRequest,
-                    null);
+            ClientTransaction clientTransaction = createNonInviteClientTransaction(
+            		sipRequest, null, byeHandler);
+            if (messageInterceptor != null) {
+                messageInterceptor.postProcess(sipRequest);
+            }
             if (clientTransaction != null) {
                 clientTransaction.start();
             }
@@ -104,7 +107,8 @@ public class MidDialogRequestManager extends RequestManager
     
     
     public ClientTransaction createNonInviteClientTransaction(
-            SipRequest sipRequest, String branchId) {
+            SipRequest sipRequest, String branchId,
+            ClientTransactionUser clientTransactionUser) {
         //8.1.2
         SipURI destinationUri = RequestManager.getDestinationUri(sipRequest,
                 logger);
@@ -135,7 +139,7 @@ public class MidDialogRequestManager extends RequestManager
         }
         ClientTransaction clientTransaction = transactionManager
             .createClientTransaction(sipRequest, inetAddress, port, transport,
-                    branchId, this);
+                    branchId, clientTransactionUser);
         return clientTransaction;
     }
     
@@ -226,43 +230,52 @@ public class MidDialogRequestManager extends RequestManager
     }
 
     ///////////////////////////////////////
-    // ClientTransaction methods
-    ///////////////////////////////////////
-    public void errResponseReceived(SipResponse sipResponse) {
-        // TODO Auto-generated method stub
-        
-    }
-
-
-    public void provResponseReceived(SipResponse sipResponse, Transaction transaction) {
-        // TODO Auto-generated method stub
-        
-    }
-
-
-    public void successResponseReceived(SipResponse sipResponse, Transaction transaction) {
-        // TODO Auto-generated method stub
-        
-    }
-
-
-    public void transactionTimeout(ClientTransaction clientTransaction) {
-        // TODO Auto-generated method stub
-        
-    }
-
-
-    public void transactionTransportError() {
-        // TODO Auto-generated method stub
-        
-    }
-
-    ///////////////////////////////////////
-    // ServerTransaction methods
+    // ServerTransactionUser methods
     ///////////////////////////////////////
     @Override
     public void transactionFailure() {
         // TODO Auto-generated method stub
         
     }
+
+
+    ///////////////////////////////////////
+    // ClientTransactionUser methods
+    ///////////////////////////////////////
+    // callbacks employed for cancel responses (ignored)
+	@Override
+	public void transactionTimeout(ClientTransaction clientTransaction) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void provResponseReceived(SipResponse sipResponse,
+			Transaction transaction) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void errResponseReceived(SipResponse sipResponse) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void successResponseReceived(SipResponse sipResponse,
+			Transaction transaction) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+	@Override
+	public void transactionTransportError() {
+		// TODO Auto-generated method stub
+		
+	}
 }

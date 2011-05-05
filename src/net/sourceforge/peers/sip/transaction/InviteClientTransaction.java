@@ -107,7 +107,7 @@ public class InviteClientTransaction extends InviteTransaction
         this.state.log(state);
         this.state = state;
         if(TERMINATED.equals(state)) {
-            transactionManager.removeClientTransaction(branchId, method);
+            //transactionManager.removeClientTransaction(branchId, method);
             transactionManager = null;
         }
     }
