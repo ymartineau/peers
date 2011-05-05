@@ -179,16 +179,16 @@ public class InitialRequestManager extends RequestManager {
     private void createInitialRequestEnd(SipRequest sipRequest,
             ClientTransaction clientTransaction, String profileUri,
             MessageInterceptor messageInterceptor) {
+    	if (clientTransaction == null) {
+    		logger.error("method not supported");
+    		return;
+    	}
         addContact(sipRequest, clientTransaction.getContact(), profileUri);
         if (messageInterceptor != null) {
             messageInterceptor.postProcess(sipRequest);
         }
         // TODO create message receiver on client transport port
-        if (clientTransaction != null) {
-            clientTransaction.start();
-        } else {
-            logger.error("method not supported");
-        }
+        clientTransaction.start();
     }
     
     public void createCancel(SipRequest inviteRequest,

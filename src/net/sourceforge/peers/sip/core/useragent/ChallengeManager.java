@@ -33,6 +33,8 @@ import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldValue;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderParamName;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaders;
 import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
+import net.sourceforge.peers.sip.transactionuser.Dialog;
+import net.sourceforge.peers.sip.transactionuser.DialogManager;
 import net.sourceforge.peers.sip.transport.SipMessage;
 import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.SipResponse;
@@ -58,12 +60,18 @@ public class ChallengeManager implements MessageInterceptor {
     private SipHeaderFieldValue contact;
     
     private InitialRequestManager initialRequestManager;
+    private MidDialogRequestManager midDialogRequestManager;
+    private DialogManager dialogManager;
     
     public ChallengeManager(Config config,
-            InitialRequestManager initialRequestManager, Logger logger) {
+            InitialRequestManager initialRequestManager,
+            MidDialogRequestManager midDialogRequestManager,
+            DialogManager dialogManager, Logger logger) {
         super();
         this.config = config;
         this.initialRequestManager = initialRequestManager;
+        this.midDialogRequestManager = midDialogRequestManager;
+        this.dialogManager = dialogManager;
         this.logger = logger;
         init();
     }
@@ -133,11 +141,17 @@ public class ChallengeManager implements MessageInterceptor {
         // and this technique is not clean
         String callId = responseHeaders.get(
                 new SipHeaderFieldName(RFC3261.HDR_CALLID)).getValue();
-        try {
-            initialRequestManager.createInitialRequest(
-                    requestUri, method, profileUri, callId, this);
-        } catch (SipUriSyntaxException e) {
-            logger.error("syntax error", e);
+        Dialog dialog = dialogManager.getDialog(callId);
+        if (dialog != null) {
+        	midDialogRequestManager.generateMidDialogRequest(
+                    dialog, RFC3261.METHOD_BYE, this);
+        } else {
+        	try {
+                initialRequestManager.createInitialRequest(
+                        requestUri, method, profileUri, callId, this);
+            } catch (SipUriSyntaxException e) {
+                logger.error("syntax error", e);
+            }
         }
     }
     

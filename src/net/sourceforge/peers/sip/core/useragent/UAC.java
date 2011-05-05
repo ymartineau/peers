@@ -173,7 +173,7 @@ public class UAC {
                         midDialogRequestManager, profileUri);
             } else if (dialog.CONFIRMED.equals(dialogState)) {
                 midDialogRequestManager.generateMidDialogRequest(
-                        dialog, RFC3261.METHOD_BYE);
+                        dialog, RFC3261.METHOD_BYE, null);
                 guiClosedCallIds.remove(callId);
             }
         } else {

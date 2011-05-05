@@ -163,7 +163,7 @@ public class CancelHandler extends DialogMethodHandler
         }
 
         return midDialogRequestManager.createNonInviteClientTransaction(
-                cancelGenericRequest, branchId);
+                cancelGenericRequest, branchId, midDialogRequestManager);
     }
 
     public void transactionFailure() {
