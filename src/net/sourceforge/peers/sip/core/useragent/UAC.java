@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008, 2009, 2010 Yohann Martineau 
+    Copyright 2007, 2008, 2009, 2010, 2011 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip.core.useragent;
@@ -166,12 +166,33 @@ public class UAC {
         }
         Dialog dialog = dialogManager.getDialog(callId);
         SipRequest inviteWithAuth = getInviteWithAuth(callId);
+        logger.debug("inviteWithAuth: " + inviteWithAuth);
         if (dialog != null) {
-            DialogState dialogState = dialog.getState();
-            if (dialog.EARLY.equals(dialogState)) {
-                initialRequestManager.createCancel(inviteWithAuth,
-                        midDialogRequestManager, profileUri);
-            } else if (dialog.CONFIRMED.equals(dialogState)) {
+            SipRequest originatingRequest;
+            if (inviteWithAuth != null) {
+                originatingRequest = inviteWithAuth;
+            } else {
+                originatingRequest = sipRequest;
+            }
+            ClientTransaction clientTransaction =
+                //transactionManager.getClientTransaction(sipRequest);
+                transactionManager.getClientTransaction(originatingRequest);
+            if (clientTransaction != null) {
+                synchronized (clientTransaction) {
+                    DialogState dialogState = dialog.getState();
+                    if (dialog.EARLY.equals(dialogState)) {
+                        initialRequestManager.createCancel(inviteWithAuth,
+                                midDialogRequestManager, profileUri);
+                    } else if (dialog.CONFIRMED.equals(dialogState)) {
+                        // clientTransaction not yet removed
+                        midDialogRequestManager.generateMidDialogRequest(
+                                dialog, RFC3261.METHOD_BYE, null);
+                        guiClosedCallIds.remove(callId);
+                    }
+                }
+            } else {
+                // clientTransaction Terminated and removed
+                logger.debug("clientTransaction null");
                 midDialogRequestManager.generateMidDialogRequest(
                         dialog, RFC3261.METHOD_BYE, null);
                 guiClosedCallIds.remove(callId);
