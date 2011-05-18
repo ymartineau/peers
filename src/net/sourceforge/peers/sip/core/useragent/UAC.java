@@ -166,7 +166,6 @@ public class UAC {
         }
         Dialog dialog = dialogManager.getDialog(callId);
         SipRequest inviteWithAuth = getInviteWithAuth(callId);
-        logger.debug("inviteWithAuth: " + inviteWithAuth);
         if (dialog != null) {
             SipRequest originatingRequest;
             if (inviteWithAuth != null) {
@@ -175,7 +174,6 @@ public class UAC {
                 originatingRequest = sipRequest;
             }
             ClientTransaction clientTransaction =
-                //transactionManager.getClientTransaction(sipRequest);
                 transactionManager.getClientTransaction(originatingRequest);
             if (clientTransaction != null) {
                 synchronized (clientTransaction) {
