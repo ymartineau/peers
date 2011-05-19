@@ -55,12 +55,12 @@
 
   <target name="compile" depends="init">
     <javac destdir="${classes.dir}" srcdir="${src.dir}" debug="true"
-        failonerror="true"/>
+        failonerror="true" includeantruntime="false"/>
   </target>
 
   <target name="test-compile" depends="init">
-    <javac destdir="${classes.dir}"
-        srcdir="${test.dir}" debug="true">
+    <javac destdir="${classes.dir}" srcdir="${test.dir}" debug="true"
+        includeantruntime="false">
       <classpath>
         <fileset dir="${lib.dir}">
           <include name="**/*.jar"/>
