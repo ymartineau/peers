@@ -197,6 +197,17 @@ Bugs fixed:
    - 3098214 start CSeq at 1 instead of 0
 
 
+2011-05-19 0.4.1 Bug fixes
+
+
+Bugs fixed:
+ - GUI:
+   - 3155571 tuijldert: update dialog state before gui notification
+ - SIP:
+   - 3137803 tuijldert: client transaction synchronization on responses reception
+   - 3285107 added authentication on bye request
+
+
 AUTHOR
 
 Yohann Martineau yohann.martineau@gmail.com
