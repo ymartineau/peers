@@ -106,6 +106,7 @@ public final class RFC3261 {
     public static final int CODE_180_RINGING                         = 180;
     public static final int CODE_200_OK                              = 200;
     public static final int CODE_401_UNAUTHORIZED                    = 401;
+    public static final int CODE_405_METHOD_NOT_ALLOWED              = 405;
     public static final int CODE_407_PROXY_AUTHENTICATION_REQUIRED   = 407;
     public static final int CODE_481_CALL_TRANSACTION_DOES_NOT_EXIST = 481;
     public static final int CODE_486_BUSYHERE                        = 486;
@@ -115,6 +116,8 @@ public final class RFC3261 {
       //REASON PHRASES
     public static final String REASON_180_RINGING  = "Ringing";
     public static final String REASON_200_OK       = "OK";
+    public static final String REASON_405_METHOD_NOT_ALLOWED =
+        "Method Not Allowed";
     public static final String REASON_481_CALL_TRANSACTION_DOES_NOT_EXIST =
         "Call/Transaction Does Not Exist";
     public static final String REASON_486_BUSYHERE = "Busy Here";

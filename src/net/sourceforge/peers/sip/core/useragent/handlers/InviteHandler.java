@@ -33,7 +33,6 @@ import net.sourceforge.peers.sdp.NoCodecException;
 import net.sourceforge.peers.sdp.SessionDescription;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.Utils;
-import net.sourceforge.peers.sip.core.useragent.MidDialogRequestManager;
 import net.sourceforge.peers.sip.core.useragent.RequestManager;
 import net.sourceforge.peers.sip.core.useragent.SipListener;
 import net.sourceforge.peers.sip.core.useragent.UserAgent;
@@ -155,7 +154,7 @@ public class InviteHandler extends DialogMethodHandler
 
         //TODO if mode autoanswer just send 200 without asking any question
         SipResponse sipResponse =
-            MidDialogRequestManager.generateMidDialogResponse(
+            RequestManager.generateResponse(
                     sipRequest,
                     dialog,
                     RFC3261.CODE_200_OK,
@@ -249,7 +248,7 @@ public class InviteHandler extends DialogMethodHandler
         
         //TODO manage auto reject Do not disturb (DND)
         SipResponse sipResponse =
-            MidDialogRequestManager.generateMidDialogResponse(
+            RequestManager.generateResponse(
                     sipRequest,
                     dialog,
                     RFC3261.CODE_486_BUSYHERE,
@@ -500,12 +499,11 @@ public class InviteHandler extends DialogMethodHandler
         //add Via with only the branchid parameter
         
         SipHeaderFieldValue via = new SipHeaderFieldValue("");
-        SipHeaderFieldValue respTopVia = Utils.getTopVia(sipResponse);
         SipHeaderParamName branchIdName = new SipHeaderParamName(RFC3261.PARAM_BRANCH);
-        via.addParam(branchIdName, respTopVia.getParam(branchIdName));
+        via.addParam(branchIdName, Utils.generateBranchId());
         
         ackHeaders.add(new SipHeaderFieldName(RFC3261.HDR_VIA), via, 0);
-        
+
         //TODO authentication headers
         
         if (request.getBody() == null && sipResponse.getBody() != null) {
@@ -516,6 +514,7 @@ public class InviteHandler extends DialogMethodHandler
         //TODO check if sdp is acceptable
 
         SipURI destinationUri = RequestManager.getDestinationUri(ack, logger);
+        challengeManager.postProcess(ack);
 
         //TODO if header route is present, addrspec = toproute.nameaddress.addrspec
         
