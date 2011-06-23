@@ -23,7 +23,7 @@ import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.media.Echo;
 import net.sourceforge.peers.media.SoundManager;
 import net.sourceforge.peers.sip.RFC3261;
-import net.sourceforge.peers.sip.core.useragent.MidDialogRequestManager;
+import net.sourceforge.peers.sip.core.useragent.RequestManager;
 import net.sourceforge.peers.sip.core.useragent.SipListener;
 import net.sourceforge.peers.sip.core.useragent.UserAgent;
 import net.sourceforge.peers.sip.transaction.ClientTransaction;
@@ -59,7 +59,7 @@ public class ByeHandler extends DialogMethodHandler
         
         String addrSpec = sipRequest.getRequestUri().toString();
         userAgent.getPeers().remove(addrSpec);
-        
+        challengeManager.postProcess(sipRequest);
     }
     
     
@@ -100,7 +100,7 @@ public class ByeHandler extends DialogMethodHandler
         }
         
         SipResponse sipResponse =
-            MidDialogRequestManager.generateMidDialogResponse(
+            RequestManager.generateResponse(
                     sipRequest,
                     dialog,
                     RFC3261.CODE_200_OK,

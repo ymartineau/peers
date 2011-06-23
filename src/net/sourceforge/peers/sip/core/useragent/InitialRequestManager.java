@@ -35,12 +35,16 @@ import net.sourceforge.peers.sip.syntaxencoding.SipHeaders;
 import net.sourceforge.peers.sip.syntaxencoding.SipURI;
 import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
 import net.sourceforge.peers.sip.transaction.ClientTransaction;
+import net.sourceforge.peers.sip.transaction.ServerTransaction;
+import net.sourceforge.peers.sip.transaction.ServerTransactionUser;
 import net.sourceforge.peers.sip.transaction.TransactionManager;
 import net.sourceforge.peers.sip.transactionuser.DialogManager;
 import net.sourceforge.peers.sip.transport.SipRequest;
+import net.sourceforge.peers.sip.transport.SipResponse;
 import net.sourceforge.peers.sip.transport.TransportManager;
 
-public class InitialRequestManager extends RequestManager {
+public class InitialRequestManager extends RequestManager
+        implements ServerTransactionUser {
 
     public InitialRequestManager(UserAgent userAgent,
             InviteHandler inviteHandler,
@@ -222,9 +226,16 @@ public class InitialRequestManager extends RequestManager {
         // TODO authentication
         
         //method inspection
-        
+        SipResponse sipResponse = null;
         if (!UAS.SUPPORTED_METHODS.contains(sipRequest.getMethod())) {
-            //TODO generate 405 (using 8.2.6) with Allow header (20.5) and send it
+            //TODO generate 405 (using 8.2.6 &) with Allow header
+            //(20.5) and send it
+            sipResponse = generateResponse(sipRequest, null,
+                    RFC3261.CODE_405_METHOD_NOT_ALLOWED,
+                    RFC3261.REASON_405_METHOD_NOT_ALLOWED);
+            SipHeaders sipHeaders = sipResponse.getSipHeaders();
+            sipHeaders.add(new SipHeaderFieldName(RFC3261.HDR_ALLOW),
+                    new SipHeaderFieldValue(Utils.generateAllowHeader()));
         }
 
         
@@ -240,6 +251,15 @@ public class InitialRequestManager extends RequestManager {
         
         //etc.
         
+        if (sipResponse != null) {
+            ServerTransaction serverTransaction =
+                transactionManager.createServerTransaction(
+                    sipResponse, userAgent.getSipPort(), RFC3261.TRANSPORT_UDP,
+                    this, sipRequest);
+            serverTransaction.start();
+            serverTransaction.receivedRequest(sipRequest);
+            serverTransaction.sendReponse(sipResponse);
+        }
         
         //TODO create server transaction
         String method = sipRequest.getMethod();
@@ -273,6 +293,16 @@ public class InitialRequestManager extends RequestManager {
             new SipHeaderFieldValue(contactNA.toString());
         sipHeaders.add(new SipHeaderFieldName(RFC3261.HDR_CONTACT),
                 new SipHeaderFieldValue(contact.toString()));
+    }
+
+    ///////////////////////////////////////////////////////////
+    // ServerTransactionUser methods
+    ///////////////////////////////////////////////////////////
+
+    @Override
+    public void transactionFailure() {
+        // TODO Auto-generated method stub
+        
     }
 
 }

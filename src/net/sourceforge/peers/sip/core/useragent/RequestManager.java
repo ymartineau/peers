@@ -29,12 +29,15 @@ import net.sourceforge.peers.sip.core.useragent.handlers.RegisterHandler;
 import net.sourceforge.peers.sip.syntaxencoding.NameAddress;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldName;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldValue;
+import net.sourceforge.peers.sip.syntaxencoding.SipHeaderParamName;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaders;
 import net.sourceforge.peers.sip.syntaxencoding.SipURI;
 import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
 import net.sourceforge.peers.sip.transaction.TransactionManager;
+import net.sourceforge.peers.sip.transactionuser.Dialog;
 import net.sourceforge.peers.sip.transactionuser.DialogManager;
 import net.sourceforge.peers.sip.transport.SipRequest;
+import net.sourceforge.peers.sip.transport.SipResponse;
 import net.sourceforge.peers.sip.transport.TransportManager;
 
 
@@ -58,6 +61,34 @@ public abstract class RequestManager {
             destinationUri = sipRequest.getRequestUri();
         }
         return destinationUri;
+    }
+
+    public static SipResponse generateResponse(SipRequest sipRequest,
+            Dialog dialog, int statusCode, String reasonPhrase) {
+        //8.2.6.2
+        SipResponse sipResponse = new SipResponse(statusCode, reasonPhrase);
+        SipHeaders requestHeaders = sipRequest.getSipHeaders();
+        SipHeaders responseHeaders = sipResponse.getSipHeaders();
+        SipHeaderFieldName fromName = new SipHeaderFieldName(RFC3261.HDR_FROM);
+        responseHeaders.add(fromName, requestHeaders.get(fromName));
+        SipHeaderFieldName callIdName = new SipHeaderFieldName(RFC3261.HDR_CALLID);
+        responseHeaders.add(callIdName, requestHeaders.get(callIdName));
+        SipHeaderFieldName cseqName = new SipHeaderFieldName(RFC3261.HDR_CSEQ);
+        responseHeaders.add(cseqName, requestHeaders.get(cseqName));
+        SipHeaderFieldName viaName = new SipHeaderFieldName(RFC3261.HDR_VIA);
+        responseHeaders.add(viaName, requestHeaders.get(viaName));//TODO check ordering
+        SipHeaderFieldName toName = new SipHeaderFieldName(RFC3261.HDR_TO);
+        SipHeaderFieldValue toValue = requestHeaders.get(toName);
+        SipHeaderParamName toTagParamName = new SipHeaderParamName(RFC3261.PARAM_TAG);
+        String toTag = toValue.getParam(toTagParamName);
+        if (toTag == null) {
+            if (dialog != null) {
+                toTag = dialog.getLocalTag();
+                toValue.addParam(toTagParamName, toTag);
+            }
+        }
+        responseHeaders.add(toName, toValue);
+        return sipResponse;
     }
 
     protected InviteHandler inviteHandler;
@@ -103,5 +134,5 @@ public abstract class RequestManager {
     public RegisterHandler getRegisterHandler() {
         return registerHandler;
     }
-    
+
 }
