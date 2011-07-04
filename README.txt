@@ -207,6 +207,7 @@ Bugs fixed:
    - 3137803 tuijldert: client transaction synchronization on responses reception
    - 3285107 added authentication on bye request
 
+
 2011-07-04 0.4.2 Bug fixes
 
 
