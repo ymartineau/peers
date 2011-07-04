@@ -207,6 +207,14 @@ Bugs fixed:
    - 3137803 tuijldert: client transaction synchronization on responses reception
    - 3285107 added authentication on bye request
 
+2011-07-04 0.4.2 Bug fixes
+
+
+Bugs fixed:
+ - SIP:
+   - 3325451 cannot hangup with asterisk 1.8.4.2
+   - 3324115 ACK does not contain Authorization header
+
 
 AUTHOR
 
