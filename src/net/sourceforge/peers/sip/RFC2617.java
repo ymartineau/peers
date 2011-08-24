@@ -28,6 +28,7 @@ public class RFC2617 {
     // PARAMETERS
 
     public static final String PARAM_NONCE    = "nonce";
+    public static final String PARAM_OPAQUE   = "opaque";
     public static final String PARAM_REALM    = "realm";
     public static final String PARAM_RESPONSE = "response";
     public static final String PARAM_URI      = "uri";

@@ -47,6 +47,7 @@ public class ChallengeManager implements MessageInterceptor {
     private String password;
     private String realm;
     private String nonce;
+    private String opaque;
     private String requestUri;
     private String digest;
     private String profileUri;
@@ -133,6 +134,7 @@ public class ChallengeManager implements MessageInterceptor {
         String headerValue = authenticate.getValue();
         realm = getParameter(RFC2617.PARAM_REALM, headerValue);
         nonce = getParameter(RFC2617.PARAM_NONCE, headerValue);
+        opaque = getParameter(RFC2617.PARAM_OPAQUE, headerValue);
         String method = sipRequest.getMethod();
         requestUri = sipRequest.getRequestUri().toString();
         digest = getRequestDigest(method);
@@ -227,6 +229,8 @@ public class ChallengeManager implements MessageInterceptor {
         appendParameter(buf, RFC2617.PARAM_URI, requestUri);
         buf.append(RFC2617.PARAM_SEPARATOR).append(" ");
         appendParameter(buf, RFC2617.PARAM_RESPONSE, digest);
+        buf.append(RFC2617.PARAM_SEPARATOR).append(" ");
+        appendParameter(buf, RFC2617.PARAM_OPAQUE, opaque);
         SipHeaderFieldName authorizationName;
         if (statusCode == RFC3261.CODE_401_UNAUTHORIZED) {
             authorizationName = new SipHeaderFieldName(
