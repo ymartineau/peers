@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2008, 2009, 2010 Yohann Martineau 
+    Copyright 2008, 2009, 2010, 2011 Yohann Martineau 
 */
 
 package net.sourceforge.peers.media;
@@ -27,6 +27,7 @@ import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.concurrent.CountDownLatch;
 
 import net.sourceforge.peers.Logger;
 
@@ -41,19 +42,22 @@ public abstract class Encoder implements Runnable {
     private boolean mediaDebug;
     private Logger logger;
     private String peersHome;
+    private CountDownLatch latch;
 
     public Encoder(PipedInputStream rawData, PipedOutputStream encodedData,
-            boolean mediaDebug, Logger logger, String peersHome) {
+            boolean mediaDebug, Logger logger, String peersHome,
+            CountDownLatch latch) {
         this.rawData = rawData;
         this.encodedData = encodedData;
         this.mediaDebug = mediaDebug;
         this.logger = logger;
         this.peersHome = peersHome;
+        this.latch = latch;
         isStopped = false;
     }
     
     public void run() {
-        byte[] buffer = new byte[Capture.BUFFER_SIZE];
+        byte[] buffer;
         if (mediaDebug) {
             SimpleDateFormat simpleDateFormat =
                 new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
@@ -70,32 +74,36 @@ public abstract class Encoder implements Runnable {
                 return;
             }
         }
+        int ready;
         while (!isStopped) {
-            int numBytesRead;
             try {
-                numBytesRead = rawData.read(buffer, 0, buffer.length);
+                ready = rawData.available();
+                while (ready == 0 && !isStopped) {
+                    try {
+                        Thread.sleep(2);
+                        ready = rawData.available();
+                    } catch (InterruptedException e) {
+                        logger.error("interrupt exception", e);
+                    }
+                }
+                if (isStopped) {
+                    break;
+                }
+                buffer = new byte[ready];
+                rawData.read(buffer);
+                if (mediaDebug) {
+                    try {
+                        encoderInput.write(buffer);
+                    } catch (IOException e) {
+                        logger.error("cannot write to file", e);
+                    }
+                }
             } catch (IOException e) {
                 logger.error("input/output error", e);
                 return;
             }
             
-            byte[] trimmedBuffer;
-            if (numBytesRead < buffer.length) {
-                trimmedBuffer = new byte[numBytesRead];
-                System.arraycopy(buffer, 0, trimmedBuffer, 0, numBytesRead);
-            } else {
-                trimmedBuffer = buffer;
-            }
-
-            if (mediaDebug) {
-                try {
-                    encoderInput.write(trimmedBuffer);
-                } catch (IOException e) {
-                    logger.error("cannot write to file", e);
-                    break;
-                }
-            }
-            byte[] ulawData = process(trimmedBuffer);
+            byte[] ulawData = process(buffer);
             if (mediaDebug) {
                 try {
                     encoderOutput.write(ulawData);
@@ -106,6 +114,7 @@ public abstract class Encoder implements Runnable {
             }
             try {
                 encodedData.write(ulawData);
+                encodedData.flush();
             } catch (IOException e) {
                 logger.error("input/output error", e);
                 return;
@@ -118,6 +127,14 @@ public abstract class Encoder implements Runnable {
             } catch (IOException e) {
                 logger.error("cannot close file", e);
                 return;
+            }
+        }
+        latch.countDown();
+        if (latch.getCount() != 0) {
+            try {
+                latch.await();
+            } catch (InterruptedException e) {
+                logger.error("interrupt exception", e);
             }
         }
     }

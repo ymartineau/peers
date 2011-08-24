@@ -14,13 +14,14 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2008, 2009, 2010 Yohann Martineau 
+    Copyright 2008, 2009, 2010, 2011 Yohann Martineau 
 */
 
 package net.sourceforge.peers.media;
 
 import java.io.IOException;
 import java.io.PipedOutputStream;
+import java.util.concurrent.CountDownLatch;
 
 import net.sourceforge.peers.Logger;
 
@@ -34,30 +35,39 @@ public class Capture implements Runnable {
     private boolean isStopped;
     private SoundManager soundManager;
     private Logger logger;
+    private CountDownLatch latch;
     
     public Capture(PipedOutputStream rawData, SoundManager soundManager,
-            Logger logger) {
+            Logger logger, CountDownLatch latch) {
         this.rawData = rawData;
         this.soundManager = soundManager;
         this.logger = logger;
+        this.latch = latch;
         isStopped = false;
     }
 
     public void run() {
-        byte[] buffer = new byte[BUFFER_SIZE];
+        byte[] buffer;
         
         while (!isStopped) {
-            int numBytesRead = soundManager.readData(buffer, 0, buffer.length);
-            if (numBytesRead != buffer.length) {
-                byte[] trimmed = new byte[numBytesRead];
-                System.arraycopy(buffer, 0, trimmed, 0, numBytesRead);
-                buffer = trimmed;
-            }
+            buffer = soundManager.readData();
             try {
-                rawData.write(buffer, 0, numBytesRead);
+                if (buffer == null) {
+                    break;
+                }
+                rawData.write(buffer);
+                rawData.flush();
             } catch (IOException e) {
                 logger.error("input/output error", e);
                 return;
+            }
+        }
+        latch.countDown();
+        if (latch.getCount() != 0) {
+            try {
+                latch.await();
+            } catch (InterruptedException e) {
+                logger.error("interrupt exception", e);
             }
         }
     }

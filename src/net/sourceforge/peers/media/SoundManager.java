@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2010 Yohann Martineau 
+    Copyright 2010, 2011 Yohann Martineau 
 */
 
 package net.sourceforge.peers.media;
@@ -133,19 +133,47 @@ public class SoundManager {
         }
     }
 
-    public int readData(byte[] buffer, int offset, int length) {
-        int numberOfBytesRead = targetDataLine.read(buffer, offset, length);
-        if (mediaDebug) {
+    /**
+     * audio read from microphone, read all available data
+     * @return
+     */
+    public synchronized byte[] readData() {
+        if (targetDataLine == null) {
+            return null;
+        }
+        int ready = targetDataLine.available();
+        while (ready == 0) {
             try {
-                microphoneOutput.write(buffer, offset, numberOfBytesRead);
-            } catch (IOException e) {
-                logger.error("cannot write to file", e);
-                return -1;
+                Thread.sleep(2);
+                ready = targetDataLine.available();
+            } catch (InterruptedException e) {
+                return null;
             }
         }
-        return numberOfBytesRead;
+        if (ready <= 0) {
+            return null;
+        }
+        byte[] buffer = new byte[ready];
+        targetDataLine.read(buffer, 0, buffer.length);
+        if (mediaDebug) {
+            try {
+                microphoneOutput.write(buffer, 0, buffer.length);
+            } catch (IOException e) {
+                logger.error("cannot write to file", e);
+                return null;
+            }
+        }
+        return buffer;
     }
 
+    /**
+     * audio sent to speaker
+     * 
+     * @param buffer
+     * @param offset
+     * @param length
+     * @return
+     */
     public int writeData(byte[] buffer, int offset, int length) {
         int numberOfBytesWritten = sourceDataLine.write(buffer, offset, length);
         if (mediaDebug) {

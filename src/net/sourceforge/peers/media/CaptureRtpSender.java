@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008, 2009, 2010 Yohann Martineau 
+    Copyright 2007, 2008, 2009, 2010, 2011 Yohann Martineau 
 */
 
 package net.sourceforge.peers.media;
@@ -22,6 +22,7 @@ package net.sourceforge.peers.media;
 import java.io.IOException;
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
+import java.util.concurrent.CountDownLatch;
 
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.rtp.RFC3551;
@@ -31,6 +32,8 @@ import net.sourceforge.peers.sdp.Codec;
 
 
 public class CaptureRtpSender {
+
+    public static final int PIPE_SIZE = 4096;
 
     private RtpSession rtpSession;
     private Capture capture;
@@ -42,10 +45,14 @@ public class CaptureRtpSender {
             throws IOException {
         super();
         this.rtpSession = rtpSession;
+        // the use of PipedInputStream and PipedOutputStream in Capture,
+        // Encoder and RtpSender imposes a synchronization point at the
+        // end of life of those threads to a void read end dead exceptions
+        CountDownLatch latch = new CountDownLatch(3);
         PipedOutputStream rawDataOutput = new PipedOutputStream();
         PipedInputStream rawDataInput;
         try {
-            rawDataInput = new PipedInputStream(rawDataOutput);
+            rawDataInput = new PipedInputStream(rawDataOutput, PIPE_SIZE);
         } catch (IOException e) {
             logger.error("input/output error", e);
             return;
@@ -54,26 +61,27 @@ public class CaptureRtpSender {
         PipedOutputStream encodedDataOutput = new PipedOutputStream();
         PipedInputStream encodedDataInput;
         try {
-            encodedDataInput = new PipedInputStream(encodedDataOutput);
+            encodedDataInput = new PipedInputStream(encodedDataOutput,
+                    PIPE_SIZE);
         } catch (IOException e) {
             logger.error("input/output error");
             return;
         }
-        capture = new Capture(rawDataOutput, soundManager, logger);
+        capture = new Capture(rawDataOutput, soundManager, logger, latch);
         switch (codec.getPayloadType()) {
         case RFC3551.PAYLOAD_TYPE_PCMU:
             encoder = new PcmuEncoder(rawDataInput, encodedDataOutput,
-                    mediaDebug, logger, peersHome);
+                    mediaDebug, logger, peersHome, latch);
             break;
         case RFC3551.PAYLOAD_TYPE_PCMA:
             encoder = new PcmaEncoder(rawDataInput, encodedDataOutput,
-                    mediaDebug, logger, peersHome);
+                    mediaDebug, logger, peersHome, latch);
             break;
         default:
             throw new RuntimeException("unknown payload type");
         }
         rtpSender = new RtpSender(encodedDataInput, rtpSession, mediaDebug,
-                codec, logger, peersHome);
+                codec, logger, peersHome, latch);
     }
 
     public void start() throws IOException {
@@ -93,14 +101,14 @@ public class CaptureRtpSender {
     }
 
     public void stop() {
-        if (rtpSender != null) {
-            rtpSender.setStopped(true);
+        if (capture != null) {
+            capture.setStopped(true);
         }
         if (encoder != null) {
             encoder.setStopped(true);
         }
-        if (capture != null) {
-            capture.setStopped(true);
+        if (rtpSender != null) {
+            rtpSender.setStopped(true);
         }
     }
 
