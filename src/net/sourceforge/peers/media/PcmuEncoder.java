@@ -14,13 +14,14 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2010 Oleg Kulikov, Yohann Martineau 
+    Copyright 2010, 2011 Oleg Kulikov, Yohann Martineau 
 */
 
 package net.sourceforge.peers.media;
 
 import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
+import java.util.concurrent.CountDownLatch;
 
 import net.sourceforge.peers.Logger;
 
@@ -102,8 +103,9 @@ public class PcmuEncoder extends Encoder {
     }
 
     public PcmuEncoder(PipedInputStream rawData, PipedOutputStream encodedData,
-            boolean mediaDebug, Logger logger, String peersHome) {
-        super(rawData, encodedData, mediaDebug, logger, peersHome);
+            boolean mediaDebug, Logger logger, String peersHome,
+            CountDownLatch latch) {
+        super(rawData, encodedData, mediaDebug, logger, peersHome, latch);
     }
 
     /**

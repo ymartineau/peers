@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2008, 2009, 2010 Yohann Martineau 
+    Copyright 2008, 2009, 2010, 2011 Yohann Martineau 
 */
 
 package net.sourceforge.peers.media;
@@ -30,6 +30,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.CountDownLatch;
 
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.rtp.RtpPacket;
@@ -47,14 +48,17 @@ public class RtpSender implements Runnable {
     private List<RtpPacket> pushedPackets;
     private Logger logger;
     private String peersHome;
+    private CountDownLatch latch;
     
     public RtpSender(PipedInputStream encodedData, RtpSession rtpSession,
-            boolean mediaDebug, Codec codec, Logger logger, String peersHome) {
+            boolean mediaDebug, Codec codec, Logger logger, String peersHome,
+            CountDownLatch latch) {
         this.encodedData = encodedData;
         this.rtpSession = rtpSession;
         this.mediaDebug = mediaDebug;
         this.codec = codec;
         this.peersHome = peersHome;
+        this.latch = latch;
         isStopped = false;
         pushedPackets = Collections.synchronizedList(
                 new ArrayList<RtpPacket>());
@@ -88,12 +92,24 @@ public class RtpSender implements Runnable {
         rtpPacket.setSsrc(random.nextInt());
         int buf_size = Capture.BUFFER_SIZE / 2;
         byte[] buffer = new byte[buf_size];
-        long counter = 0;
+        int timestamp = 0;
+        int numBytesRead;
+        int tempBytesRead;
+        long sleepTime = 0;
+        long offset = 0;
+        long lastSentTime = System.nanoTime();
+        // indicate if its the first time that we send a packet (dont wait)
+        boolean firstTime = true;
         
         while (!isStopped) {
-            int numBytesRead;
+            numBytesRead = 0;
             try {
-                numBytesRead = encodedData.read(buffer, 0, buf_size);
+                while (!isStopped && numBytesRead < buf_size) {
+                    // expect that the buffer is full
+                    tempBytesRead = encodedData.read(buffer, numBytesRead,
+                            buf_size - numBytesRead);
+                    numBytesRead += tempBytesRead;
+                }
             } catch (IOException e) {
                 logger.error("input/output error", e);
                 return;
@@ -127,15 +143,32 @@ public class RtpSender implements Runnable {
                 rtpPacket.setData(trimmedBuffer);
             }
             
-            rtpPacket.setSequenceNumber(sequenceNumber + (int)counter);
-            rtpPacket.setTimestamp(buf_size * counter++);
-            
-            rtpSession.send(rtpPacket);
-            try {
-                Thread.sleep(15);
-            } catch (InterruptedException e) {
-                logger.error("Thread interrupted", e);
-                return;
+            rtpPacket.setSequenceNumber(sequenceNumber++);
+            timestamp += buf_size;
+            rtpPacket.setTimestamp(timestamp);
+            if (firstTime) {
+                rtpSession.send(rtpPacket);
+                lastSentTime = System.nanoTime();
+                firstTime = false;
+                continue;
+            }
+            sleepTime = 19500000 - (System.nanoTime() - lastSentTime) + offset;
+            if (sleepTime > 0) {
+                try {
+                    Thread.sleep(Math.round(sleepTime / 1000000f));
+                } catch (InterruptedException e) {
+                    logger.error("Thread interrupted", e);
+                    return;
+                }
+                rtpSession.send(rtpPacket);
+                lastSentTime = System.nanoTime();
+                offset = 0;
+            } else {
+                rtpSession.send(rtpPacket);
+                lastSentTime = System.nanoTime();
+                if (sleepTime < -20000000) {
+                    offset = sleepTime + 20000000;
+                }
             }
         }
         if (mediaDebug) {
@@ -144,6 +177,14 @@ public class RtpSender implements Runnable {
             } catch (IOException e) {
                 logger.error("cannot close file", e);
                 return;
+            }
+        }
+        latch.countDown();
+        if (latch.getCount() != 0) {
+            try {
+                latch.await();
+            } catch (InterruptedException e) {
+                logger.error("interrupt exception", e);
             }
         }
     }

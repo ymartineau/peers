@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2008, 2009, 2010 Yohann Martineau 
+    Copyright 2008, 2009, 2010, 2011 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip.core.useragent;
@@ -229,8 +229,10 @@ public class ChallengeManager implements MessageInterceptor {
         appendParameter(buf, RFC2617.PARAM_URI, requestUri);
         buf.append(RFC2617.PARAM_SEPARATOR).append(" ");
         appendParameter(buf, RFC2617.PARAM_RESPONSE, digest);
-        buf.append(RFC2617.PARAM_SEPARATOR).append(" ");
-        appendParameter(buf, RFC2617.PARAM_OPAQUE, opaque);
+        if (opaque != null) {
+            buf.append(RFC2617.PARAM_SEPARATOR).append(" ");
+            appendParameter(buf, RFC2617.PARAM_OPAQUE, opaque);
+        }
         SipHeaderFieldName authorizationName;
         if (statusCode == RFC3261.CODE_401_UNAUTHORIZED) {
             authorizationName = new SipHeaderFieldName(

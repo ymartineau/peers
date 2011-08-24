@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2010 Yohann Martineau 
+    Copyright 2010, 2011 Yohann Martineau 
 */
 
 package net.sourceforge.peers.rtp;
@@ -110,18 +110,19 @@ public class RtpSession {
         byte[] buf = rtpParser.encode(rtpPacket);
         DatagramPacket datagramPacket = new DatagramPacket(buf, buf.length,
                 remoteAddress, remotePort);
-        try {
-            if (!datagramSocket.isClosed()) {
-                datagramSocket.send(datagramPacket);
-            }
-        } catch (IOException e) {
-            logger.error("cannot send rtp packet", e);
-        }
-        if (mediaDebug) {
+        
+        if (!datagramSocket.isClosed()) {
             try {
-                rtpSessionOutput.write(buf);
+                datagramSocket.send(datagramPacket);
             } catch (IOException e) {
-                logger.error("cannot write to file", e);
+                logger.error("cannot send rtp packet", e);
+            }
+            if (mediaDebug) {
+                try {
+                    rtpSessionOutput.write(buf);
+                } catch (IOException e) {
+                    logger.error("cannot write to file", e);
+                }
             }
         }
     }
