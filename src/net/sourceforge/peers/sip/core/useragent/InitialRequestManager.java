@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008, 2009, 2010 Yohann Martineau 
+    Copyright 2007, 2008, 2009, 2010, 2011 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip.core.useragent;
@@ -164,7 +164,7 @@ public class InitialRequestManager extends RequestManager
             clientTransaction = registerHandler.preProcessRegister(sipRequest);
         }
         createInitialRequestEnd(sipRequest, clientTransaction, profileUri,
-                messageInterceptor);
+                messageInterceptor, true);
         return sipRequest;
     }
     
@@ -182,12 +182,14 @@ public class InitialRequestManager extends RequestManager
     
     private void createInitialRequestEnd(SipRequest sipRequest,
             ClientTransaction clientTransaction, String profileUri,
-            MessageInterceptor messageInterceptor) {
+            MessageInterceptor messageInterceptor, boolean addContact) {
     	if (clientTransaction == null) {
     		logger.error("method not supported");
     		return;
     	}
-        addContact(sipRequest, clientTransaction.getContact(), profileUri);
+    	if (addContact) {
+    	    addContact(sipRequest, clientTransaction.getContact(), profileUri);
+    	}
         if (messageInterceptor != null) {
             messageInterceptor.postProcess(sipRequest);
         }
@@ -214,7 +216,8 @@ public class InitialRequestManager extends RequestManager
             clientTransaction = cancelHandler.preProcessCancel(sipRequest,
                     inviteRequest, midDialogRequestManager);
         if (clientTransaction != null) {
-            createInitialRequestEnd(sipRequest, clientTransaction, profileUri, null);
+            createInitialRequestEnd(sipRequest, clientTransaction, profileUri,
+                    null, false);
         }
         
         
