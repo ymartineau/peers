@@ -146,7 +146,12 @@ public class CancelHandler extends DialogMethodHandler
         if (inviteRoute != null) {
             cancelHeaders.add(routeName, inviteRoute);
         }
-        
+
+        //content-length
+        SipHeaderFieldName contentLengthName =
+            new SipHeaderFieldName(RFC3261.HDR_CONTENT_LENGTH);
+        SipHeaderFieldValue contentLengthValue = new SipHeaderFieldValue("0");
+        cancelHeaders.add(contentLengthName, contentLengthValue);
         
         InviteClientTransaction inviteClientTransaction =
             (InviteClientTransaction)transactionManager.getClientTransaction(
