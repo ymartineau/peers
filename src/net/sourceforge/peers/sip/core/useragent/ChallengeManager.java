@@ -148,9 +148,13 @@ public class ChallengeManager implements MessageInterceptor {
         	midDialogRequestManager.generateMidDialogRequest(
                     dialog, RFC3261.METHOD_BYE, this);
         } else {
+            SipHeaderFieldValue from = requestHeaders.get(
+                    new SipHeaderFieldName(RFC3261.HDR_FROM));
+            String fromTag = from.getParam(new SipHeaderParamName(
+                    RFC3261.PARAM_TAG));
         	try {
                 initialRequestManager.createInitialRequest(
-                        requestUri, method, profileUri, callId, this);
+                        requestUri, method, profileUri, callId, fromTag, this);
             } catch (SipUriSyntaxException e) {
                 logger.error("syntax error", e);
             }

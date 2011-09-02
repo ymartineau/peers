@@ -336,6 +336,7 @@ public class InviteHandler extends DialogMethodHandler
         Dialog dialog = dialogManager.getDialog(sipResponse);
         if (dialog != null) {
             dialog.receivedOrSent300To699();
+            dialogManager.removeDialog(dialog.getId());
         }
         int statusCode = sipResponse.getStatusCode();
         if (statusCode == RFC3261.CODE_401_UNAUTHORIZED

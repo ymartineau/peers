@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008, 2009, 2010 Yohann Martineau 
+    Copyright 2007, 2008, 2009, 2010, 2011 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip.core.useragent;
@@ -26,9 +26,7 @@ public class SipEvent {
     public enum EventType {
         ERROR, RINGING, INCOMING_CALL, CALLEE_PICKUP;
     }
-    
-    private static final long serialVersionUID = 1L;
-    
+
     private EventType eventType;
     private SipMessage sipMessage;
 
