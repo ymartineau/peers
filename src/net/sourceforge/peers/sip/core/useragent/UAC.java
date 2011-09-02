@@ -120,7 +120,7 @@ public class UAC {
                 
             };
             initialRequestManager.createInitialRequest(requestUri,
-                    RFC3261.METHOD_REGISTER, profileUri, registerCallID,
+                    RFC3261.METHOD_REGISTER, profileUri, registerCallID, null,
                     messageInterceptor);
             //initialRequestManager.registerHandler.unregister();
         }

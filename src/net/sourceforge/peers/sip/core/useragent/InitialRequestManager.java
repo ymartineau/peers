@@ -78,7 +78,8 @@ public class InitialRequestManager extends RequestManager
      * @throws SipUriSyntaxException 
      */
     public SipRequest getGenericRequest(String requestUri, String method,
-            String profileUri) throws SipUriSyntaxException {
+            String profileUri, String callId, String fromTag)
+            throws SipUriSyntaxException {
         //8.1.1
         SipRequest request = new SipRequest(method, new SipURI(requestUri));
         SipHeaders headers = request.getSipHeaders();
@@ -110,15 +111,27 @@ public class InitialRequestManager extends RequestManager
         
         NameAddress fromNA = new NameAddress(profileUri);
         SipHeaderFieldValue from = new SipHeaderFieldValue(fromNA.toString());
-        from.addParam(new SipHeaderParamName(RFC3261.PARAM_TAG),
-                Utils.generateTag());
+        String localFromTag;
+        if (fromTag != null) {
+            localFromTag = fromTag;
+        } else {
+            localFromTag = Utils.generateTag();
+        }
+        from.addParam(new SipHeaderParamName(RFC3261.PARAM_TAG), localFromTag);
         headers.add(new SipHeaderFieldName(RFC3261.HDR_FROM), from);
         
         //Call-ID
         
-        headers.add(new SipHeaderFieldName(RFC3261.HDR_CALLID),
-                new SipHeaderFieldValue(Utils.generateCallID(
-                        userAgent.getConfig().getLocalInetAddress())));
+        SipHeaderFieldName callIdName =
+            new SipHeaderFieldName(RFC3261.HDR_CALLID);
+        String localCallId;
+        if (callId != null) {
+            localCallId = callId;
+        } else {
+            localCallId = Utils.generateCallID(
+                    userAgent.getConfig().getLocalInetAddress());
+        }
+        headers.add(callIdName, new SipHeaderFieldValue(localCallId));
         
         //CSeq
         
@@ -137,16 +150,16 @@ public class InitialRequestManager extends RequestManager
             String profileUri, String callId) throws SipUriSyntaxException {
         
         return createInitialRequest(requestUri, method, profileUri, callId,
-                null);
+                null, null);
     }
     
     public SipRequest createInitialRequest(String requestUri, String method,
-            String profileUri, String callId,
+            String profileUri, String callId, String fromTag,
             MessageInterceptor messageInterceptor)
                 throws SipUriSyntaxException {
         
-        SipRequest sipRequest = createInitialRequestStart(requestUri, method,
-                profileUri, callId);
+        SipRequest sipRequest = getGenericRequest(requestUri, method,
+                profileUri, callId, fromTag);
         
         // TODO add route header for outbound proxy give it to xxxHandler to create
         // clientTransaction
@@ -165,18 +178,6 @@ public class InitialRequestManager extends RequestManager
         }
         createInitialRequestEnd(sipRequest, clientTransaction, profileUri,
                 messageInterceptor, true);
-        return sipRequest;
-    }
-    
-    private SipRequest createInitialRequestStart(String requestUri, String method,
-            String profileUri, String callId) throws SipUriSyntaxException {
-        SipRequest sipRequest = getGenericRequest(requestUri, method,
-                profileUri);
-        if (callId != null) {
-            SipHeaderFieldValue callIdValue = sipRequest.getSipHeaders().get(
-                    new SipHeaderFieldName(RFC3261.HDR_CALLID));
-            callIdValue.setValue(callId);
-        }
         return sipRequest;
     }
     
@@ -204,9 +205,9 @@ public class InitialRequestManager extends RequestManager
                 new SipHeaderFieldName(RFC3261.HDR_CALLID));
         SipRequest sipRequest;
         try {
-            sipRequest = createInitialRequestStart(
+            sipRequest = getGenericRequest(
                     inviteRequest.getRequestUri().toString(), RFC3261.METHOD_CANCEL,
-                    profileUri, callId.getValue());
+                    profileUri, callId.getValue(), null);
         } catch (SipUriSyntaxException e) {
             logger.error("syntax error", e);
             return;
