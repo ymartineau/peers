@@ -171,8 +171,8 @@ public class InviteHandler extends DialogMethodHandler
         byte[] offerBytes = sipRequest.getBody();
         SessionDescription answer;
         try {
-            if (offerBytes != null && RFC3261.CONTENT_TYPE_SDP.equals(
-                    contentType.getValue())) {
+            if (offerBytes != null && contentType != null &&
+                    RFC3261.CONTENT_TYPE_SDP.equals(contentType.getValue())) {
                 // create response in 200
                 try {
                     SessionDescription offer = sdpManager.parse(offerBytes);
@@ -568,6 +568,24 @@ public class InviteHandler extends DialogMethodHandler
         // created, in the second case, they must be updated.
         logger.debug("handleAck");
 
+        if (mediaDestination == null) {
+            SipHeaders reqHeaders = ack.getSipHeaders();
+            SipHeaderFieldValue contentType =
+                reqHeaders.get(new SipHeaderFieldName(RFC3261.HDR_CONTENT_TYPE));
+            byte[] offerBytes = ack.getBody();
+
+            if (offerBytes != null && contentType != null &&
+                    RFC3261.CONTENT_TYPE_SDP.equals(contentType.getValue())) {
+                // create response in 200
+                try {
+                    SessionDescription answer = sdpManager.parse(offerBytes);
+                    mediaDestination = sdpManager.getMediaDestination(answer);
+                } catch (NoCodecException e) {
+                    logger.error(e.getMessage(), e);
+                    return;
+                }
+            }
+        }
         String destAddress = mediaDestination.getDestination();
         int destPort = mediaDestination.getPort();
         Codec codec = mediaDestination.getCodec();
