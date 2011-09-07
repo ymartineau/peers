@@ -217,6 +217,21 @@ Bugs fixed:
    - 3324115 ACK does not contain Authorization header
 
 
+2011-09-06 0.4.3 Various improvements
+
+
+New features:
+ - SIP:
+   - manage opaque parameter in challenge
+   - use same tag in From header between original and authenticated INVITE
+   - support incoming INVITEs and reINVITEs with empty body
+
+
+Bugs fixed:
+ - SIP:
+   - 3392342 bad CANCEL sip request when other party doesn't picking up
+
+
 AUTHOR
 
 Yohann Martineau yohann.martineau@gmail.com
