@@ -29,4 +29,11 @@
       </package>
     </packages>
   </test>
+  <test name="Core">
+    <packages>
+      <package name="net.sourceforge.peers.sip.core.useragent">
+        <include name=".*TestNG"/>
+      </package>
+    </packages>
+  </test>
 </suite>
