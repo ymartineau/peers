@@ -97,8 +97,11 @@ public abstract class MessageReceiver implements Runnable {
                 byteArrayInputStream);
         BufferedReader reader = new BufferedReader(inputStreamReader);
         String startLine = reader.readLine();
-        while (startLine == null || startLine.equals("")) {
+        while ("".equals(startLine)) {
             startLine = reader.readLine();
+        }
+        if (startLine == null) {
+            return;
         }
         if (!startLine.contains(RFC3261.DEFAULT_SIP_VERSION)) {
             // keep-alive, send back to sender
