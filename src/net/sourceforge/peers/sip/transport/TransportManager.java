@@ -345,14 +345,24 @@ public class TransportManager {
     private MessageReceiver createMessageReceiver(SipTransportConnection conn)
             throws SocketException {
         MessageReceiver messageReceiver = null;
+        SipTransportConnection sipTransportConnection = conn;
         if (RFC3261.TRANSPORT_UDP.equals(conn.getTransport())) {
             DatagramSocket datagramSocket = datagramSockets.get(conn);
             if (datagramSocket == null) {
                 datagramSocket = new DatagramSocket(conn.getLocalPort(),
                         conn.getLocalInetAddress());
                 datagramSocket.setSoTimeout(SOCKET_TIMEOUT);
-                datagramSockets.put(conn, datagramSocket);
-                logger.info("added datagram socket " + conn);
+                if (conn.getLocalPort() == 0) {
+                    sipTransportConnection = new SipTransportConnection(
+                            conn.getLocalInetAddress(),
+                            datagramSocket.getLocalPort(),
+                            conn.getRemoteInetAddress(),
+                            conn.getRemotePort(),
+                            conn.getTransport());
+                    config.setSipPort(datagramSocket.getLocalPort());
+                }
+                datagramSockets.put(sipTransportConnection, datagramSocket);
+                logger.info("added datagram socket " + sipTransportConnection);
             }
             messageReceiver = new UdpMessageReceiver(datagramSocket,
                     transactionManager, this, config, logger);
@@ -362,8 +372,8 @@ public class TransportManager {
             //TODO
             //messageReceiver = new TcpMessageReceiver(port);
         }
-        messageReceivers.put(conn, messageReceiver);
-        logger.info("added " + conn + ": " + messageReceiver
+        messageReceivers.put(sipTransportConnection, messageReceiver);
+        logger.info("added " + sipTransportConnection + ": " + messageReceiver
                 + " to message receivers");
         return messageReceiver;
     }
