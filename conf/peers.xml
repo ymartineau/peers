@@ -52,9 +52,9 @@
       <outboundProxy/>
       <interface ref="eth1"/>
       <!-- you can specify the sip listening port you want, default value is
-           5060 -->
+           5060, 0 can be used to choose a random free port -->
       <!-- Example: 5060 -->
-      <port>6060</port>
+      <port>0</port>
     </profile>
   </sip>
   <codecs>
