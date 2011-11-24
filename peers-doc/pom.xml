@@ -1,0 +1,53 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>net.sourceforge.peers</groupId>
+  <artifactId>peers-doc</artifactId>
+  <version>0.5-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+  <name>Peers documentation</name>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>com.agilejava.docbkx</groupId>
+        <artifactId>docbkx-maven-plugin</artifactId>
+        <version>2.0.13</version>
+        <dependencies>
+          <dependency>
+            <groupId>org.docbook</groupId>
+            <artifactId>docbook-xml</artifactId>
+            <version>4.4</version>
+            <scope>runtime</scope>
+          </dependency>
+        </dependencies>
+
+        <executions>
+          <execution>
+            <phase>pre-site</phase>
+            <goals>
+              <goal>generate-html</goal>
+              <goal>generate-pdf</goal>
+            </goals>
+          </execution>
+        </executions>
+
+        <configuration>
+          <sectionAutolabel>true</sectionAutolabel>
+          <sectionLabelIncludesComponentLabel>true</sectionLabelIncludesComponentLabel>
+          <postProcess>
+            <copy todir="target/docbkx/html/">
+              <fileset dir="src/docbkx/">
+                <include name="*.png"/>
+              </fileset>
+            </copy>
+          </postProcess>
+        </configuration>
+
+      </plugin>
+    </plugins>
+  </build>
+
+</project>

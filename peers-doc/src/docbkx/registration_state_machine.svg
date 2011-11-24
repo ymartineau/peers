@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="482.84277"
+   height="168.68532"
+   id="svg8733"
+   version="1.1"
+   inkscape:version="0.47 r22583"
+   sodipodi:docname="registration_state_machine.svg"
+   inkscape:export-filename="/media/data/peers/doc/docbook/registration_state_machine.png"
+   inkscape:export-xdpi="90"
+   inkscape:export-ydpi="90">
+  <defs
+     id="defs8735">
+    <marker
+       inkscape:stockid="Arrow2Lend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow2Lend"
+       style="overflow:visible">
+      <path
+         id="path3657"
+         style="font-size:12px;fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         transform="matrix(-1.1,0,0,-1.1,-1.1,0)" />
+    </marker>
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 526.18109 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="744.09448 : 526.18109 : 1"
+       inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
+       id="perspective8741" />
+    <inkscape:perspective
+       id="perspective10437"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.98994949"
+     inkscape:cx="264.95947"
+     inkscape:cy="-46.56225"
+     inkscape:document-units="mm"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1440"
+     inkscape:window-height="825"
+     inkscape:window-x="0"
+     inkscape:window-y="25"
+     inkscape:window-maximized="1"
+     units="mm" />
+  <metadata
+     id="metadata8738">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Calque 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-9.6015287,-91.207099)">
+    <g
+       id="g8769"
+       transform="translate(-3.5355148,0)">
+      <text
+         id="text8743"
+         y="105.84925"
+         x="335.37067"
+         style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+         xml:space="preserve"><tspan
+           y="105.84925"
+           x="335.37067"
+           id="tspan8745"
+           sodipodi:role="line">RegistrationStateFailed</tspan></text>
+      <rect
+         y="91.707115"
+         x="326.27927"
+         height="21.213203"
+         width="155.56349"
+         id="rect8759"
+         style="opacity:0.93999999;fill:none;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+    </g>
+    <g
+       id="g8779">
+      <text
+         id="text8747"
+         y="181.61069"
+         x="315.1676"
+         style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+         xml:space="preserve"><tspan
+           y="181.61069"
+           x="315.1676"
+           id="tspan8749"
+           sodipodi:role="line">RegistrationStateRegistering</tspan></text>
+      <rect
+         y="168.4787"
+         x="309.10669"
+         height="19.192898"
+         width="182.83762"
+         id="rect8761"
+         style="opacity:0.93999999;fill:none;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+    </g>
+    <g
+       id="g8784"
+       transform="translate(-7.0710678,0)">
+      <text
+         id="text8751"
+         y="254.34166"
+         x="330.31989"
+         style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+         xml:space="preserve"><tspan
+           y="254.34166"
+           x="330.31989"
+           id="tspan8753"
+           sodipodi:role="line">RegistrationStateSuccess</tspan></text>
+      <rect
+         y="240.19954"
+         x="325.26913"
+         height="19.192898"
+         width="164.65486"
+         id="rect8765"
+         style="opacity:0.93999999;fill:none;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+    </g>
+    <g
+       id="g8774"
+       transform="translate(-79.802051,0)">
+      <text
+         id="text8755"
+         y="182.62083"
+         x="97.984787"
+         style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+         xml:space="preserve"><tspan
+           y="182.62083"
+           x="97.984787"
+           id="tspan8757"
+           sodipodi:role="line">RegistrationStateUnregistered</tspan></text>
+      <rect
+         y="168.4584"
+         x="89.90358"
+         height="20.203051"
+         width="197.9899"
+         id="rect8767"
+         style="opacity:0.93999999;fill:none;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+    </g>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+       x="213.38585"
+       y="172.55994"
+       id="text9487"><tspan
+         sodipodi:role="line"
+         id="tspan9489"
+         x="213.38585"
+         y="172.55994">registerSent()</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow2Lend)"
+       d="m 208.09142,179.59038 98.99495,0"
+       id="path9491" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow2Lend)"
+       d="m 353.55339,167.46855 0,-53.53808"
+       id="path9677" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow2Lend)"
+       d="m 401.29453,112.92032 0,54.54823"
+       id="path9863" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow2Lend)"
+       d="m 352.54324,186.66145 0,52.52793"
+       id="path10049" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow2Lend)"
+       d="m 401.31483,187.6716 0,50.50763"
+       id="path10235" />
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+       x="259.75134"
+       y="147.16399"
+       id="text10421"><tspan
+         sodipodi:role="line"
+         id="tspan10423"
+         x="259.75134"
+         y="147.16399">registerFailed()</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+       x="405.35544"
+       y="144.23505"
+       id="text10425"><tspan
+         sodipodi:role="line"
+         id="tspan10427"
+         x="405.35544"
+         y="144.23505">registerSent()</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+       x="403.94308"
+       y="217.24611"
+       id="text10425-2"><tspan
+         sodipodi:role="line"
+         id="tspan10427-8"
+         x="403.94308"
+         y="217.24611">registerSent()</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+       x="229.46707"
+       y="216.03709"
+       id="text10454"><tspan
+         sodipodi:role="line"
+         id="tspan10456"
+         x="229.46707"
+         y="216.03709">registerSuccessful()</tspan></text>
+  </g>
+</svg>

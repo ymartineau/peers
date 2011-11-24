@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="572.74634"
+   height="288.89349"
+   id="svg2958"
+   version="1.1"
+   inkscape:version="0.47 r22583"
+   sodipodi:docname="sip_core_method_handlers.svg"
+   inkscape:export-filename="/media/data/peers/doc/docbook/sip_core_method_handlers.png"
+   inkscape:export-xdpi="90"
+   inkscape:export-ydpi="90">
+  <defs
+     id="defs2960">
+    <marker
+       inkscape:stockid="Arrow2Lend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow2Lend"
+       style="overflow:visible">
+      <path
+         id="path3894"
+         style="font-size:12px;fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         transform="matrix(-1.1,0,0,-1.1,-1.1,0)" />
+    </marker>
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 526.18109 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="744.09448 : 526.18109 : 1"
+       inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
+       id="perspective2966" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.98994949"
+     inkscape:cx="287.9594"
+     inkscape:cy="109.80699"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1440"
+     inkscape:window-height="825"
+     inkscape:window-x="0"
+     inkscape:window-y="25"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata2963">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Calque 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-63.139614,-78.075132)">
+    <g
+       id="g3026"
+       transform="translate(17.172594,-13.131983)">
+      <text
+         id="text2968"
+         y="107.86955"
+         x="277.79196"
+         style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+         xml:space="preserve"><tspan
+           y="107.86955"
+           x="277.79196"
+           id="tspan2970"
+           sodipodi:role="line">ClientTransactionUser</tspan></text>
+      <rect
+         y="91.707115"
+         x="269.71072"
+         height="22.223356"
+         width="146.47212"
+         id="rect3006"
+         style="fill:none;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+    </g>
+    <g
+       id="g3031"
+       transform="translate(-2.0203051,-5.0507627)">
+      <text
+         id="text2972"
+         y="159.38733"
+         x="106.06602"
+         style="font-size:12px;font-style:italic;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Charter Italic"
+         xml:space="preserve"><tspan
+           y="159.38733"
+           x="106.06602"
+           id="tspan2974"
+           sodipodi:role="line">MethodHandler</tspan></text>
+      <rect
+         y="141.20459"
+         x="97.964493"
+         height="25.253813"
+         width="110.10663"
+         id="rect3008"
+         style="fill:none;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+    </g>
+    <g
+       id="g3036"
+       transform="translate(6.0609153,-9.0913728)">
+      <text
+         id="text2976"
+         y="203.83405"
+         x="228.29448"
+         style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+         xml:space="preserve"><tspan
+           y="203.83405"
+           x="228.29448"
+           id="tspan2978"
+           sodipodi:role="line">RegisterHandler</tspan></text>
+      <rect
+         y="188.68176"
+         x="219.20311"
+         height="22.223356"
+         width="116.16754"
+         id="rect3012"
+         style="fill:none;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+    </g>
+    <g
+       id="g3041"
+       transform="translate(-33.335034,7.0710678)">
+      <text
+         id="text2980"
+         y="259.39243"
+         x="102.02541"
+         style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+         xml:space="preserve"><tspan
+           y="259.39243"
+           x="102.02541"
+           id="tspan2982"
+           sodipodi:role="line">OptionsHandler</tspan></text>
+      <rect
+         y="243.23"
+         x="96.974648"
+         height="24.243662"
+         width="104.04572"
+         id="rect3014"
+         style="fill:none;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+    </g>
+    <g
+       id="g3071">
+      <text
+         id="text2984"
+         y="244.24014"
+         x="354.56354"
+         style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+         xml:space="preserve"><tspan
+           y="244.24014"
+           x="354.56354"
+           id="tspan2986"
+           sodipodi:role="line">InviteHandler</tspan></text>
+      <rect
+         y="229.08786"
+         x="346.48233"
+         height="22.223356"
+         width="97.984795"
+         id="rect3016"
+         style="fill:none;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+    </g>
+    <g
+       id="g3081">
+      <text
+         id="text2988"
+         y="303.83914"
+         x="351.53308"
+         style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+         xml:space="preserve"><tspan
+           y="303.83914"
+           x="351.53308"
+           id="tspan2990"
+           sodipodi:role="line">CancelHandler</tspan></text>
+      <rect
+         y="288.66656"
+         x="344.46201"
+         height="20.203051"
+         width="101.01525"
+         id="rect3018"
+         style="fill:none;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+    </g>
+    <g
+       id="g3091"
+       transform="translate(4.0406102,-22.223356)">
+      <text
+         id="text2996"
+         y="332.12344"
+         x="171.72594"
+         style="font-size:12px;font-style:italic;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Charter Italic"
+         xml:space="preserve"><tspan
+           y="332.12344"
+           x="171.72594"
+           id="tspan2998"
+           sodipodi:role="line">DialogMethodHandler</tspan></text>
+      <rect
+         y="314.93054"
+         x="163.64471"
+         height="23.233509"
+         width="143.44167"
+         id="rect3020"
+         style="fill:none;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+    </g>
+    <g
+       id="g3086">
+      <text
+         id="text2992"
+         y="359.39755"
+         x="358.60416"
+         style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+         xml:space="preserve"><tspan
+           y="359.39755"
+           x="358.60416"
+           id="tspan2994"
+           sodipodi:role="line">ByeHandler</tspan></text>
+      <rect
+         y="343.23511"
+         x="352.54324"
+         height="23.233509"
+         width="80.812202"
+         id="rect3022"
+         style="fill:none;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+    </g>
+    <g
+       id="g3076">
+      <text
+         id="text3000"
+         y="300.80869"
+         x="492.95444"
+         style="font-size:12px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+         xml:space="preserve"><tspan
+           y="300.80869"
+           x="492.95444"
+           id="tspan3002"
+           sodipodi:role="line">ServerTransactionUser</tspan></text>
+      <rect
+         y="285.6767"
+         x="484.87323"
+         height="21.213203"
+         width="150.51273"
+         id="rect3024"
+         style="fill:none;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+    </g>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow2Lend)"
+       d="m 116.16754,250.30106 0,-87.88327"
+       id="path3868" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow2Lend)"
+       d="M 240.41631,292.72747 165.23507,162.50975"
+       id="path4318" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow2Lend)"
+       d="m 281.83256,178.58023 -74.10472,-19.8563"
+       id="path4504" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:4, 4;stroke-dashoffset:0;marker-end:url(#Arrow2Lend)"
+       d="m 294.96454,178.58023 44.60729,-77.26209"
+       id="path4690" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:4, 4;stroke-dashoffset:0;marker-end:url(#Arrow2Lend)"
+       d="m 394.96965,228.07771 0,-127.27923"
+       id="path4876" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow2Lend)"
+       d="m 346.46202,239.18938 -52.02286,52.02286"
+       id="path5062" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow2Lend)"
+       d="m 344.46202,297.77823 -34.56988,9.26297"
+       id="path5248" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow2Lend)"
+       d="m 350.52293,355.35693 -67.3817,-38.90285"
+       id="path5434" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:4, 4;stroke-dashoffset:0;marker-end:url(#Arrow2Lend)"
+       d="m 443.45697,240.19954 76.50448,44.16988"
+       id="path5620" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:4, 4;stroke-dashoffset:0;marker-end:url(#Arrow2Lend)"
+       d="m 445.47727,300.80869 37.37565,0"
+       id="path5806" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:4, 4;stroke-dashoffset:0;marker-end:url(#Arrow2Lend)"
+       d="m 433.35544,355.35693 83.87762,-48.42677"
+       id="path5992" />
+  </g>
+</svg>
