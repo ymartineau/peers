@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="527"
+   height="255"
+   id="svg3949"
+   version="1.1"
+   inkscape:version="0.47 r22583"
+   sodipodi:docname="sip_syntax_encoding.svg"
+   inkscape:export-filename="/media/data/peers/doc/docbook/sip_syntax_encoding.png"
+   inkscape:export-xdpi="90"
+   inkscape:export-ydpi="90">
+  <defs
+     id="defs3951">
+    <marker
+       inkscape:stockid="DiamondLend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="DiamondLend"
+       style="overflow:visible">
+      <path
+         id="path4665"
+         d="M 0,-7.0710768 -7.0710894,0 0,7.0710589 7.0710462,0 0,-7.0710768 z"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;marker-start:none"
+         transform="matrix(0.8,0,0,0.8,-5.6,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Lend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow1Lend"
+       style="overflow:visible">
+      <path
+         id="path4570"
+         d="M 0,0 5,-5 -12.5,0 5,5 0,0 z"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;marker-start:none"
+         transform="matrix(-0.8,0,0,-0.8,-10,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="EmptyTriangleOutL"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="EmptyTriangleOutL"
+       style="overflow:visible">
+      <path
+         id="path4728"
+         d="m 5.77,0 -8.65,5 0,-10 8.65,5 z"
+         style="fill:#ffffff;fill-rule:evenodd;stroke:#000000;stroke-width:1pt;marker-start:none"
+         transform="matrix(0.8,0,0,0.8,-4.8,0)" />
+    </marker>
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 526.18109 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="744.09448 : 526.18109 : 1"
+       inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
+       id="perspective3957" />
+    <inkscape:perspective
+       id="perspective3990"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1"
+     inkscape:cx="347.95944"
+     inkscape:cy="87.463525"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="995"
+     inkscape:window-height="821"
+     inkscape:window-x="437"
+     inkscape:window-y="25"
+     inkscape:window-maximized="0" />
+  <metadata
+     id="metadata3954">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Calque 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-27.5,-84.862183)">
+    <g
+       id="g3965"
+       transform="translate(-14,5)">
+      <text
+         id="text3959"
+         y="100.36218"
+         x="111"
+         style="font-size:14px;font-style:italic;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Charter Italic"
+         xml:space="preserve"><tspan
+           y="100.36218"
+           x="111"
+           id="tspan3961"
+           sodipodi:role="line">SipMessage</tspan></text>
+      <rect
+         rx="0"
+         ry="15"
+         y="81.362183"
+         x="97"
+         height="30"
+         width="111"
+         id="rect3963"
+         style="fill:none;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+    </g>
+    <g
+       id="g4004"
+       transform="translate(-20,-5)">
+      <text
+         id="text3970"
+         y="186.36218"
+         x="60"
+         style="font-size:14px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+         xml:space="preserve"><tspan
+           y="186.36218"
+           x="60"
+           id="tspan3972"
+           sodipodi:role="line">SipRequest</tspan></text>
+      <rect
+         rx="0"
+         ry="14.5"
+         y="167.36218"
+         x="48"
+         height="29"
+         width="104"
+         id="rect3980"
+         style="fill:none;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+    </g>
+    <g
+       id="g4009"
+       transform="translate(-63,-3)">
+      <text
+         id="text3974"
+         y="185.36218"
+         x="232"
+         style="font-size:14px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+         xml:space="preserve"><tspan
+           y="185.36218"
+           x="232"
+           id="tspan3976"
+           sodipodi:role="line">SipResponse</tspan></text>
+      <rect
+         rx="0"
+         ry="14.5"
+         y="165.86218"
+         x="224"
+         height="29"
+         width="104"
+         id="rect3980-2"
+         style="fill:none;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+    </g>
+    <g
+       id="g5966"
+       transform="translate(0,-3)">
+      <text
+         id="text4014"
+         y="109.36218"
+         x="316"
+         style="font-size:14px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+         xml:space="preserve"><tspan
+           y="109.36218"
+           x="316"
+           id="tspan4016"
+           sodipodi:role="line">SipHeaders</tspan></text>
+      <rect
+         rx="0"
+         ry="14.5"
+         y="88.362183"
+         x="303"
+         height="32"
+         width="110"
+         id="rect4038"
+         style="fill:none;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+    </g>
+    <g
+       id="g5971"
+       transform="translate(-2.5,0)">
+      <text
+         id="text4018"
+         y="184.36218"
+         x="325"
+         style="font-size:14px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+         xml:space="preserve"><tspan
+           y="184.36218"
+           x="325"
+           id="tspan4020"
+           sodipodi:role="line">SipHeader</tspan></text>
+      <rect
+         rx="0"
+         ry="14.5"
+         y="162.36218"
+         x="311"
+         height="31"
+         width="99"
+         id="rect4040"
+         style="fill:none;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+    </g>
+    <g
+       id="g5976">
+      <text
+         id="text4022"
+         y="261.36218"
+         x="184"
+         style="font-size:14px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+         xml:space="preserve"><tspan
+           y="261.36218"
+           x="184"
+           id="tspan4024"
+           sodipodi:role="line">SipHeaderFieldName</tspan></text>
+      <rect
+         rx="0"
+         ry="14.5"
+         y="240.36218"
+         x="176"
+         height="32"
+         width="163"
+         id="rect4044"
+         style="fill:none;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+    </g>
+    <g
+       id="g5981"
+       transform="translate(6,0)">
+      <text
+         id="text4026"
+         y="264.36218"
+         x="382"
+         style="font-size:14px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+         xml:space="preserve"><tspan
+           y="264.36218"
+           x="382"
+           id="tspan4028"
+           sodipodi:role="line">SipHeaderFieldValue</tspan></text>
+      <rect
+         rx="0"
+         ry="14.5"
+         y="243.36218"
+         x="370"
+         height="31"
+         width="163"
+         id="rect4048"
+         style="fill:none;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+    </g>
+    <g
+       id="g5986">
+      <text
+         id="text4030"
+         y="331.36218"
+         x="369"
+         style="font-size:14px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+         xml:space="preserve"><tspan
+           y="331.36218"
+           x="369"
+           id="tspan4032"
+           sodipodi:role="line">SipHeaderFieldMultiValue</tspan></text>
+      <rect
+         rx="0"
+         ry="12.5"
+         y="311.36218"
+         x="361"
+         height="28"
+         width="193"
+         id="rect4050"
+         style="fill:none;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+    </g>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)"
+       d="m 91.235099,162.36218 35.642381,-46"
+       id="path4052"
+       inkscape:connector-type="polyline"
+       inkscape:connection-start="#g4004"
+       inkscape:connection-end="#g3965" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)"
+       d="m 198.78618,162.86218 -45.58223,-46.5"
+       id="path5200"
+       inkscape:connector-type="polyline"
+       inkscape:connection-start="#g4009"
+       inkscape:connection-end="#g3965" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#DiamondLend)"
+       d="m 303,101.36218 -109,0"
+       id="path6181"
+       inkscape:connector-type="polyline"
+       inkscape:connection-start="#g5966"
+       inkscape:connection-end="#g3965" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#DiamondLend)"
+       d="m 358,162.36218 0,-45"
+       id="path6371"
+       inkscape:connector-type="polyline"
+       inkscape:connection-start="#g5971"
+       inkscape:connection-end="#g5966" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#DiamondLend)"
+       d="m 277.98408,240.36218 60.17197,-47"
+       id="path6561"
+       inkscape:connector-type="polyline"
+       inkscape:connection-start="#g5976"
+       inkscape:connection-end="#g5971" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#DiamondLend)"
+       d="m 438.45988,243.36218 -61.41976,-50"
+       id="path6751"
+       inkscape:connector-type="polyline"
+       inkscape:connection-start="#g5981"
+       inkscape:connection-end="#g5971" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)"
+       d="m 457.5,311.36218 0,-37"
+       id="path6943"
+       inkscape:connector-type="polyline"
+       inkscape:connection-start="#g5986"
+       inkscape:connection-end="#g5981" />
+  </g>
+</svg>

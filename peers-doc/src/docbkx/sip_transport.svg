@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="388.89859"
+   height="174.72592"
+   id="svg7342"
+   version="1.1"
+   inkscape:version="0.47 r22583"
+   sodipodi:docname="sip_transport.svg"
+   inkscape:export-filename="/media/data/peers/doc/docbook/sip_transport.png"
+   inkscape:export-xdpi="90"
+   inkscape:export-ydpi="90">
+  <defs
+     id="defs7344">
+    <marker
+       inkscape:stockid="Arrow1Lend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow1Lend"
+       style="overflow:visible">
+      <path
+         id="path4570"
+         d="M 0,0 5,-5 -12.5,0 5,5 0,0 z"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;marker-start:none"
+         transform="matrix(-0.8,0,0,-0.8,-10,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="DiamondLend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="DiamondLend"
+       style="overflow:visible">
+      <path
+         id="path4665"
+         d="M 0,-7.0710768 -7.0710894,0 0,7.0710589 7.0710462,0 0,-7.0710768 z"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;marker-start:none"
+         transform="matrix(0.8,0,0,0.8,-5.6,0)" />
+    </marker>
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 526.18109 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="744.09448 : 526.18109 : 1"
+       inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
+       id="perspective7350" />
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.98994949"
+     inkscape:cx="114.60307"
+     inkscape:cy="-0.30158854"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1440"
+     inkscape:window-height="825"
+     inkscape:window-x="0"
+     inkscape:window-y="25"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata7347">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Calque 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-61.119305,-90.19696)">
+    <g
+       id="g7382">
+      <text
+         id="text7352"
+         y="108.8797"
+         x="161.6244"
+         style="font-size:14px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+         xml:space="preserve"><tspan
+           y="108.8797"
+           x="161.6244"
+           id="tspan7354"
+           sodipodi:role="line">TransportManager</tspan></text>
+      <rect
+         y="90.69696"
+         x="150.51273"
+         height="27.274118"
+         width="150.51273"
+         id="rect7372"
+         style="fill:none;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+    </g>
+    <g
+       id="g7387">
+      <text
+         id="text7356"
+         y="178.58023"
+         x="83.635582"
+         style="font-size:14px;font-style:italic;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Charter Italic"
+         xml:space="preserve"><tspan
+           y="178.58023"
+           x="83.635582"
+           id="tspan7358"
+           sodipodi:role="line">MessageSender</tspan></text>
+      <rect
+         y="159.38733"
+         x="74.751289"
+         height="28.284271"
+         width="128.28937"
+         id="rect7374"
+         style="fill:none;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+    </g>
+    <g
+       id="g7397">
+      <text
+         id="text7360"
+         y="178.58023"
+         x="302.9173"
+         style="font-size:14px;font-style:italic;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans;-inkscape-font-specification:Bitstream Charter Italic"
+         xml:space="preserve"><tspan
+           y="178.58023"
+           x="302.9173"
+           id="tspan7362"
+           sodipodi:role="line">MessageReceiver</tspan></text>
+      <rect
+         y="160.39749"
+         x="292.94424"
+         height="27.274118"
+         width="141.42136"
+         id="rect7376"
+         style="fill:none;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+    </g>
+    <g
+       id="g7392">
+      <text
+         id="text7364"
+         y="251.81628"
+         x="69.700523"
+         style="font-size:14px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+         xml:space="preserve"><tspan
+           y="251.81628"
+           x="69.700523"
+           id="tspan7366"
+           sodipodi:role="line">UdpMessageSender</tspan></text>
+      <rect
+         y="233.12846"
+         x="61.619305"
+         height="29.294424"
+         width="155.56349"
+         id="rect7378"
+         style="fill:none;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+    </g>
+    <g
+       id="g7402">
+      <text
+         id="text7368"
+         y="251.81628"
+         x="288.98224"
+         style="font-size:14px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+         xml:space="preserve"><tspan
+           y="251.81628"
+           x="288.98224"
+           id="tspan7370"
+           sodipodi:role="line">UdpMessageReceiver</tspan></text>
+      <rect
+         y="232.09801"
+         x="279.81226"
+         height="32.324883"
+         width="169.70563"
+         id="rect7380"
+         style="fill:none;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0" />
+    </g>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#DiamondLend)"
+       d="m 156.65106,159.38733 51.99705,-41.41625"
+       id="path7407"
+       inkscape:connector-type="polyline"
+       inkscape:connection-start="#g7387"
+       inkscape:connection-end="#g7382" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#DiamondLend)"
+       d="M 336.67726,160.39749 252.74675,117.97108"
+       id="path8105"
+       inkscape:connector-type="polyline"
+       inkscape:connection-start="#g7397"
+       inkscape:connection-end="#g7382" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)"
+       d="M 139.30141,233.12846 138.99218,187.6716"
+       id="path8291"
+       inkscape:connector-type="polyline"
+       inkscape:connection-start="#g7392"
+       inkscape:connection-end="#g7387" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)"
+       d="m 364.44511,232.09801 -0.6046,-44.4264"
+       id="path8481"
+       inkscape:connector-type="polyline"
+       inkscape:connection-start="#g7402"
+       inkscape:connection-end="#g7397" />
+  </g>
+</svg>

@@ -17,6 +17,7 @@
   <modules>
     <module>peers-lib</module>
     <module>peers-gui</module>
+    <module>peers-doc</module>
   </modules>
 
 </project>

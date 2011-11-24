@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="479.30722"
+   height="120.36483"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.47 r22583"
+   sodipodi:docname="pipes.svg"
+   inkscape:export-filename="/media/data/peers/doc/docbook/pipes.png"
+   inkscape:export-xdpi="90"
+   inkscape:export-ydpi="90">
+  <defs
+     id="defs4">
+    <marker
+       inkscape:stockid="Arrow1Lend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow1Lend"
+       style="overflow:visible">
+      <path
+         id="path3747"
+         d="M 0,0 5,-5 -12.5,0 5,5 0,0 z"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;marker-start:none"
+         transform="matrix(-0.8,0,0,-0.8,-10,0)" />
+    </marker>
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 526.18109 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="744.09448 : 526.18109 : 1"
+       inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
+       id="perspective10" />
+    <inkscape:perspective
+       id="perspective3647"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective3684"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective3715"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <inkscape:perspective
+       id="perspective4197"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <marker
+       inkscape:stockid="Arrow1Lend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow1Lend-5"
+       style="overflow:visible">
+      <path
+         id="path3747-3"
+         d="M 0,0 5,-5 -12.5,0 5,5 0,0 z"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt;marker-start:none"
+         transform="matrix(-0.8,0,0,-0.8,-10,0)" />
+    </marker>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.98994949"
+     inkscape:cx="254.06784"
+     inkscape:cy="45.71548"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1440"
+     inkscape:window-height="825"
+     inkscape:window-x="0"
+     inkscape:window-y="25"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Calque 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-47.482253,-89.019981)">
+    <text
+       xml:space="preserve"
+       style="font-size:14px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+       x="145.46196"
+       y="99.788322"
+       id="text2820"
+       inkscape:export-filename="/media/data/peers/doc/documentation-0.4/pipes.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         sodipodi:role="line"
+         id="tspan2822"
+         x="145.46196"
+         y="99.788322"
+         style="font-size:12px">rawDataOutput</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:14px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+       x="289.91376"
+       y="97.768028"
+       id="text2824"
+       inkscape:export-filename="/media/data/peers/doc/documentation-0.4/pipes.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         sodipodi:role="line"
+         id="tspan2826"
+         x="289.91376"
+         y="97.768028"
+         style="font-size:12px">rawDataInput</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:14px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+       x="161.6244"
+       y="176.55994"
+       id="text2832"
+       inkscape:export-filename="/media/data/peers/doc/documentation-0.4/pipes.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         sodipodi:role="line"
+         id="tspan2834"
+         x="161.6244"
+         y="176.55994"
+         style="font-size:12px">encodedDataOutput</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:14px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+       x="312.13715"
+       y="177.57007"
+       id="text2836"
+       inkscape:export-filename="/media/data/peers/doc/documentation-0.4/pipes.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
+         sodipodi:role="line"
+         id="tspan2838"
+         x="312.13715"
+         y="177.57007"
+         style="font-size:12px">encodedDataInput</tspan></text>
+    <g
+       id="g3622"
+       transform="translate(-20.203051,-7.0710678)"
+       inkscape:export-filename="/media/data/peers/doc/documentation-0.4/pipes.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <text
+         id="text2816"
+         y="128.0726"
+         x="85.862968"
+         style="font-size:14px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+         xml:space="preserve"><tspan
+           y="128.0726"
+           x="85.862968"
+           id="tspan2818"
+           sodipodi:role="line">Capture</tspan></text>
+      <rect
+         style="fill:none;stroke:#000000;stroke-opacity:1"
+         y="110.90001"
+         x="78.791901"
+         height="25.253815"
+         width="68.690376"
+         id="rect2844" />
+    </g>
+    <g
+       id="g3627"
+       transform="translate(-101.01525,-1.0101525)"
+       inkscape:export-filename="/media/data/peers/doc/documentation-0.4/pipes.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <text
+         id="text2828"
+         y="119.99138"
+         x="499.01535"
+         style="font-size:14px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+         xml:space="preserve"><tspan
+           y="119.99138"
+           x="499.01535"
+           id="tspan2830"
+           sodipodi:role="line">xxxEncoder</tspan></text>
+      <rect
+         y="103.82894"
+         x="490.93414"
+         height="25.253813"
+         width="100.0051"
+         id="rect3618"
+         style="fill:none;stroke:#000000;stroke-opacity:1" />
+    </g>
+    <g
+       id="g3632"
+       transform="translate(-47.47717,4.0406102)"
+       inkscape:export-filename="/media/data/peers/doc/documentation-0.4/pipes.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <text
+         id="text2840"
+         y="196.76299"
+         x="492.95444"
+         style="font-size:14px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+         xml:space="preserve"><tspan
+           y="196.76299"
+           x="492.95444"
+           id="tspan2842"
+           sodipodi:role="line">RtpSender</tspan></text>
+      <rect
+         y="177.57008"
+         x="485.88336"
+         height="27.274118"
+         width="87.88327"
+         id="rect3620"
+         style="fill:none;stroke:#000000;stroke-opacity:1" />
+    </g>
+    <g
+       id="g3661"
+       transform="translate(-68.690373,-15.152289)"
+       inkscape:export-filename="/media/data/peers/doc/documentation-0.4/pipes.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <path
+         id="path3637"
+         d="m 236.3757,125.04215 173.74623,0"
+         style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+      <path
+         id="path3637-7"
+         d="m 235.36554,137.16398 173.74623,0"
+         style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    </g>
+    <g
+       id="g3627-8"
+       transform="translate(-442.95189,76.266519)"
+       inkscape:export-filename="/media/data/peers/doc/documentation-0.4/pipes.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <text
+         id="text2828-7"
+         y="119.99138"
+         x="499.01535"
+         style="font-size:14px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
+         xml:space="preserve"><tspan
+           y="119.99138"
+           x="499.01535"
+           id="tspan2830-4"
+           sodipodi:role="line">xxxEncoder</tspan></text>
+      <rect
+         y="103.82894"
+         x="490.93414"
+         height="25.253813"
+         width="100.0051"
+         id="rect3618-9"
+         style="fill:none;stroke:#000000;stroke-opacity:1" />
+    </g>
+    <g
+       id="g3661-3"
+       transform="translate(-35.860413,62.629454)"
+       inkscape:export-filename="/media/data/peers/doc/documentation-0.4/pipes.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
+      <path
+         id="path3637-77"
+         d="m 236.3757,125.04215 173.74623,0"
+         style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+      <path
+         id="path3637-7-2"
+         d="m 235.36554,137.16398 173.74623,0"
+         style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1" />
+    </g>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)"
+       d="m 126.26907,114.96093 40.4061,0"
+       id="path3739"
+       inkscape:export-filename="/media/data/peers/doc/documentation-0.4/pipes.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend-5)"
+       d="m 339.41126,114.94062 49.49747,0"
+       id="path4217"
+       inkscape:export-filename="/media/data/peers/doc/documentation-0.4/pipes.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend-5)"
+       d="m 148.49242,193.73252 51.51778,0"
+       id="path4405"
+       inkscape:export-filename="/media/data/peers/doc/documentation-0.4/pipes.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend-5)"
+       d="m 372.74629,193.73252 63.63961,0"
+       id="path4593"
+       inkscape:export-filename="/media/data/peers/doc/documentation-0.4/pipes.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
+  </g>
+</svg>
