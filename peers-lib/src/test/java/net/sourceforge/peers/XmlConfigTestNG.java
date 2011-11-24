@@ -30,13 +30,11 @@ import org.testng.annotations.Test;
 
 public class XmlConfigTestNG {
 
-    public static final String TEST_CONFIG_FILE =
-        "test/net/sourceforge/peers/configTest.xml";
-
     @Test
     public void testSave() throws SipUriSyntaxException, UnknownHostException {
+        String fileName = getClass().getResource("configTest.xml").getFile();
         Logger logger = new Logger(null);
-        Config config = new XmlConfig(TEST_CONFIG_FILE, logger);
+        Config config = new XmlConfig(fileName, logger);
         InetAddress localHost = InetAddress.getLocalHost();
         String userPart = "alice";
         String domain = "sourceforge.net";
@@ -56,7 +54,7 @@ public class XmlConfigTestNG {
         config.setMediaDebug(mediaDebug);
         config.setRtpPort(rtpPort);
         config.save();
-        config = new XmlConfig(TEST_CONFIG_FILE, logger);
+        config = new XmlConfig(fileName, logger);
         assert localHost.equals(config.getLocalInetAddress());
         assert userPart.equals(config.getUserPart());
         assert domain.equals(config.getDomain());

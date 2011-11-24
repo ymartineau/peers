@@ -53,7 +53,9 @@ public class Logger {
             networkWriter = new PrintWriter(new BufferedWriter(
                     new FileWriter(peersHome + NETWORK_FILE)));
         } catch (IOException e) {
-            System.err.println(e);
+            System.out.println("logging to stdout");
+            logWriter = new PrintWriter(System.out);
+            networkWriter = new PrintWriter(System.out);
         }
         logMutex = new Object();
         networkMutex = new Object();
