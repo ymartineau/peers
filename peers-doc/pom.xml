@@ -7,8 +7,6 @@
   <version>0.5-SNAPSHOT</version>
   <packaging>jar</packaging>
 
-  <name>Peers documentation</name>
-
   <build>
     <plugins>
       <plugin>

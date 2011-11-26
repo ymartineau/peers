@@ -1,0 +1,40 @@
+Maven
+
+build lifecycles:
+ - default
+ - clean
+ - site
+
+1 lifecycle: n phases
+
+default lifecycle main phases:
+ - validate
+ - compile
+ - test
+ - package
+ - integration-test
+ - verify
+ - install
+ - deploy
+
+calling one phase automatically calls all previous phases.
+
+1 phase: n goals
+
+goals are independant tasks that can be bound to a phase or not
+
+packaging defines the way goals and phases associated:
+
+jar packaging:
+ - process-resources: resources:resources
+ - compile: compiler:compile
+ - package: jar:jar
+ - ...
+
+plugins can tweak the way goals and phases are associated and can add new goals.
+Goals executions defined by packaging are invoked first, then goals defined in
+plugins.
+
+In plugins, goals to be invoked must be declared explicitly. Nevertheless, goals
+are automatically bound to a default phase. This default goal / phase
+association can be modified in plugin definition.
