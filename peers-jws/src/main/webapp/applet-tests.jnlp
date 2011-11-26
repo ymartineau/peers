@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jnlp spec="1.0+" codebase="" href="">
+    <information>
+        <title>Peers Java Web Start</title>
+        <vendor>Yohann Martineau</vendor>
+    </information>
+    <security>
+       <all-permissions/>
+    </security>
+    <resources>
+        <j2se version="1.6+"
+              href="http://java.sun.com/products/autodl/j2se" />
+        <jar href="peers-jws-with-dependencies.jar" main="true" />
+
+    </resources>
+     <application-desc 
+         name="Peers"
+         main-class="net.sourceforge.peers.javawebstart.JavaWebStart"
+         width="320"
+         height="240"/>
+     <update check="background"/>
+</jnlp>
