@@ -14,7 +14,6 @@
   <modules>
     <module>peers-doc</module>
     <module>peers-gui</module>
-    <!-- <module>peers-jws</module> -->
     <module>peers-lib</module>
     <module>peers-jws</module>
   </modules>

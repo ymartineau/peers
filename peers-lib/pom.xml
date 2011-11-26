@@ -30,15 +30,6 @@
           <includes>
             <include>**/*TestNG.java</include>
           </includes>
-          <!--
-          <suiteXmlFiles>
-            <suiteXmlFile>src/test/resources/misc.testng.xml</suiteXmlFile>
-            <suiteXmlFile>src/test/resources/nat.testng.xml</suiteXmlFile>
-            <suiteXmlFile>src/test/resources/rtp.testng.xml</suiteXmlFile>
-            <suiteXmlFile>src/test/resources/sdp.testng.xml</suiteXmlFile>
-            <suiteXmlFile>src/test/resources/sip.testng.xml</suiteXmlFile>
-          </suiteXmlFiles>
-          -->
         </configuration>
       </plugin>
     </plugins>
