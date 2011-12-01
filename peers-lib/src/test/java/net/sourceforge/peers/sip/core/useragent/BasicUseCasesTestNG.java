@@ -43,7 +43,7 @@ public class BasicUseCasesTestNG {
 
     @BeforeTest
     public void init() throws SocketException, InterruptedException {
-        String prefix = "resources/test-user-";
+        String prefix = "src/test/resources/test-user-";
         String testUserHome = prefix + "1";
         Logger logger = new Logger(testUserHome);
         
