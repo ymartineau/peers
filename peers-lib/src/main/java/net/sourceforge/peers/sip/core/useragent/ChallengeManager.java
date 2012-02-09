@@ -24,6 +24,7 @@ import java.io.PrintStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import java.util.UUID;
 import net.sourceforge.peers.Config;
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.RFC2617;
@@ -51,6 +52,11 @@ public class ChallengeManager implements MessageInterceptor {
     private String requestUri;
     private String digest;
     private String profileUri;
+    private String qop;
+    private String cnonce;
+    
+    private static volatile int nonceCount = 1;
+    private String nonceCountHex;
 
     private Config config;
     private Logger logger;
@@ -105,7 +111,7 @@ public class ChallengeManager implements MessageInterceptor {
 
     public void handleChallenge(SipRequest sipRequest,
             SipResponse sipResponse) {
-        init();
+        init();        
         statusCode = sipResponse.getStatusCode();
         SipHeaders responseHeaders = sipResponse.getSipHeaders();
         SipHeaders requestHeaders = sipRequest.getSipHeaders();
@@ -135,8 +141,13 @@ public class ChallengeManager implements MessageInterceptor {
         realm = getParameter(RFC2617.PARAM_REALM, headerValue);
         nonce = getParameter(RFC2617.PARAM_NONCE, headerValue);
         opaque = getParameter(RFC2617.PARAM_OPAQUE, headerValue);
+        qop = getParameter(RFC2617.PARAM_QOP, headerValue);
+        if( "auth".equals(qop)) {      
+            nonceCountHex = String.format("%08X", nonceCount++);
+        }
         String method = sipRequest.getMethod();
         requestUri = sipRequest.getRequestUri().toString();
+        cnonce = UUID.randomUUID().toString();
         digest = getRequestDigest(method);
 
         // FIXME message should be copied "as is" not created anew from scratch
@@ -179,6 +190,14 @@ public class ChallengeManager implements MessageInterceptor {
         buf.append(RFC2617.DIGEST_SEPARATOR);
         buf.append(nonce);
         buf.append(RFC2617.DIGEST_SEPARATOR);
+        if("auth".equals(qop)) {      
+            buf.append(nonceCountHex);
+            buf.append(RFC2617.DIGEST_SEPARATOR);
+            buf.append(cnonce);
+            buf.append(RFC2617.DIGEST_SEPARATOR);
+            buf.append(qop);
+            buf.append(RFC2617.DIGEST_SEPARATOR);
+        }
         buf.append(ha2);
         return md5hash(buf.toString());
     }
@@ -233,6 +252,14 @@ public class ChallengeManager implements MessageInterceptor {
         appendParameter(buf, RFC2617.PARAM_URI, requestUri);
         buf.append(RFC2617.PARAM_SEPARATOR).append(" ");
         appendParameter(buf, RFC2617.PARAM_RESPONSE, digest);
+        if("auth".equals(qop)) {
+            buf.append(RFC2617.PARAM_SEPARATOR).append(" ");
+            appendParameter(buf, RFC2617.PARAM_NC, nonceCountHex);
+            buf.append(RFC2617.PARAM_SEPARATOR).append(" ");
+            appendParameter(buf, RFC2617.PARAM_CNONCE, cnonce);
+            buf.append(RFC2617.PARAM_SEPARATOR).append(" ");
+            appendParameter(buf, RFC2617.PARAM_QOP, qop);
+        }
         if (opaque != null) {
             buf.append(RFC2617.PARAM_SEPARATOR).append(" ");
             appendParameter(buf, RFC2617.PARAM_OPAQUE, opaque);
@@ -269,5 +296,5 @@ public class ChallengeManager implements MessageInterceptor {
         buf.append(value);
         buf.append(RFC2617.PARAM_VALUE_DELIMITER);
     }
-
-}
+    
+    }
