@@ -33,6 +33,10 @@ public class RFC2617 {
     public static final String PARAM_RESPONSE = "response";
     public static final String PARAM_URI      = "uri";
     public static final String PARAM_USERNAME = "username";
+    public static final String PARAM_QOP      = "qop";
+    public static final String PARAM_CNONCE   = "cnonce";
+    public static final String PARAM_NC       = "nc";
+    public static final String PARAM_ALGORITHM= "algorithm";
     
     // MISCELLANEOUS
     
