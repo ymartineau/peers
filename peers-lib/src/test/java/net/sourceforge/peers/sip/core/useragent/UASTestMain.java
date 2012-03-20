@@ -31,7 +31,7 @@ public class UASTestMain {
      */
     public static void main(String[] args) {
         try {
-            new UserAgent(null, null, new Logger(null));
+            new UserAgent(null, (String)null, new Logger(null));
         } catch (SocketException e) {
             e.printStackTrace();
         }

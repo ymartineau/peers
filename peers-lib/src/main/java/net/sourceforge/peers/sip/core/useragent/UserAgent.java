@@ -81,20 +81,31 @@ public class UserAgent {
 
     public UserAgent(SipListener sipListener, String peersHome,
             Logger logger) throws SocketException {
+        this(sipListener, null, peersHome, logger);
+    }
+
+    public UserAgent(SipListener sipListener, Config config,
+            Logger logger) throws SocketException {
+        this(sipListener, config, null, logger);
+    }
+
+    private UserAgent(SipListener sipListener, Config config, String peersHome,
+            Logger logger) throws SocketException {
         this.sipListener = sipListener;
         if (peersHome == null) {
-            this.peersHome = Utils.DEFAULT_PEERS_HOME;
-        } else {
-            this.peersHome = peersHome;
+            peersHome = Utils.DEFAULT_PEERS_HOME;
         }
+        this.peersHome = peersHome;
         if (logger == null) {
             logger = new Logger(this.peersHome);
-        } else {
-            this.logger = logger;
         }
-        config = new XmlConfig(this.peersHome + File.separator
-                + CONFIG_FILE, this.logger);
-        
+        this.logger = logger;
+        if (config == null) {
+            config = new XmlConfig(this.peersHome + File.separator
+                    + CONFIG_FILE, this.logger);
+        }
+        this.config = config;
+
         cseqCounter = 1;
         
         StringBuffer buf = new StringBuffer();

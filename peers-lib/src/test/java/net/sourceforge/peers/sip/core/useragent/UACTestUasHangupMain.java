@@ -30,7 +30,7 @@ public class UACTestUasHangupMain {
     public static void main(String[] args) {
         String requestUri;
         try {
-            UserAgent userAgent = new UserAgent(null, null, new Logger(null));
+            UserAgent userAgent = new UserAgent(null, (String)null, new Logger(null));
             requestUri = "sip:bob@" + userAgent.getConfig()
                 .getLocalInetAddress().getHostAddress() + ":6060";
             userAgent.getUac().invite(requestUri,
