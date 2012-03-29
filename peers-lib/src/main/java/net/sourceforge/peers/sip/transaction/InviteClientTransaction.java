@@ -131,7 +131,7 @@ public class InviteClientTransaction extends InviteTransaction
             logger.error("input/output error", e);
             transportError();
         }
-        
+        logger.debug("InviteClientTransaction.start");
         
         if (RFC3261.TRANSPORT_UDP.equals(transport)) {
             //start timer A with value T1 for retransmission

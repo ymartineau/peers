@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jnlp spec="1.0+" codebase="" href="">
+    <information>
+        <title>Peers javascript</title>
+        <vendor>Yohann Martineau</vendor>
+    </information>
+    <security>
+        <all-permissions/>
+    </security>
+    <resources>
+        <j2se version="1.6+"
+              href="http://java.sun.com/products/autodl/j2se" />
+        <jar href="peers-js-with-dependencies.jar" main="true" />
+    </resources>
+     <applet-desc 
+         name="Peers"
+         main-class="net.sourceforge.peers.javascript.JsUserAgent"
+         width="1"
+         height="1"/>
+     <update check="background"/>
+</jnlp>
