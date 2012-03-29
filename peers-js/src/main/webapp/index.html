@@ -1,0 +1,85 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+  <title>Peers javascript demo page</title>
+
+  <style type="text/css">
+
+  #logger {
+    border: 1px solid black;
+    height: 300px;
+    width: 450px;
+    overflow: auto;
+  }
+
+  </style>
+
+  <script type="text/javascript">
+
+  function $(id) {
+    return document.getElementById(id);
+  }
+
+  function log(message) {
+    $("logger").innerHTML += new Date() + " " + message + "<br/>";
+  }
+
+  // server functions
+
+  function registering(sipRequest) {
+    log("registering");
+  }
+
+  function registerSuccessful(sipResponse) {
+    log("registerSuccessful " + sipResponse.getStatusCode());
+  }
+
+  function registerFailed(sipResponse) {
+    log("registerFailed " + sipResponse);
+  }
+
+  function remoteHangup(sipRequest) {
+    log("remoteHangup")
+  }
+
+  function ringing(sipResponse) {
+    log("ringing");
+  }
+
+  function calleePickup(sipResponse) {
+    log("calleePickup");
+  }
+
+  function error(sipResponse) {
+    log("error " + sipResponse);
+  }
+
+  // client functions
+
+  function call() {
+    log("call");
+    $("peers").invite("sip:1001@192.168.1.92");
+  }
+
+  </script>
+
+</head>
+
+<body>
+    <script src="deployJava.js"></script>
+    <script type="text/javascript">
+        var attributes = { id:'peers', code:'net.sourceforge.peers.javascript.JsUserAgent',  width:1, height:1} ;
+        var parameters = {jnlp_href: 'applet-tests.jnlp'} ;
+        deployJava.runApplet(attributes, parameters, '1.6');
+    </script>
+    <div>
+      <a href="javascript:call();">Call</a>
+    </div>
+    <div id="logger"/>
+</body>
+
+</html>
+

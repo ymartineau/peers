@@ -45,6 +45,7 @@ public class UdpMessageSender extends MessageSender {
 
     @Override
     public synchronized void sendMessage(SipMessage sipMessage) throws IOException {
+        logger.debug("UdpMessageSender.sendMessage");
         if (sipMessage == null) {
             return;
         }
@@ -58,9 +59,16 @@ public class UdpMessageSender extends MessageSender {
 
     @Override
     public synchronized void sendBytes(byte[] bytes) throws IOException {
+        logger.debug("UdpMessageSender.sendBytes");
         DatagramPacket packet = new DatagramPacket(bytes, bytes.length,
                 inetAddress, port);
-        datagramSocket.send(packet);
+        logger.debug("UdpMessageSender.sendBytes packet created");
+        try {
+            datagramSocket.send(packet);
+        } catch (Throwable t) {
+            logger.error("throwable", new Exception(t));
+        }
+        logger.debug("UdpMessageSender.sendBytes packet sent");
     }
 
 }
