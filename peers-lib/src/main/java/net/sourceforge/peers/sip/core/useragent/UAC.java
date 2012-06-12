@@ -75,8 +75,6 @@ public class UAC {
         this.dialogManager = dialogManager;
         this.transactionManager = transactionManager;
         this.logger = logger;
-        registerCallID = Utils.generateCallID(
-                userAgent.getConfig().getLocalInetAddress());
         guiClosedCallIds = Collections.synchronizedList(new ArrayList<String>());
         profileUri = RFC3261.SIP_SCHEME + RFC3261.SCHEME_SEPARATOR
             + userAgent.getUserpart() + RFC3261.AT + userAgent.getDomain();
@@ -93,6 +91,8 @@ public class UAC {
         SipListener sipListener = userAgent.getSipListener();
         profileUri = RFC3261.SIP_SCHEME + RFC3261.SCHEME_SEPARATOR
         	+ userAgent.getUserpart() + RFC3261.AT + domain;
+        registerCallID = Utils.generateCallID(
+                userAgent.getConfig().getLocalInetAddress());
         SipRequest sipRequest = initialRequestManager.createInitialRequest(
                 requestUri, RFC3261.METHOD_REGISTER, profileUri,
                 registerCallID);
