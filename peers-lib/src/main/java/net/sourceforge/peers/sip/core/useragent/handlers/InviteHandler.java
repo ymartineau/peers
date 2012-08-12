@@ -14,13 +14,15 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008, 2009, 2010, 2011 Yohann Martineau 
+    Copyright 2007, 2008, 2009, 2010, 2011, 2012 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip.core.useragent.handlers;
 
 import java.io.IOException;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -60,6 +62,8 @@ import net.sourceforge.peers.sip.transport.TransportManager;
 
 public class InviteHandler extends DialogMethodHandler
         implements ServerTransactionUser, ClientTransactionUser {
+
+    public static final int TIMEOUT = 100;
 
     private MediaDestination mediaDestination;
     
@@ -171,19 +175,31 @@ public class InviteHandler extends DialogMethodHandler
         byte[] offerBytes = sipRequest.getBody();
         SessionDescription answer;
         try {
+            DatagramSocket datagramSocket;
+            try {
+                datagramSocket = new DatagramSocket();
+                datagramSocket.setSoTimeout(TIMEOUT);
+            } catch (SocketException e) {
+                logger.error("cannot create datagram socket ", e);
+                return;
+            }
+            userAgent.getMediaManager().setDatagramSocket(datagramSocket);
             if (offerBytes != null && contentType != null &&
                     RFC3261.CONTENT_TYPE_SDP.equals(contentType.getValue())) {
                 // create response in 200
                 try {
                     SessionDescription offer = sdpManager.parse(offerBytes);
-                    answer = sdpManager.createSessionDescription(offer);
+                    answer = sdpManager.createSessionDescription(offer,
+                            datagramSocket.getLocalPort());
                     mediaDestination = sdpManager.getMediaDestination(offer);
                 } catch (NoCodecException e) {
-                    answer = sdpManager.createSessionDescription(null);
+                    answer = sdpManager.createSessionDescription(null,
+                            datagramSocket.getLocalPort());
                 }
             } else {
                 // create offer in 200 (never tested...)
-                answer = sdpManager.createSessionDescription(null);
+                answer = sdpManager.createSessionDescription(null,
+                        datagramSocket.getLocalPort());
             }
             sipResponse.setBody(answer.toString().getBytes());
         } catch (IOException e) {
@@ -268,6 +284,7 @@ public class InviteHandler extends DialogMethodHandler
         
         dialog.receivedOrSent300To699();
         
+        userAgent.getMediaManager().setDatagramSocket(null);
 //        setChanged();
 //        notifyObservers(sipRequest);
     }
@@ -312,9 +329,19 @@ public class InviteHandler extends DialogMethodHandler
         ClientTransaction clientTransaction = transactionManager
                 .createClientTransaction(sipRequest, inetAddress,
                     port, transport, null, this);
+        DatagramSocket datagramSocket;
+        try {
+            datagramSocket = new DatagramSocket();
+            datagramSocket.setSoTimeout(TIMEOUT);
+        } catch (SocketException e) {
+            logger.error("cannot create datagram socket ", e);
+            return null;
+        }
+        userAgent.getMediaManager().setDatagramSocket(datagramSocket);
         try {
             SessionDescription sessionDescription =
-                sdpManager.createSessionDescription(null);
+                sdpManager.createSessionDescription(null,
+                        datagramSocket.getLocalPort());
             sipRequest.setBody(sessionDescription.toString().getBytes());
         } catch (IOException e) {
             logger.error(e.getMessage(), e);
@@ -365,6 +392,7 @@ public class InviteHandler extends DialogMethodHandler
         if (guiClosedCallIds.contains(callId)) {
             guiClosedCallIds.remove(callId);
         }
+        userAgent.getMediaManager().setDatagramSocket(null);
     }
 
     public void provResponseReceived(SipResponse sipResponse, Transaction transaction) {

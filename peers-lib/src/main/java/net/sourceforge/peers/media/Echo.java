@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2009, 2010 Yohann Martineau 
+    Copyright 2009, 2010, 2012 Yohann Martineau 
 */
 
 package net.sourceforge.peers.media;
@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
-import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
 
@@ -33,17 +32,16 @@ public class Echo implements Runnable {
 
     public static final int BUFFER_SIZE = 2048;
 
-    private InetAddress localAddress;
-    private int localPort;
+    private DatagramSocket datagramSocket;
     private InetAddress remoteAddress;
     private int remotePort;
     private boolean isRunning;
     private Logger logger;
 
-    public Echo(String localAddress, int localPort, String remoteAddress,
-            int remotePort, Logger logger) throws UnknownHostException {
-        this.localAddress = InetAddress.getByName(localAddress);
-        this.localPort = localPort;
+    public Echo(DatagramSocket datagramSocket,
+            String remoteAddress, int remotePort, Logger logger)
+            throws UnknownHostException {
+        this.datagramSocket = datagramSocket;
         this.remoteAddress = InetAddress.getByName(remoteAddress);
         this.remotePort = remotePort;
         this.logger = logger;
@@ -52,15 +50,6 @@ public class Echo implements Runnable {
 
     @Override
     public void run() {
-        DatagramSocket datagramSocket;
-        try {
-            datagramSocket = new DatagramSocket(localPort, localAddress);
-            datagramSocket.setSoTimeout(1000);
-        } catch (SocketException e) {
-            logger.error("cannot create datagram socket "
-                    + localAddress.getHostAddress() + ":" + localPort);
-            return;
-        }
         try {
             while (isRunning) {
                 byte[] buf = new byte[BUFFER_SIZE];
