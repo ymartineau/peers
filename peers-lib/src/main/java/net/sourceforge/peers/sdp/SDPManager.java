@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008, 2009, 2010 Yohann Martineau 
+    Copyright 2007, 2008, 2009, 2010, 2012 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sdp;
@@ -102,7 +102,8 @@ public class SDPManager {
         throw new NoCodecException();
     }
 
-    public SessionDescription createSessionDescription(SessionDescription offer)
+    public SessionDescription createSessionDescription(SessionDescription offer,
+            int localRtpPort)
             throws IOException {
         SessionDescription sessionDescription = new SessionDescription();
         sessionDescription.setUsername("user1");
@@ -137,7 +138,7 @@ public class SDPManager {
         attributes.put(RFC4566.ATTR_SENDRECV, "");
         mediaDescription.setAttributes(attributes);
         mediaDescription.setType(RFC4566.MEDIA_AUDIO);
-        mediaDescription.setPort(config.getRtpPort());
+        mediaDescription.setPort(localRtpPort);
         mediaDescription.setCodecs(codecs);
         List<MediaDescription> mediaDescriptions =
             new ArrayList<MediaDescription>();

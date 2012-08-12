@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2010, 2011 Yohann Martineau 
+    Copyright 2010, 2011, 2012 Yohann Martineau 
 */
 
 package net.sourceforge.peers.rtp;
@@ -43,8 +43,6 @@ import net.sourceforge.peers.media.SoundManager;
  */
 public class RtpSession {
 
-    public static final int TIMEOUT = 100;
-
     private InetAddress remoteAddress;
     private int remotePort;
     private DatagramSocket datagramSocket;
@@ -58,20 +56,13 @@ public class RtpSession {
     private Logger logger;
     private String peersHome;
 
-    public RtpSession(InetAddress localAddress, int localPort,
+    public RtpSession(InetAddress localAddress, DatagramSocket datagramSocket,
             boolean mediaDebug, Logger logger, String peersHome) {
         this.mediaDebug = mediaDebug;
         this.logger = logger;
         this.peersHome = peersHome;
         running = false;
-        try {
-            datagramSocket = new DatagramSocket(localPort, localAddress);
-            datagramSocket.setSoTimeout(TIMEOUT);
-        } catch (SocketException e) {
-            logger.error("cannot create datagram socket on port " + localPort,
-                    e);
-            return;
-        }
+        this.datagramSocket = datagramSocket;
         rtpListeners = new ArrayList<RtpListener>();
         rtpParser = new RtpParser(logger);
         executorService = Executors.newSingleThreadExecutor();

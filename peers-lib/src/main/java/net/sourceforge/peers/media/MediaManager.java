@@ -14,12 +14,13 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2010 Yohann Martineau 
+    Copyright 2010, 2012 Yohann Martineau 
 */
 
 package net.sourceforge.peers.media;
 
 import java.io.IOException;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
@@ -40,6 +41,7 @@ public class MediaManager {
     private RtpSession rtpSession;
     private DtmfFactory dtmfFactory;
     private Logger logger;
+    private DatagramSocket datagramSocket;
 
     public MediaManager(UserAgent userAgent, Logger logger) {
         this.userAgent = userAgent;
@@ -64,7 +66,7 @@ public class MediaManager {
                 return;
             }
             
-            rtpSession = new RtpSession(inetAddress, userAgent.getRtpPort(),
+            rtpSession = new RtpSession(inetAddress, datagramSocket,
                     userAgent.isMediaDebug(), logger, userAgent.getPeersHome());
             
             try {
@@ -110,8 +112,8 @@ public class MediaManager {
         case echo:
             Echo echo;
             try {
-                echo = new Echo(localAddress, userAgent.getRtpPort(),
-                            remoteAddress, remotePort, logger);
+                echo = new Echo(datagramSocket, remoteAddress, remotePort,
+                        logger);
             } catch (UnknownHostException e) {
                 logger.error("unknown host amongst "
                         + localAddress + " or " + remoteAddress);
@@ -150,9 +152,10 @@ public class MediaManager {
             soundManager.openAndStartLines();
             
             
-            rtpSession = new RtpSession(userAgent.getConfig()
-                    .getLocalInetAddress(), userAgent.getRtpPort(),
-                    userAgent.isMediaDebug(), logger, userAgent.getPeersHome());
+            rtpSession = new RtpSession(
+                    userAgent.getConfig().getLocalInetAddress(),
+                    datagramSocket, userAgent.isMediaDebug(), logger,
+                    userAgent.getPeersHome());
             
             try {
                 InetAddress inetAddress = InetAddress.getByName(destAddress);
@@ -193,9 +196,7 @@ public class MediaManager {
         case echo:
             Echo echo;
             try {
-                echo = new Echo(userAgent.getConfig().getLocalInetAddress()
-                            .getHostAddress(),
-                        userAgent.getRtpPort(), destAddress, destPort, logger);
+                echo = new Echo(datagramSocket, destAddress, destPort, logger);
             } catch (UnknownHostException e) {
                 logger.error("unknown host amongst "
                         + userAgent.getConfig().getLocalInetAddress()
@@ -239,6 +240,13 @@ public class MediaManager {
             captureRtpSender.stop();
             captureRtpSender = null;
         }
+        if (datagramSocket != null) {
+            datagramSocket = null;
+        }
+    }
+
+    public void setDatagramSocket(DatagramSocket datagramSocket) {
+        this.datagramSocket = datagramSocket;
     }
 
 }
