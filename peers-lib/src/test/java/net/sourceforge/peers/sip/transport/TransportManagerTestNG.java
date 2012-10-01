@@ -29,7 +29,6 @@ import java.net.UnknownHostException;
 import net.sourceforge.peers.Config;
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.media.MediaMode;
-import net.sourceforge.peers.sip.PortProvider;
 import net.sourceforge.peers.sip.syntaxencoding.SipParser;
 import net.sourceforge.peers.sip.syntaxencoding.SipParserException;
 import net.sourceforge.peers.sip.syntaxencoding.SipURI;
@@ -44,8 +43,9 @@ public class TransportManagerTestNG {
     private volatile int port;
     
     @BeforeTest
-    protected void init() throws UnknownHostException {
-        port = PortProvider.getNextPort();
+    protected void init() throws UnknownHostException, SocketException {
+        DatagramSocket datagramSocket = new DatagramSocket();
+        port = datagramSocket.getLocalPort();
         //TODO interface between transport manager and transaction manager
         Config config = new Config() {
             
@@ -106,7 +106,8 @@ public class TransportManagerTestNG {
             }
         };
         Logger logger = new Logger(null);
-        transportManager = new TransportManager(new TransactionManager(logger),
+        transportManager = new TransportManager(
+                new TransactionManager(logger),
                 config, logger);
     }
     
@@ -141,13 +142,16 @@ public class TransportManagerTestNG {
     @Test (expectedExceptions = SocketException.class)
     public void checkServerConnection()
         throws SocketException, UnknownHostException {
+        DatagramSocket datagramSocket = new DatagramSocket();
+        int localPort = datagramSocket.getLocalPort();
+        datagramSocket.close();
         try {
-            transportManager.createServerTransport("UDP", port);
+            transportManager.createServerTransport("UDP", localPort);
         } catch (IOException e) {
             e.printStackTrace();
             assert false;
         }
-        new DatagramSocket(port, InetAddress.getLocalHost());
+        new DatagramSocket(localPort, InetAddress.getLocalHost());
     }
 
     private SipMessage parse(String message) throws IOException, SipParserException {

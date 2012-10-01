@@ -56,7 +56,7 @@ public class UserAgent {
     private String peersHome;
     private Logger logger;
     private Config config;
-    
+
     private List<String> peers;
     //private List<Dialog> dialogs;
     
@@ -130,8 +130,8 @@ public class UserAgent {
         
         //transport
         
-        transportManager = new TransportManager(transactionManager, config,
-                logger);
+        transportManager = new TransportManager(transactionManager,
+                config, logger);
         
         transactionManager.setTransportManager(transportManager);
         
@@ -192,6 +192,12 @@ public class UserAgent {
                 dialogManager,
                 transactionManager,
                 transportManager);
+        try {
+            while (transportManager.getSipPort() <= 0) {
+                Thread.sleep(50);
+            }
+        } catch (InterruptedException e) {
+        }
         uac = new UAC(this,
                 initialRequestManager,
                 midDialogRequestManager,
@@ -298,7 +304,7 @@ public class UserAgent {
     }
     
     public int getSipPort() {
-        return config.getSipPort();
+        return transportManager.getSipPort();
     }
 
     public int getRtpPort() {
@@ -353,4 +359,7 @@ public class UserAgent {
         return peersHome;
     }
 
+    public TransportManager getTransportManager() {
+        return transportManager;
+    }
 }

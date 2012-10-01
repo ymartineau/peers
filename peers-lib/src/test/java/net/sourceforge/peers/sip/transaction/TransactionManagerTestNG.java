@@ -21,13 +21,14 @@ package net.sourceforge.peers.sip.transaction;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Random;
 
 import net.sourceforge.peers.Config;
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.media.MediaMode;
-import net.sourceforge.peers.sip.PortProvider;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.syntaxencoding.SipParser;
 import net.sourceforge.peers.sip.syntaxencoding.SipParserException;
@@ -43,6 +44,7 @@ import org.testng.annotations.Test;
 public class TransactionManagerTestNG {
 
     private TransactionManager transactionManager;
+    private TransportManager transportManager;
     
     @BeforeClass
     public void init() throws UnknownHostException {
@@ -69,7 +71,7 @@ public class TransactionManagerTestNG {
             }
             @Override
             public int getSipPort() {
-                return PortProvider.getNextPort();
+                return 0;
             }
             @Override
             public int getRtpPort() {
@@ -106,7 +108,7 @@ public class TransactionManagerTestNG {
                 return null;
             }
         };
-        TransportManager transportManager = new TransportManager(
+        transportManager = new TransportManager(
                 transactionManager, config, logger);
         transactionManager.setTransportManager(transportManager);
     }
@@ -117,7 +119,6 @@ public class TransactionManagerTestNG {
         String testMessage = "MESSAGE sip:bob@biloxi.com SIP/2.0\r\n" +
         "Via: \r\n" +
         "\r\n";
-        int port = PortProvider.getNextPort();
         InetAddress localHost = InetAddress.getLocalHost();
         SipRequest sipRequest = (SipRequest)parse(testMessage);
         ClientTransactionUser clientTransactionUser = new ClientTransactionUser() {
@@ -132,10 +133,15 @@ public class TransactionManagerTestNG {
             public void transactionTransportError() {
             }
         };
+        DatagramSocket datagramSocket = new DatagramSocket();
+        int port = datagramSocket.getLocalPort();
+        datagramSocket.close();
+        transportManager.setSipPort(port);
+//        int port = new Random().nextInt();
         ClientTransaction clientTransaction =
             transactionManager.createClientTransaction(sipRequest,
                     localHost,
-                    port,
+                    new Random().nextInt(65535),
                     "UDP",
                     RFC3261.BRANCHID_MAGIC_COOKIE + "dsj2J347hsd23SD",
                     clientTransactionUser);
@@ -162,9 +168,12 @@ public class TransactionManagerTestNG {
                 public void transactionFailure() {
                 }
             };
+        DatagramSocket datagramSocket = new DatagramSocket();
+        int port = datagramSocket.getLocalPort();
+        datagramSocket.close();
         ServerTransaction serverTransaction =
             transactionManager.createServerTransaction(sipResponse,
-                PortProvider.getNextPort(), "UDP", serverTransactionUser,
+                port, "UDP", serverTransactionUser,
                 sipRequest);
         assert serverTransaction != null;
         assert serverTransaction instanceof NonInviteServerTransaction;
@@ -176,7 +185,9 @@ public class TransactionManagerTestNG {
         String testMessage = "INVITE sip:bob@biloxi.com SIP/2.0\r\n" +
         "Via: \r\n" +
         "\r\n";
-        int port = PortProvider.getNextPort();
+        DatagramSocket datagramSocket = new DatagramSocket();
+        int port = datagramSocket.getLocalPort();
+        datagramSocket.close();
         InetAddress localHost = InetAddress.getLocalHost();
         SipRequest sipRequest = (SipRequest)parse(testMessage);
         ClientTransactionUser clientTransactionUser = new ClientTransactionUser() {
@@ -191,10 +202,11 @@ public class TransactionManagerTestNG {
             public void transactionTransportError() {
             }
         };
+        transportManager.setSipPort(port);
         ClientTransaction clientTransaction =
             transactionManager.createClientTransaction(sipRequest,
                     localHost,
-                    port,
+                    new Random().nextInt(65535),
                     "UDP",
                     RFC3261.BRANCHID_MAGIC_COOKIE + "dsj2J347hsd23SD",
                     clientTransactionUser);
@@ -221,9 +233,12 @@ public class TransactionManagerTestNG {
                 public void transactionFailure() {
                 }
             };
+        DatagramSocket datagramSocket = new DatagramSocket();
+        int port = datagramSocket.getLocalPort();
+        datagramSocket.close();
         ServerTransaction serverTransaction =
             transactionManager.createServerTransaction(sipResponse,
-                PortProvider.getNextPort(), "UDP", serverTransactionUser,
+                port, "UDP", serverTransactionUser,
                 sipRequest);
         assert serverTransaction != null;
         assert serverTransaction instanceof InviteServerTransaction;

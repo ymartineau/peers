@@ -69,11 +69,12 @@ public class TransportManager {
     private Hashtable<SipTransportConnection, DatagramSocket> datagramSockets;
     private Hashtable<SipTransportConnection, MessageSender> messageSenders;
     private Hashtable<SipTransportConnection, MessageReceiver> messageReceivers;
-    
+
     private TransactionManager transactionManager;
 
     private Config config;
-    
+    private int sipPort;
+
     public TransportManager(TransactionManager transactionManager,
             Config config, Logger logger) {
         sipParser = new SipParser();
@@ -125,7 +126,6 @@ public class TransportManager {
         if (myAddress == null) {
             myAddress = config.getLocalInetAddress();
         }
-        int sipPort = config.getSipPort();
 
         buf.append(myAddress.getHostAddress()); //TODO use getHostName if real DNS
         buf.append(TRANSPORT_PORT_SEP);
@@ -231,7 +231,7 @@ public class TransportManager {
         SipTransportConnection connection;
         try {
             connection = new SipTransportConnection(config.getLocalInetAddress(),
-                    config.getSipPort(), InetAddress.getByName(host),
+                    sipPort, InetAddress.getByName(host),
                     port, transport);
         } catch (UnknownHostException e) {
             logger.error("unknwon host", e);
@@ -298,6 +298,8 @@ public class TransportManager {
             //TODO use Utils.getMyAddress to create socket on appropriate NIC
             DatagramSocket datagramSocket = datagramSockets.get(conn);
             if (datagramSocket == null) {
+                logger.debug("new DatagramSocket(" + conn.getLocalPort()
+                        + ", " + conn.getLocalInetAddress());
                 datagramSocket = new DatagramSocket(conn.getLocalPort(),
                         conn.getLocalInetAddress());
                 datagramSocket.setSoTimeout(SOCKET_TIMEOUT);
@@ -314,18 +316,19 @@ public class TransportManager {
         messageSenders.put(conn, messageSender);
         //when a mesage is sent over a transport, the transport layer
         //must also be able to receive messages on this transport
-        SipTransportConnection serverConn = new SipTransportConnection(
-                config.getLocalInetAddress(), messageSender.getLocalPort(), null,
-                SipTransportConnection.EMPTY_PORT,
-                conn.getTransport());
         
 //        MessageReceiver messageReceiver =
-//            createMessageReceiver(serverConn, socket);
-        MessageReceiver messageReceiver = messageReceivers.get(serverConn);
+//            createMessageReceiver(conn, socket);
+        MessageReceiver messageReceiver = messageReceivers.get(conn);
         if (messageReceiver == null) {
-        	messageReceiver = createMessageReceiver(serverConn, socket);
+        	messageReceiver = createMessageReceiver(conn, socket);
         	new Thread(messageReceiver).start();
         }
+//        if (RFC3261.TRANSPORT_UDP.equalsIgnoreCase(conn.getTransport())) {
+//            messageSender = new UdpMessageSender(conn.getRemoteInetAddress(),
+//                    conn.getRemotePort(), (DatagramSocket)socket, config, logger);
+//            messageSenders.put(conn, messageSender);
+//        }
         return messageSender;
     }
     
@@ -349,6 +352,8 @@ public class TransportManager {
         if (RFC3261.TRANSPORT_UDP.equals(conn.getTransport())) {
             DatagramSocket datagramSocket = datagramSockets.get(conn);
             if (datagramSocket == null) {
+                logger.debug("new DatagramSocket(" + conn.getLocalPort()
+                        + ", " + conn.getLocalInetAddress());
                 datagramSocket = new DatagramSocket(conn.getLocalPort(),
                         conn.getLocalInetAddress());
                 datagramSocket.setSoTimeout(SOCKET_TIMEOUT);
@@ -359,7 +364,8 @@ public class TransportManager {
                             conn.getRemoteInetAddress(),
                             conn.getRemotePort(),
                             conn.getTransport());
-                    config.setSipPort(datagramSocket.getLocalPort());
+                    sipPort = datagramSocket.getLocalPort();
+                    //config.setSipPort(datagramSocket.getLocalPort());
                 }
                 datagramSockets.put(sipTransportConnection, datagramSocket);
                 logger.info("added datagram socket " + sipTransportConnection);
@@ -409,6 +415,14 @@ public class TransportManager {
     public MessageSender getMessageSender(
             SipTransportConnection sipTransportConnection) {
         return messageSenders.get(sipTransportConnection);
+    }
+
+    public int getSipPort() {
+        return sipPort;
+    }
+
+    public void setSipPort(int sipPort) {
+        this.sipPort = sipPort;
     }
 
 }

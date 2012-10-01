@@ -23,10 +23,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.util.Enumeration;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -114,103 +111,70 @@ public class XmlConfig implements Config {
             return;
         }
         Element documentElement = document.getDocumentElement();
-        Node node = getFirstChild(documentElement, "network");
-        node = getFirstChild(node, "interfaces");
-        node = getFirstChild(node, "interface");
-        node = getFirstChild(node, "address");
-        ipAddressNode = node;
-        if (node != null && !"".equals(node.getTextContent().trim())) {
-            String address = node.getTextContent();
-            try {
+        ipAddressNode = getFirstChild(documentElement, "ipAddress");
+        String address = ipAddressNode.getTextContent();
+        try {
+            if (isNullOrEmpty(ipAddressNode)) {
+                localInetAddress = InetAddress.getLocalHost();
+            } else {
                 localInetAddress = InetAddress.getByName(address);
-            } catch (UnknownHostException e) {
-                logger.error("unknown host: " + address, e);
             }
-        } else {
-            try {
-                boolean found = false;
-                Enumeration<NetworkInterface> e = NetworkInterface
-                        .getNetworkInterfaces();
-                while (e.hasMoreElements() && !found) {
-                    NetworkInterface networkInterface = e.nextElement();
-                    Enumeration<InetAddress> f = networkInterface
-                            .getInetAddresses();
-                    while (f.hasMoreElements() && !found) {
-                        InetAddress inetAddress = f.nextElement();
-                        if (inetAddress.isSiteLocalAddress()) {
-                            this.localInetAddress = inetAddress;
-                            found = true;
-                        }
-                    }
-                }
-            } catch (SocketException e) {
-                logger.error("socket exception", e);
-            }
-            if (localInetAddress == null) {
-                logger.error("IP address not found, configure it manually");
-            }
+        } catch (UnknownHostException e) {
+            logger.error("unknown host: " + address, e);
         }
-        node = getFirstChild(documentElement, "sip");
-        Node parent = getFirstChild(node, "profile");
-        node = getFirstChild(parent, "userpart");
-        userPartNode = node;
-        if (node != null && !"".equals(node.getTextContent().trim())) {
-            userPart = node.getTextContent();
-        } else {
+        userPartNode = getFirstChild(documentElement, "userPart");
+        if (isNullOrEmpty(userPartNode)) {
             logger.error("userpart not found in configuration file");
-        }
-        node = getFirstChild(parent, "domain");
-        domainNode = node;
-        if (node != null && !"".equals(node.getTextContent().trim())) {
-            domain = node.getTextContent();
         } else {
+            userPart = userPartNode.getTextContent();
+        }
+        domainNode = getFirstChild(documentElement, "domain");
+        if (isNullOrEmpty(domainNode)) {
             logger.error("domain not found in configuration file");
+        } else {
+            domain = domainNode.getTextContent();
         }
-        node = getFirstChild(parent, "password");
-        passwordNode = node;
-        if (node != null && !"".equals(node.getTextContent().trim())) {
-            password = node.getTextContent();
+        passwordNode = getFirstChild(documentElement, "password");
+        if (!isNullOrEmpty(passwordNode)) {
+            password = passwordNode.getTextContent();
         }
-        node = getFirstChild(parent, "outboundProxy");
-        outboundProxyNode = node;
-        if (node != null && !"".equals(node.getTextContent().trim())) {
-            String uri = node.getTextContent();
+        outboundProxyNode = getFirstChild(documentElement, "outboundProxy");
+        if (!isNullOrEmpty(outboundProxyNode)) {
+            String uri = outboundProxyNode.getTextContent();
             try {
                 outboundProxy = new SipURI(uri);
             } catch (SipUriSyntaxException e) {
                 logger.error("sip uri syntax exception: " + uri, e);
             }
         }
-        node = getFirstChild(parent, "port");
-        sipPortNode = node;
-        if (node != null && !"".equals(node.getTextContent().trim())) {
-            sipPort = Integer.parseInt(node.getTextContent());
-        } else {
+        sipPortNode = getFirstChild(documentElement, "sipPort");
+        if (isNullOrEmpty(sipPortNode)) {
             sipPort = RFC3261.TRANSPORT_DEFAULT_PORT;
-        }
-        parent = getFirstChild(documentElement, "codecs");
-        node = getFirstChild(parent, "mediaMode");
-        mediaModeNode = node;
-        if (node != null && !"".equals(node.getTextContent().trim())) {
-            mediaMode = MediaMode.valueOf(node.getTextContent());
         } else {
+            sipPort = Integer.parseInt(sipPortNode.getTextContent());
+        }
+        mediaModeNode = getFirstChild(documentElement, "mediaMode");
+        if (isNullOrEmpty(mediaModeNode)) {
             mediaMode = MediaMode.captureAndPlayback;
-        }
-        node = getFirstChild(parent, "mediaDebug");
-        mediaDebugNode = node;
-        if (node != null && !"".equals(node.getTextContent().trim())) {
-            mediaDebug = Boolean.parseBoolean(node.getTextContent());
         } else {
+            mediaMode = MediaMode.valueOf(mediaModeNode.getTextContent());
+        }
+        mediaDebugNode = getFirstChild(documentElement, "mediaDebug");
+        if (isNullOrEmpty(mediaDebugNode)) {
             mediaDebug = false;
-        }
-        node = getFirstChild(documentElement, "rtp");
-        node = getFirstChild(node, "port");
-        rtpPortNode = node;
-        if (node != null && !"".equals(node.getTextContent().trim())) {
-            rtpPort = Integer.parseInt(node.getTextContent());
         } else {
-            rtpPort = RTP_DEFAULT_PORT;
+            mediaDebug = Boolean.parseBoolean(mediaDebugNode.getTextContent());
         }
+        rtpPortNode = getFirstChild(documentElement, "rtpPort");
+        if (isNullOrEmpty(rtpPortNode)) {
+            rtpPort = RTP_DEFAULT_PORT;
+        } else {
+            rtpPort = Integer.parseInt(rtpPortNode.getTextContent());
+        }
+    }
+
+    private boolean isNullOrEmpty(Node node) {
+        return node == null || "".equals(node.getTextContent().trim());
     }
 
     private Node getFirstChild(Node parent, String childName) {

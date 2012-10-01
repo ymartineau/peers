@@ -175,9 +175,14 @@ public class InviteHandler extends DialogMethodHandler
         byte[] offerBytes = sipRequest.getBody();
         SessionDescription answer;
         try {
+            int rtpPort = userAgent.getConfig().getRtpPort();
             DatagramSocket datagramSocket;
             try {
-                datagramSocket = new DatagramSocket();
+                if (rtpPort == 0) {
+                    datagramSocket = new DatagramSocket();
+                } else {
+                    datagramSocket = new DatagramSocket(rtpPort);
+                }
                 datagramSocket.setSoTimeout(TIMEOUT);
             } catch (SocketException e) {
                 logger.error("cannot create datagram socket ", e);
@@ -329,9 +334,14 @@ public class InviteHandler extends DialogMethodHandler
         ClientTransaction clientTransaction = transactionManager
                 .createClientTransaction(sipRequest, inetAddress,
                     port, transport, null, this);
+        int rtpPort = userAgent.getConfig().getRtpPort();
         DatagramSocket datagramSocket;
         try {
-            datagramSocket = new DatagramSocket();
+            if (rtpPort == 0) {
+                datagramSocket = new DatagramSocket();
+            } else {
+                datagramSocket = new DatagramSocket(rtpPort);
+            }
             datagramSocket.setSoTimeout(TIMEOUT);
         } catch (SocketException e) {
             logger.error("cannot create datagram socket ", e);

@@ -37,10 +37,9 @@ public class UdpMessageSender extends MessageSender {
     public UdpMessageSender(InetAddress inetAddress, int port,
             DatagramSocket datagramSocket, Config config,
             Logger logger) throws SocketException {
-        super(inetAddress, port, config, RFC3261.TRANSPORT_UDP, logger);
-
+        super(datagramSocket.getLocalPort(), inetAddress, port,
+                config, RFC3261.TRANSPORT_UDP, logger);
         this.datagramSocket = datagramSocket;
-        localPort = datagramSocket.getLocalPort();
     }
 
     @Override
@@ -62,7 +61,9 @@ public class UdpMessageSender extends MessageSender {
         logger.debug("UdpMessageSender.sendBytes");
         DatagramPacket packet = new DatagramPacket(bytes, bytes.length,
                 inetAddress, port);
-        logger.debug("UdpMessageSender.sendBytes packet created");
+        logger.debug("UdpMessageSender.sendBytes " + bytes.length
+                + " " + inetAddress + ":" + port);
+        logger.debug(datagramSocket.getLocalAddress().toString());
         try {
             datagramSocket.send(packet);
         } catch (Throwable t) {

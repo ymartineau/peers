@@ -24,12 +24,13 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.util.Random;
 
 import net.sourceforge.peers.Config;
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.media.MediaMode;
-import net.sourceforge.peers.sip.PortProvider;
 import net.sourceforge.peers.sip.syntaxencoding.SipParser;
 import net.sourceforge.peers.sip.syntaxencoding.SipParserException;
 import net.sourceforge.peers.sip.syntaxencoding.SipURI;
@@ -48,9 +49,10 @@ public class MessageSenderTestNG {
     private volatile int port;
 
     @BeforeClass
-    protected void init() throws UnknownHostException {
+    protected void init() throws UnknownHostException, SocketException {
         //TODO interface between transport manager and transaction manager
-        final int localPort = PortProvider.getNextPort();
+        DatagramSocket datagramSocket = new DatagramSocket();
+        final int localPort = datagramSocket.getLocalPort();
         Config config = new Config() {
             
             @Override public void setUserPart(String userPart) {}
@@ -114,9 +116,11 @@ public class MessageSenderTestNG {
             @Override public void messageReceived(SipMessage sipMessage) {}
         };
         Logger logger = new Logger(null);
-        transportManager = new TransportManager(new TransactionManager(logger),
+        transportManager = new TransportManager(
+                new TransactionManager(logger),
                 config, logger);
         transportManager.setSipServerTransportUser(sipServerTransportUser);
+        transportManager.setSipPort(new Random().nextInt(65535));
     }
     
     @Test(groups = "listen")
@@ -127,9 +131,8 @@ public class MessageSenderTestNG {
                         new byte[2048], 2048);
                 DatagramSocket datagramSocket;
                 try {
-                    port = PortProvider.getNextPort();
-                    datagramSocket = new DatagramSocket(port,
-                            InetAddress.getLocalHost());
+                    datagramSocket = new DatagramSocket();
+                    port = datagramSocket.getLocalPort();
                     while (message == null || "".equals(message.trim())) {
                         datagramSocket.receive(datagramPacket);
                         byte[] receivedBytes = datagramPacket.getData();
