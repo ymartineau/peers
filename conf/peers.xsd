@@ -34,14 +34,6 @@
     </xs:restriction>
   </xs:simpleType>
 
-  <xs:simpleType name="familyType">
-    <xs:restriction base="xs:string">
-      <xs:enumeration value="audio"/>
-      <xs:enumeration value="video"/>
-      <xs:enumeration value="other"/>
-    </xs:restriction>
-  </xs:simpleType>
-
   <xs:simpleType name="mediaModeType">
     <xs:restriction base="xs:string">
       <xs:enumeration value="none"/>
@@ -52,115 +44,19 @@
 
   <!-- Complex Types -->
 
-
-  <xs:complexType name="interfaceType">
+  <xs:complexType name="peersType">
     <xs:sequence>
-      <xs:element name="name" type="xs:string"/>
-      <xs:element name="address" type="xs:string"/>
-    </xs:sequence>
-    <xs:attribute name="id" type="xs:ID"/>
-  </xs:complexType>
-
-  <xs:complexType name="interfaceRefType">
-    <xs:attribute name="ref" type="xs:IDREF"/>
-  </xs:complexType>
-
-  <xs:complexType name="interfacesType">
-    <xs:sequence>
-      <xs:element name="interface" type="interfaceType" maxOccurs="unbounded"/>
-    </xs:sequence>
-  </xs:complexType>
-
-
-  <xs:complexType name="networkType">
-    <xs:sequence>
-      <xs:element name="interfaces" type="interfacesType"/>
-    </xs:sequence>
-  </xs:complexType>
-
-
-  <xs:complexType name="audioType">
-  </xs:complexType>
-
-  <xs:complexType name="videoType">
-  </xs:complexType>
-
-  <xs:complexType name="devicesType">
-    <xs:sequence>
-      <xs:element name="audio" type="audioType"/>
-      <xs:element name="video" type="videoType"/>
-    </xs:sequence>
-  </xs:complexType>
-
-
-  <xs:complexType name="profileType">
-    <xs:sequence>
-      <xs:element name="userpart" type="xs:string"/>
+      <xs:element name="ipAddress" type="xs:string"/>
+      <xs:element name="userPart" type="xs:string"/>
       <xs:element name="domain" type="xs:string"/>
       <xs:element name="password" type="xs:string"/>
       <xs:element name="outboundProxy" type="xs:string"/>
-      <xs:element name="interface" type="interfaceRefType"/>
-      <xs:element name="port" type="portType"/>
+      <xs:element name="sipPort" type="portType"/>
+      <xs:element name="rtpPort" type="portType"/>
+      <xs:element name="mediaMode" type="mediaModeType"/>
+      <xs:element name="mediaDebug" type="xs:boolean"/>
     </xs:sequence>
   </xs:complexType>
-
-  <xs:complexType name="sipType">
-    <xs:sequence>
-      <!-- maxOccurs="unbounded" -->
-      <xs:element name="profile" type="profileType"/>
-    </xs:sequence>
-  </xs:complexType>
-
-
-  <xs:complexType name="attributeType">
-    <xs:attribute name="name" type="xs:string"/>
-    <xs:attribute name="value" type="xs:string"/>
-  </xs:complexType>
-
-  <xs:complexType name="attributesType">
-    <xs:sequence>
-      <xs:element name="attribute" type="attributeType" maxOccurs="unbounded"/>
-    </xs:sequence>
-  </xs:complexType>
-
-  <xs:complexType name="codecType">
-    <xs:sequence>
-      <xs:element name="family" type="familyType"/>
-      <xs:element name="name" type="xs:string"/>
-      <xs:element name="payloadType" type="xs:integer"/>
-      <xs:element name="attributes" type="attributesType" minOccurs="0"/>
-    </xs:sequence>
-  </xs:complexType>
-
-  <xs:complexType name="codecsType">
-    <xs:sequence>
-      <xs:element name="codec" type="codecType" maxOccurs="unbounded"/>
-      <xs:element name="mediaMode" type="mediaModeType"
-          default="captureAndPlayback"/>
-      <xs:element name="mediaDebug" type="xs:boolean" default="false"/>
-    </xs:sequence>
-  </xs:complexType>
-
-
-  <xs:complexType name="rtpType">
-    <xs:sequence>
-      <xs:element name="interface" type="interfaceRefType"/>
-      <xs:element name="port" type="portType"/>
-    </xs:sequence>
-  </xs:complexType>
-
-
-  <xs:complexType name="peersType">
-    <xs:sequence>
-      <xs:element name="network" type="networkType"/>
-      <xs:element name="devices" type="devicesType"/>
-      <xs:element name="sip" type="sipType"/>
-      <xs:element name="codecs" type="codecsType"/>
-      <xs:element name="rtp" type="rtpType"/>
-    </xs:sequence>
-  </xs:complexType>
-
-
 
   <!-- Root Element -->
 

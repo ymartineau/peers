@@ -41,9 +41,11 @@ public abstract class MessageSender {
     private Timer timer;
     protected Logger logger;
     
-    public MessageSender(InetAddress inetAddress, int port, Config config,
+    public MessageSender(int localPort, InetAddress inetAddress,
+            int port, Config config,
             String transportName, Logger logger) {
         super();
+        this.localPort = localPort;
         this.inetAddress = inetAddress;
         this.port = port;
         this.config = config;
@@ -66,7 +68,8 @@ public abstract class MessageSender {
         }
         buf.append(myAddress.getHostAddress());
         buf.append(RFC3261.TRANSPORT_PORT_SEP);
-        buf.append(config.getSipPort());
+        //buf.append(config.getSipPort());
+        buf.append(localPort);
         buf.append(RFC3261.PARAM_SEPARATOR);
         buf.append(RFC3261.PARAM_TRANSPORT);
         buf.append(RFC3261.PARAM_ASSIGNMENT);

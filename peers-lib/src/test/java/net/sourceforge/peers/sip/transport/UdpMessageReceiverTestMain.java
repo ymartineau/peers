@@ -26,7 +26,6 @@ import java.net.UnknownHostException;
 import net.sourceforge.peers.Config;
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.media.MediaMode;
-import net.sourceforge.peers.sip.PortProvider;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.syntaxencoding.SipURI;
 
@@ -56,7 +55,7 @@ public class UdpMessageReceiverTestMain implements Runnable {
                 }
                 @Override
                 public int getSipPort() {
-                    return PortProvider.getNextPort();
+                    return 0;
                 }
                 @Override
                 public int getRtpPort() {
