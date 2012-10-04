@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2010 Yohann Martineau 
+    Copyright 2010, 2012 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip.core.useragent;
@@ -24,8 +24,8 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 
 import net.sourceforge.peers.Config;
+import net.sourceforge.peers.JavaConfig;
 import net.sourceforge.peers.media.MediaMode;
-import net.sourceforge.peers.sip.syntaxencoding.SipURI;
 import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
 import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.SipResponse;
@@ -44,79 +44,18 @@ public class BasicUseCasesTestNG {
     private UserSipListener user2SipListener;
 
     @BeforeTest
-    public void init() throws SocketException, InterruptedException {
+    public void init() throws SocketException, InterruptedException,
+            UnknownHostException{
 
-        Config config = new Config() {
-            @Override public void setUserPart(String userPart) {}
-            @Override public void setSipPort(int sipPort) {}
-            @Override public void setRtpPort(int rtpPort) {}
-            @Override public void setPublicInetAddress(InetAddress inetAddress) {}
-            @Override public void setPassword(String password) {}
-            @Override public void setOutboundProxy(SipURI outboundProxy) {}
-            @Override public void setMediaMode(MediaMode mediaMode) {}
-            @Override public void setMediaDebug(boolean mediaDebug) {}
-            @Override public void setLocalInetAddress(InetAddress inetAddress) {}
-            @Override public void setDomain(String domain) {}
-            @Override public void save() {}
-            @Override public boolean isMediaDebug() { return false; }
-            @Override public String getUserPart() { return null; }
-            @Override public int getSipPort() { return 0; }
-            @Override public int getRtpPort() { return 0; }
-            @Override public InetAddress getPublicInetAddress() { return null; }
-            @Override public String getPassword() { return null; }
-            @Override public SipURI getOutboundProxy() { return null; }
-            @Override
-            public MediaMode getMediaMode() {
-                return MediaMode.captureAndPlayback;
-            }
-            @Override
-            public InetAddress getLocalInetAddress() {
-                try {
-                    return InetAddress.getLocalHost();
-                } catch (UnknownHostException e) {
-                    e.printStackTrace();
-                }
-                return null;
-            }
-            @Override public String getDomain() { return null; }
-        };
+        Config config = new JavaConfig();
+        config.setLocalInetAddress(InetAddress.getLocalHost());
+        config.setMediaMode(MediaMode.captureAndPlayback);
         user1SipListener = new UserSipListener();
         testUser1 = new UserAgent(user1SipListener, config, null);
 
-        config = new Config() {
-            @Override public void setUserPart(String userPart) {}
-            @Override public void setSipPort(int sipPort) {}
-            @Override public void setRtpPort(int rtpPort) {}
-            @Override public void setPublicInetAddress(InetAddress inetAddress) {}
-            @Override public void setPassword(String password) {}
-            @Override public void setOutboundProxy(SipURI outboundProxy) {}
-            @Override public void setMediaMode(MediaMode mediaMode) {}
-            @Override public void setMediaDebug(boolean mediaDebug) {}
-            @Override public void setLocalInetAddress(InetAddress inetAddress) {}
-            @Override public void setDomain(String domain) {}
-            @Override public void save() {}
-            @Override public boolean isMediaDebug() { return false; }
-            @Override public String getUserPart() { return null; }
-            @Override public int getSipPort() { return 0; }
-            @Override public int getRtpPort() { return 0; }
-            @Override public InetAddress getPublicInetAddress() { return null; }
-            @Override public String getPassword() { return null; }
-            @Override public SipURI getOutboundProxy() { return null; }
-            @Override
-            public MediaMode getMediaMode() {
-                return MediaMode.echo;
-            }
-            @Override
-            public InetAddress getLocalInetAddress() {
-                try {
-                    return InetAddress.getLocalHost();
-                } catch (UnknownHostException e) {
-                    e.printStackTrace();
-                }
-                return null;
-            }
-            @Override public String getDomain() { return null; }
-        };
+        config = new JavaConfig();
+        config.setLocalInetAddress(InetAddress.getLocalHost());
+        config.setMediaMode(MediaMode.echo);
         user2SipListener = new UserSipListener();
         testUser2 = new UserAgent(user2SipListener, config, null);
 
@@ -157,10 +96,7 @@ public class BasicUseCasesTestNG {
         }
 
         @Override
-        public void calleePickup(SipResponse sipResponse) {
-            // TODO Auto-generated method stub
-            
-        }
+        public void calleePickup(SipResponse sipResponse) { }
 
         @Override
         public void error(SipResponse sipResponse) {
@@ -173,33 +109,19 @@ public class BasicUseCasesTestNG {
         }
 
         @Override
-        public void registerFailed(SipResponse sipResponse) {
-            // TODO Auto-generated method stub
-            
-        }
+        public void registerFailed(SipResponse sipResponse) { }
 
         @Override
-        public void registerSuccessful(SipResponse sipResponse) {
-            // TODO Auto-generated method stub
-        }
+        public void registerSuccessful(SipResponse sipResponse) { }
 
         @Override
-        public void registering(SipRequest sipRequest) {
-            // TODO Auto-generated method stub
-            
-        }
+        public void registering(SipRequest sipRequest) { }
 
         @Override
-        public void remoteHangup(SipRequest sipRequest) {
-            // TODO Auto-generated method stub
-            
-        }
+        public void remoteHangup(SipRequest sipRequest) { }
 
         @Override
-        public void ringing(SipResponse sipResponse) {
-            // TODO Auto-generated method stub
-            
-        }
+        public void ringing(SipResponse sipResponse) { }
         
     }
 
