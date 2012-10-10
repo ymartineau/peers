@@ -26,6 +26,9 @@ public class NameAddress {
     public static String nameAddressToUri(String nameAddress) {
         int leftPos = nameAddress.indexOf(RFC3261.LEFT_ANGLE_BRACKET);
         int rightPos = nameAddress.indexOf(RFC3261.RIGHT_ANGLE_BRACKET);
+        if (leftPos < 0 || rightPos < 0) {
+            return nameAddress;
+        }
         return nameAddress.substring(leftPos + 1, rightPos);
     }
     
