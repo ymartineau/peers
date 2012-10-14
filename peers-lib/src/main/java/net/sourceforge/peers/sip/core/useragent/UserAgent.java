@@ -192,12 +192,7 @@ public class UserAgent {
                 dialogManager,
                 transactionManager,
                 transportManager);
-        try {
-            while (transportManager.getSipPort() <= 0) {
-                Thread.sleep(50);
-            }
-        } catch (InterruptedException e) {
-        }
+
         uac = new UAC(this,
                 initialRequestManager,
                 midDialogRequestManager,
