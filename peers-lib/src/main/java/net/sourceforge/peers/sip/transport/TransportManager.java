@@ -225,7 +225,7 @@ public class TransportManager {
         //TODO check config
         String rport = topVia.getParam(new SipHeaderParamName(
                 RFC3261.PARAM_RPORT));
-        if (rport != null) {
+        if (rport != null && !"".equals(rport.trim())) {
             port = Integer.parseInt(rport);
         }
         SipTransportConnection connection;
@@ -364,9 +364,9 @@ public class TransportManager {
                             conn.getRemoteInetAddress(),
                             conn.getRemotePort(),
                             conn.getTransport());
-                    sipPort = datagramSocket.getLocalPort();
                     //config.setSipPort(datagramSocket.getLocalPort());
                 }
+                sipPort = datagramSocket.getLocalPort();
                 datagramSockets.put(sipTransportConnection, datagramSocket);
                 logger.info("added datagram socket " + sipTransportConnection);
             }

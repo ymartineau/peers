@@ -35,7 +35,7 @@ import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 
-public class BasicUseCasesTestNG {
+public class CancelTestNG {
 
     private UserAgent testUser1;
     private UserAgent testUser2;
@@ -49,13 +49,13 @@ public class BasicUseCasesTestNG {
 
         Config config = new JavaConfig();
         config.setLocalInetAddress(InetAddress.getLocalHost());
-        config.setMediaMode(MediaMode.captureAndPlayback);
+        config.setMediaMode(MediaMode.none);
         user1SipListener = new UserSipListener();
         testUser1 = new UserAgent(user1SipListener, config, null);
 
         config = new JavaConfig();
         config.setLocalInetAddress(InetAddress.getLocalHost());
-        config.setMediaMode(MediaMode.echo);
+        config.setMediaMode(MediaMode.none);
         user2SipListener = new UserSipListener();
         testUser2 = new UserAgent(user2SipListener, config, null);
 
