@@ -60,7 +60,9 @@ public class IncomingRtpReader implements RtpListener {
     @Override
     public void receivedRtpPacket(RtpPacket rtpPacket) {
         byte[] rawBuf = decoder.process(rtpPacket.getData());
-        soundManager.writeData(rawBuf, 0, rawBuf.length);
+        if (soundManager != null) {
+            soundManager.writeData(rawBuf, 0, rawBuf.length);
+        }
     }
 
 }

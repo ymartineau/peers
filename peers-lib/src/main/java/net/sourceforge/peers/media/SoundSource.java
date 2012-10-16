@@ -14,11 +14,17 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2010 Yohann Martineau 
+    Copyright 2012 Yohann Martineau
 */
 
 package net.sourceforge.peers.media;
 
-public enum MediaMode {
-    none, captureAndPlayback, echo, file
+public interface SoundSource {
+
+    /**
+     * read raw data linear PCM 8kHz, 16 bits signed, mono-channel, little endian
+     * @return
+     */
+    public byte[] readData();
+
 }

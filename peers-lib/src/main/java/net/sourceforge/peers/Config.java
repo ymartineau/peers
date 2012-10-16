@@ -36,6 +36,7 @@ public interface Config {
     public int getSipPort();
     public MediaMode getMediaMode();
     public boolean isMediaDebug();
+    public String getMediaFile();
     public int getRtpPort();
     public void setLocalInetAddress(InetAddress inetAddress);
     public void setPublicInetAddress(InetAddress inetAddress);
@@ -46,6 +47,7 @@ public interface Config {
     public void setSipPort(int sipPort);
     public void setMediaMode(MediaMode mediaMode);
     public void setMediaDebug(boolean mediaDebug);
+    public void setMediaFile(String mediaFile);
     public void setRtpPort(int rtpPort);
 
 }

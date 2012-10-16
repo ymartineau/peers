@@ -29,11 +29,10 @@ import java.net.UnknownHostException;
 import java.util.Random;
 
 import net.sourceforge.peers.Config;
+import net.sourceforge.peers.JavaConfig;
 import net.sourceforge.peers.Logger;
-import net.sourceforge.peers.media.MediaMode;
 import net.sourceforge.peers.sip.syntaxencoding.SipParser;
 import net.sourceforge.peers.sip.syntaxencoding.SipParserException;
-import net.sourceforge.peers.sip.syntaxencoding.SipURI;
 import net.sourceforge.peers.sip.transaction.TransactionManager;
 
 import org.testng.annotations.BeforeClass;
@@ -53,64 +52,9 @@ public class MessageSenderTestNG {
         //TODO interface between transport manager and transaction manager
         DatagramSocket datagramSocket = new DatagramSocket();
         final int localPort = datagramSocket.getLocalPort();
-        Config config = new Config() {
-            
-            @Override public void setUserPart(String userPart) {}
-            @Override public void setSipPort(int sipPort) {}
-            @Override public void setRtpPort(int rtpPort) {}
-            @Override public void setPassword(String password) {}
-            @Override public void setOutboundProxy(SipURI outboundProxy) {}
-            @Override public void setMediaMode(MediaMode mediaMode) {}
-            @Override public void setMediaDebug(boolean mediaDebug) {}
-            @Override public void setLocalInetAddress(InetAddress inetAddress) {}
-            @Override public void setPublicInetAddress(InetAddress inetAddress) {}
-            @Override public void setDomain(String domain) {}
-            @Override public void save() {}
-            @Override public boolean isMediaDebug() {
-                return false;
-            }
-            @Override public String getUserPart() {
-                return null;
-            }
-            @Override
-            public int getSipPort() {
-                return localPort;
-            }
-            @Override
-            public int getRtpPort() {
-                return 0;
-            }
-            @Override
-            public String getPassword() {
-                return null;
-            }
-            @Override
-            public SipURI getOutboundProxy() {
-                return null;
-            }
-            @Override
-            public MediaMode getMediaMode() {
-                return null;
-            }
-            @Override
-            public InetAddress getLocalInetAddress() {
-                InetAddress inetAddress;
-                try {
-                    inetAddress = InetAddress.getLocalHost();
-                } catch (UnknownHostException e) {
-                    throw new AssertionError();
-                }
-                return inetAddress;
-            }
-            @Override
-            public InetAddress getPublicInetAddress() {
-                return null;
-            }
-            @Override
-            public String getDomain() {
-                return null;
-            }
-        };
+        Config config = new JavaConfig();
+        config.setSipPort(localPort);
+        config.setLocalInetAddress(InetAddress.getLocalHost());
         SipServerTransportUser sipServerTransportUser =
             new SipServerTransportUser() {
             @Override public void messageReceived(SipMessage sipMessage) {}

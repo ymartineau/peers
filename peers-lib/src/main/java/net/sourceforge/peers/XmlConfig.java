@@ -66,6 +66,7 @@ public class XmlConfig implements Config {
     private int sipPort;
     private MediaMode mediaMode;
     private boolean mediaDebug;
+    private String mediaFile;
     private int rtpPort;
     
     // corresponding DOM nodes
@@ -78,6 +79,7 @@ public class XmlConfig implements Config {
     private Node sipPortNode;
     private Node mediaModeNode;
     private Node mediaDebugNode;
+    private Node mediaFileNode;
     private Node rtpPortNode;
 
     // non-persistent variables
@@ -164,6 +166,15 @@ public class XmlConfig implements Config {
             mediaDebug = false;
         } else {
             mediaDebug = Boolean.parseBoolean(mediaDebugNode.getTextContent());
+        }
+        mediaFileNode = getFirstChild(documentElement, "mediaFile");
+        if (!isNullOrEmpty(mediaFileNode)) {
+            mediaFile = mediaFileNode.getTextContent();
+        }
+        if (mediaMode == MediaMode.file) {
+            if (mediaFile == null || "".equals(mediaFile.trim())) {
+                logger.error("streaming from file but no file provided");
+            }
         }
         rtpPortNode = getFirstChild(documentElement, "rtpPort");
         if (isNullOrEmpty(rtpPortNode)) {
@@ -331,6 +342,16 @@ public class XmlConfig implements Config {
     public void setRtpPort(int rtpPort) {
         this.rtpPort = rtpPort;
         rtpPortNode.setTextContent(Integer.toString(rtpPort));
+    }
+
+    @Override
+    public String getMediaFile() {
+        return mediaFile;
+    }
+
+    @Override
+    public void setMediaFile(String mediaFile) {
+        this.mediaFile = mediaFile;
     }
 
 }

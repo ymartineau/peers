@@ -51,11 +51,17 @@
            packets on speakers.
          - echo: receive rtp packets, do not play them on speakers and send
            those packets to remote party
-         - none: no media is capture, played, send nor received -->
+         - none: no media is capture, played, send nor received
+         - file: stream audio from audio file provided in mediaFile -->
   <mediaMode>captureAndPlayback</mediaMode>
   <!-- mediaDebug is a boolean parameter. If set to true, files will be
        created in a media directory in peers.home directory. Those files will
        contain raw data at input and output of microphone, encoder, rtp
        sender, rtp receiver, and speaker. -->
   <mediaDebug>false</mediaDebug>
+  <!-- mediaFile file read and sent during call. This file must be a raw audio
+       file with the following format: linear PCM 8kHz, 16 bits signed,
+       mono-channel, little endian.  -->
+  <!-- Example: media/message.raw -->
+  <mediaFile></mediaFile>
 </peers>

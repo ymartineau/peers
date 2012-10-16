@@ -34,6 +34,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.RejectedExecutionException;
 
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.media.SoundManager;
@@ -46,7 +47,6 @@ public class RtpSession {
     private InetAddress remoteAddress;
     private int remotePort;
     private DatagramSocket datagramSocket;
-    private boolean running;
     private ExecutorService executorService;
     private List<RtpListener> rtpListeners;
     private RtpParser rtpParser;
@@ -61,7 +61,6 @@ public class RtpSession {
         this.mediaDebug = mediaDebug;
         this.logger = logger;
         this.peersHome = peersHome;
-        running = false;
         this.datagramSocket = datagramSocket;
         rtpListeners = new ArrayList<RtpListener>();
         rtpParser = new RtpParser(logger);
@@ -69,7 +68,6 @@ public class RtpSession {
     }
 
     public void start() {
-        running = true;
         if (mediaDebug) {
             SimpleDateFormat simpleDateFormat =
                 new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
@@ -90,7 +88,7 @@ public class RtpSession {
     }
 
     public void stop() {
-        running = false;
+        executorService.shutdown();
     }
 
     public void addRtpListener(RtpListener rtpListener) {
@@ -126,22 +124,22 @@ public class RtpSession {
         this.remotePort = remotePort;
     }
 
+    private void closeFileAndDatagramSocket() {
+        if (mediaDebug) {
+            try {
+                rtpSessionOutput.close();
+                rtpSessionInput.close();
+            } catch (IOException e) {
+                logger.error("cannot close file", e);
+            }
+        }
+        datagramSocket.close();
+    }
+
     class Receiver implements Runnable {
 
         @Override
         public void run() {
-            if (!running) {
-                if (mediaDebug) {
-                    try {
-                        rtpSessionOutput.close();
-                        rtpSessionInput.close();
-                    } catch (IOException e) {
-                        logger.error("cannot close file", e);
-                    }
-                }
-                datagramSocket.close();
-                return;
-            }
             int receiveBufferSize;
             try {
                 receiveBufferSize = datagramSocket.getReceiveBufferSize();
@@ -156,7 +154,11 @@ public class RtpSession {
             try {
                 datagramSocket.receive(datagramPacket);
             } catch (SocketTimeoutException e) {
-                executorService.execute(this);
+                try {
+                    executorService.execute(this);
+                } catch (RejectedExecutionException rej) {
+                    closeFileAndDatagramSocket();
+                }
                 return;
             } catch (IOException e) {
                 logger.error("cannot receive packet", e);
@@ -188,7 +190,11 @@ public class RtpSession {
             for (RtpListener rtpListener: rtpListeners) {
                 rtpListener.receivedRtpPacket(rtpPacket);
             }
-            executorService.execute(this);
+            try {
+                executorService.execute(this);
+            } catch (RejectedExecutionException rej) {
+                closeFileAndDatagramSocket();
+            }
         }
 
     }

@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2010, 2011 Yohann Martineau 
+    Copyright 2010, 2011, 2012 Yohann Martineau 
 */
 
 package net.sourceforge.peers.media;
@@ -35,7 +35,7 @@ import javax.sound.sampled.TargetDataLine;
 
 import net.sourceforge.peers.Logger;
 
-public class SoundManager {
+public class SoundManager implements SoundSource {
 
     public final static String MEDIA_DIR = "media";
 

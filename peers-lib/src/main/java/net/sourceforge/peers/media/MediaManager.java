@@ -42,6 +42,7 @@ public class MediaManager {
     private DtmfFactory dtmfFactory;
     private Logger logger;
     private DatagramSocket datagramSocket;
+    private FileReader fileReader;
 
     public MediaManager(UserAgent userAgent, Logger logger) {
         this.userAgent = userAgent;
@@ -49,55 +50,56 @@ public class MediaManager {
         dtmfFactory = new DtmfFactory();
     }
 
+    private void startRtpSessionOnSuccessResponse(String localAddress,
+            String remoteAddress, int remotePort, Codec codec,
+            SoundSource soundSource) {
+        InetAddress inetAddress;
+        try {
+            inetAddress = InetAddress.getByName(localAddress);
+        } catch (UnknownHostException e) {
+            logger.error("unknown host: " + localAddress, e);
+            return;
+        }
+        
+        rtpSession = new RtpSession(inetAddress, datagramSocket,
+                userAgent.isMediaDebug(), logger, userAgent.getPeersHome());
+        
+        try {
+            inetAddress = InetAddress.getByName(remoteAddress);
+            rtpSession.setRemoteAddress(inetAddress);
+        } catch (UnknownHostException e) {
+            logger.error("unknown host: " + remoteAddress, e);
+        }
+        rtpSession.setRemotePort(remotePort);
+        
+        
+        try {
+            captureRtpSender = new CaptureRtpSender(rtpSession,
+                    soundSource, userAgent.isMediaDebug(), codec, logger,
+                    userAgent.getPeersHome());
+        } catch (IOException e) {
+            logger.error("input/output error", e);
+            return;
+        }
+
+        try {
+            captureRtpSender.start();
+        } catch (IOException e) {
+            logger.error("input/output error", e);
+        }
+    }
+
     public void successResponseReceived(String localAddress,
             String remoteAddress, int remotePort, Codec codec) {
         switch (userAgent.getMediaMode()) {
         case captureAndPlayback:
-            //TODO this could be optimized, create captureRtpSender at stack init
-            //     and just retrieve it here
             SoundManager soundManager = userAgent.getSoundManager();
             soundManager.openAndStartLines();
             
-            InetAddress inetAddress;
-            try {
-                inetAddress = InetAddress.getByName(localAddress);
-            } catch (UnknownHostException e) {
-                logger.error("unknown host: " + localAddress, e);
-                return;
-            }
-            
-            rtpSession = new RtpSession(inetAddress, datagramSocket,
-                    userAgent.isMediaDebug(), logger, userAgent.getPeersHome());
+            startRtpSessionOnSuccessResponse(localAddress, remoteAddress,
+                    remotePort, codec, soundManager);
             
             try {
-                inetAddress = InetAddress.getByName(remoteAddress);
-                rtpSession.setRemoteAddress(inetAddress);
-            } catch (UnknownHostException e) {
-                logger.error("unknown host: " + remoteAddress, e);
-            }
-            rtpSession.setRemotePort(remotePort);
-            
-            
-            try {
-                captureRtpSender = new CaptureRtpSender(rtpSession,
-                        soundManager, userAgent.isMediaDebug(), codec, logger,
-                        userAgent.getPeersHome());
-            } catch (IOException e) {
-                logger.error("input/output error", e);
-                return;
-            }
-
-            try {
-                captureRtpSender.start();
-            } catch (IOException e) {
-                logger.error("input/output error", e);
-            }
-            
-            try {
-                //TODO retrieve port from SDP offer
-//                    incomingRtpReader = new IncomingRtpReader(localAddress,
-//                            Utils.getInstance().getRtpPort(),
-//                            remoteAddress, remotePort);
                 incomingRtpReader = new IncomingRtpReader(
                         captureRtpSender.getRtpSession(), soundManager, codec,
                         logger);
@@ -123,61 +125,88 @@ public class MediaManager {
             Thread echoThread = new Thread(echo);
             echoThread.start();
             break;
+        case file:
+            String fileName = userAgent.getConfig().getMediaFile();
+            fileReader = new FileReader(fileName, logger);
+            startRtpSessionOnSuccessResponse(localAddress, remoteAddress,
+                    remotePort, codec, fileReader);
+            try {
+                incomingRtpReader = new IncomingRtpReader(
+                        captureRtpSender.getRtpSession(), null, codec,
+                        logger);
+            } catch (IOException e) {
+                logger.error("input/output error", e);
+                return;
+            }
+
+            incomingRtpReader.start();
+            break;
         case none:
         default:
             break;
         }
     }
 
+    private void stopPreviousRtpSession() {
+      //TODO this could be optimized, create captureRtpSender at stack init
+        //     and just retrieve it here
+        if (rtpSession != null) {
+            rtpSession.stop();
+            while (!rtpSession.isSocketClosed()) {
+                try {
+                    Thread.sleep(15);
+                } catch (InterruptedException e) {
+                    logger.debug("sleep interrupted");
+                }
+            }
+        }
+        if (captureRtpSender != null) {
+            captureRtpSender.stop();
+        }
+    }
+
+    private void startNewRtpSession(String destAddress, int destPort,
+            Codec codec, SoundSource soundSource) {
+        rtpSession = new RtpSession(
+                userAgent.getConfig().getLocalInetAddress(),
+                datagramSocket, userAgent.isMediaDebug(), logger,
+                userAgent.getPeersHome());
+        
+        try {
+            InetAddress inetAddress = InetAddress.getByName(destAddress);
+            rtpSession.setRemoteAddress(inetAddress);
+        } catch (UnknownHostException e) {
+            logger.error("unknown host: " + destAddress, e);
+        }
+        rtpSession.setRemotePort(destPort);
+        
+        try {
+            captureRtpSender = new CaptureRtpSender(rtpSession,
+                    soundSource, userAgent.isMediaDebug(), codec, logger,
+                    userAgent.getPeersHome());
+        } catch (IOException e) {
+            logger.error("input/output error", e);
+            return;
+        }
+        try {
+            captureRtpSender.start();
+        } catch (IOException e) {
+            logger.error("input/output error", e);
+        }
+    }
+
     public void handleAck(String destAddress, int destPort, Codec codec) {
         switch (userAgent.getMediaMode()) {
         case captureAndPlayback:
-            //TODO this could be optimized, create captureRtpSender at stack init
-            //     and just retrieve it here
-            if (rtpSession != null) {
-                rtpSession.stop();
-                while (!rtpSession.isSocketClosed()) {
-                    try {
-                        Thread.sleep(15);
-                    } catch (InterruptedException e) {
-                        logger.debug("sleep interrupted");
-                    }
-                }
-            }
-            if (captureRtpSender != null) {
-                captureRtpSender.stop();
-            }
+
+            stopPreviousRtpSession();
+
             SoundManager soundManager = userAgent.getSoundManager();
             soundManager.closeLines();
             soundManager.openAndStartLines();
-            
-            
-            rtpSession = new RtpSession(
-                    userAgent.getConfig().getLocalInetAddress(),
-                    datagramSocket, userAgent.isMediaDebug(), logger,
-                    userAgent.getPeersHome());
-            
-            try {
-                InetAddress inetAddress = InetAddress.getByName(destAddress);
-                rtpSession.setRemoteAddress(inetAddress);
-            } catch (UnknownHostException e) {
-                logger.error("unknown host: " + destAddress, e);
-            }
-            rtpSession.setRemotePort(destPort);
-            
-            try {
-                captureRtpSender = new CaptureRtpSender(rtpSession,
-                        soundManager, userAgent.isMediaDebug(), codec, logger,
-                        userAgent.getPeersHome());
-            } catch (IOException e) {
-                logger.error("input/output error", e);
-                return;
-            }
-            try {
-                captureRtpSender.start();
-            } catch (IOException e) {
-                logger.error("input/output error", e);
-            }
+
+            startNewRtpSession(destAddress, destPort, codec, soundManager);
+
             try {
                 //TODO retrieve port from SDP offer
 //                        incomingRtpReader = new IncomingRtpReader(localAddress,
@@ -206,6 +235,23 @@ public class MediaManager {
             userAgent.setEcho(echo);
             Thread echoThread = new Thread(echo);
             echoThread.start();
+            break;
+        case file:
+            stopPreviousRtpSession();
+            if (fileReader != null) {
+                fileReader.close();
+            }
+            String fileName = userAgent.getConfig().getMediaFile();
+            fileReader = new FileReader(fileName, logger);
+            startNewRtpSession(destAddress, destPort, codec, fileReader);
+            try {
+                incomingRtpReader = new IncomingRtpReader(rtpSession,
+                        null, codec, logger);
+            } catch (IOException e) {
+                logger.error("input/output error", e);
+                return;
+            }
+            incomingRtpReader.start();
             break;
         case none:
         default:
@@ -247,6 +293,10 @@ public class MediaManager {
 
     public void setDatagramSocket(DatagramSocket datagramSocket) {
         this.datagramSocket = datagramSocket;
+    }
+
+    public FileReader getFileReader() {
+        return fileReader;
     }
 
 }
