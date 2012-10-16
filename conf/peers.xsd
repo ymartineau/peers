@@ -39,6 +39,7 @@
       <xs:enumeration value="none"/>
       <xs:enumeration value="captureAndPlayback"/>
       <xs:enumeration value="echo"/>
+      <xs:enumeration value="file"/>
     </xs:restriction>
   </xs:simpleType>
 
@@ -55,6 +56,7 @@
       <xs:element name="rtpPort" type="portType"/>
       <xs:element name="mediaMode" type="mediaModeType"/>
       <xs:element name="mediaDebug" type="xs:boolean"/>
+      <xs:element name="mediaFile" type="xs:string"/>
     </xs:sequence>
   </xs:complexType>
 

@@ -21,6 +21,7 @@ package net.sourceforge.peers.sip.core.useragent.handlers;
 
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.media.Echo;
+import net.sourceforge.peers.media.MediaManager;
 import net.sourceforge.peers.media.SoundManager;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.core.useragent.RequestManager;
@@ -93,6 +94,11 @@ public class ByeHandler extends DialogMethodHandler
                 echo.stop();
                 userAgent.setEcho(null);
             }
+            break;
+        case file:
+            MediaManager mediaManager = userAgent.getMediaManager();
+            mediaManager.stopSession();
+            mediaManager.getFileReader().close();
             break;
         case none:
         default:

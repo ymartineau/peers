@@ -25,11 +25,10 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 
 import net.sourceforge.peers.Config;
+import net.sourceforge.peers.JavaConfig;
 import net.sourceforge.peers.Logger;
-import net.sourceforge.peers.media.MediaMode;
 import net.sourceforge.peers.sip.syntaxencoding.SipParser;
 import net.sourceforge.peers.sip.syntaxencoding.SipParserException;
-import net.sourceforge.peers.sip.syntaxencoding.SipURI;
 
 
 public class UdpMessageSenderTestMain implements Runnable {
@@ -49,64 +48,14 @@ public class UdpMessageSenderTestMain implements Runnable {
             e.printStackTrace();
             return;
         }
-        Config config = new Config() {
-            
-            @Override public void setUserPart(String userPart) {}
-            @Override public void setSipPort(int sipPort) {}
-            @Override public void setRtpPort(int rtpPort) {}
-            @Override public void setPassword(String password) {}
-            @Override public void setOutboundProxy(SipURI outboundProxy) {}
-            @Override public void setMediaMode(MediaMode mediaMode) {}
-            @Override public void setMediaDebug(boolean mediaDebug) {}
-            @Override public void setLocalInetAddress(InetAddress inetAddress) {}
-            @Override public void setPublicInetAddress(InetAddress inetAddress) {}
-            @Override public void setDomain(String domain) {}
-            @Override public void save() {}
-            @Override public boolean isMediaDebug() {
-                return false;
-            }
-            @Override public String getUserPart() {
-                return null;
-            }
-            @Override
-            public int getSipPort() {
-                return 0;
-            }
-            @Override
-            public int getRtpPort() {
-                return 0;
-            }
-            @Override
-            public String getPassword() {
-                return null;
-            }
-            @Override
-            public SipURI getOutboundProxy() {
-                return null;
-            }
-            @Override
-            public MediaMode getMediaMode() {
-                return null;
-            }
-            @Override
-            public InetAddress getLocalInetAddress() {
-                InetAddress inetAddress;
-                try {
-                    inetAddress = InetAddress.getLocalHost();
-                } catch (UnknownHostException e) {
-                    throw new AssertionError();
-                }
-                return inetAddress;
-            }
-            @Override
-            public InetAddress getPublicInetAddress() {
-                return null;
-            }
-            @Override
-            public String getDomain() {
-                return null;
-            }
-        };
+        Config config = new JavaConfig();
+        InetAddress localhost = null;
+        try {
+            localhost = InetAddress.getLocalHost();
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+        }
+        config.setLocalInetAddress(localhost);
         TransportManager transportManager = new TransportManager(
                 null, config, new Logger(null));
         try {

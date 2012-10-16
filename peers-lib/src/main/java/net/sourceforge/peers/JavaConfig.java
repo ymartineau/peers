@@ -35,6 +35,7 @@ public class JavaConfig implements Config {
     private int sipPort;
     private MediaMode mediaMode;
     private boolean mediaDebug;
+    private String mediaFile;
     private int rtpPort;
 
     @Override
@@ -140,6 +141,16 @@ public class JavaConfig implements Config {
     @Override
     public void setRtpPort(int rtpPort) {
         this.rtpPort = rtpPort;
+    }
+
+    @Override
+    public String getMediaFile() {
+        return mediaFile;
+    }
+
+    @Override
+    public void setMediaFile(String mediaFile) {
+        this.mediaFile = mediaFile;
     }
 
 }

@@ -40,7 +40,7 @@ public class CaptureRtpSender {
     private Encoder encoder;
     private RtpSender rtpSender;
 
-    public CaptureRtpSender(RtpSession rtpSession, SoundManager soundManager,
+    public CaptureRtpSender(RtpSession rtpSession, SoundSource soundSource,
             boolean mediaDebug, Codec codec, Logger logger, String peersHome)
             throws IOException {
         super();
@@ -67,7 +67,7 @@ public class CaptureRtpSender {
             logger.error("input/output error");
             return;
         }
-        capture = new Capture(rawDataOutput, soundManager, logger, latch);
+        capture = new Capture(rawDataOutput, soundSource, logger, latch);
         switch (codec.getPayloadType()) {
         case RFC3551.PAYLOAD_TYPE_PCMU:
             encoder = new PcmuEncoder(rawDataInput, encodedDataOutput,

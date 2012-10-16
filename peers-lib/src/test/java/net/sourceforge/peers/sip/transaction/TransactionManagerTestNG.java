@@ -27,12 +27,11 @@ import java.net.UnknownHostException;
 import java.util.Random;
 
 import net.sourceforge.peers.Config;
+import net.sourceforge.peers.JavaConfig;
 import net.sourceforge.peers.Logger;
-import net.sourceforge.peers.media.MediaMode;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.syntaxencoding.SipParser;
 import net.sourceforge.peers.sip.syntaxencoding.SipParserException;
-import net.sourceforge.peers.sip.syntaxencoding.SipURI;
 import net.sourceforge.peers.sip.transport.SipMessage;
 import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.SipResponse;
@@ -50,64 +49,8 @@ public class TransactionManagerTestNG {
     public void init() throws UnknownHostException {
         Logger logger = new Logger(null);
         transactionManager = new TransactionManager(logger);
-        Config config = new Config() {
-            
-            @Override public void setUserPart(String userPart) {}
-            @Override public void setSipPort(int sipPort) {}
-            @Override public void setRtpPort(int rtpPort) {}
-            @Override public void setPassword(String password) {}
-            @Override public void setOutboundProxy(SipURI outboundProxy) {}
-            @Override public void setMediaMode(MediaMode mediaMode) {}
-            @Override public void setMediaDebug(boolean mediaDebug) {}
-            @Override public void setLocalInetAddress(InetAddress inetAddress) {}
-            @Override public void setPublicInetAddress(InetAddress inetAddress) {}
-            @Override public void setDomain(String domain) {}
-            @Override public void save() {}
-            @Override public boolean isMediaDebug() {
-                return false;
-            }
-            @Override public String getUserPart() {
-                return null;
-            }
-            @Override
-            public int getSipPort() {
-                return 0;
-            }
-            @Override
-            public int getRtpPort() {
-                return 0;
-            }
-            @Override
-            public String getPassword() {
-                return null;
-            }
-            @Override
-            public SipURI getOutboundProxy() {
-                return null;
-            }
-            @Override
-            public MediaMode getMediaMode() {
-                return null;
-            }
-            @Override
-            public InetAddress getLocalInetAddress() {
-                InetAddress inetAddress;
-                try {
-                    inetAddress = InetAddress.getLocalHost();
-                } catch (UnknownHostException e) {
-                    throw new AssertionError();
-                }
-                return inetAddress;
-            }
-            @Override
-            public InetAddress getPublicInetAddress() {
-                return null;
-            }
-            @Override
-            public String getDomain() {
-                return null;
-            }
-        };
+        Config config = new JavaConfig();
+        config.setLocalInetAddress(InetAddress.getLocalHost());
         transportManager = new TransportManager(
                 transactionManager, config, logger);
         transactionManager.setTransportManager(transportManager);
