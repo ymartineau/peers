@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008, 2009, 2010 Yohann Martineau 
+    Copyright 2007-2013 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip.core.useragent.handlers;
@@ -244,7 +244,8 @@ public class RegisterHandler extends MethodHandler
             	if (delay == -1) {
             		delay = Integer.parseInt(expires) - REFRESH_MARGIN;
             	}
-                timer = new Timer();
+                timer = new Timer(getClass().getSimpleName()
+                        + " refresh timer");
                 timer.schedule(new RefreshTimerTask(), delay * 1000);
             }
         }

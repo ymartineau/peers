@@ -14,17 +14,16 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2010 Yohann Martineau 
+    Copyright 2010-2013 Yohann Martineau 
 */
 
 package net.sourceforge.peers.gui;
 
-import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
 
 public interface MainFrameListener {
 
     public void callClicked(String callee);
     public void windowClosed();
-    public void register() throws SipUriSyntaxException;
+    public void register();
 
 }

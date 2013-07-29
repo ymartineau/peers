@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008, 2009, 2010, 2011 Yohann Martineau 
+    Copyright 2007-2013 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip.core.useragent;
@@ -24,9 +24,6 @@ import java.util.Collections;
 import java.util.List;
 
 import net.sourceforge.peers.Logger;
-import net.sourceforge.peers.media.Echo;
-import net.sourceforge.peers.media.MediaManager;
-import net.sourceforge.peers.media.SoundManager;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldName;
@@ -215,28 +212,7 @@ public class UAC {
                 }
             }
         }
-        switch (userAgent.getMediaMode()) {
-        case captureAndPlayback:
-            userAgent.getMediaManager().stopSession();
-            SoundManager soundManager = userAgent.getSoundManager();
-            if (soundManager != null) {
-                soundManager.closeLines();
-            }
-            break;
-        case echo:
-            Echo echo = userAgent.getEcho();
-            if (echo != null) {
-                echo.stop();
-                userAgent.setEcho(null);
-            }
-            break;
-        case file:
-            MediaManager mediaManager = userAgent.getMediaManager();
-            mediaManager.stopSession();
-            break;
-        default:
-            break;
-        }
+        userAgent.getMediaManager().stopSession();
     }
 
     public InitialRequestManager getInitialRequestManager() {

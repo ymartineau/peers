@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008, 2009, 2010, 2011, 2012 Yohann Martineau 
+    Copyright 2007-2013 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip.core.useragent.handlers;
@@ -27,8 +27,10 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Timer;
 
 import net.sourceforge.peers.Logger;
+import net.sourceforge.peers.media.MediaManager;
 import net.sourceforge.peers.sdp.Codec;
 import net.sourceforge.peers.sdp.MediaDestination;
 import net.sourceforge.peers.sdp.NoCodecException;
@@ -66,6 +68,8 @@ public class InviteHandler extends DialogMethodHandler
     public static final int TIMEOUT = 100;
 
     private MediaDestination mediaDestination;
+    private Timer ackTimer;
+    private boolean initialIncomingInvite;
     
     public InviteHandler(UserAgent userAgent,
             DialogManager dialogManager,
@@ -73,6 +77,8 @@ public class InviteHandler extends DialogMethodHandler
             TransportManager transportManager, Logger logger) {
         super(userAgent, dialogManager, transactionManager, transportManager,
                 logger);
+        ackTimer = new Timer(getClass().getSimpleName() + " Ack "
+                + Timer.class.getSimpleName());
     }
     
     
@@ -81,7 +87,7 @@ public class InviteHandler extends DialogMethodHandler
     //////////////////////////////////////////////////////////
 
     public void handleInitialInvite(SipRequest sipRequest) {
-        
+        initialIncomingInvite = true;
         //generate 180 Ringing
         SipResponse sipResponse = buildGenericResponse(sipRequest,
                 RFC3261.CODE_180_RINGING, RFC3261.REASON_180_RINGING);
@@ -117,6 +123,8 @@ public class InviteHandler extends DialogMethodHandler
     }
     
     public void handleReInvite(SipRequest sipRequest, Dialog dialog) {
+        logger.debug("handleReInvite");
+        initialIncomingInvite = false;
         SipHeaders sipHeaders = sipRequest.getSipHeaders();
 
         // 12.2.2 update dialog
@@ -136,7 +144,36 @@ public class InviteHandler extends DialogMethodHandler
         
     }
 
-    private void sendSuccessfulResponse(SipRequest sipRequest, Dialog dialog) {
+    private DatagramSocket getDatagramSocket() {
+        DatagramSocket datagramSocket = userAgent.getMediaManager()
+                .getDatagramSocket();
+        if (datagramSocket == null) { // initial invite success response
+            int rtpPort = userAgent.getConfig().getRtpPort();
+            try {
+                if (rtpPort == 0) {
+                    int localPort = -1;
+                    while (localPort % 2 != 0) {
+                        datagramSocket = new DatagramSocket();
+                        localPort = datagramSocket.getLocalPort();
+                        if (localPort % 2 != 0) {
+                            datagramSocket.close();
+                        }
+                    }
+                } else {
+                    datagramSocket = new DatagramSocket(rtpPort);
+                }
+                logger.debug("new rtp DatagramSocket " +
+                        datagramSocket.hashCode());
+                datagramSocket.setSoTimeout(TIMEOUT);
+            } catch (SocketException e) {
+                logger.error("cannot create datagram socket ", e);
+            }
+            userAgent.getMediaManager().setDatagramSocket(datagramSocket);
+        }
+        return datagramSocket;
+    }
+
+    private synchronized void sendSuccessfulResponse(SipRequest sipRequest, Dialog dialog) {
         SipHeaders reqHeaders = sipRequest.getSipHeaders();
         SipHeaderFieldValue contentType =
             reqHeaders.get(new SipHeaderFieldName(RFC3261.HDR_CONTENT_TYPE));
@@ -175,20 +212,8 @@ public class InviteHandler extends DialogMethodHandler
         byte[] offerBytes = sipRequest.getBody();
         SessionDescription answer;
         try {
-            int rtpPort = userAgent.getConfig().getRtpPort();
-            DatagramSocket datagramSocket;
-            try {
-                if (rtpPort == 0) {
-                    datagramSocket = new DatagramSocket();
-                } else {
-                    datagramSocket = new DatagramSocket(rtpPort);
-                }
-                datagramSocket.setSoTimeout(TIMEOUT);
-            } catch (SocketException e) {
-                logger.error("cannot create datagram socket ", e);
-                return;
-            }
-            userAgent.getMediaManager().setDatagramSocket(datagramSocket);
+            DatagramSocket datagramSocket = getDatagramSocket();
+
             if (offerBytes != null && contentType != null &&
                     RFC3261.CONTENT_TYPE_SDP.equals(contentType.getValue())) {
                 // create response in 200
@@ -334,20 +359,10 @@ public class InviteHandler extends DialogMethodHandler
         ClientTransaction clientTransaction = transactionManager
                 .createClientTransaction(sipRequest, inetAddress,
                     port, transport, null, this);
-        int rtpPort = userAgent.getConfig().getRtpPort();
         DatagramSocket datagramSocket;
-        try {
-            if (rtpPort == 0) {
-                datagramSocket = new DatagramSocket();
-            } else {
-                datagramSocket = new DatagramSocket(rtpPort);
-            }
-            datagramSocket.setSoTimeout(TIMEOUT);
-        } catch (SocketException e) {
-            logger.error("cannot create datagram socket ", e);
-            return null;
+        synchronized (this) {
+            datagramSocket = getDatagramSocket();
         }
-        userAgent.getMediaManager().setDatagramSocket(datagramSocket);
         try {
             SessionDescription sessionDescription =
                 sdpManager.createSessionDescription(null,
@@ -604,6 +619,7 @@ public class InviteHandler extends DialogMethodHandler
         // TODO determine if ACK is ACK of an initial INVITE or a re-INVITE
         // in first case, captureRtpSender and incomingRtpReader must be
         // created, in the second case, they must be updated.
+
         logger.debug("handleAck");
 
         if (mediaDestination == null) {
@@ -628,7 +644,13 @@ public class InviteHandler extends DialogMethodHandler
         int destPort = mediaDestination.getPort();
         Codec codec = mediaDestination.getCodec();
         
-        userAgent.getMediaManager().handleAck(destAddress, destPort, codec);
+        MediaManager mediaManager = userAgent.getMediaManager();
+        if (initialIncomingInvite) {
+            mediaManager.handleAck(destAddress, destPort, codec);
+        } else {
+            mediaManager.updateRemote(destAddress, destPort, codec);
+        }
+
     }
 
     public void transactionTimeout(ClientTransaction clientTransaction) {

@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2010 Yohann Martineau 
+    Copyright 2010-2013 Yohann Martineau 
 */
 
 package net.sourceforge.peers;
@@ -181,6 +181,10 @@ public class XmlConfig implements Config {
             rtpPort = RTP_DEFAULT_PORT;
         } else {
             rtpPort = Integer.parseInt(rtpPortNode.getTextContent());
+            if (rtpPort % 2 != 0) {
+                logger.error("rtp port provided is " + rtpPort
+                        + " rtp port must be even");
+            }
         }
     }
 

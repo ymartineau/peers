@@ -15,7 +15,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008, 2009, 2010, 2012 Yohann Martineau
+    Copyright 2007-2013 Yohann Martineau
 -->
 <peers xmlns="http://peers.sourceforge.net"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -41,8 +41,8 @@
        choose a random free port -->
   <!-- Example: 5060 -->
   <sipPort>0</sipPort>
- 	<!-- you can specify the rtp port to use for incoming and outgoing rtp
- 	     traffic, 0 can be used to choose a random free port -->
+ 	<!-- you can specify an even rtp port to use for incoming and outgoing rtp
+ 	     traffic, 0 can be used to choose a random even free port -->
   <rtpPort>0</rtpPort>
   <!-- mediaMode corresponds to the way media is managed. Three values are
        possible for this parameter:

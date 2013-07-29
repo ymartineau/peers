@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008, 2009, 2010 Yohann Martineau 
+    Copyright 2007-2013 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip.transaction;
@@ -53,7 +53,8 @@ public class TransactionManager {
         this.logger = logger;
         clientTransactions = new Hashtable<String, ClientTransaction>();
         serverTransactions = new Hashtable<String, ServerTransaction>();
-        timer = new Timer("Transaction timer");
+        timer = new Timer(TransactionManager.class.getSimpleName()
+                + " " + Timer.class.getSimpleName());
     }
     
     public ClientTransaction createClientTransaction(SipRequest sipRequest,

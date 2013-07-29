@@ -52,13 +52,13 @@ public class UacHangupTestNG {
 
         Config config = new JavaConfig();
         config.setLocalInetAddress(InetAddress.getLocalHost());
-        config.setMediaMode(MediaMode.captureAndPlayback);
+        config.setMediaMode(MediaMode.none);
         user1SipListener = new UserSipListener();
         testUser1 = new UserAgent(user1SipListener, config, null);
 
         config = new JavaConfig();
         config.setLocalInetAddress(InetAddress.getLocalHost());
-        config.setMediaMode(MediaMode.echo);
+        config.setMediaMode(MediaMode.none);
         user2SipListener = new UserSipListener();
         testUser2 = new UserAgent(user2SipListener, config, null);
 
@@ -72,7 +72,7 @@ public class UacHangupTestNG {
         int port = testUser2.getTransportManager().getSipPort();
         UAC uac1 = testUser1.getUac();
         SipRequest invite = uac1.invite("sip:" + host + ":" + port,
-                "sdfjhskdjfh");
+                Utils.generateCallID(inetAddress));
         while (!user2SipListener.incomingCallInvoked) {
             Thread.sleep(50);
         }
