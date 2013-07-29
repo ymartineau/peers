@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2010, 2012 Yohann Martineau 
+    Copyright 2010-2013 Yohann Martineau 
 */
 
 package net.sourceforge.peers.media;
@@ -95,7 +95,6 @@ public class MediaManager {
         case captureAndPlayback:
             SoundManager soundManager = userAgent.getSoundManager();
             soundManager.openAndStartLines();
-            
             startRtpSessionOnSuccessResponse(localAddress, remoteAddress,
                     remotePort, codec, soundManager);
             
@@ -122,7 +121,7 @@ public class MediaManager {
                 return;
             }
             userAgent.setEcho(echo);
-            Thread echoThread = new Thread(echo);
+            Thread echoThread = new Thread(echo, Echo.class.getSimpleName());
             echoThread.start();
             break;
         case file:
@@ -147,31 +146,12 @@ public class MediaManager {
         }
     }
 
-    private void stopPreviousRtpSession() {
-      //TODO this could be optimized, create captureRtpSender at stack init
-        //     and just retrieve it here
-        if (rtpSession != null) {
-            rtpSession.stop();
-            while (!rtpSession.isSocketClosed()) {
-                try {
-                    Thread.sleep(15);
-                } catch (InterruptedException e) {
-                    logger.debug("sleep interrupted");
-                }
-            }
-        }
-        if (captureRtpSender != null) {
-            captureRtpSender.stop();
-        }
-    }
+    private void startRtpSession(String destAddress, int destPort,
+        Codec codec, SoundSource soundSource) {
+        rtpSession = new RtpSession(userAgent.getConfig()
+                .getLocalInetAddress(), datagramSocket,
+                userAgent.isMediaDebug(), logger, userAgent.getPeersHome());
 
-    private void startNewRtpSession(String destAddress, int destPort,
-            Codec codec, SoundSource soundSource) {
-        rtpSession = new RtpSession(
-                userAgent.getConfig().getLocalInetAddress(),
-                datagramSocket, userAgent.isMediaDebug(), logger,
-                userAgent.getPeersHome());
-        
         try {
             InetAddress inetAddress = InetAddress.getByName(destAddress);
             rtpSession.setRemoteAddress(inetAddress);
@@ -193,25 +173,19 @@ public class MediaManager {
         } catch (IOException e) {
             logger.error("input/output error", e);
         }
+
     }
 
     public void handleAck(String destAddress, int destPort, Codec codec) {
         switch (userAgent.getMediaMode()) {
         case captureAndPlayback:
 
-            stopPreviousRtpSession();
-
             SoundManager soundManager = userAgent.getSoundManager();
-            soundManager.closeLines();
             soundManager.openAndStartLines();
 
-            startNewRtpSession(destAddress, destPort, codec, soundManager);
+            startRtpSession(destAddress, destPort, codec, soundManager);
 
             try {
-                //TODO retrieve port from SDP offer
-//                        incomingRtpReader = new IncomingRtpReader(localAddress,
-//                                Utils.getInstance().getRtpPort(),
-//                                remoteAddress, remotePort);
                 //FIXME RTP sessions can be different !
                 incomingRtpReader = new IncomingRtpReader(rtpSession,
                         soundManager, codec, logger);
@@ -221,6 +195,7 @@ public class MediaManager {
             }
 
             incomingRtpReader.start();
+
             break;
         case echo:
             Echo echo;
@@ -233,17 +208,16 @@ public class MediaManager {
                 return;
             }
             userAgent.setEcho(echo);
-            Thread echoThread = new Thread(echo);
+            Thread echoThread = new Thread(echo, Echo.class.getSimpleName());
             echoThread.start();
             break;
         case file:
-            stopPreviousRtpSession();
             if (fileReader != null) {
                 fileReader.close();
             }
             String fileName = userAgent.getConfig().getMediaFile();
             fileReader = new FileReader(fileName, logger);
-            startNewRtpSession(destAddress, destPort, codec, fileReader);
+            startRtpSession(destAddress, destPort, codec, fileReader);
             try {
                 incomingRtpReader = new IncomingRtpReader(rtpSession,
                         null, codec, logger);
@@ -259,6 +233,36 @@ public class MediaManager {
         }
     }
 
+    public void updateRemote(String destAddress, int destPort, Codec codec) {
+        switch (userAgent.getMediaMode()) {
+        case captureAndPlayback:
+            try {
+                InetAddress inetAddress = InetAddress.getByName(destAddress);
+                rtpSession.setRemoteAddress(inetAddress);
+            } catch (UnknownHostException e) {
+                logger.error("unknown host: " + destAddress, e);
+            }
+            rtpSession.setRemotePort(destPort);
+            break;
+        case echo:
+            //TODO update echo socket
+            break;
+        case file:
+            try {
+                InetAddress inetAddress = InetAddress.getByName(destAddress);
+                rtpSession.setRemoteAddress(inetAddress);
+            } catch (UnknownHostException e) {
+                logger.error("unknown host: " + destAddress, e);
+            }
+            rtpSession.setRemotePort(destPort);
+            break;
+
+        default:
+            break;
+        }
+
+    }
+    
     public void sendDtmf(char digit) {
         if (captureRtpSender != null) {
             List<RtpPacket> rtpPackets = dtmfFactory.createDtmfPackets(digit);
@@ -289,10 +293,35 @@ public class MediaManager {
         if (datagramSocket != null) {
             datagramSocket = null;
         }
+
+        switch (userAgent.getMediaMode()) {
+        case captureAndPlayback:
+            SoundManager soundManager = userAgent.getSoundManager();
+            if (soundManager != null) {
+                soundManager.closeLines();
+            }
+            break;
+        case echo:
+            Echo echo = userAgent.getEcho();
+            if (echo != null) {
+                echo.stop();
+                userAgent.setEcho(null);
+            }
+            break;
+        case file:
+            fileReader.close();
+            break;
+        default:
+            break;
+        }
     }
 
     public void setDatagramSocket(DatagramSocket datagramSocket) {
         this.datagramSocket = datagramSocket;
+    }
+
+    public DatagramSocket getDatagramSocket() {
+        return datagramSocket;
     }
 
     public FileReader getFileReader() {

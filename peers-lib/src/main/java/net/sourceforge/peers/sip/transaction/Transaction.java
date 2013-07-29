@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008, 2009, 2010 Yohann Martineau 
+    Copyright 2007-2013 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip.transaction;
@@ -49,7 +49,6 @@ public abstract class Transaction {
     protected Transaction(String branchId, String method, Timer timer,
             TransportManager transportManager,
             TransactionManager transactionManager, Logger logger) {
-        super();
         this.branchId = branchId;
         this.method = method;
         this.timer = timer;

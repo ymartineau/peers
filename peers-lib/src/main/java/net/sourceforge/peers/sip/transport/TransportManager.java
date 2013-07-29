@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008, 2009, 2010 Yohann Martineau 
+    Copyright 2007-2013 Yohann Martineau 
 */
 
 package net.sourceforge.peers.sip.transport;
@@ -158,6 +158,9 @@ public class TransportManager {
         return messageSender;
     }
     
+    private String threadName(int port) {
+        return getClass().getSimpleName() + " " + port;
+    }
     
     public void createServerTransport(String transportType, int port)
             throws SocketException {
@@ -168,10 +171,10 @@ public class TransportManager {
         MessageReceiver messageReceiver = messageReceivers.get(conn);
         if (messageReceiver == null) {
             messageReceiver = createMessageReceiver(conn);
-            new Thread(messageReceiver).start();
+            new Thread(messageReceiver, threadName(port)).start();
         }
         if (!messageReceiver.isListening()) {
-            new Thread(messageReceiver).start();
+            new Thread(messageReceiver, threadName(port)).start();
         }
     }
     
@@ -299,7 +302,7 @@ public class TransportManager {
             DatagramSocket datagramSocket = datagramSockets.get(conn);
             if (datagramSocket == null) {
                 logger.debug("new DatagramSocket(" + conn.getLocalPort()
-                        + ", " + conn.getLocalInetAddress());
+                        + ", " + conn.getLocalInetAddress() + ")");
                 datagramSocket = new DatagramSocket(conn.getLocalPort(),
                         conn.getLocalInetAddress());
                 datagramSocket.setSoTimeout(SOCKET_TIMEOUT);
@@ -322,7 +325,7 @@ public class TransportManager {
         MessageReceiver messageReceiver = messageReceivers.get(conn);
         if (messageReceiver == null) {
         	messageReceiver = createMessageReceiver(conn, socket);
-        	new Thread(messageReceiver).start();
+        	new Thread(messageReceiver, threadName(conn.getLocalPort())).start();
         }
 //        if (RFC3261.TRANSPORT_UDP.equalsIgnoreCase(conn.getTransport())) {
 //            messageSender = new UdpMessageSender(conn.getRemoteInetAddress(),

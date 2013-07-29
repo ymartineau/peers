@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2010 Yohann Martineau 
+    Copyright 2010-2013 Yohann Martineau 
  */
 
 package net.sourceforge.peers.gui;
@@ -43,7 +43,6 @@ import javax.swing.border.Border;
 
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.Utils;
-import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
 import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.SipResponse;
 
@@ -137,13 +136,9 @@ public class MainFrame implements WindowListener, ActionListener {
                 }
                 eventManager = new EventManager(MainFrame.this,
                         peersHome, logger);
-                try {
                     eventManager.register();
-                } catch (SipUriSyntaxException e) {
-                    statusLabel.setText(e.getMessage());
-                }
             }
-        });
+        }, "gui-event-manager");
         thread.start();
 
         try {

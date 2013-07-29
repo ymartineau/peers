@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2010, 2011, 2012 Yohann Martineau 
+    Copyright 2010-2013 Yohann Martineau 
 */
 
 package net.sourceforge.peers.rtp;
@@ -67,7 +67,7 @@ public class RtpSession {
         executorService = Executors.newSingleThreadExecutor();
     }
 
-    public void start() {
+    public synchronized void start() {
         if (mediaDebug) {
             SimpleDateFormat simpleDateFormat =
                 new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
@@ -95,7 +95,10 @@ public class RtpSession {
         rtpListeners.add(rtpListener);
     }
 
-    public void send(RtpPacket rtpPacket) {
+    public synchronized void send(RtpPacket rtpPacket) {
+        if (datagramSocket == null) {
+            return;
+        }
         byte[] buf = rtpParser.encode(rtpPacket);
         DatagramPacket datagramPacket = new DatagramPacket(buf, buf.length,
                 remoteAddress, remotePort);
@@ -200,6 +203,9 @@ public class RtpSession {
     }
 
     public boolean isSocketClosed() {
+        if (datagramSocket == null) {
+            return true;
+        }
         return datagramSocket.isClosed();
     }
 

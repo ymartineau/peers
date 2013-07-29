@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008, 2009, 2010, 2011 Yohann Martineau 
+    Copyright 2007-2013 Yohann Martineau 
 */
 
 package net.sourceforge.peers.media;
@@ -65,6 +65,7 @@ public class CaptureRtpSender {
                     PIPE_SIZE);
         } catch (IOException e) {
             logger.error("input/output error");
+            rawDataInput.close();
             return;
         }
         capture = new Capture(rawDataOutput, soundSource, logger, latch);
@@ -78,6 +79,8 @@ public class CaptureRtpSender {
                     mediaDebug, logger, peersHome, latch);
             break;
         default:
+            encodedDataInput.close();
+            rawDataInput.close();
             throw new RuntimeException("unknown payload type");
         }
         rtpSender = new RtpSender(encodedDataInput, rtpSession, mediaDebug,
@@ -90,9 +93,12 @@ public class CaptureRtpSender {
         encoder.setStopped(false);
         rtpSender.setStopped(false);
         
-        Thread captureThread = new Thread(capture);
-        Thread encoderThread = new Thread(encoder);
-        Thread rtpSenderThread = new Thread(rtpSender);
+        Thread captureThread = new Thread(capture,
+                Capture.class.getSimpleName());
+        Thread encoderThread = new Thread(encoder,
+                Encoder.class.getSimpleName());
+        Thread rtpSenderThread = new Thread(rtpSender,
+                RtpSender.class.getSimpleName());
         
         captureThread.start();
         encoderThread.start();

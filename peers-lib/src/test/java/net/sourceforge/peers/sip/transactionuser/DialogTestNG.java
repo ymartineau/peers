@@ -150,12 +150,13 @@ public class DialogTestNG {
         dialog.receivedOrSent300To699();
     }
     
-    @Test(expectedExceptions = IllegalStateException.class)
-    public void shouldThrowIfByeOnTerminated() {
-        Dialog dialog = new Dialog("", "", "", new Logger(null));
-        dialog.receivedOrSent2xx();
-        dialog.receivedOrSentBye();
-        dialog.receivedOrSentBye();
-    }
+    // retransmissions can be sent to dialog
+//    @Test(expectedExceptions = IllegalStateException.class)
+//    public void shouldThrowIfByeOnTerminated() {
+//        Dialog dialog = new Dialog("", "", "", new Logger(null));
+//        dialog.receivedOrSent2xx();
+//        dialog.receivedOrSentBye();
+//        dialog.receivedOrSentBye();
+//    }
     
 }
