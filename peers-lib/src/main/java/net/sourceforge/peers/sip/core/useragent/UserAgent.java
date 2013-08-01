@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.sourceforge.peers.Config;
+import net.sourceforge.peers.FileLogger;
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.XmlConfig;
 import net.sourceforge.peers.media.Echo;
@@ -97,7 +98,7 @@ public class UserAgent {
         }
         this.peersHome = peersHome;
         if (logger == null) {
-            logger = new Logger(this.peersHome);
+            logger = new FileLogger(this.peersHome);
         }
         this.logger = logger;
         if (config == null) {

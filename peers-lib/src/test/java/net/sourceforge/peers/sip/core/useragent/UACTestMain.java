@@ -21,7 +21,7 @@ package net.sourceforge.peers.sip.core.useragent;
 
 import java.net.SocketException;
 
-import net.sourceforge.peers.Logger;
+import net.sourceforge.peers.FileLogger;
 import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
 import net.sourceforge.peers.sip.transport.SipRequest;
 
@@ -32,7 +32,7 @@ public class UACTestMain {
         UserAgent userAgent;
         SipRequest sipRequest;
         try {
-            userAgent = new UserAgent(null, (String)null, new Logger(null));
+            userAgent = new UserAgent(null, (String)null, new FileLogger(null));
             requestUri = "sip:bob@" + userAgent.getConfig()
                 .getLocalInetAddress().getHostAddress() + ":6060";
             sipRequest = userAgent.getUac().invite(requestUri,

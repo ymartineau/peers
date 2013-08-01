@@ -373,8 +373,7 @@ public class EventManager implements SipListener, MainFrameListener,
                 public void run() {
                     if (accountFrame == null ||
                             !accountFrame.isDisplayable()) {
-                        accountFrame = new AccountFrame(EventManager.this,
-                                userAgent, logger);
+                        accountFrame = new AccountFrame(userAgent, logger);
                         accountFrame.setVisible(true);
                     } else {
                         accountFrame.requestFocus();

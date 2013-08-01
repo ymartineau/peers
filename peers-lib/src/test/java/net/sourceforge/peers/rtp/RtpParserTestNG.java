@@ -19,7 +19,7 @@
 
 package net.sourceforge.peers.rtp;
 
-import net.sourceforge.peers.Logger;
+import net.sourceforge.peers.FileLogger;
 
 import org.testng.annotations.Test;
 
@@ -44,7 +44,7 @@ public class RtpParserTestNG {
         for (int i = 0; i < 160; ++i) {
             packet[pos++] = new Integer(i).byteValue();
         }
-        RtpParser rtpParser = new RtpParser(new Logger(null));
+        RtpParser rtpParser = new RtpParser(new FileLogger(null));
         RtpPacket rtpPacket = rtpParser.decode(packet);
         assert rtpPacket.getVersion() == 2;
         assert !rtpPacket.isPadding();
@@ -77,7 +77,7 @@ public class RtpParserTestNG {
             data[i] = new Integer(i).byteValue();
         }
         rtpPacket.setData(data);
-        RtpParser rtpParser = new RtpParser(new Logger(null));
+        RtpParser rtpParser = new RtpParser(new FileLogger(null));
         byte[] packet = rtpParser.encode(rtpPacket);
         int pos = 0;
         assert packet[pos++] == new Integer(0x80).byteValue();

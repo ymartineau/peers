@@ -33,7 +33,7 @@ public class XmlConfigTestNG {
     @Test
     public void testSave() throws SipUriSyntaxException, UnknownHostException {
         String fileName = getClass().getResource("configTest.xml").getFile();
-        Logger logger = new Logger(null);
+        Logger logger = new FileLogger(null);
         Config config = new XmlConfig(fileName, logger);
         InetAddress localHost = InetAddress.getLocalHost();
         String userPart = "alice";

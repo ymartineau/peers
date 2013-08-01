@@ -19,8 +19,6 @@
 
 package net.sourceforge.peers.gui;
 
-import java.awt.event.ActionListener;
-
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
@@ -45,8 +43,7 @@ public class AccountFrame extends javax.swing.JFrame {
     private Logger logger;
 
     /** Creates new form AccountFrame */
-    public AccountFrame(ActionListener actionListener, UserAgent userAgent,
-            Logger logger) {
+    public AccountFrame(UserAgent userAgent, Logger logger) {
         this.userAgent = userAgent;
         this.logger = logger;
         unregistering = false;

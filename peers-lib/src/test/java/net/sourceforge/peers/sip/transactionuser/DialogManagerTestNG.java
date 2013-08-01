@@ -22,7 +22,7 @@ package net.sourceforge.peers.sip.transactionuser;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
-import net.sourceforge.peers.Logger;
+import net.sourceforge.peers.FileLogger;
 import net.sourceforge.peers.sip.syntaxencoding.SipParser;
 import net.sourceforge.peers.sip.syntaxencoding.SipParserException;
 import net.sourceforge.peers.sip.transport.SipMessage;
@@ -37,7 +37,7 @@ public class DialogManagerTestNG {
     
     @BeforeClass
     public void createDialogManager() {
-        dialogManager = new DialogManager(new Logger(null));
+        dialogManager = new DialogManager(new FileLogger(null));
     }
     
     @Test

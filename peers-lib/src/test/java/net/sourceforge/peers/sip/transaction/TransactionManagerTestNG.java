@@ -27,6 +27,7 @@ import java.net.UnknownHostException;
 import java.util.Random;
 
 import net.sourceforge.peers.Config;
+import net.sourceforge.peers.FileLogger;
 import net.sourceforge.peers.JavaConfig;
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.RFC3261;
@@ -47,7 +48,7 @@ public class TransactionManagerTestNG {
     
     @BeforeClass
     public void init() throws UnknownHostException {
-        Logger logger = new Logger(null);
+        Logger logger = new FileLogger(null);
         transactionManager = new TransactionManager(logger);
         Config config = new JavaConfig();
         config.setLocalInetAddress(InetAddress.getLocalHost());
