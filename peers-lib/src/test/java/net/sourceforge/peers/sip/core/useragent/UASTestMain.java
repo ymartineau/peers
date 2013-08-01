@@ -21,7 +21,7 @@ package net.sourceforge.peers.sip.core.useragent;
 
 import java.net.SocketException;
 
-import net.sourceforge.peers.Logger;
+import net.sourceforge.peers.FileLogger;
 
 
 public class UASTestMain {
@@ -31,7 +31,7 @@ public class UASTestMain {
      */
     public static void main(String[] args) {
         try {
-            new UserAgent(null, (String)null, new Logger(null));
+            new UserAgent(null, (String)null, new FileLogger(null));
         } catch (SocketException e) {
             e.printStackTrace();
         }

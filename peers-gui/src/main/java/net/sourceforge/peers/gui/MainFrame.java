@@ -41,6 +41,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
 
+import net.sourceforge.peers.FileLogger;
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.transport.SipRequest;
@@ -77,7 +78,7 @@ public class MainFrame implements WindowListener, ActionListener {
         if (args.length > 0) {
             peersHome = args[0];
         }
-        logger = new Logger(peersHome);
+        logger = new FileLogger(peersHome);
         String lookAndFeelClassName = UIManager.getSystemLookAndFeelClassName();
         try {
             UIManager.setLookAndFeel(lookAndFeelClassName);

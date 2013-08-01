@@ -14,7 +14,7 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2007, 2008, 2009, 2010 Yohann Martineau 
+    Copyright 2007-2013 Yohann Martineau 
 */
 
 package net.sourceforge.peers;
@@ -29,7 +29,7 @@ import java.util.Date;
 
 import net.sourceforge.peers.sip.Utils;
 
-public class Logger {
+public class FileLogger implements Logger {
 
     public final static String LOG_FILE = File.separator + "logs"
         + File.separator + "peers.log";
@@ -43,7 +43,7 @@ public class Logger {
     private SimpleDateFormat logFormatter;
     private SimpleDateFormat networkFormatter;
 
-    public Logger(String peersHome) {
+    public FileLogger(String peersHome) {
         if (peersHome == null) {
             peersHome = Utils.DEFAULT_PEERS_HOME;
         }
@@ -63,27 +63,31 @@ public class Logger {
         networkFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss,SSS");
     }
 
+    @Override
     public final void debug(String message) {
         synchronized (logMutex) {
             logWriter.write(genericLog(message.toString(), "DEBUG"));
             logWriter.flush();
         }
     }
-    
+
+    @Override
     public final void info(String message) {
         synchronized (logMutex) {
             logWriter.write(genericLog(message.toString(), "INFO "));
             logWriter.flush();
         }
     }
-    
+
+    @Override
     public final void error(String message) {
         synchronized (logMutex) {
             logWriter.write(genericLog(message.toString(), "ERROR"));
             logWriter.flush();
         }
     }
-    
+
+    @Override
     public final void error(String message, Exception exception) {
         synchronized (logMutex) {
             logWriter.write(genericLog(message, "ERROR"));
@@ -104,7 +108,8 @@ public class Logger {
         buf.append("\n");
         return buf.toString();
     }
-    
+
+    @Override
     public final void traceNetwork(String message, String direction) {
         synchronized (networkMutex) {
             StringBuffer buf = new StringBuffer();

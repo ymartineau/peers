@@ -27,6 +27,7 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 
 import net.sourceforge.peers.Config;
+import net.sourceforge.peers.FileLogger;
 import net.sourceforge.peers.JavaConfig;
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.syntaxencoding.SipParser;
@@ -49,7 +50,7 @@ public class TransportManagerTestNG {
         Config config = new JavaConfig();
         config.setSipPort(port);
         config.setLocalInetAddress(InetAddress.getLocalHost());
-        Logger logger = new Logger(null);
+        Logger logger = new FileLogger(null);
         transportManager = new TransportManager(
                 new TransactionManager(logger),
                 config, logger);
