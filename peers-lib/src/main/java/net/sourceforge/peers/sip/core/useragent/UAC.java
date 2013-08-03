@@ -117,10 +117,12 @@ public class UAC {
                 }
                 
             };
+            // for any reason, asterisk requires a new Call-ID to unregister
+            registerCallID = Utils.generateCallID(
+                    userAgent.getConfig().getLocalInetAddress());
             initialRequestManager.createInitialRequest(requestUri,
                     RFC3261.METHOD_REGISTER, profileUri, registerCallID, null,
                     messageInterceptor);
-            //initialRequestManager.registerHandler.unregister();
         }
     }
     
