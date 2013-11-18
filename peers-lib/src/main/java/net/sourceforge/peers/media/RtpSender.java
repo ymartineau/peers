@@ -123,7 +123,7 @@ public class RtpSender implements Runnable {
             }
             if (mediaDebug) {
                 try {
-                    rtpSenderInput.write(trimmedBuffer);
+                    rtpSenderInput.write(trimmedBuffer); // TODO use classpath
                 } catch (IOException e) {
                     logger.error("cannot write to file", e);
                     break;

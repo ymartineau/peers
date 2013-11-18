@@ -20,8 +20,8 @@
     </copyright>
     <abstract>
       <para>
-        Peers is a java SIP softphone. Peers documentation is made of several
-        chapters.
+        Peers is a java SIP softphone. Peers documentation is divided into
+        several chapters.
       </para>
       <para>
         The first chapter gives a reasonable background on voice over
@@ -36,8 +36,7 @@
       <para>
         The third chapter shows how peers library can be used in a simple java
         project. This chapter will definitely be useful for developers coming
-        to peers and wondering how to use this tiny sip client in their own
-        project.
+        to peers and wondering how to use the library in their own project.
       </para>
       <para>
         The fourth chapter gives more details about build system (maven) and
@@ -376,7 +375,7 @@
 
     <para>
       Peers is a <link xl:href="http://maven.apache.org/">maven</link>
-      project with several modules:
+      project containing several modules:
     </para>
     <itemizedlist>
       <listitem>
@@ -416,8 +415,9 @@
     <para>
       Peers-jws is a Java Web Start application. A Java Web Start application
       is just a java application that can be launched from a web browser
-      using a simple click. Actually, you generally need to grant security
-      rights but it's running outside your browser. Peers-js is another demo
+      with a simple click. Actually, you generally need to grant system
+      resources security access rights (microphone, write to the disk, etc.)
+      but it's running outside your browser. Peers-js is another demo
       application. Peers-js is a java applet running inside browser. When
       you run this demo application, the java applet is not visible, user
       interface is developed using html and javascript. In this case, peers
@@ -441,7 +441,8 @@
     <para>
       Conf directory contains peers xml configuration file and its grammar.
       Logs contains log files once you started peers in root directory and
-      media directory contains binary files with raw audio data.
+      media directory contains binary files with raw audio data generated when
+      media debug option is turned on.
     </para>
   </chapter>
 
@@ -462,10 +463,11 @@
     <para>
       The following example application will be a command line interface (cli)
       phone based on peers. Let's call this application cli-phone. This
-      application will be run from command line, notify user
+      application will run from command line, notify user
       about events and take commands from console. Those commands will be as
-      simple as possible: call &lt;number&gt; and hangup. SIP registration
-      parameters will be kept in configuration file peers.xml.
+      simple as possible: call &lt;number&gt; and hangup. This hangup parameter
+      takes no parameter as cli-phone will support only one parallel call. SIP
+      registration parameters will be kept in configuration file peers.xml.
     </para>
     <para>
       Here is an example to create an empty maven application:
@@ -504,9 +506,8 @@
     <para>
       We will create a Thread which will read commands from console and a
       main object will receive events from console and sip stack. Let's call
-      this main object EventManager. It will handle all sort of events and will
-      make decisions about appropriate actions to take depending on those events.
-      Actually, this is just finite state machine.
+      this main object EventManager. It will handle all important events and
+      will make decisions appropriately. Actually, this is just finite state machine.
     </para>
     <example>
       <title>CommandsReader</title>
