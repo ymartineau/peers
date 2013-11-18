@@ -15,24 +15,47 @@
       </personname>
     </author>
     <copyright>
-      <year>2011</year>
+      <year>2012</year>
       <holder>Yohann Martineau</holder>
     </copyright>
     <abstract>
       <para>
-        This page describes how sip softphones work. Then an in-depth analysis
-        of Peers source code is provided. It has been considered that the
-        reader/developer must understand general considerations before peers
-        source code. Some notions about voice over ip are required to
-        understand source code, they are explained in first part. 
+        Peers is a java SIP softphone. Peers documentation is made of several
+        chapters.
+      </para>
+      <para>
+        The first chapter gives a reasonable background on voice over
+        IP, especially on SIP. This chapter is accurate for beginners, if you
+        feel comfortable with codecs, rtp, sip and sdp, you can skip this
+        chapter. This chapter applies to any sip client.
+      </para>
+      <para>
+        The second chapter gives an overview of peers project and its
+        components.
+      </para>
+      <para>
+        The third chapter shows how peers library can be used in a simple java
+        project. This chapter will definitely be useful for developers coming
+        to peers and wondering how to use this tiny sip client in their own
+        project.
+      </para>
+      <para>
+        The fourth chapter gives more details about build system (maven) and
+        modules packaging. This chapter is useful for integrators. You will
+        also probably need to read this chapter if you want to use peers
+        library or any of its demo projects.
+      </para>
+      <para>
+        Finally, the fifth chapter provides a detailed analysis of each peers
+        module. This part is for experienced sip and java developers.
       </para>
     </abstract>
   </info>
   <chapter>
-    <title>General considerations</title>
+    <title>Technical background</title>
     <para>
       Let's start with simple things. First, it may seem obvious, but we have
-      to answer the question: what is Peers? Peers is a lightweight java sip
+      to answer the question: what is Peers? Peers is a lightweight java SIP
       softphone, i.e. a software that enables its users to place calls on
       internet.
     </para>
@@ -346,12 +369,193 @@
     </section>
   </chapter>
   <chapter>
-    <title>Source code analysis</title>
+    <title>Overview</title>
     <para>
-      The following paragraphs apply to peers since version 0.3.1.
+      The following paragraphs apply to peers since version 0.5.
     </para>
+
+    <para>
+      Peers is a <link xl:href="http://maven.apache.org/">maven</link>
+      project with several modules:
+    </para>
+    <itemizedlist>
+      <listitem>
+        <para>peers-lib</para>
+      </listitem>
+      <listitem>
+        <para>peers-gui</para>
+      </listitem>
+      <listitem>
+        <para>peers-jws</para>
+      </listitem>
+      <listitem>
+        <para>peers-js</para>
+      </listitem>
+    </itemizedlist>
+    <para>
+      Only two modules are used to generate peers binary zip file: peers-gui
+      and peers-lib. Peers-gui is the graphical user interface and peers-lib
+      implements everything that is not related to graphical user interface
+      (network stacks, audio encoding, etc.).
+    </para>
+    <para>
+      Actually, peers binary zip file is built by peers-gui. Peers-gui has a
+      dependency on peers-lib. Thus, peers-gui retrieves a binary file from
+      peers-lib, adds its own directories and files and packages the whole
+      as a zip file.
+    </para>
+    <para>
+      In addition to those to simple modules, a few demo modules have been
+      added. The goal of those modules is to show how peers-lib library can
+      be used in various environments. Those demo applications are not fully
+      tested applications. You should not use them as is in a deployed
+      application, but they give examples to create new applications based on
+      peers-lib. You can consider those demo applications as proofs of
+      concept.
+    </para>
+    <para>
+      Peers-jws is a Java Web Start application. A Java Web Start application
+      is just a java application that can be launched from a web browser
+      using a simple click. Actually, you generally need to grant security
+      rights but it's running outside your browser. Peers-js is another demo
+      application. Peers-js is a java applet running inside browser. When
+      you run this demo application, the java applet is not visible, user
+      interface is developed using html and javascript. In this case, peers
+      interface is javascript, hence its name: peers-js.
+    </para>
+    <para>
+      In addition to maven modules, peers root directory contains several
+      utility directories:
+    </para>
+    <itemizedlist>
+      <listitem>
+        <para>conf</para>
+      </listitem>
+      <listitem>
+        <para>logs</para>
+      </listitem>
+      <listitem>
+        <para>media</para>
+      </listitem>
+    </itemizedlist>
+    <para>
+      Conf directory contains peers xml configuration file and its grammar.
+      Logs contains log files once you started peers in root directory and
+      media directory contains binary files with raw audio data.
+    </para>
+  </chapter>
+
+  <chapter>
+    <title>Peers library usage example</title>
+    <para>
+      Peers can be used as a library with no other dependencies. In this case,
+      you need to add peers jar library file to your application classpath.
+      You can add it to your ant build.xml compile tasks or you can just add it
+      to your favorite IDE classpath. The simplest way to develop an application
+      based on peers is using maven.
+    </para>
+    <para>
+      As peers is a maven project, you just have to add a dependency to
+      peers-lib and here you go, you can insert a sip phone in your own
+      application.
+    </para>
+    <para>
+      The following example application will be a command line interface (cli)
+      phone based on peers. Let's call this application cli-phone. This
+      application will be run from command line, notify user
+      about events and take commands from console. Those commands will be as
+      simple as possible: call &lt;number&gt; and hangup. SIP registration
+      parameters will be kept in configuration file peers.xml.
+    </para>
+    <para>
+      Here is an example to create an empty maven application:
+    </para>
+    <literallayout><literal>mvn archetype:create -DgroupId=demo -DartifactId=cli-phone</literal></literallayout>
+    <para>
+      It creates a nice empty maven project. Let's add peers-lib dependency to
+      this project. In pom.xml, add the following dependency:
+    </para>
+    <literallayout><literal>    &lt;dependency&gt;
+      &lt;groupId&gt;net.sourceforge.peers&lt;/groupId&gt;
+      &lt;artifactId&gt;peers-lib&lt;/artifactId&gt;
+      &lt;version&gt;0.5-SNAPSHOT&lt;/version&gt;
+      &lt;scope&gt;compile&lt;/scope&gt;
+    &lt;/dependency&gt;</literal></literallayout>
+    <para>
+      Let's check that this project still builds from newly created project
+      directory:
+    </para>
+    <literallayout><literal>mvn clean package
+...
+[INFO] BUILD SUCCESS
+...</literal></literallayout>
+    <para>
+      Great, now let's start developing our real application. My IDE is eclipse,
+      so to generate project files easily, I use the following command line:
+    </para>
+    <literallayout><literal>mvn eclipse:eclipse</literal></literallayout>
+    <para>
+      Thanks to this command, you can import existing project in eclipse: File
+      &gt; Import &gt; Existing Projects into Workspace &gt; Select root
+      directory and browse to the place where you created your new maven
+      project &gt; Finish and that's it. You can now open your project in
+      eclipse. Maven already created a main class for you called App.
+    </para>
+    <para>
+      We will create a Thread which will read commands from console and a
+      main object will receive events from console and sip stack. Let's call
+      this main object EventManager. It will handle all sort of events and will
+      make decisions about appropriate actions to take depending on those events.
+      Actually, this is just finite state machine.
+    </para>
+    <example>
+      <title>CommandsReader</title>
+        <programlisting>
+<![CDATA[
+package demo;
+
+public class CommandsReader extends Thread {
+
+    @Override
+    public void run() {
+
+    }
+
+}
+]]>
+      </programlisting>
+    </example>
+
+  </chapter>
+
+  <chapter>
+    <title>Build system</title>
+    <para></para>
+  </chapter>
+
+  <chapter>
+    <title>Peers source</title>
     <section>
-      <title>Overview</title>
+      <title>peers-lib</title>
+      <para></para>
+    </section>
+
+    <section>
+      <title>peers-gui</title>
+      <para></para>
+    </section>
+
+    <section>
+      <title>peers-jws</title>
+      <para></para>
+    </section>
+
+    <section>
+      <title>peers-js</title>
+      <para></para>
+    </section>
+
+
       <section>
         <title>Architecture</title>
         <para>
@@ -526,7 +730,10 @@
           other objects, not to perform an action on an event. 
         </para>
       </section>
-    </section>
+
+
+
+
     <section>
       <title>Package details</title>
       <section>
