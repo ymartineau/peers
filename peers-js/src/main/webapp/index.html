@@ -1,6 +1,5 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
-"http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html>
 
 <head>
 
@@ -23,7 +22,7 @@
   }
 
   #incomingCall {
-    display: none;
+    visibility: hidden;
   }
 
   </style>
@@ -50,7 +49,6 @@
   }
 
   function javaNetworkLog(message) {
-    var htmlMessage
     localLog(null, message, "networkLogger");
   }
 
@@ -75,28 +73,31 @@
 
   function registerFailed(sipResponse) {
     log("registerFailed " + sipResponse);
+    var registerActionInput = document.getElementById("registerAction");
+    registerActionInput.value = "register";
   }
 
   function incomingCall(sipRequest, provResponse) {
     log("incomingCall");
     inviteSipRequest = sipRequest;
-    var incomingCall = document.getElementById("incomingCall");
-    var caller = document.getElementById("caller");
-    var fromStr = peers.getFrom(sipRequest);
-    var from = document.createTextNode(fromStr);
-    caller.appendChild(from);
-    incomingCall.style = "display: block";
+    var incomingCallDiv = document.getElementById("incomingCall");
+    var callerDiv = document.getElementById("caller");
+    var peersObj = document.getElementById("peers");
+    var fromStr = peersObj.getFrom(sipRequest);
+    var fromTxt = document.createTextNode(fromStr);
+    callerDiv.appendChild(fromTxt);
+    incomingCallDiv.style.visibility = "visible";
   }
 
   function remoteHangup(sipRequest) {
     log("remoteHangup");
-    var callAction = document.getElementById("callAction");
-    callAction.value = "call";
+    var callActionInput = document.getElementById("callAction");
+    callActionInput.value = "call";
     // cleanup for incoming calls cancelled
-    var incomingCall = document.getElementById("incomingCall");
-    incomingCall.style = "display: none";
-    var caller = document.getElementById("caller");
-    caller.innerHTML = "";
+    var incomingCallDiv = document.getElementById("incomingCall");
+    incomingCallDiv.style.visibility = "hidden";
+    var callerDiv = document.getElementById("caller");
+    callerDiv.innerHTML = "";
   }
 
   function ringing(sipResponse) {
@@ -109,8 +110,8 @@
 
   function error(sipResponse) {
     log("error " + sipResponse);
-    var callAction = document.getElementById("callAction");
-    callAction.value = "call";
+    var callActionInput = document.getElementById("callAction");
+    callActionInput.value = "call";
   }
 
   function setInviteSipRequest(sipRequest) {
@@ -120,59 +121,58 @@
 
   // client functions
 
-  function registerAction() {
-    log("registerAction");
-    var peers = document.getElementById("peers");
-    var registerAction = document.getElementById("registerAction");
-    if (registerAction.value == "register") {
-      var userPart = document.getElementById("userPart");
-      var domain = document.getElementById("domain");
-      var password = document.getElementById("password");
-      var outboundProxy = document.getElementById("outboundProxy");
-      registerAction.value = "unregister";
-      peers.register(userPart.value, password.value, domain.value,
-          outboundProxy.value);
+  function doRegisterAction() {
+    log("doRegisterAction");
+    var peersObj = document.getElementById("peers");
+    var registerActionInput = document.getElementById("registerAction");
+    if (registerActionInput.value == "register") {
+      var userPartInput = document.getElementById("userPart");
+      var domainInput = document.getElementById("domain");
+      var passwordInput = document.getElementById("password");
+      var outboundProxyInput = document.getElementById("outboundProxy");
+      registerActionInput.value = "unregister";
+      peersObj.register(userPartInput.value, passwordInput.value,
+          domainInput.value, outboundProxyInput.value);
     } else {
-      registerAction.value = "register";
-      peers.unregister();
-    }
-
-  }
-
-  function callAction() {
-    log("callAction");
-    var peers = document.getElementById("peers");
-    var callAction = document.getElementById("callAction");
-    if (callAction.value == "call") {
-      var callee = document.getElementById("callee");
-      callAction.value = "hangup";
-      peers.invite(callee.value);
-    } else {
-      callAction.value = "call";
-      peers.terminate(inviteSipRequest);
+      registerActionInput.value = "register";
+      peersObj.unregister();
     }
   }
 
-  function reject() {
-    log("reject");
-    var peers = document.getElementById("peers");
-    peers.busyHereClicked(inviteSipRequest);
-    var incomingCall = document.getElementById("incomingCall");
-    incomingCall.style = "display: none";
-    var caller = document.getElementById("caller");
-    caller.innerHTML = "";
+  function doCallAction() {
+    log("doCallAction");
+    var peersObj = document.getElementById("peers");
+    var callActionInput = document.getElementById("callAction");
+    if (callActionInput.value == "call") {
+      var calleeInput = document.getElementById("callee");
+      callActionInput.value = "hangup";
+      peersObj.invite(calleeInput.value);
+    } else {
+      callActionInput.value = "call";
+      peersObj.terminate(inviteSipRequest);
+    }
   }
 
-  function pickup() {
-    log("pickup");
-    var peers = document.getElementById("peers");
-    peers.pickupClicked(inviteSipRequest);
-    var incomingCall = document.getElementById("incomingCall");
-    incomingCall.style = "display: none";
-    var caller = document.getElementById("caller");
-    caller.innerHTML = "";
-    var callAction = document.getElementById("callAction");
-    callAction.value = "hangup";
+  function doReject() {
+    log("doReject");
+    var peersObj = document.getElementById("peers");
+    peersObj.busyHereClicked(inviteSipRequest);
+    var incomingCallDiv = document.getElementById("incomingCall");
+    incomingCallDiv.style.visibility = "hidden";
+    var callerDiv = document.getElementById("caller");
+    callerDiv.innerHTML = "";
+  }
+
+  function doPickup() {
+    log("doPickup");
+    var peersObj = document.getElementById("peers");
+    peersObj.pickupClicked(inviteSipRequest);
+    var incomingCallDiv = document.getElementById("incomingCall");
+    incomingCallDiv.style.visibility = "hidden";
+    var callerDiv = document.getElementById("caller");
+    callerDiv.innerHTML = "";
+    var callActionInput = document.getElementById("callAction");
+    callActionInput.value = "hangup";
   }
   </script>
 
@@ -210,18 +210,18 @@
       </tbody>
     </table>
     <div>
-      <input id="registerAction" type="button" value="register" onclick="registerAction()"/>
+      <input id="registerAction" type="button" value="register" onclick="doRegisterAction()"/>
     </div>
     <div>
       callee: <input id="callee" type="text"/> (example: sip:6002@asterisk-ip)
     </div>
     <div>
-      <input id="callAction" type="button" value="call" onclick="callAction()"/>
+      <input id="callAction" type="button" value="call" onclick="doCallAction()"/>
     </div>
     <div id="incomingCall">
       incoming call from <div id="caller"></div>
-      <input id="reject" type="button" value="reject" onclick="reject()"/>
-      <input id="pickup" type="button" value="pickup" onclick="pickup()"/>
+      <input id="reject" type="button" value="reject" onclick="doReject()"/>
+      <input id="pickup" type="button" value="pickup" onclick="doPickup()"/>
     </div>
     <div id="logger"></div>
     <div id="networkLogger"></div>
