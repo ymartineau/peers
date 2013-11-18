@@ -28,10 +28,10 @@ import net.sourceforge.peers.Config;
 import net.sourceforge.peers.FileLogger;
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.XmlConfig;
+import net.sourceforge.peers.media.AbstractSoundManager;
 import net.sourceforge.peers.media.Echo;
 import net.sourceforge.peers.media.MediaManager;
 import net.sourceforge.peers.media.MediaMode;
-import net.sourceforge.peers.media.SoundManager;
 import net.sourceforge.peers.sdp.SDPManager;
 import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.core.useragent.handlers.ByeHandler;
@@ -77,21 +77,24 @@ public class UserAgent {
     private SipListener sipListener;
     
     private SDPManager sdpManager;
-    private SoundManager soundManager;
+    private AbstractSoundManager soundManager;
     private MediaManager mediaManager;
 
     public UserAgent(SipListener sipListener, String peersHome,
-            Logger logger) throws SocketException {
-        this(sipListener, null, peersHome, logger);
+            Logger logger, AbstractSoundManager soundManager)
+                    throws SocketException {
+        this(sipListener, null, peersHome, logger, soundManager);
     }
 
     public UserAgent(SipListener sipListener, Config config,
-            Logger logger) throws SocketException {
-        this(sipListener, config, null, logger);
+            Logger logger, AbstractSoundManager soundManager)
+                    throws SocketException {
+        this(sipListener, config, null, logger, soundManager);
     }
 
     private UserAgent(SipListener sipListener, Config config, String peersHome,
-            Logger logger) throws SocketException {
+            Logger logger, AbstractSoundManager soundManager)
+                    throws SocketException {
         this.sipListener = sipListener;
         if (peersHome == null) {
             peersHome = Utils.DEFAULT_PEERS_HOME;
@@ -217,8 +220,9 @@ public class UserAgent {
         sdpManager = new SDPManager(this, logger);
         inviteHandler.setSdpManager(sdpManager);
         optionsHandler.setSdpManager(sdpManager);
-        soundManager = new SoundManager(config.isMediaDebug(), logger,
-                this.peersHome);
+        // soundManager  = new SoundManager(config.isMediaDebug(), logger,
+        // this.peersHome);
+        this.soundManager = soundManager;
         mediaManager = new MediaManager(this, logger);
     }
 
@@ -339,7 +343,7 @@ public class UserAgent {
         return sipListener;
     }
 
-    public SoundManager getSoundManager() {
+    public AbstractSoundManager getSoundManager() {
         return soundManager;
     }
 

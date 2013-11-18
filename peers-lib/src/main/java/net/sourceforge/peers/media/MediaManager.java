@@ -93,8 +93,8 @@ public class MediaManager {
             String remoteAddress, int remotePort, Codec codec) {
         switch (userAgent.getMediaMode()) {
         case captureAndPlayback:
-            SoundManager soundManager = userAgent.getSoundManager();
-            soundManager.openAndStartLines();
+            AbstractSoundManager soundManager = userAgent.getSoundManager();
+            soundManager.init();
             startRtpSessionOnSuccessResponse(localAddress, remoteAddress,
                     remotePort, codec, soundManager);
             
@@ -180,8 +180,8 @@ public class MediaManager {
         switch (userAgent.getMediaMode()) {
         case captureAndPlayback:
 
-            SoundManager soundManager = userAgent.getSoundManager();
-            soundManager.openAndStartLines();
+            AbstractSoundManager soundManager = userAgent.getSoundManager();
+            soundManager.init();
 
             startRtpSession(destAddress, destPort, codec, soundManager);
 
@@ -296,9 +296,9 @@ public class MediaManager {
 
         switch (userAgent.getMediaMode()) {
         case captureAndPlayback:
-            SoundManager soundManager = userAgent.getSoundManager();
+            AbstractSoundManager soundManager = userAgent.getSoundManager();
             if (soundManager != null) {
-                soundManager.closeLines();
+                soundManager.close();
             }
             break;
         case echo:

@@ -31,11 +31,11 @@ import net.sourceforge.peers.sdp.Codec;
 public class IncomingRtpReader implements RtpListener {
 
     private RtpSession rtpSession;
-    private SoundManager soundManager;
+    private AbstractSoundManager soundManager;
     private Decoder decoder;
 
     public IncomingRtpReader(RtpSession rtpSession,
-            SoundManager soundManager, Codec codec, Logger logger)
+            AbstractSoundManager soundManager, Codec codec, Logger logger)
             throws IOException {
         logger.debug("playback codec:" + codec.toString().trim());
         this.rtpSession = rtpSession;

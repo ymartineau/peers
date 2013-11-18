@@ -62,8 +62,8 @@ public abstract class Encoder implements Runnable {
             SimpleDateFormat simpleDateFormat =
                 new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
             String date = simpleDateFormat.format(new Date());
-            String dir = peersHome + File.separator + SoundManager.MEDIA_DIR
-                + File.separator;
+            String dir = peersHome + File.separator
+                    + AbstractSoundManager.MEDIA_DIR + File.separator;
             String fileName = dir + date + "_g711_encoder.output";
             try {
                 encoderOutput = new FileOutputStream(fileName);

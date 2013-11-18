@@ -34,6 +34,7 @@ import javax.swing.SwingUtilities;
 
 import net.sourceforge.peers.Config;
 import net.sourceforge.peers.Logger;
+import net.sourceforge.peers.media.AbstractSoundManager;
 import net.sourceforge.peers.media.MediaManager;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.Utils;
@@ -69,7 +70,7 @@ public class EventManager implements SipListener, MainFrameListener,
     private Logger logger;
 
     public EventManager(MainFrame mainFrame, String peersHome,
-            Logger logger) {
+            Logger logger, AbstractSoundManager soundManager) {
         this.mainFrame = mainFrame;
         this.logger = logger;
         callFrames = Collections.synchronizedMap(
@@ -77,7 +78,7 @@ public class EventManager implements SipListener, MainFrameListener,
         closed = false;
         // create sip stack
         try {
-            userAgent = new UserAgent(this, peersHome, logger);
+            userAgent = new UserAgent(this, peersHome, logger, soundManager);
         } catch (SocketException e) {
             SwingUtilities.invokeLater(new Runnable() {
                 @Override

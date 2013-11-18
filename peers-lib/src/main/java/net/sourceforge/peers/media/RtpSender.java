@@ -70,7 +70,7 @@ public class RtpSender implements Runnable {
                 new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
             String date = simpleDateFormat.format(new Date());
             String fileName = peersHome + File.separator
-                + SoundManager.MEDIA_DIR + File.separator + date
+                + AbstractSoundManager.MEDIA_DIR + File.separator + date
                 + "_rtp_sender.input";
             try {
                 rtpSenderInput = new FileOutputStream(fileName);

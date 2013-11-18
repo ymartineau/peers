@@ -17,7 +17,7 @@
     Copyright 2010, 2011, 2012 Yohann Martineau 
 */
 
-package net.sourceforge.peers.media;
+package net.sourceforge.peers.javaxsound;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -34,10 +34,9 @@ import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.TargetDataLine;
 
 import net.sourceforge.peers.Logger;
+import net.sourceforge.peers.media.AbstractSoundManager;
 
-public class SoundManager implements SoundSource {
-
-    public final static String MEDIA_DIR = "media";
+public class JavaxSoundManager extends AbstractSoundManager {
 
     private AudioFormat audioFormat;
     private TargetDataLine targetDataLine;
@@ -50,7 +49,7 @@ public class SoundManager implements SoundSource {
     private Logger logger;
     private String peersHome;
     
-    public SoundManager(boolean mediaDebug, Logger logger, String peersHome) {
+    public JavaxSoundManager(boolean mediaDebug, Logger logger, String peersHome) {
         this.mediaDebug = mediaDebug;
         this.logger = logger;
         this.peersHome = peersHome;
@@ -60,7 +59,8 @@ public class SoundManager implements SoundSource {
         sourceInfo = new DataLine.Info(SourceDataLine.class, audioFormat);
     }
 
-    public void openAndStartLines() {
+    @Override
+    public void init() {
         logger.debug("openAndStartLines");
         if (mediaDebug) {
             SimpleDateFormat simpleDateFormat =
@@ -103,7 +103,8 @@ public class SoundManager implements SoundSource {
         sourceDataLine.start();
     }
 
-    public synchronized void closeLines() {
+    @Override
+    public synchronized void close() {
         logger.debug("closeLines");
         if (microphoneOutput != null) {
             try {
@@ -133,10 +134,7 @@ public class SoundManager implements SoundSource {
         }
     }
 
-    /**
-     * audio read from microphone, read all available data
-     * @return
-     */
+    @Override
     public synchronized byte[] readData() {
         if (targetDataLine == null) {
             return null;
@@ -166,14 +164,7 @@ public class SoundManager implements SoundSource {
         return buffer;
     }
 
-    /**
-     * audio sent to speaker
-     * 
-     * @param buffer
-     * @param offset
-     * @param length
-     * @return
-     */
+    @Override
     public int writeData(byte[] buffer, int offset, int length) {
         int numberOfBytesWritten = sourceDataLine.write(buffer, offset, length);
         if (mediaDebug) {

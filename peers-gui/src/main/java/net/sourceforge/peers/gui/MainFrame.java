@@ -43,6 +43,8 @@ import javax.swing.border.Border;
 
 import net.sourceforge.peers.FileLogger;
 import net.sourceforge.peers.Logger;
+import net.sourceforge.peers.javaxsound.JavaxSoundManager;
+import net.sourceforge.peers.media.AbstractSoundManager;
 import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.SipResponse;
@@ -85,6 +87,9 @@ public class MainFrame implements WindowListener, ActionListener {
         } catch (Exception e) {
             logger.error("cannot change look and feel", e);
         }
+        final AbstractSoundManager soundManager = new JavaxSoundManager(
+                false, //TODO config.isMediaDebug(),
+                logger, peersHome);
         String title = "";
         if (!Utils.DEFAULT_PEERS_HOME.equals(peersHome)) {
             title = peersHome;
@@ -136,7 +141,7 @@ public class MainFrame implements WindowListener, ActionListener {
                     peersHome = args[0];
                 }
                 eventManager = new EventManager(MainFrame.this,
-                        peersHome, logger);
+                        peersHome, logger, soundManager);
                     eventManager.register();
             }
         }, "gui-event-manager");

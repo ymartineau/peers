@@ -25,6 +25,7 @@ import java.net.UnknownHostException;
 
 import net.sourceforge.peers.Config;
 import net.sourceforge.peers.JavaConfig;
+import net.sourceforge.peers.media.AbstractSoundManager;
 import net.sourceforge.peers.media.MediaMode;
 import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
 import net.sourceforge.peers.sip.transport.SipRequest;
@@ -51,13 +52,16 @@ public class CancelTestNG {
         config.setLocalInetAddress(InetAddress.getLocalHost());
         config.setMediaMode(MediaMode.none);
         user1SipListener = new UserSipListener();
-        testUser1 = new UserAgent(user1SipListener, config, null);
+        AbstractSoundManager soundManager = new DummySoundManager();
+        testUser1 = new UserAgent(user1SipListener, config, null,
+                soundManager);
 
         config = new JavaConfig();
         config.setLocalInetAddress(InetAddress.getLocalHost());
         config.setMediaMode(MediaMode.none);
         user2SipListener = new UserSipListener();
-        testUser2 = new UserAgent(user2SipListener, config, null);
+        testUser2 = new UserAgent(user2SipListener, config, null,
+                soundManager);
 
     }
 

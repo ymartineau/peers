@@ -37,7 +37,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
 
 import net.sourceforge.peers.Logger;
-import net.sourceforge.peers.media.SoundManager;
+import net.sourceforge.peers.media.AbstractSoundManager;
 
 /**
  * can be instantiated on UAC INVITE sending or on UAS 200 OK sending 
@@ -72,8 +72,8 @@ public class RtpSession {
             SimpleDateFormat simpleDateFormat =
                 new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
             String date = simpleDateFormat.format(new Date());
-            String dir = peersHome + File.separator + SoundManager.MEDIA_DIR
-                + File.separator;
+            String dir = peersHome + File.separator
+                    + AbstractSoundManager.MEDIA_DIR + File.separator;
             String fileName = dir + date + "_rtp_session.output";
             try {
                 rtpSessionOutput = new FileOutputStream(fileName);
