@@ -31,6 +31,8 @@ import java.util.concurrent.Executors;
 import net.sourceforge.peers.Config;
 import net.sourceforge.peers.JavaConfig;
 import net.sourceforge.peers.Logger;
+import net.sourceforge.peers.javaxsound.JavaxSoundManager;
+import net.sourceforge.peers.media.AbstractSoundManager;
 import net.sourceforge.peers.media.MediaManager;
 import net.sourceforge.peers.media.MediaMode;
 import net.sourceforge.peers.sip.RFC3261;
@@ -64,6 +66,10 @@ public class JsUserAgent extends Applet implements SipListener, WebLoggerOutput 
         executorService = Executors.newCachedThreadPool();
         logger = new WebLogger(this);
         config = new JavaConfig();
+        String peersHome = Utils.DEFAULT_PEERS_HOME;
+        final AbstractSoundManager soundManager = new JavaxSoundManager(
+                false, //TODO config.isMediaDebug(),
+                logger, peersHome);
         InetAddress localhost = null;
         try {
             localhost = InetAddress.getLocalHost();
@@ -79,7 +85,8 @@ public class JsUserAgent extends Applet implements SipListener, WebLoggerOutput 
             public void run() {
                 
                 try {
-                    userAgent = new UserAgent(JsUserAgent.this, config, logger);
+                    userAgent = new UserAgent(JsUserAgent.this, config, logger,
+                            soundManager);
                     System.out.println("useragent created");
                 } catch (SocketException e) {
                     logger.error(e.getMessage());
