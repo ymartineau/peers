@@ -193,8 +193,15 @@
         deployJava.runApplet(attributes, parameters, '1.6');
     </script>
     <div>
+      warning: this demo will only work if you register on a registrar (pabx)
+      on your local network. This limitation is due to restrictions on
+      permissions when java runtime environment is run as a browser plugin.
+    </div>
+    <div>
       local ip address:
       <input id="ipAddress" type="text"/>
+      (use this field if your computer has several local area network ip
+      adresses). In any case, click "init" first.
     </div>
     <div>
       <input id="instantiatePeersAction" type="button" value="init" onclick="doInstantiatePeersAction()"/>
