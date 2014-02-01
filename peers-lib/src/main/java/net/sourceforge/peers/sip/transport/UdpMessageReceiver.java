@@ -51,23 +51,33 @@ public class UdpMessageReceiver extends MessageReceiver {
     protected void listen() throws IOException {
         byte[] buf = new byte[BUFFER_SIZE];
         final DatagramPacket packet = new DatagramPacket(buf, buf.length);
-        String result = AccessController.doPrivileged(
-            new PrivilegedAction<String>() {
-                public String run() {
+        final int noException = 0;
+        final int socketTimeoutException = 1;
+        final int ioException = 2;
+        // AccessController.doPrivileged added for plugin compatibility
+        int result = AccessController.doPrivileged(
+            new PrivilegedAction<Integer>() {
+                public Integer run() {
                     try {
                         datagramSocket.receive(packet);
                     } catch (SocketTimeoutException e) {
-                        return "";
+                        return socketTimeoutException;
                     } catch (IOException e) {
-                        return null;
+                        logger.error("cannot receive packet", e);
+                        return ioException;
                     }
-                    return "";
+                    return noException;
                 }
-            }
-            
-        );
-        if (result == null) {
+            });
+        switch (result) {
+        case socketTimeoutException:
+            return;
+        case ioException:
             throw new IOException();
+        case noException:
+            break;
+        default:
+            break;
         }
         byte[] trimmedPacket = new byte[packet.getLength()];
         System.arraycopy(packet.getData(), 0,

@@ -90,7 +90,15 @@ public class RtpSession {
     }
 
     public void stop() {
-        executorService.shutdown();
+        // AccessController.doPrivileged added for plugin compatibility
+        AccessController.doPrivileged(
+            new PrivilegedAction<Void>() {
+                public Void run() {
+                    executorService.shutdown();
+                    return null;
+                }
+            }
+        );
     }
 
     public void addRtpListener(RtpListener rtpListener) {
@@ -178,20 +186,39 @@ public class RtpSession {
                 return;
             }
             byte[] buf = new byte[receiveBufferSize];
-            DatagramPacket datagramPacket = new DatagramPacket(buf,
+            final DatagramPacket datagramPacket = new DatagramPacket(buf,
                     buf.length);
-            try {
-                datagramSocket.receive(datagramPacket);
-            } catch (SocketTimeoutException e) {
+            final int noException = 0;
+            final int socketTimeoutException = 1;
+            final int ioException = 2;
+            int result = AccessController.doPrivileged(
+	            new PrivilegedAction<Integer>() {
+	                public Integer run() {
+					    try {
+					        datagramSocket.receive(datagramPacket);
+					    } catch (SocketTimeoutException e) {
+                            return socketTimeoutException;
+					    } catch (IOException e) {
+					        logger.error("cannot receive packet", e);
+					        return ioException;
+					    }
+					    return noException;
+	                }
+	            });
+            switch (result) {
+            case socketTimeoutException:
                 try {
                     executorService.execute(this);
                 } catch (RejectedExecutionException rej) {
                     closeFileAndDatagramSocket();
                 }
                 return;
-            } catch (IOException e) {
-                logger.error("cannot receive packet", e);
+            case ioException:
                 return;
+            case noException:
+                break;
+            default:
+                break;
             }
             InetAddress remoteAddress = datagramPacket.getAddress();
             if (remoteAddress != null &&

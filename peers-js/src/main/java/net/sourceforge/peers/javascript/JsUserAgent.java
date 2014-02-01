@@ -106,13 +106,7 @@ public class JsUserAgent extends Applet implements SipListener, WebLoggerOutput 
         executorService.submit(new Runnable() {
             @Override
             public void run() {
-//                AccessController.doPrivileged(new PrivilegedAction<Void>() {
-//                    @Override
-//                    public Void run() {
-                        userAgent.close();
-//                        return null;
-//                    }
-//                });
+                userAgent.close();
             }
         });
     }
@@ -126,58 +120,41 @@ public class JsUserAgent extends Applet implements SipListener, WebLoggerOutput 
         executorService.submit(new Runnable() {
             @Override
             public void run() {
-//                AccessController.doPrivileged(new PrivilegedAction<Void>() {
-//                    @Override
-//                    public Void run() {
-                        config.setUserPart(userPart);
-                        config.setPassword(password);
-                        config.setDomain(domain);
-                        if (outboundProxy != null && !"".equals(outboundProxy.trim())) {
-                            SipURI outboundProxyUri = null;
-                            try {
-                                outboundProxyUri = new SipURI(outboundProxy);
-                            } catch (SipUriSyntaxException e) {
-                                logger.error(e.getMessage());
-                            }
-                            config.setOutboundProxy(outboundProxyUri);
-                        }
+                config.setUserPart(userPart);
+                config.setPassword(password);
+                config.setDomain(domain);
+                if (outboundProxy != null && !"".equals(outboundProxy.trim())) {
+                    SipURI outboundProxyUri = null;
+                    try {
+                        outboundProxyUri = new SipURI(outboundProxy);
+                    } catch (SipUriSyntaxException e) {
+                        logger.error(e.getMessage());
+                    }
+                    config.setOutboundProxy(outboundProxyUri);
+                }
 
-                        try {
-                            userAgent.getUac().register();
-                        } catch (SipUriSyntaxException e) {
-                            logger.error(e.getMessage());
-                        }
-//                        return null;
-//                    }
-//                });
+                try {
+                    userAgent.getUac().register();
+                } catch (SipUriSyntaxException e) {
+                    logger.error(e.getMessage());
+                }
             }
         });
     }
 
     public void invite(final String uri) {
         executorService.submit(new Runnable() {
-            
             @Override
             public void run() {
-//                AccessController.doPrivileged(new PrivilegedAction<Void>() {
-//
-//                    @Override
-//                    public Void run() {
-                        String callId = Utils.generateCallID(
-                                userAgent.getConfig().getLocalInetAddress());
-                        try {
-                            SipRequest sipRequest =
-                                    userAgent.getUac().invite(uri, callId);
-                            setInviteSipRequest(sipRequest);
-                        } catch (SipUriSyntaxException e) {
-                            logger.error(e.getMessage());
-                        }
-//                        return null;
-//                    }
-//
-//                    
-//                });
-
+                String callId = Utils.generateCallID(userAgent.getConfig()
+                        .getLocalInetAddress());
+                try {
+                    SipRequest sipRequest = userAgent.getUac().invite(uri,
+                            callId);
+                    setInviteSipRequest(sipRequest);
+                } catch (SipUriSyntaxException e) {
+                    logger.error(e.getMessage());
+                }
             }
         });
 
@@ -185,23 +162,13 @@ public class JsUserAgent extends Applet implements SipListener, WebLoggerOutput 
 
     public void unregister() {
         executorService.submit(new Runnable() {
-            
             @Override
             public void run() {
-//                AccessController.doPrivileged(new PrivilegedAction<Void>() {
-//
-//                    @Override
-//                    public Void run() {
-                        try {
-                            userAgent.getUac().unregister();
-                        } catch (SipUriSyntaxException e) {
-                            logger.error(e.getMessage());
-                        }
-//                        return null;
-//                    }
-//                    
-//                });
-
+                try {
+                    userAgent.getUac().unregister();
+                } catch (SipUriSyntaxException e) {
+                    logger.error(e.getMessage());
+                }
             }
         });
 
@@ -209,86 +176,44 @@ public class JsUserAgent extends Applet implements SipListener, WebLoggerOutput 
 
     public void terminate(final SipRequest sipRequest) {
         executorService.submit(new Runnable() {
-            
             @Override
             public void run() {
-//                AccessController.doPrivileged(new PrivilegedAction<Void>() {
-//
-//                    @Override
-//                    public Void run() {
-                        userAgent.getUac().terminate(sipRequest);
-//                        return null;
-//                    }
-//
-//                });
-
+                userAgent.getUac().terminate(sipRequest);
             }
         });
-
     }
 
     public void pickupClicked(final SipRequest sipRequest) {
         executorService.submit(new Runnable() {
-            
             @Override
             public void run() {
-//                AccessController.doPrivileged(new PrivilegedAction<Void>() {
-//
-//                    @Override
-//                    public Void run() {
-                        String callId = Utils.getMessageCallId(sipRequest);
-                        DialogManager dialogManager = userAgent.getDialogManager();
-                        Dialog dialog = dialogManager.getDialog(callId);
-                        userAgent.getUas().acceptCall(sipRequest, dialog);
-//                        return null;
-//                    }
-//
-//                });
-
+                String callId = Utils.getMessageCallId(sipRequest);
+                DialogManager dialogManager = userAgent.getDialogManager();
+                Dialog dialog = dialogManager.getDialog(callId);
+                userAgent.getUas().acceptCall(sipRequest, dialog);
             }
         });
-
     }
     
     public void busyHereClicked(final SipRequest sipRequest) {
         executorService.submit(new Runnable() {
-            
             @Override
             public void run() {
-//                AccessController.doPrivileged(new PrivilegedAction<Void>() {
-//
-//                    @Override
-//                    public Void run() {
-                        userAgent.getUas().rejectCall(sipRequest);
-//                        return null;
-//                    }
-//
-//                });
+                userAgent.getUas().rejectCall(sipRequest);
 
             }
         });
-
     }
     
     public void dtmf(final char digit) {
         executorService.submit(new Runnable() {
-            
             @Override
             public void run() {
-//                AccessController.doPrivileged(new PrivilegedAction<Void>() {
-//
-//                    @Override
-//                    public Void run() {
-                        MediaManager mediaManager = userAgent.getMediaManager();
-                        mediaManager.sendDtmf(digit);
-//                        return null;
-//                    }
-//
-//                });
+                MediaManager mediaManager = userAgent.getMediaManager();
+                mediaManager.sendDtmf(digit);
 
             }
         });
-
     }
 
     // server methods
