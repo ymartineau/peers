@@ -121,6 +121,13 @@
 
   // client functions
 
+  function doInstantiatePeersAction() {
+    log("doInstantiatePeersAction");
+    var peersObj = document.getElementById("peers");
+    var ipAddressInput = document.getElementById("ipAddress");
+    peersObj.instantiatePeers(ipAddress.value);
+  }
+
   function doRegisterAction() {
     log("doRegisterAction");
     var peersObj = document.getElementById("peers");
@@ -185,8 +192,16 @@
         var parameters = {jnlp_href: 'applet-tests.jnlp'} ;
         deployJava.runApplet(attributes, parameters, '1.6');
     </script>
+    <div>
+      local ip address:
+      <input id="ipAddress" type="text"/>
+    </div>
+    <div>
+      <input id="instantiatePeersAction" type="button" value="init" onclick="doInstantiatePeersAction()"/>
+    </div>
     <table id="account">
       <tbody>
+
         <tr>
           <td>user part:</td>
           <td><input id="userPart" type="text"/></td>

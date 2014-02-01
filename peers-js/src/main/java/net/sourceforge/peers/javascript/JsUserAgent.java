@@ -23,8 +23,6 @@ import java.applet.Applet;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
-import java.security.AccessController;
-import java.security.PrivilegedAction;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -60,41 +58,46 @@ public class JsUserAgent extends Applet implements SipListener, WebLoggerOutput 
     private Logger logger;
     private ExecutorService executorService;
 
-    @Override
-    public void init() {
-        System.out.println("init");
-        executorService = Executors.newCachedThreadPool();
-        logger = new WebLogger(this);
-        config = new JavaConfig();
-        String peersHome = Utils.DEFAULT_PEERS_HOME;
-        final AbstractSoundManager soundManager = new JavaxSoundManager(
-                false, //TODO config.isMediaDebug(),
-                logger, peersHome);
-        InetAddress localhost = null;
+    public void instantiatePeers(String ipAddress) {
         try {
-            localhost = InetAddress.getLocalHost();
-        } catch (UnknownHostException e1) {
-            System.out.println(e1 + " " + e1.getMessage());
-            logger.error("Unknown localhost", e1);
-        }
-        config.setLocalInetAddress(localhost);
-        config.setMediaMode(MediaMode.captureAndPlayback);
-
-        executorService.submit(new Runnable() {
-            @Override
-            public void run() {
-                
-                try {
-                    userAgent = new UserAgent(JsUserAgent.this, config, logger,
-                            soundManager);
-                    System.out.println("useragent created");
-                } catch (SocketException e) {
-                    logger.error(e.getMessage());
-                    System.out.println(e);
-                }
+            System.out.println("instantiatePeers");
+            executorService = Executors.newCachedThreadPool();
+            logger = new WebLogger(this);
+            config = new JavaConfig();
+            String peersHome = Utils.DEFAULT_PEERS_HOME;
+            final AbstractSoundManager soundManager = new JavaxSoundManager(
+                    false, //TODO config.isMediaDebug(),
+                    logger, peersHome);
+            InetAddress inetAddress;
+            try {
+                inetAddress = InetAddress.getByName(ipAddress);
+            } catch (UnknownHostException e1) {
+                System.out.println(e1 + " " + e1.getMessage());
+                logger.error("Unknown ipAddress " + ipAddress, e1);
+                return;
             }
-        });
-        System.out.println("task scheduled");
+            config.setLocalInetAddress(inetAddress);
+            config.setMediaMode(MediaMode.captureAndPlayback);
+
+            executorService.submit(new Runnable() {
+                @Override
+                public void run() {
+
+                    try {
+                        userAgent = new UserAgent(JsUserAgent.this, config,
+                                logger, soundManager);
+                        System.out.println("useragent created");
+                    } catch (SocketException e) {
+                        logger.error(e.getMessage());
+                        System.out.println(e);
+                    }
+                }
+            });
+            System.out.println("task scheduled");
+        } catch (SecurityException e) {
+            logger.error(e.getMessage());
+            e.printStackTrace();
+        }
     }
 
     // client methods
@@ -103,13 +106,13 @@ public class JsUserAgent extends Applet implements SipListener, WebLoggerOutput 
         executorService.submit(new Runnable() {
             @Override
             public void run() {
-                AccessController.doPrivileged(new PrivilegedAction<Void>() {
-                    @Override
-                    public Void run() {
+//                AccessController.doPrivileged(new PrivilegedAction<Void>() {
+//                    @Override
+//                    public Void run() {
                         userAgent.close();
-                        return null;
-                    }
-                });
+//                        return null;
+//                    }
+//                });
             }
         });
     }
@@ -123,9 +126,9 @@ public class JsUserAgent extends Applet implements SipListener, WebLoggerOutput 
         executorService.submit(new Runnable() {
             @Override
             public void run() {
-                AccessController.doPrivileged(new PrivilegedAction<Void>() {
-                    @Override
-                    public Void run() {
+//                AccessController.doPrivileged(new PrivilegedAction<Void>() {
+//                    @Override
+//                    public Void run() {
                         config.setUserPart(userPart);
                         config.setPassword(password);
                         config.setDomain(domain);
@@ -144,9 +147,9 @@ public class JsUserAgent extends Applet implements SipListener, WebLoggerOutput 
                         } catch (SipUriSyntaxException e) {
                             logger.error(e.getMessage());
                         }
-                        return null;
-                    }
-                });
+//                        return null;
+//                    }
+//                });
             }
         });
     }
@@ -156,10 +159,10 @@ public class JsUserAgent extends Applet implements SipListener, WebLoggerOutput 
             
             @Override
             public void run() {
-                AccessController.doPrivileged(new PrivilegedAction<Void>() {
-
-                    @Override
-                    public Void run() {
+//                AccessController.doPrivileged(new PrivilegedAction<Void>() {
+//
+//                    @Override
+//                    public Void run() {
                         String callId = Utils.generateCallID(
                                 userAgent.getConfig().getLocalInetAddress());
                         try {
@@ -169,11 +172,11 @@ public class JsUserAgent extends Applet implements SipListener, WebLoggerOutput 
                         } catch (SipUriSyntaxException e) {
                             logger.error(e.getMessage());
                         }
-                        return null;
-                    }
-
-                    
-                });
+//                        return null;
+//                    }
+//
+//                    
+//                });
 
             }
         });
@@ -185,19 +188,19 @@ public class JsUserAgent extends Applet implements SipListener, WebLoggerOutput 
             
             @Override
             public void run() {
-                AccessController.doPrivileged(new PrivilegedAction<Void>() {
-
-                    @Override
-                    public Void run() {
+//                AccessController.doPrivileged(new PrivilegedAction<Void>() {
+//
+//                    @Override
+//                    public Void run() {
                         try {
                             userAgent.getUac().unregister();
                         } catch (SipUriSyntaxException e) {
                             logger.error(e.getMessage());
                         }
-                        return null;
-                    }
-                    
-                });
+//                        return null;
+//                    }
+//                    
+//                });
 
             }
         });
@@ -209,15 +212,15 @@ public class JsUserAgent extends Applet implements SipListener, WebLoggerOutput 
             
             @Override
             public void run() {
-                AccessController.doPrivileged(new PrivilegedAction<Void>() {
-
-                    @Override
-                    public Void run() {
+//                AccessController.doPrivileged(new PrivilegedAction<Void>() {
+//
+//                    @Override
+//                    public Void run() {
                         userAgent.getUac().terminate(sipRequest);
-                        return null;
-                    }
-
-                });
+//                        return null;
+//                    }
+//
+//                });
 
             }
         });
@@ -229,18 +232,18 @@ public class JsUserAgent extends Applet implements SipListener, WebLoggerOutput 
             
             @Override
             public void run() {
-                AccessController.doPrivileged(new PrivilegedAction<Void>() {
-
-                    @Override
-                    public Void run() {
+//                AccessController.doPrivileged(new PrivilegedAction<Void>() {
+//
+//                    @Override
+//                    public Void run() {
                         String callId = Utils.getMessageCallId(sipRequest);
                         DialogManager dialogManager = userAgent.getDialogManager();
                         Dialog dialog = dialogManager.getDialog(callId);
                         userAgent.getUas().acceptCall(sipRequest, dialog);
-                        return null;
-                    }
-
-                });
+//                        return null;
+//                    }
+//
+//                });
 
             }
         });
@@ -252,15 +255,15 @@ public class JsUserAgent extends Applet implements SipListener, WebLoggerOutput 
             
             @Override
             public void run() {
-                AccessController.doPrivileged(new PrivilegedAction<Void>() {
-
-                    @Override
-                    public Void run() {
+//                AccessController.doPrivileged(new PrivilegedAction<Void>() {
+//
+//                    @Override
+//                    public Void run() {
                         userAgent.getUas().rejectCall(sipRequest);
-                        return null;
-                    }
-
-                });
+//                        return null;
+//                    }
+//
+//                });
 
             }
         });
@@ -272,16 +275,16 @@ public class JsUserAgent extends Applet implements SipListener, WebLoggerOutput 
             
             @Override
             public void run() {
-                AccessController.doPrivileged(new PrivilegedAction<Void>() {
-
-                    @Override
-                    public Void run() {
+//                AccessController.doPrivileged(new PrivilegedAction<Void>() {
+//
+//                    @Override
+//                    public Void run() {
                         MediaManager mediaManager = userAgent.getMediaManager();
                         mediaManager.sendDtmf(digit);
-                        return null;
-                    }
-
-                });
+//                        return null;
+//                    }
+//
+//                });
 
             }
         });

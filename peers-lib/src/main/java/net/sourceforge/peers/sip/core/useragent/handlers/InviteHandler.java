@@ -24,6 +24,8 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -148,25 +150,40 @@ public class InviteHandler extends DialogMethodHandler
         DatagramSocket datagramSocket = userAgent.getMediaManager()
                 .getDatagramSocket();
         if (datagramSocket == null) { // initial invite success response
-            int rtpPort = userAgent.getConfig().getRtpPort();
-            try {
-                if (rtpPort == 0) {
-                    int localPort = -1;
-                    while (localPort % 2 != 0) {
-                        datagramSocket = new DatagramSocket();
-                        localPort = datagramSocket.getLocalPort();
-                        if (localPort % 2 != 0) {
-                            datagramSocket.close();
+            // AccessController.doPrivileged added for plugin compatibility
+            datagramSocket = AccessController.doPrivileged(
+                new PrivilegedAction<DatagramSocket>() {
+
+                    @Override
+                    public DatagramSocket run() {
+                        DatagramSocket datagramSocket = null;
+                        int rtpPort = userAgent.getConfig().getRtpPort();
+                        try {
+                            if (rtpPort == 0) {
+                                int localPort = -1;
+                                while (localPort % 2 != 0) {
+                                    datagramSocket = new DatagramSocket();
+                                    localPort = datagramSocket.getLocalPort();
+                                    if (localPort % 2 != 0) {
+                                        datagramSocket.close();
+                                    }
+                                }
+                            } else {
+                                datagramSocket = new DatagramSocket(rtpPort);
+                            }
+                        } catch (SocketException e) {
+                            logger.error("cannot create datagram socket ", e);
                         }
+ 
+                        return datagramSocket;
                     }
-                } else {
-                    datagramSocket = new DatagramSocket(rtpPort);
                 }
-                logger.debug("new rtp DatagramSocket " +
-                        datagramSocket.hashCode());
+            );
+            logger.debug("new rtp DatagramSocket " + datagramSocket.hashCode());
+            try {
                 datagramSocket.setSoTimeout(TIMEOUT);
             } catch (SocketException e) {
-                logger.error("cannot create datagram socket ", e);
+                logger.error("cannot set timeout on datagram socket ", e);
             }
             userAgent.getMediaManager().setDatagramSocket(datagramSocket);
         }

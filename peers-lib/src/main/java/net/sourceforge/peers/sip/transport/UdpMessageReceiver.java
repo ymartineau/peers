@@ -24,6 +24,8 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 
 import net.sourceforge.peers.Config;
 import net.sourceforge.peers.Logger;
@@ -48,11 +50,24 @@ public class UdpMessageReceiver extends MessageReceiver {
     @Override
     protected void listen() throws IOException {
         byte[] buf = new byte[BUFFER_SIZE];
-        DatagramPacket packet = new DatagramPacket(buf, buf.length);
-        try {
-            datagramSocket.receive(packet);
-        } catch (SocketTimeoutException e) {
-            return;
+        final DatagramPacket packet = new DatagramPacket(buf, buf.length);
+        String result = AccessController.doPrivileged(
+            new PrivilegedAction<String>() {
+                public String run() {
+                    try {
+                        datagramSocket.receive(packet);
+                    } catch (SocketTimeoutException e) {
+                        return "";
+                    } catch (IOException e) {
+                        return null;
+                    }
+                    return "";
+                }
+            }
+            
+        );
+        if (result == null) {
+            throw new IOException();
         }
         byte[] trimmedPacket = new byte[packet.getLength()];
         System.arraycopy(packet.getData(), 0,

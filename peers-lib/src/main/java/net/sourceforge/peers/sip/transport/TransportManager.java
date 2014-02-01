@@ -39,6 +39,8 @@ import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.util.Hashtable;
 
 import net.sourceforge.peers.Config;
@@ -293,7 +295,7 @@ public class TransportManager {
         
     }
     
-    private MessageSender createMessageSender(SipTransportConnection conn)
+    private MessageSender createMessageSender(final SipTransportConnection conn)
             throws IOException {
         MessageSender messageSender = null;
         Object socket = null;
@@ -303,8 +305,27 @@ public class TransportManager {
             if (datagramSocket == null) {
                 logger.debug("new DatagramSocket(" + conn.getLocalPort()
                         + ", " + conn.getLocalInetAddress() + ")");
-                datagramSocket = new DatagramSocket(conn.getLocalPort(),
-                        conn.getLocalInetAddress());
+                // AccessController.doPrivileged added for plugin compatibility
+                datagramSocket = AccessController.doPrivileged(
+                    new PrivilegedAction<DatagramSocket>() {
+
+                        @Override
+                        public DatagramSocket run() {
+                            try {
+                                return new DatagramSocket(conn.getLocalPort(),
+                                        conn.getLocalInetAddress());
+                            } catch (SocketException e) {
+                                logger.error("cannot create socket", e);
+                            } catch (SecurityException e) {
+                                logger.error("security exception", e);
+                            }
+                            return null;
+                        }
+                    }
+                );
+                if (datagramSocket == null) {
+                    throw new SocketException();
+                }
                 datagramSocket.setSoTimeout(SOCKET_TIMEOUT);
                 datagramSockets.put(conn, datagramSocket);
                 logger.info("added datagram socket " + conn);
@@ -348,7 +369,7 @@ public class TransportManager {
         return messageReceiver;
     }
     
-    private MessageReceiver createMessageReceiver(SipTransportConnection conn)
+    private MessageReceiver createMessageReceiver(final SipTransportConnection conn)
             throws SocketException {
         MessageReceiver messageReceiver = null;
         SipTransportConnection sipTransportConnection = conn;
@@ -357,8 +378,24 @@ public class TransportManager {
             if (datagramSocket == null) {
                 logger.debug("new DatagramSocket(" + conn.getLocalPort()
                         + ", " + conn.getLocalInetAddress());
-                datagramSocket = new DatagramSocket(conn.getLocalPort(),
-                        conn.getLocalInetAddress());
+                // AccessController.doPrivileged added for plugin compatibility
+                datagramSocket = AccessController.doPrivileged(
+                        new PrivilegedAction<DatagramSocket>() {
+
+                            @Override
+                            public DatagramSocket run() {
+                                try {
+                                    return new DatagramSocket(conn.getLocalPort(),
+                                            conn.getLocalInetAddress());
+                                } catch (SocketException e) {
+                                    logger.error("cannot create socket", e);
+                                } catch (SecurityException e) {
+                                    logger.error("security exception", e);
+                                }
+                                return null;
+                            }
+                        }
+                    );
                 datagramSocket.setSoTimeout(SOCKET_TIMEOUT);
                 if (conn.getLocalPort() == 0) {
                     sipTransportConnection = new SipTransportConnection(
@@ -407,9 +444,19 @@ public class TransportManager {
 		{
 			return;
 		}
-		for (DatagramSocket datagramSocket: datagramSockets.values()) {
-			datagramSocket.close();
-		}
+        // AccessController.doPrivileged added for plugin compatibility
+        AccessController.doPrivileged(
+            new PrivilegedAction<Void>() {
+                @Override
+                public Void run() {
+                    for (DatagramSocket datagramSocket: datagramSockets.values()) {
+                        datagramSocket.close();
+                    }
+                    return null;
+                }
+            }
+        );
+
 		datagramSockets.clear();
 		messageReceivers.clear();
 		messageSenders.clear();

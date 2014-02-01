@@ -28,6 +28,8 @@ import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -100,15 +102,29 @@ public class RtpSession {
             return;
         }
         byte[] buf = rtpParser.encode(rtpPacket);
-        DatagramPacket datagramPacket = new DatagramPacket(buf, buf.length,
+        final DatagramPacket datagramPacket =
+                new DatagramPacket(buf, buf.length,
                 remoteAddress, remotePort);
         
         if (!datagramSocket.isClosed()) {
-            try {
-                datagramSocket.send(datagramPacket);
-            } catch (IOException e) {
-                logger.error("cannot send rtp packet", e);
-            }
+            // AccessController.doPrivileged added for plugin compatibility
+            AccessController.doPrivileged(
+                new PrivilegedAction<Void>() {
+
+                    @Override
+                    public Void run() {
+                        try {
+                            datagramSocket.send(datagramPacket);
+                        } catch (IOException e) {
+                            logger.error("cannot send rtp packet", e);
+                        } catch (SecurityException e) {
+                            logger.error("security exception", e);
+                        }
+                        return null;
+                    }
+                }
+            );
+
             if (mediaDebug) {
                 try {
                     rtpSessionOutput.write(buf);
@@ -136,7 +152,17 @@ public class RtpSession {
                 logger.error("cannot close file", e);
             }
         }
-        datagramSocket.close();
+        // AccessController.doPrivileged added for plugin compatibility
+        AccessController.doPrivileged(
+            new PrivilegedAction<Void>() {
+                @Override
+                public Void run() {
+                    datagramSocket.close();
+                    return null;
+                }
+            }
+        );
+
     }
 
     class Receiver implements Runnable {

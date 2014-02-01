@@ -23,6 +23,8 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -85,22 +87,38 @@ public class JavaxSoundManager extends AbstractSoundManager {
                 return;
             }
         }
-        try {
-            targetDataLine = (TargetDataLine) AudioSystem.getLine(targetInfo);
-            targetDataLine.open(audioFormat);
-        } catch (LineUnavailableException e) {
-            logger.error("target line unavailable", e);
-            return;
-        }
-        targetDataLine.start();
-        try {
-            sourceDataLine = (SourceDataLine) AudioSystem.getLine(sourceInfo);
-            sourceDataLine.open(audioFormat);
-        } catch (LineUnavailableException e) {
-            logger.error("source line unavailable", e);
-            return;
-        }
-        sourceDataLine.start();
+        // AccessController.doPrivileged added for plugin compatibility
+        AccessController.doPrivileged(
+            new PrivilegedAction<Void>() {
+
+                @Override
+                public Void run() {
+                    try {
+                        targetDataLine = (TargetDataLine) AudioSystem.getLine(targetInfo);
+                        targetDataLine.open(audioFormat);
+                    } catch (LineUnavailableException e) {
+                        logger.error("target line unavailable", e);
+                        return null;
+                    } catch (SecurityException e) {
+                        logger.error("security exception", e);
+                        return null;
+                    } catch (Throwable t) {
+                        logger.error("throwable " + t.getMessage());
+                        return null;
+                    }
+                    targetDataLine.start();
+                    try {
+                        sourceDataLine = (SourceDataLine) AudioSystem.getLine(sourceInfo);
+                        sourceDataLine.open(audioFormat);
+                    } catch (LineUnavailableException e) {
+                        logger.error("source line unavailable", e);
+                        return null;
+                    }
+                    sourceDataLine.start();
+                    return null;
+                }
+        });
+
     }
 
     @Override
@@ -122,16 +140,24 @@ public class JavaxSoundManager extends AbstractSoundManager {
             }
             speakerInput = null;
         }
-        if (targetDataLine != null) {
-            targetDataLine.close();
-            targetDataLine = null;
-        }
-        if (sourceDataLine != null) {
-            sourceDataLine.drain();
-            sourceDataLine.stop();
-            sourceDataLine.close();
-            sourceDataLine = null;
-        }
+        // AccessController.doPrivileged added for plugin compatibility
+        AccessController.doPrivileged(new PrivilegedAction<Void>() {
+
+            @Override
+            public Void run() {
+                if (targetDataLine != null) {
+                    targetDataLine.close();
+                    targetDataLine = null;
+                }
+                if (sourceDataLine != null) {
+                    sourceDataLine.drain();
+                    sourceDataLine.stop();
+                    sourceDataLine.close();
+                    sourceDataLine = null;
+                }
+                return null;
+            }
+        });
     }
 
     @Override

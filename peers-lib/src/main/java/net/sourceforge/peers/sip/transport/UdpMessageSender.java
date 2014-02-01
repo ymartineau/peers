@@ -24,6 +24,8 @@ import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
 import java.net.SocketException;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 
 import net.sourceforge.peers.Config;
 import net.sourceforge.peers.Logger;
@@ -59,16 +61,27 @@ public class UdpMessageSender extends MessageSender {
     @Override
     public synchronized void sendBytes(byte[] bytes) throws IOException {
         logger.debug("UdpMessageSender.sendBytes");
-        DatagramPacket packet = new DatagramPacket(bytes, bytes.length,
+        final DatagramPacket packet = new DatagramPacket(bytes, bytes.length,
                 inetAddress, port);
         logger.debug("UdpMessageSender.sendBytes " + bytes.length
                 + " " + inetAddress + ":" + port);
-        logger.debug(datagramSocket.getLocalAddress().toString());
-        try {
-            datagramSocket.send(packet);
-        } catch (Throwable t) {
-            logger.error("throwable", new Exception(t));
-        }
+        // AccessController.doPrivileged added for plugin compatibility
+        AccessController.doPrivileged(
+            new PrivilegedAction<Void>() {
+
+                @Override
+                public Void run() {
+                    try {
+                        logger.debug(datagramSocket.getLocalAddress().toString());
+                        datagramSocket.send(packet);
+                    } catch (Throwable t) {
+                        logger.error("throwable", new Exception(t));
+                    }
+                    return null;
+                }
+            }
+        );
+
         logger.debug("UdpMessageSender.sendBytes packet sent");
     }
 
