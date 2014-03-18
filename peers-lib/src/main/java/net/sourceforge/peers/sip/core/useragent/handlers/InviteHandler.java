@@ -484,7 +484,7 @@ public class InviteHandler extends DialogMethodHandler
             SipRequest sipRequest = transaction.getRequest();
             logger.debug("cancel after prov response: sipRequest " + sipRequest
                     + ", sipResponse " + sipResponse);
-            userAgent.getUac().terminate(sipRequest);
+            userAgent.terminate(sipRequest);
         }
     }
 
@@ -626,7 +626,7 @@ public class InviteHandler extends DialogMethodHandler
         List<String> guiClosedCallIds = userAgent.getUac().getGuiClosedCallIds();
         String callId = Utils.getMessageCallId(sipResponse);
         if (guiClosedCallIds.contains(callId)) {
-            userAgent.getUac().terminate(request);
+            userAgent.terminate(request);
         }
         
         

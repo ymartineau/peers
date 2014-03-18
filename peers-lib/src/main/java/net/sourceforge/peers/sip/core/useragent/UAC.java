@@ -82,7 +82,7 @@ public class UAC {
      * For the moment we consider that only one profile uri is used at a time.
      * @throws SipUriSyntaxException 
      */
-    public SipRequest register() throws SipUriSyntaxException {
+    SipRequest register() throws SipUriSyntaxException {
         String domain = userAgent.getDomain();
         String requestUri = RFC3261.SIP_SCHEME + RFC3261.SCHEME_SEPARATOR
             + domain;
@@ -100,7 +100,7 @@ public class UAC {
         return sipRequest;
     }
     
-    public void unregister() throws SipUriSyntaxException {
+    void unregister() throws SipUriSyntaxException {
         if (getInitialRequestManager().getRegisterHandler().isRegistered()) {
             String requestUri = RFC3261.SIP_SCHEME + RFC3261.SCHEME_SEPARATOR
                 + userAgent.getDomain();
@@ -126,7 +126,7 @@ public class UAC {
         }
     }
     
-    public SipRequest invite(String requestUri, String callId)
+    SipRequest invite(String requestUri, String callId)
             throws SipUriSyntaxException {
         return initialRequestManager.createInitialRequest(requestUri,
                 RFC3261.METHOD_INVITE, profileUri, callId);
@@ -159,7 +159,7 @@ public class UAC {
         return sipRequestNoAuth;
     }
 
-    public void terminate(SipRequest sipRequest) {
+    void terminate(SipRequest sipRequest) {
         String callId = Utils.getMessageCallId(sipRequest);
         if (!guiClosedCallIds.contains(callId)) {
             guiClosedCallIds.add(callId);

@@ -179,7 +179,7 @@ public class RegisterHandler extends MethodHandler
                                 InetAddress.getByName(received);
                             Config config = userAgent.getConfig();
                             config.setPublicInetAddress(receivedInetAddress);
-                            userAgent.getUac().register();
+                            userAgent.register();
                         } catch (UnknownHostException e) {
                             notifyListener(sipResponse);
                             logger.error(e.getMessage(), e);

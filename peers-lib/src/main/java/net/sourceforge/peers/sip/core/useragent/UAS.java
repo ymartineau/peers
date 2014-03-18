@@ -113,12 +113,12 @@ public class UAS implements SipServerTransportUser {
         }
     }
 
-    public void acceptCall(SipRequest sipRequest, Dialog dialog) {
+    void acceptCall(SipRequest sipRequest, Dialog dialog) {
         initialRequestManager.getInviteHandler().acceptCall(sipRequest,
                 dialog);
     }
 
-    public void rejectCall(SipRequest sipRequest) {
+    void rejectCall(SipRequest sipRequest) {
         initialRequestManager.getInviteHandler().rejectCall(sipRequest);
     }
 

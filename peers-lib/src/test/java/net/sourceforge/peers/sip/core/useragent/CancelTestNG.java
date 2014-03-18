@@ -71,13 +71,12 @@ public class CancelTestNG {
         InetAddress inetAddress = config.getLocalInetAddress();
         String host = inetAddress.getHostAddress();
         int port = testUser2.getTransportManager().getSipPort();
-        UAC uac1 = testUser1.getUac();
-        SipRequest invite = uac1.invite("sip:" + host + ":" + port,
+        SipRequest invite = testUser1.invite("sip:" + host + ":" + port,
                 "sdfjhskdjfh");
         while (!user2SipListener.incomingCallInvoked) {
             Thread.sleep(50);
         }
-        uac1.terminate(invite);
+        testUser1.terminate(invite);
         while (!user1SipListener.invite487Received) {
             Thread.sleep(50);
         }

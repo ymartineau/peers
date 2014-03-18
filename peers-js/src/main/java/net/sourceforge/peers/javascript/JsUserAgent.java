@@ -134,7 +134,7 @@ public class JsUserAgent extends Applet implements SipListener, WebLoggerOutput 
                 }
 
                 try {
-                    userAgent.getUac().register();
+                    userAgent.register();
                 } catch (SipUriSyntaxException e) {
                     logger.error(e.getMessage());
                 }
@@ -149,8 +149,7 @@ public class JsUserAgent extends Applet implements SipListener, WebLoggerOutput 
                 String callId = Utils.generateCallID(userAgent.getConfig()
                         .getLocalInetAddress());
                 try {
-                    SipRequest sipRequest = userAgent.getUac().invite(uri,
-                            callId);
+                    SipRequest sipRequest = userAgent.invite(uri, callId);
                     setInviteSipRequest(sipRequest);
                 } catch (SipUriSyntaxException e) {
                     logger.error(e.getMessage());
@@ -165,7 +164,7 @@ public class JsUserAgent extends Applet implements SipListener, WebLoggerOutput 
             @Override
             public void run() {
                 try {
-                    userAgent.getUac().unregister();
+                    userAgent.unregister();
                 } catch (SipUriSyntaxException e) {
                     logger.error(e.getMessage());
                 }
@@ -178,7 +177,7 @@ public class JsUserAgent extends Applet implements SipListener, WebLoggerOutput 
         executorService.submit(new Runnable() {
             @Override
             public void run() {
-                userAgent.getUac().terminate(sipRequest);
+                userAgent.terminate(sipRequest);
             }
         });
     }
@@ -190,7 +189,7 @@ public class JsUserAgent extends Applet implements SipListener, WebLoggerOutput 
                 String callId = Utils.getMessageCallId(sipRequest);
                 DialogManager dialogManager = userAgent.getDialogManager();
                 Dialog dialog = dialogManager.getDialog(callId);
-                userAgent.getUas().acceptCall(sipRequest, dialog);
+                userAgent.acceptCall(sipRequest, dialog);
             }
         });
     }
@@ -199,7 +198,7 @@ public class JsUserAgent extends Applet implements SipListener, WebLoggerOutput 
         executorService.submit(new Runnable() {
             @Override
             public void run() {
-                userAgent.getUas().rejectCall(sipRequest);
+                userAgent.rejectCall(sipRequest);
 
             }
         });
@@ -211,7 +210,6 @@ public class JsUserAgent extends Applet implements SipListener, WebLoggerOutput 
             public void run() {
                 MediaManager mediaManager = userAgent.getMediaManager();
                 mediaManager.sendDtmf(digit);
-
             }
         });
     }

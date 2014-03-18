@@ -36,7 +36,7 @@ public class UACTestUasHangupMain {
                     new FileLogger(null), soundManager);
             requestUri = "sip:bob@" + userAgent.getConfig()
                 .getLocalInetAddress().getHostAddress() + ":6060";
-            userAgent.getUac().invite(requestUri,
+            userAgent.invite(requestUri,
                     Utils.generateCallID(userAgent.getConfig()
                             .getLocalInetAddress()));
         } catch (SipUriSyntaxException e) {

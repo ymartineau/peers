@@ -225,7 +225,7 @@ public class AccountFrame extends javax.swing.JFrame {
             Runnable runnable = new Runnable() {
                 public void run() {
                     try {
-                        userAgent.getUac().register();
+                        userAgent.register();
                     } catch (SipUriSyntaxException e) {
                         JOptionPane.showMessageDialog(AccountFrame.this,
                                 e.getMessage());
@@ -270,7 +270,7 @@ public class AccountFrame extends javax.swing.JFrame {
                 @Override
                 public void run() {
                     try {
-                        userAgent.getUac().unregister();
+                        userAgent.unregister();
                     } catch (SipUriSyntaxException e) {
                         logger.error("syntax error", e);
                     }

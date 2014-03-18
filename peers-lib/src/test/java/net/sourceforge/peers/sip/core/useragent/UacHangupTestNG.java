@@ -74,8 +74,7 @@ public class UacHangupTestNG {
         InetAddress inetAddress = config.getLocalInetAddress();
         String host = inetAddress.getHostAddress();
         int port = testUser2.getTransportManager().getSipPort();
-        UAC uac1 = testUser1.getUac();
-        SipRequest invite = uac1.invite("sip:" + host + ":" + port,
+        SipRequest invite = testUser1.invite("sip:" + host + ":" + port,
                 Utils.generateCallID(inetAddress));
         while (!user2SipListener.incomingCallInvoked) {
             Thread.sleep(50);
@@ -87,7 +86,7 @@ public class UacHangupTestNG {
         while (!user1SipListener.calleePickup) {
             Thread.sleep(50);
         }
-        uac1.terminate(invite);
+        testUser1.terminate(invite);
     }
 
     @AfterTest

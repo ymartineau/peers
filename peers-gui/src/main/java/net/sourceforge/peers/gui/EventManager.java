@@ -246,7 +246,7 @@ public class EventManager implements SipListener, MainFrameListener,
                 Config config = userAgent.getConfig();
                 if (config.getPassword() != null) {
                     try {
-                        userAgent.getUac().register();
+                        userAgent.register();
                     } catch (SipUriSyntaxException e) {
                         mainFrame.setLabelText(e.getMessage());
                     }
@@ -269,7 +269,7 @@ public class EventManager implements SipListener, MainFrameListener,
                 callFrames.put(callId, callFrame);
                 SipRequest sipRequest;
                 try {
-                    sipRequest = userAgent.getUac().invite(uri, callId);
+                    sipRequest = userAgent.invite(uri, callId);
                 } catch (SipUriSyntaxException e) {
                     logger.error(e.getMessage(), e);
                     mainFrame.setLabelText(e.getMessage());
@@ -289,7 +289,7 @@ public class EventManager implements SipListener, MainFrameListener,
             @Override
             public void run() {
                 try {
-                    userAgent.getUac().unregister();
+                    userAgent.unregister();
                 } catch (Exception e) {
                     logger.error("error while unregistering", e);
                 }
@@ -311,7 +311,7 @@ public class EventManager implements SipListener, MainFrameListener,
             
             @Override
             public void run() {
-                userAgent.getUac().terminate(sipRequest);
+                userAgent.terminate(sipRequest);
             }
         });
     }
@@ -324,7 +324,7 @@ public class EventManager implements SipListener, MainFrameListener,
                 String callId = Utils.getMessageCallId(sipRequest);
                 DialogManager dialogManager = userAgent.getDialogManager();
                 Dialog dialog = dialogManager.getDialog(callId);
-                userAgent.getUas().acceptCall(sipRequest, dialog);
+                userAgent.acceptCall(sipRequest, dialog);
             }
         });
     }
@@ -335,7 +335,7 @@ public class EventManager implements SipListener, MainFrameListener,
             
             @Override
             public void run() {
-                userAgent.getUas().rejectCall(sipRequest);
+                userAgent.rejectCall(sipRequest);
             }
         });
 

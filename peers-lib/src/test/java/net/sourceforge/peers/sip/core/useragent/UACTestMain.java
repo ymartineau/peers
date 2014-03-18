@@ -38,7 +38,7 @@ public class UACTestMain {
                     soundManager);
             requestUri = "sip:bob@" + userAgent.getConfig()
                 .getLocalInetAddress().getHostAddress() + ":6060";
-            sipRequest = userAgent.getUac().invite(requestUri,
+            sipRequest = userAgent.invite(requestUri,
                     userAgent.getConfig()
                         .getLocalInetAddress().getHostName());
         } catch (SipUriSyntaxException e) {
@@ -56,7 +56,7 @@ public class UACTestMain {
         }
         
         if (sipRequest != null) {
-            userAgent.getUac().terminate(sipRequest);
+            userAgent.terminate(sipRequest);
         }
     }
 }

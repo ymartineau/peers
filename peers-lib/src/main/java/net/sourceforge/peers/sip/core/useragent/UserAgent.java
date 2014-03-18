@@ -40,8 +40,10 @@ import net.sourceforge.peers.sip.core.useragent.handlers.InviteHandler;
 import net.sourceforge.peers.sip.core.useragent.handlers.OptionsHandler;
 import net.sourceforge.peers.sip.core.useragent.handlers.RegisterHandler;
 import net.sourceforge.peers.sip.syntaxencoding.SipURI;
+import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
 import net.sourceforge.peers.sip.transaction.Transaction;
 import net.sourceforge.peers.sip.transaction.TransactionManager;
+import net.sourceforge.peers.sip.transactionuser.Dialog;
 import net.sourceforge.peers.sip.transactionuser.DialogManager;
 import net.sourceforge.peers.sip.transport.SipMessage;
 import net.sourceforge.peers.sip.transport.SipRequest;
@@ -225,12 +227,40 @@ public class UserAgent {
         this.soundManager = soundManager;
         mediaManager = new MediaManager(this, logger);
     }
+    
+    // client methods
 
     public void close() {
         transportManager.closeTransports();
         config.setPublicInetAddress(null);
     }
+    
+    public SipRequest register() throws SipUriSyntaxException {
+        return uac.register();
+    }
 
+    public void unregister() throws SipUriSyntaxException {
+        uac.unregister();
+    }
+    
+    public SipRequest invite(String requestUri, String callId)
+            throws SipUriSyntaxException {
+        return uac.invite(requestUri, callId);
+    }
+    
+    public void terminate(SipRequest sipRequest) {
+        uac.terminate(sipRequest);
+    }
+    
+    public void acceptCall(SipRequest sipRequest, Dialog dialog) {
+        uas.acceptCall(sipRequest, dialog);
+    }
+    
+    public void rejectCall(SipRequest sipRequest) {
+        uas.rejectCall(sipRequest);
+    }
+    
+    
     /**
      * Gives the sipMessage if sipMessage is a SipRequest or 
      * the SipRequest corresponding to the SipResponse
