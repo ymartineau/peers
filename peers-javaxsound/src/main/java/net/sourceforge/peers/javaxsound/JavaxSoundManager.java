@@ -35,8 +35,11 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
 import javax.sound.sampled.TargetDataLine;
 
+import com.sun.corba.se.impl.javax.rmi.CORBA.Util;
+
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.media.AbstractSoundManager;
+import net.sourceforge.peers.sip.Utils;
 
 public class JavaxSoundManager extends AbstractSoundManager {
 
@@ -55,6 +58,9 @@ public class JavaxSoundManager extends AbstractSoundManager {
         this.mediaDebug = mediaDebug;
         this.logger = logger;
         this.peersHome = peersHome;
+        if (peersHome == null) {
+            this.peersHome = Utils.DEFAULT_PEERS_HOME;
+        }
         // linear PCM 8kHz, 16 bits signed, mono-channel, little endian
         audioFormat = new AudioFormat(8000, 16, 1, true, false);
         targetInfo = new DataLine.Info(TargetDataLine.class, audioFormat);

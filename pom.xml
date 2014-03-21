@@ -17,6 +17,7 @@
     <module>peers-lib</module>
     <module>peers-jws</module>
     <module>peers-javaxsound</module>
+    <module>peers-demo</module>
   </modules>
 
 </project>
