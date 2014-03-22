@@ -379,6 +379,9 @@
     </para>
     <itemizedlist>
       <listitem>
+        <para>peers-demo</para>
+      </listitem>
+      <listitem>
         <para>peers-doc</para>
       </listitem>
       <listitem>
@@ -397,6 +400,10 @@
         <para>peers-lib</para>
       </listitem>
     </itemizedlist>
+    <para>
+      Peers-demo is a demo project to show peers library usage with a simple
+      example. See next chapter.
+    </para>
     <para>
       Peers-doc is a module which contains this documentation as docbook. It
       generates an html file and a pdf file.
@@ -469,126 +476,141 @@
     <title>Peers library usage</title>
     <section>
       <title>Overview</title>
-			<para>
-			  Peers provides one class to use sip and media stacks: User-Agent and
-			  one interface to receive notifications from sip stack. The User-Agent
-			  constructor takes a few parameters: SipListener, Config, Logger and
-			  AbstractSoundManager. SipListener must be a class implementing the
-			  corresponding interface. It can be the class that instantiates
-			  User-Agent so that there is only one class to communicate with peers
-			  API. Config is an interface which must be implemented by your
-			  application. This simple interface will provide configuration parameters
-			  to sip stack such as username, password and domain name. If you want
-			  to use an xml configuration file to store those parameters, an XmlConfig
-			  class is available in peers-lib. Logger is also a simple interface to
-			  log messages. You can use null in User-Agent constructor so that a
-			  default logger is used. In this case, messages will be logged in a file.
-			  The last parameter is AbstractSoundManager. Here you can provide your
-			  implementation of AbstractSoundManager or you can use JavaxSoundManager
-			  from peers-javaxsound.
-			</para>
+      <para>
+        Peers provides one class to use sip and media stacks: UserAgent and
+        one interface to receive notifications from sip stack. The UserAgent
+        constructor takes a few parameters: SipListener, Config, Logger and
+        AbstractSoundManager. SipListener must be a class implementing the
+        corresponding interface. It can be the class that instantiates
+        UserAgent so that there is only one class to communicate with peers
+        API. Config is an interface which must be implemented by your
+        application. This simple interface will provide configuration parameters
+        to sip stack such as username, password and domain name. If you want
+        to use an xml configuration file to store those parameters, an XmlConfig
+        class is available in peers-lib. Logger is also a simple interface to
+        log messages. You can use null in User-Agent constructor so that a
+        default logger is used.
+        The last parameter is AbstractSoundManager. Here you can provide your
+        implementation of AbstractSoundManager or you can use JavaxSoundManager
+        from peers-javaxsound.
+      </para>
+      <figure>
+        <title>Peers API usage</title>
+        <mediaobject>
+          <imageobject role="fo">
+            <imagedata fileref="api-usage.svg" width="96mm"/>
+          </imageobject>
+          <imageobject role="html">
+            <imagedata fileref="api-usage.png"/>
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <para>
+        App is a class corresponding to your application.
+      </para>
     </section>
     <section>
       <title>Example</title>
-			<para>
-				Peers can be used as a library with no other dependencies. In this case,
-				you need to add peers jar library file(s) to your application classpath.
-				You can add it to your ant build.xml compile tasks or you can just add it
-				to your favorite IDE classpath. The simplest way to develop an application
-				based on peers is using maven.
-			</para>
-			<para>
-				As peers is a maven project, you just have to add the right dependencies
-				to your application and you can easily integrate a sip phone in your own
-				application.
-			</para>
-			<para>
-				The following example application will be a command line interface (cli)
-				phone based on peers. Let's call this application peers-demo. This
-				application will run from command line, notify user about events (remote
-				hangup, incoming call) and take commands from console. Those commands
-				will be as simple as possible: call &lt;number&gt;, hangup, acceptCall and
-				rejectCall. This application will support only one call at a time. SIP
-				registration parameters will be provided using java interface.
-				This demo application will rely on peers-lib to manage network stacks
-				and on peers-javaxsound to manage microphone and speakers.
-			</para>
-			<para>
-				The final application code is available in peers-demo module in peers
-				source code.
-			</para>
-			<para>
-				Here is an example to create an empty maven application:
-			</para>
-			<literallayout><literal>mvn archetype:generate
-			-DarchetypeGroupId=org.apache.maven.archetypes
-			-DgroupId=net.sourceforge.peers
-			-DartifactId=peers-demo</literal></literallayout>
-			<para>
-				It creates a nice empty maven project. Let's add peers-lib dependency to
-				this project. In pom.xml, add the following dependency:
-			</para>
-			<literallayout><literal>    &lt;dependency&gt;
-				&lt;groupId&gt;net.sourceforge.peers&lt;/groupId&gt;
-				&lt;artifactId&gt;peers-lib&lt;/artifactId&gt;
-				&lt;version&gt;0.5-SNAPSHOT&lt;/version&gt;
-				&lt;scope&gt;compile&lt;/scope&gt;
-			&lt;/dependency&gt;
-			&lt;dependency&gt;
-				&lt;groupId&gt;net.sourceforge.peers&lt;/groupId&gt;
-				&lt;artifactId&gt;peers-javaxsound&lt;/artifactId&gt;
-				&lt;version&gt;0.5-SNAPSHOT&lt;/version&gt;
-				&lt;scope&gt;compile&lt;/scope&gt;
-			&lt;/dependency&gt;</literal></literallayout>
-			<para>
-				Let's check that this project still builds from newly created project
-				directory:
-			</para>
-			<literallayout><literal>mvn clean install
+      <para>
+        Peers can be used as a library with no other dependencies. In this case,
+        you need to add peers jar library file(s) to your application classpath.
+        You can add it to your ant build.xml compile tasks or you can just add it
+        to your favorite IDE classpath. The simplest way to develop an application
+        based on peers is using maven.
+      </para>
+      <para>
+        As peers is a maven project, you just have to add the right dependencies
+        to your application and you can easily integrate a sip phone in your own
+        application.
+      </para>
+      <para>
+        The following example application will be a command line interface (cli)
+        phone based on peers. Let's call this application peers-demo. This
+        application will run from command line, notify user about events (remote
+        hangup, incoming call) and take commands from console. Those commands
+        will be as simple as possible: call &lt;number&gt;, hangup.
+        This application will support only one simultaneous call. SIP
+        registration parameters will be provided using java interface.
+        This demo application will rely on peers-lib to manage network stacks
+        and on peers-javaxsound to manage microphone and speakers.
+      </para>
+      <para>
+        The final application code is available in peers-demo module in peers
+        source code.
+      </para>
+      <para>
+        Here is an example to create an empty maven application:
+      </para>
+      <literallayout><literal>mvn archetype:generate
+      -DarchetypeGroupId=org.apache.maven.archetypes
+      -DgroupId=net.sourceforge.peers
+      -DartifactId=peers-demo</literal></literallayout>
+      <para>
+        It creates a nice empty maven project. Let's add peers-lib dependency to
+        this project. In pom.xml, add the following dependency:
+      </para>
+      <literallayout><literal>    &lt;dependency&gt;
+        &lt;groupId&gt;net.sourceforge.peers&lt;/groupId&gt;
+        &lt;artifactId&gt;peers-lib&lt;/artifactId&gt;
+        &lt;version&gt;0.5-SNAPSHOT&lt;/version&gt;
+        &lt;scope&gt;compile&lt;/scope&gt;
+      &lt;/dependency&gt;
+      &lt;dependency&gt;
+        &lt;groupId&gt;net.sourceforge.peers&lt;/groupId&gt;
+        &lt;artifactId&gt;peers-javaxsound&lt;/artifactId&gt;
+        &lt;version&gt;0.5-SNAPSHOT&lt;/version&gt;
+        &lt;scope&gt;compile&lt;/scope&gt;
+      &lt;/dependency&gt;</literal></literallayout>
+      <para>
+        Let's check that this project still builds from newly created project
+        directory:
+      </para>
+      <literallayout><literal>mvn clean install
 ...
 [INFO] BUILD SUCCESS
 ...</literal></literallayout>
-			<para>
-				Great, now let's start developing our real application. My IDE (Integrated
-				Development Environment) is eclipse. To generate eclipse project files
-				easily, I use the following command line either in peers root directory
-				or in any maven project (let's do it in peers-demo new project):
-			</para>
-			<literallayout><literal>mvn eclipse:eclipse</literal></literallayout>
-			<para>
-				Thanks to this command, you can import existing project in eclipse: File
-				&gt; Import &gt; Existing Projects into Workspace &gt; Select the root
-				directory from which you want to scan projects and browse to the place
-				where you created your new maven project &gt; Finish and that's it. You
-				can now open your project in eclipse. Maven already created a main class
-				for you called App. You can delete this class and the corresponding unit
-				test in src/test/java.
-			</para>
-			<para>
-				When you modify project library dependencies in pom.xml, don't forget to
-				run mvn eclipse:eclipse again and to refresh project in eclipse. It
-				updates dependencies in eclipse project.
-			</para>
-			<para>
-				We create a new package to host classes for this application:
-				net.sourceforge.peers.demo. We will create a Thread to read commands from
-				console (CommandsReader) and a main object will receive events from
-				console and sip stack. Let's call this main object EventManager. It will
-				handle all events coming from sip stack and from CommandsReader and will
-				make decisions appropriately (display message on console, call peers API,
-				etc.). Actually, this central class is just finite state machine.
-			</para>
-			<para>
-				In a first step, this application will just behave as a client. It means
-				will only implement call and hangup commands. Later acceptCall and
-				rejectCall will be implemented.
-			</para>
-			<para>
-				Let's start with the class that will read commands from console:
-			</para>
-			<example>
-				<title>CommandsReader</title>
-					<programlisting>
+      <para>
+        Great, now let's start developing our real application. My IDE (Integrated
+        Development Environment) is <link xl:href="https://www.eclipse.org/">eclipse</link>.
+        To generate eclipse project files
+        easily, I use the following command line either in peers root directory
+        or in any maven project (let's do it in peers-demo new project):
+      </para>
+      <literallayout><literal>mvn eclipse:eclipse</literal></literallayout>
+      <para>
+        Thanks to this command, you can import existing project in eclipse: File
+        &gt; Import &gt; Existing Projects into Workspace &gt; Select the root
+        directory from which you want to scan projects and browse to the place
+        where you created your new maven project &gt; Finish and that's it. You
+        can now open your project in eclipse. Maven already created a main class
+        for you called App. You can delete this class and the corresponding unit
+        test in src/test/java.
+      </para>
+      <para>
+        When you modify project library dependencies in pom.xml, don't forget to
+        run mvn eclipse:eclipse again and refresh project in eclipse. It
+        updates dependencies in eclipse project.
+      </para>
+      <para>
+        We create a new package to host classes for this application:
+        net.sourceforge.peers.demo. We will create a Thread to read commands from
+        console (CommandsReader) and a main object will receive events from
+        console and sip stack. Let's call this main object EventManager. It will
+        handle all events coming from sip stack and from CommandsReader and will
+        make decisions appropriately (display message on console, call peers API,
+        etc.). Actually, in a real application this central class is just
+        finite state machine.
+      </para>
+      <para>
+        This application will just behave as a client, it will not support
+        incoming calls. This is just to provide a very simple example.
+      </para>
+      <para>
+        Let's start with the class that will read commands from console:
+      </para>
+      <example>
+        <title>CommandsReader</title>
+          <programlisting>
 <![CDATA[
 package net.sourceforge.peers.demo;
 [...]
@@ -600,6 +622,7 @@ public class CommandsReader extends Thread {
     public void run() {
         InputStreamReader inputStreamReader = new InputStreamReader(System.in);
         BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+        setRunning(true);
         while (isRunning()) {
             String command;
             try {
@@ -615,26 +638,27 @@ public class CommandsReader extends Thread {
                 eventManager.call(callee);
             } else if (command.startsWith(HANGUP)) {
                 eventManager.hangup();
+            } else {
+                System.out.println("unknown command " + command);
             }
         }
     }
 ]]>
-				</programlisting>
-			</example>
-	
-			<para>
-				This class has a reference to the central class EventManager, a getter
-				and a setter on an isRunning boolean. This variable will be used to stop
-				the thread. As you can see here, string commands are just read from
-				System.in using a BufferedReader to get one line at a time. Useless
-				spaces are trimmed and one argument is read for call command.
-			</para>
-			<para>
-				Here is the corresponding EventManager class, in its first version.
-			</para>
-			<example>
-				<title>EventManager interfaces</title>
-					<programlisting>
+        </programlisting>
+      </example>
+      <para>
+        This class has a reference to the central class EventManager, a getter
+        and a setter on an isRunning boolean. This variable will be used to stop
+        the thread. As you can see here, string commands are just read from
+        System.in using a BufferedReader to get one line at a time. Useless
+        spaces are trimmed and one argument is read for call command.
+      </para>
+      <para>
+        Here is the corresponding EventManager class, in its first version.
+      </para>
+      <example>
+        <title>EventManager interfaces</title>
+          <programlisting>
 <![CDATA[
 public class EventManager implements SipListener {
 
@@ -671,14 +695,342 @@ public class EventManager implements SipListener {
 
 }
 ]]>
-				</programlisting>
-			</example>
-			<para>
-				This EventManager class implements methods called from CommandsReader
-				and the SipListener interface from peers API to receive notifications
-				from peers-lib SIP stack (to notify our application that callee picked
-				up the call for example).
-			</para>
+        </programlisting>
+      </example>
+      <para>
+        This EventManager class implements methods called from CommandsReader
+        and the SipListener interface from peers API to receive notifications
+        from peers-lib SIP stack (to notify our application that callee picked
+        up the call for example).
+      </para>
+      <para>
+        Now, let's add our utility classes to initialize UserAgent class
+        in our EventManager constructor:
+      </para>
+      <example>
+        <title>Create a UserAgent in EventManager</title>
+          <programlisting>
+<![CDATA[
+    private UserAgent userAgent;
+    private CommandsReader commandsReader;
+    
+    public EventManager() throws SocketException {
+        Config config = new MyConfig();
+        Logger logger = new FileLogger(null);
+        JavaxSoundManager javaxSoundManager = new JavaxSoundManager(false, logger, null);
+        userAgent = new UserAgent(this, config, logger, javaxSoundManager);
+        new Thread() {
+            public void run() {
+                try {
+                    userAgent.register();
+                } catch (SipUriSyntaxException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.start();
+        commandsReader = new CommandsReader(this);
+        commandsReader.start();
+    }
+]]>
+        </programlisting>
+      </example>
+      <para>
+        Here, we use a custom implementation of Config interface to provide
+        hardcoded accound parameters. The FileLogger(null) instance will
+        actually log messages to console on standard output. If you create a
+        logs dir in your project root directory (peers-demo), it would log
+        messages to two text files: logs/peers.log and logs/transport.log.
+        transport.log would give full traces of sip messages (outgoing and
+        incoming) and peers.log all traces about peers internal sip stack
+        (finite state machine transitions, important steps, etc.).
+        JavaxSoundManager provides the real access to microphone and speakers.
+        This class relies upon oracle java javax.sound extension.
+        Once those utility objects are available, peers UserAgent class can
+        be instantiated.
+      </para>
+      <para>
+        userAgent.register() will start event registration, we call this
+        method in a new thread to register user account in background.
+      </para>
+      <para>
+        Here is an example MyConfig class:
+      </para>
+      <example>
+        <title>MyConfig</title>
+          <programlisting>
+<![CDATA[
+package net.sourceforge.peers.demo;
+
+[...]
+public class MyConfig implements Config {
+
+    private InetAddress publicIpAddress;
+
+    @Override
+    public InetAddress getLocalInetAddress() {
+        InetAddress inetAddress;
+        try {
+            // if you have only one active network interface, getLocalHost()
+            // should be enough
+            //inetAddress = InetAddress.getLocalHost();
+            // if you have several network interfaces like I do,
+            // select the right one after running ipconfig or ifconfig
+            inetAddress = InetAddress.getByName("192.168.1.11");
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return inetAddress;
+    }
+
+    @Override
+    public InetAddress getPublicInetAddress() { return publicIpAddress; }
+    @Override public String getUserPart() { return "ymartineau"; }
+    @Override public String getDomain() { return "ippi.fr"; }
+    @Override public String getPassword() { return "abc123"; }
+    @Override  // use microphone and speakers to capture and playback sound
+    public MediaMode getMediaMode() { return MediaMode.captureAndPlayback; }
+
+    @Override
+    public void setPublicInetAddress(InetAddress inetAddress) {
+        publicIpAddress = inetAddress;
+    }
+    
+
+
+]]>
+        </programlisting>
+      </example>
+      <example>
+        <title>MyConfig (cont.)</title>
+        <programlisting>
+<![CDATA[
+    @Override public SipURI getOutboundProxy() { return null; }
+    @Override public int getSipPort() { return 0; } // use default sip port 5060
+    @Override public boolean isMediaDebug() { return false; }
+    @Override public String getMediaFile() { return null; }
+    @Override public int getRtpPort() { return 0; } // use random rtp port
+    
+    // in this simple example, we don't need those modifiers, but they are
+    // required by the interface
+    @Override public void setLocalInetAddress(InetAddress inetAddress) { }
+    @Override public void setUserPart(String userPart) { }
+    @Override public void setDomain(String domain) { }
+    @Override public void setPassword(String password) { }
+    @Override public void setOutboundProxy(SipURI outboundProxy) { }
+    @Override public void setSipPort(int sipPort) { }
+    @Override public void setMediaMode(MediaMode mediaMode) { }
+    @Override public void setMediaDebug(boolean mediaDebug) { }
+    @Override public void setMediaFile(String mediaFile) { }
+    @Override public void setRtpPort(int rtpPort) { }
+    @Override public void save() { }
+    
+}
+]]>
+        </programlisting>
+      </example>
+      <para>
+        Now, we need to invoke userAgent api when a command is invoked from
+        command line. In EventManager, we add a sipRequest to keep a reference
+        to the current call so that we can hangup when a call is established.
+      </para>
+      <example>
+        <title>Invoke UserAgent peers API</title>
+          <programlisting>
+<![CDATA[
+public class EventManager implements SipListener {
+    [...]
+    private SipRequest sipRequest;
+    [...]
+    // commands methods
+    public void call(final String callee) {
+        new Thread() {
+            @Override
+            public void run() {
+                try {
+                    sipRequest = userAgent.invite(callee, null);
+                } catch (SipUriSyntaxException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.start();
+    }
+    
+    public void hangup() {
+        new Thread() {
+            @Override
+            public void run() {
+                userAgent.terminate(sipRequest);
+            }
+        }.start();
+    }
+    [...]
+]]>
+        </programlisting>
+      </example>
+      <para>
+        Here we use a null second parameter to invite so that callId is
+        generated automatically by sip stack. We also call userAgent methods
+        in new threads so that console does not stick on commands input.
+      </para>
+      <para>
+        Our demo project is almost done, we still need a main to instantiate
+        EventManager:
+      </para>
+      <example>
+        <title>Demo project main method</title>
+          <programlisting>
+<![CDATA[
+    public static void main(String[] args) {
+        try {
+            new EventManager();
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
+    }
+]]>
+        </programlisting>
+      </example>
+      <para>
+        Now run this demo project: in eclipse right-click EventManager and
+        Run As &gt; Java Application. You should see something like this:
+      </para>
+      <literallayout><literal>logging to stdout
+2014-03-22 00:20:07,893 INFO  [main] starting user agent
+    [myAddress: 192.168.1.11, sipPort: 0, userpart: ymartineau, domain: ippi.fr]
+2014-03-22 00:20:07,977 DEBUG [main] new DatagramSocket(0, /192.168.1.11
+2014-03-22 00:20:07,985 INFO  [main] added datagram socket 192.168.1.11:60588/UDP
+2014-03-22 00:20:07,986 INFO  [main] added 192.168.1.11:60588/UDP:
+    net.sourceforge.peers.sip.transport.UdpMessageReceiver@7436ef21 to message receivers
+</literal></literallayout>
+      <para>
+        Then, you should see the sip REGISTER message sent and received:
+      </para>
+      <literallayout><literal>2014-03-22 00:20:08,103 SENT to 213.215.45.230/5060 [Thread-2]
+
+2014-03-22 00:20:08,234 SENT to 213.215.45.230/5060 [TransportManager 0]
+
+REGISTER sip:ippi.fr SIP/2.0
+Via: SIP/2.0/UDP 192.168.1.11:60588;rport;branch=z9hG4bKu62lFMeRS
+Max-Forwards: 70
+To: &lt;sip:ymartineau@ippi.fr&gt;
+From: &lt;sip:ymartineau@ippi.fr&gt;;tag=tPpKyeqA
+Call-ID: F4vlP0Y4-1395444008026@192.168.1.11
+CSeq: 2 REGISTER
+Contact: &lt;sip:ymartineau@192.168.1.11:60588;transport=UDP&gt;
+Authorization: Digest username="ymartineau", realm="ippi.fr",
+    nonce="532cca45176760c845efda663182a5be2609f85c", uri="sip:ippi.fr",
+    response="d44b8bd2a59f38b003628dc276c69ad7"
+
+
+2014-03-22 00:20:08,270 RECEIVED from 213.215.45.230/5060 [TransportManager 0]
+
+SIP/2.0 200 OK
+Via: SIP/2.0/UDP 192.168.1.11:60588;received=192.168.1.11;rport=60588;branch=z9hG4bKu62lFMeRS
+To: &lt;sip:ymartineau@ippi.fr&gt;;tag=a910c8153188470b2841623c513a131f.db9b
+From: &lt;sip:ymartineau@ippi.fr&gt;;tag=tPpKyeqA
+Call-ID: F4vlP0Y4-1395444008026@192.168.1.11
+CSeq: 2 REGISTER
+Contact: &lt;sip:ymartineau@192.168.1.11:60588;transport=UDP&gt;;
+    expires=3600;received="sip:90.32.185.72:60588",
+    &lt;sip:ymartineau@192.168.1.11:60587;transport=UDP&gt;;
+    expires=3559;received="sip:90.32.185.72:60587",
+    &lt;sip:ymartineau@192.168.1.11:61005;transport=UDP&gt;;
+    expires=3388;received="sip:90.32.185.72:61005"
+Server: OpenSIPS (1.8.2-tls (i386/linux))
+Content-Length: 0
+</literal></literallayout>
+      <para>
+        It may be somehow tricky to write commands on console because of the
+        numerous messages displayed. If you have difficulties, write the command
+        in your preferred text editor first and then copy paste it in the console
+        and hit return. Here is an example:
+      </para>
+      <literallayout><literal>call sip:*1234@ippi.fr</literal></literallayout>
+      <para>
+        You should see something like:
+      </para>
+      <literallayout><literal>2014-03-22 00:20:34,965 DEBUG [Thread-6]
+    SM z9hG4bKHnwoNi3EZ|INVITE [InviteClientTransactionStateInit ->
+        InviteClientTransactionStateCalling] setState
+2014-03-22 00:20:34,965 DEBUG [Thread-6] UdpMessageSender.sendMessage
+2014-03-22 00:20:34,965 DEBUG [Thread-6] UdpMessageSender.sendBytes
+2014-03-22 00:20:34,965 DEBUG [Thread-6] UdpMessageSender.sendBytes 577 ippi.fr/213.215.45.230:5060
+2014-03-22 00:20:34,965 DEBUG [Thread-6] /192.168.1.11
+2014-03-22 00:20:34,965 DEBUG [Thread-6] UdpMessageSender.sendBytes packet sent
+2014-03-22 00:20:34,965 SENT to 213.215.45.230/5060 [Thread-6]
+
+INVITE sip:*1234@ippi.fr SIP/2.0
+Via: SIP/2.0/UDP 192.168.1.11:60588;rport;branch=z9hG4bKHnwoNi3EZ
+Max-Forwards: 70
+To: &lt;sip:*1234@ippi.fr&gt;
+From: &lt;sip:ymartineau@ippi.fr&gt;;tag=nImz7hym
+Call-ID: kTw3F5Wk-1395444034935@192.168.1.11
+CSeq: 3 INVITE
+Content-Length: 212
+Content-Type: application/sdp
+Contact: &lt;sip:ymartineau@192.168.1.11:60588;transport=UDP&gt;
+
+v=0
+o=user1 432074470 1969904641 IN IP4 192.168.1.11
+s=-
+c=IN IP4 192.168.1.11
+t=0 0
+m=audio 60590 RTP/AVP 0 8 101
+a=rtpmap:0 PCMU/8000
+a=rtpmap:8 PCMA/8000
+a=rtpmap:101 telephone-event/8000
+a=sendrecv
+
+2014-03-22 00:20:34,965 DEBUG [Thread-6] InviteClientTransaction.start
+2014-03-22 00:20:34,996 RECEIVED from 213.215.45.230/5060 [TransportManager 0]
+</literal></literallayout>
+      <para>
+        If the callee pick-ups you should now be able to talk with the call
+        using your computer microphone and you can use the following command
+        to hangup:
+      </para>
+      <literallayout><literal>hangup</literal></literallayout>
+      <para>
+        If hangup is successful, you should see something like:
+      </para>
+      <literallayout><literal>2014-03-22 00:20:42,286 SENT to 213.215.45.230/5060 [Thread-8]
+
+BYE sip:411@213.215.45.231 SIP/2.0
+Via: SIP/2.0/UDP 192.168.1.11:60588;rport;branch=z9hG4bKZechHp2Ua
+To: &lt;sip:*1234@ippi.fr&gt;;tag=as4f8c117e
+From: &lt;sip:ymartineau@ippi.fr&gt;;tag=nImz7hym
+Call-ID: kTw3F5Wk-1395444034935@192.168.1.11
+CSeq: 6 BYE
+Route: &lt;sip:213.215.45.230;lr&gt;
+Max-Forwards: 70
+Proxy-Authorization: Digest username="ymartineau", realm="ippi.fr",
+    nonce="532cca60e3cd40a74c9e37655a0addccc6596e41", uri="sip:*1234@ippi.fr",
+    response="71f51c20a68e8aa86e3ff00c3a81b71a"
+
+
+2014-03-22 00:20:42,304 DEBUG [Thread-8] closeLines
+2014-03-22 00:20:42,339 RECEIVED from 213.215.45.230/5060 [TransportManager 0]
+
+SIP/2.0 200 OK
+Via: SIP/2.0/UDP 192.168.1.11:60588;received=192.168.1.11;rport=60588;
+    branch=z9hG4bKZechHp2Ua
+From: &lt;sip:ymartineau@ippi.fr&gt;;tag=nImz7hym
+To: &lt;sip:*1234@ippi.fr&gt;;tag=as4f8c117e
+Call-ID: kTw3F5Wk-1395444034935@192.168.1.11
+CSeq: 6 BYE
+User-Agent: Asterisk PBX
+Allow: INVITE, ACK, CANCEL, OPTIONS, BYE, REFER, SUBSCRIBE, NOTIFY
+Contact: &lt;sip:411@213.215.45.231&gt;
+Content-Length: 0
+
+</literal></literallayout>
+      <para>
+        As you can see, we built our first example in half an hour using maven,
+        eclipse and three java classes. You can now build more complex examples
+        using dtmf UserAgent method, or notify user when an incoming call is
+        reaching your application.
+      </para>
     </section>
   </chapter>
 

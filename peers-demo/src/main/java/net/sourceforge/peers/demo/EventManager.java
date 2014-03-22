@@ -8,26 +8,57 @@ import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.javaxsound.JavaxSoundManager;
 import net.sourceforge.peers.sip.core.useragent.SipListener;
 import net.sourceforge.peers.sip.core.useragent.UserAgent;
+import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
 import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.SipResponse;
 
 public class EventManager implements SipListener {
 
-    //TODO add to doc
     private UserAgent userAgent;
+    private SipRequest sipRequest;
+    private CommandsReader commandsReader;
     
     public EventManager() throws SocketException {
         Config config = new MyConfig();
         Logger logger = new FileLogger(null);
         JavaxSoundManager javaxSoundManager = new JavaxSoundManager(false, logger, null);
         userAgent = new UserAgent(this, config, logger, javaxSoundManager);
+        new Thread() {
+            public void run() {
+                try {
+                    userAgent.register();
+                } catch (SipUriSyntaxException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.start();
+        commandsReader = new CommandsReader(this);
+        commandsReader.start();
     }
-    //end TODO add to doc
     
     
     // commands methods
-    public void call(String callee) { }
-    public void hangup() { }
+    public void call(final String callee) {
+        new Thread() {
+            @Override
+            public void run() {
+                try {
+                    sipRequest = userAgent.invite(callee, null);
+                } catch (SipUriSyntaxException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.start();
+    }
+    
+    public void hangup() {
+        new Thread() {
+            @Override
+            public void run() {
+                userAgent.terminate(sipRequest);
+            }
+        }.start();
+    }
     
     
     // SipListener methods
@@ -56,4 +87,11 @@ public class EventManager implements SipListener {
     @Override
     public void error(SipResponse sipResponse) { }
 
+    public static void main(String[] args) {
+        try {
+            new EventManager();
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
+    }
 }
