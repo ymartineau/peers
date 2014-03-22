@@ -14,7 +14,7 @@
    id="svg2"
    version="1.1"
    inkscape:version="0.48.4 r9939"
-   sodipodi:docname="Nouveau document 1">
+   sodipodi:docname="api-usage.svg">
   <defs
      id="defs4">
     <marker
@@ -101,7 +101,10 @@
      transform="translate(-101.5,-87.875)">
     <g
        id="g3798"
-       transform="translate(-69,-34)">
+       transform="translate(-69,-34)"
+       inkscape:export-filename="D:\yohann\workspace\peers\peers-doc\src\docbkx\api-usage.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
       <g
          transform="translate(218,-5)"
          id="g3761">
@@ -137,7 +140,10 @@
          x="91"
          y="92.362183"></tspan></text>
     <g
-       id="g3788">
+       id="g3788"
+       inkscape:export-filename="D:\yohann\workspace\peers\peers-doc\src\docbkx\api-usage.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
       <text
          sodipodi:linespacing="125%"
          id="text3770"
@@ -158,7 +164,10 @@
          style="fill:none;stroke:#000000;stroke-opacity:1" />
     </g>
     <g
-       id="g3793">
+       id="g3793"
+       inkscape:export-filename="D:\yohann\workspace\peers\peers-doc\src\docbkx\api-usage.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
       <text
          sodipodi:linespacing="125%"
          id="text3780"
@@ -180,7 +189,10 @@
     </g>
     <g
        id="g3818"
-       transform="translate(-86,-23)">
+       transform="translate(-86,-23)"
+       inkscape:export-filename="D:\yohann\workspace\peers\peers-doc\src\docbkx\api-usage.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
       <text
          sodipodi:linespacing="125%"
          id="text3804"
@@ -202,7 +214,10 @@
     </g>
     <g
        id="g3825"
-       transform="translate(6,-67)">
+       transform="translate(6,-67)"
+       inkscape:export-filename="D:\yohann\workspace\peers\peers-doc\src\docbkx\api-usage.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
       <text
          sodipodi:linespacing="125%"
          id="text3808"
@@ -224,7 +239,10 @@
     </g>
     <g
        id="g3834"
-       transform="translate(96,-110)">
+       transform="translate(96,-110)"
+       inkscape:export-filename="D:\yohann\workspace\peers\peers-doc\src\docbkx\api-usage.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90">
       <text
          sodipodi:linespacing="125%"
          id="text3812"
@@ -253,7 +271,10 @@
        inkscape:connection-start="#g3793"
        inkscape:connection-start-point="d4"
        inkscape:connection-end="#g3788"
-       inkscape:connection-end-point="d4" />
+       inkscape:connection-end-point="d4"
+       inkscape:export-filename="D:\yohann\workspace\peers\peers-doc\src\docbkx\api-usage.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
     <path
        style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#DiamondLend)"
        d="m 256.66578,183.36218 61.7647,-66"
@@ -263,7 +284,10 @@
        inkscape:connection-start="#g3818"
        inkscape:connection-start-point="d4"
        inkscape:connection-end="#g3798"
-       inkscape:connection-end-point="d4" />
+       inkscape:connection-end-point="d4"
+       inkscape:export-filename="D:\yohann\workspace\peers\peers-doc\src\docbkx\api-usage.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
     <path
        style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#DiamondLend)"
        d="m 337.2268,187.36218 -4.32989,-70"
@@ -273,7 +297,10 @@
        inkscape:connection-start="#g3825"
        inkscape:connection-start-point="d4"
        inkscape:connection-end="#g3798"
-       inkscape:connection-end-point="d4" />
+       inkscape:connection-end-point="d4"
+       inkscape:export-filename="D:\yohann\workspace\peers\peers-doc\src\docbkx\api-usage.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
     <path
        style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#DiamondLend)"
        d="m 461.9375,190.36218 -108.405,-73"
@@ -283,7 +310,10 @@
        inkscape:connection-start="#g3834"
        inkscape:connection-start-point="d4"
        inkscape:connection-end="#g3798"
-       inkscape:connection-end-point="d4" />
+       inkscape:connection-end-point="d4"
+       inkscape:export-filename="D:\yohann\workspace\peers\peers-doc\src\docbkx\api-usage.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
     <path
        style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#DiamondLend)"
        d="m 172.14054,182.36218 130.7027,-65"
@@ -293,6 +323,9 @@
        inkscape:connection-start="#g3793"
        inkscape:connection-start-point="d4"
        inkscape:connection-end="#g3798"
-       inkscape:connection-end-point="d4" />
+       inkscape:connection-end-point="d4"
+       inkscape:export-filename="D:\yohann\workspace\peers\peers-doc\src\docbkx\api-usage.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
   </g>
 </svg>

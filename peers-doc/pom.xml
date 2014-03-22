@@ -33,12 +33,14 @@
         </executions>
 
         <configuration>
+          <htmlStylesheet>peers.css</htmlStylesheet>
           <sectionAutolabel>true</sectionAutolabel>
           <sectionLabelIncludesComponentLabel>true</sectionLabelIncludesComponentLabel>
           <postProcess>
             <copy todir="target/docbkx/html/">
               <fileset dir="src/docbkx/">
                 <include name="*.png"/>
+                <include name="*.css"/>
               </fileset>
             </copy>
           </postProcess>
