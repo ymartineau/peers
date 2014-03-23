@@ -9,8 +9,8 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="462"
-   height="128"
+   width="453"
+   height="125"
    id="svg2"
    version="1.1"
    inkscape:version="0.48.4 r9939"
@@ -68,8 +68,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1"
-     inkscape:cx="283.46798"
-     inkscape:cy="43.512817"
+     inkscape:cx="102.46798"
+     inkscape:cy="40.512817"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -90,7 +90,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -98,7 +98,7 @@
      inkscape:label="Calque 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(-101.5,-87.875)">
+     transform="translate(-110.5,-87.875)">
     <g
        id="g3798"
        transform="translate(-69,-34)"
@@ -138,12 +138,13 @@
          sodipodi:role="line"
          id="tspan3768"
          x="91"
-         y="92.362183"></tspan></text>
+         y="92.362183" /></text>
     <g
        id="g3788"
        inkscape:export-filename="D:\yohann\workspace\peers\peers-doc\src\docbkx\api-usage.png"
        inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90">
+       inkscape:export-ydpi="90"
+       transform="translate(9,96.5)">
       <text
          sodipodi:linespacing="125%"
          id="text3770"
@@ -164,32 +165,8 @@
          style="fill:none;stroke:#000000;stroke-opacity:1" />
     </g>
     <g
-       id="g3793"
-       inkscape:export-filename="D:\yohann\workspace\peers\peers-doc\src\docbkx\api-usage.png"
-       inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90">
-      <text
-         sodipodi:linespacing="125%"
-         id="text3780"
-         y="199.36218"
-         x="134"
-         style="font-size:14px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
-         xml:space="preserve"><tspan
-           y="199.36218"
-           x="134"
-           id="tspan3782"
-           sodipodi:role="line">App</tspan></text>
-      <rect
-         y="182.36218"
-         x="118"
-         height="26"
-         width="56"
-         id="rect3786"
-         style="fill:none;stroke:#000000;stroke-opacity:1" />
-    </g>
-    <g
        id="g3818"
-       transform="translate(-86,-23)"
+       transform="translate(-86,-20)"
        inkscape:export-filename="D:\yohann\workspace\peers\peers-doc\src\docbkx\api-usage.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90">
@@ -214,7 +191,7 @@
     </g>
     <g
        id="g3825"
-       transform="translate(6,-67)"
+       transform="translate(6,-67.5)"
        inkscape:export-filename="D:\yohann\workspace\peers\peers-doc\src\docbkx\api-usage.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90">
@@ -239,7 +216,7 @@
     </g>
     <g
        id="g3834"
-       transform="translate(96,-110)"
+       transform="translate(96,-113.5)"
        inkscape:export-filename="D:\yohann\workspace\peers\peers-doc\src\docbkx\api-usage.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90">
@@ -263,21 +240,8 @@
          style="fill:none;stroke:#000000;stroke-opacity:1" />
     </g>
     <path
-       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)"
-       d="m 146.28108,182.36218 1.44865,-67"
-       id="path3839"
-       inkscape:connector-type="polyline"
-       inkscape:connector-curvature="3"
-       inkscape:connection-start="#g3793"
-       inkscape:connection-start-point="d4"
-       inkscape:connection-end="#g3788"
-       inkscape:connection-end-point="d4"
-       inkscape:export-filename="D:\yohann\workspace\peers\peers-doc\src\docbkx\api-usage.png"
-       inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90" />
-    <path
        style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#DiamondLend)"
-       d="m 256.66578,183.36218 61.7647,-66"
+       d="m 256.28756,186.36218 62.56477,-69"
        id="path4469"
        inkscape:connector-type="polyline"
        inkscape:connector-curvature="3"
@@ -290,7 +254,7 @@
        inkscape:export-ydpi="90" />
     <path
        style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#DiamondLend)"
-       d="m 337.2268,187.36218 -4.32989,-70"
+       d="m 337.2228,186.86218 -4.32125,-69.5"
        id="path4657"
        inkscape:connector-type="polyline"
        inkscape:connector-curvature="3"
@@ -303,7 +267,7 @@
        inkscape:export-ydpi="90" />
     <path
        style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#DiamondLend)"
-       d="m 461.9375,190.36218 -108.405,-73"
+       d="m 461.26425,186.86218 -106.95078,-69.5"
        id="path5033"
        inkscape:connector-type="polyline"
        inkscape:connector-curvature="3"
@@ -316,16 +280,14 @@
        inkscape:export-ydpi="90" />
     <path
        style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#DiamondLend)"
-       d="m 172.14054,182.36218 130.7027,-65"
-       id="path5221"
+       d="m 78.168394,98.987183 126.036266,-69.5"
+       id="path3110"
        inkscape:connector-type="polyline"
        inkscape:connector-curvature="3"
-       inkscape:connection-start="#g3793"
+       inkscape:connection-start="#g3788"
        inkscape:connection-start-point="d4"
        inkscape:connection-end="#g3798"
        inkscape:connection-end-point="d4"
-       inkscape:export-filename="D:\yohann\workspace\peers\peers-doc\src\docbkx\api-usage.png"
-       inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90" />
+       transform="translate(101.5,87.875)" />
   </g>
 </svg>

@@ -478,10 +478,10 @@
       <title>Overview</title>
       <para>
         Peers provides one class to use sip and media stacks: UserAgent and
-        one interface to receive notifications from sip stack. The UserAgent
+        one interface to receive notifications from sip stack: SipListener. The UserAgent
         constructor takes a few parameters: SipListener, Config, Logger and
         AbstractSoundManager. SipListener must be a class implementing the
-        corresponding interface. It can be the class that instantiates
+        corresponding interface. It can be the class that creates
         UserAgent so that there is only one class to communicate with peers
         API. Config is an interface which must be implemented by your
         application. This simple interface will provide configuration parameters
@@ -489,10 +489,11 @@
         to use an xml configuration file to store those parameters, an XmlConfig
         class is available in peers-lib. Logger is also a simple interface to
         log messages. You can use null in User-Agent constructor so that a
-        default logger is used.
+        default logger is used. Default logger will output messages on standard
+        output.
         The last parameter is AbstractSoundManager. Here you can provide your
-        implementation of AbstractSoundManager or you can use JavaxSoundManager
-        from peers-javaxsound.
+        own implementation of AbstractSoundManager or you can use JavaxSoundManager
+        from peers-javaxsound module.
       </para>
       <figure>
         <title>Peers API usage</title>
@@ -505,9 +506,6 @@
           </imageobject>
         </mediaobject>
       </figure>
-      <para>
-        App is a class corresponding to your application.
-      </para>
     </section>
     <section>
       <title>Example</title>
@@ -530,7 +528,7 @@
         hangup, incoming call) and take commands from console. Those commands
         will be as simple as possible: call &lt;number&gt;, hangup.
         This application will support only one simultaneous call. SIP
-        registration parameters will be provided using java interface.
+        registration parameters will be provided using Config java interface.
         This demo application will rely on peers-lib to manage network stacks
         and on peers-javaxsound to manage microphone and speakers.
       </para>
@@ -574,7 +572,7 @@
         Development Environment) is <link xl:href="https://www.eclipse.org/">eclipse</link>.
         To generate eclipse project files
         easily, I use the following command line either in peers root directory
-        or in any maven project (let's do it in peers-demo new project):
+        or in any maven module (let's do it in peers-demo new project):
       </para>
       <literallayout><literal>mvn eclipse:eclipse</literal></literallayout>
       <para>
@@ -605,6 +603,17 @@
         This application will just behave as a client, it will not support
         incoming calls. This is just to provide a very simple example.
       </para>
+      <figure>
+        <title>peers-demo application UML class diagram</title>
+        <mediaobject>
+          <imageobject role="fo">
+            <imagedata fileref="peers-demo.svg" width="140mm"/>
+          </imageobject>
+          <imageobject role="html">
+            <imagedata fileref="peers-demo.png"/>
+          </imageobject>
+        </mediaobject>
+      </figure>
       <para>
         Let's start with the class that will read commands from console:
       </para>
