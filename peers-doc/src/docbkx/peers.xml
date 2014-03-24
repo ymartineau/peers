@@ -724,7 +724,7 @@ public class EventManager implements SipListener {
     private CommandsReader commandsReader;
     
     public EventManager() throws SocketException {
-        Config config = new MyConfig();
+        Config config = new CustomConfig();
         Logger logger = new FileLogger(null);
         JavaxSoundManager javaxSoundManager = new JavaxSoundManager(false, logger, null);
         userAgent = new UserAgent(this, config, logger, javaxSoundManager);
@@ -762,16 +762,16 @@ public class EventManager implements SipListener {
         method in a new thread to register user account in background.
       </para>
       <para>
-        Here is an example MyConfig class:
+        Here is an example CustomConfig class:
       </para>
       <example>
-        <title>MyConfig</title>
+        <title>CustomConfig</title>
           <programlisting>
 <![CDATA[
 package net.sourceforge.peers.demo;
 
 [...]
-public class MyConfig implements Config {
+public class CustomConfig implements Config {
 
     private InetAddress publicIpAddress;
 
@@ -811,7 +811,7 @@ public class MyConfig implements Config {
         </programlisting>
       </example>
       <example>
-        <title>MyConfig (cont.)</title>
+        <title>CustomConfig (cont.)</title>
         <programlisting>
 <![CDATA[
     @Override public SipURI getOutboundProxy() { return null; }

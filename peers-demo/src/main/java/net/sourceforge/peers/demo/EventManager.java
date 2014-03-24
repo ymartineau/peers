@@ -19,7 +19,7 @@ public class EventManager implements SipListener {
     private CommandsReader commandsReader;
     
     public EventManager() throws SocketException {
-        Config config = new MyConfig();
+        Config config = new CustomConfig();
         Logger logger = new FileLogger(null);
         JavaxSoundManager javaxSoundManager = new JavaxSoundManager(false, logger, null);
         userAgent = new UserAgent(this, config, logger, javaxSoundManager);
