@@ -90,7 +90,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -134,7 +134,10 @@
        x="91"
        y="92.362183"
        id="text3766"
-       sodipodi:linespacing="125%"><tspan
+       sodipodi:linespacing="125%"
+       inkscape:export-filename="D:\yohann\workspace\peers\peers-doc\src\docbkx\api-usage.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90"><tspan
          sodipodi:role="line"
          id="tspan3768"
          x="91"
@@ -288,6 +291,9 @@
        inkscape:connection-start-point="d4"
        inkscape:connection-end="#g3798"
        inkscape:connection-end-point="d4"
-       transform="translate(101.5,87.875)" />
+       transform="translate(101.5,87.875)"
+       inkscape:export-filename="D:\yohann\workspace\peers\peers-doc\src\docbkx\api-usage.png"
+       inkscape:export-xdpi="90"
+       inkscape:export-ydpi="90" />
   </g>
 </svg>

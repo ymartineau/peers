@@ -496,7 +496,7 @@
         from peers-javaxsound module.
       </para>
       <figure>
-        <title>Peers API usage</title>
+        <title>Peers API</title>
         <mediaobject>
           <imageobject role="fo">
             <imagedata fileref="api-usage.svg" width="96mm"/>
@@ -534,7 +534,7 @@
       </para>
       <para>
         The final application code is available in peers-demo module in peers
-        source code.
+        <link xl:href="https://github.com/ymartineau/peers/tree/master/peers-demo">source code</link>.
       </para>
       <para>
         Here is an example to create an empty maven application:
@@ -596,7 +596,7 @@
         console and sip stack. Let's call this main object EventManager. It will
         handle all events coming from sip stack and from CommandsReader and will
         make decisions appropriately (display message on console, call peers API,
-        etc.). Actually, in a real application this central class is just
+        etc.). Actually, in a real application this central class is a
         finite state machine.
       </para>
       <para>
