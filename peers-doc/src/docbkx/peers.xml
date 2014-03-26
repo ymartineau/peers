@@ -374,7 +374,20 @@
     </para>
 
     <para>
-      Peers is a <link xl:href="http://maven.apache.org/">maven</link>
+      Peers is distributed several ways: either as a binary "desktop" zip file
+      which can be downloaded on sourceforge in peers project
+      <link xl:href="http://sourceforge.net/projects/peers">page</link>, or as a
+      git project hosted on
+      <link xl:href="https://github.com/ymartineau/peers">github</link> for
+      souce code. The binary zip file can be extracted on windows, linux or
+      mac and the .bat or .sh startup script can be used to start peers. To
+      download peers source code, a git client must be available on your
+      computer, then you have to run:
+    </para>
+    <literallayout><literal>git clone https://github.com/ymartineau/peers.git</literal></literallayout>
+    <para>
+      If you take a look at peers source code, you will see that peers is
+      actually a <link xl:href="http://maven.apache.org/">maven</link>
       project containing several modules:
     </para>
     <itemizedlist>
@@ -401,8 +414,15 @@
       </listitem>
     </itemizedlist>
     <para>
-      Peers-demo is a demo project to show peers library usage with a simple
-      example. See next chapter.
+      Maven is a java build tool which is pretty useful to manage dependencies
+      amongst modules or on external libraries. You must download it, extract
+      it and setup your environment variables if you want to build peers from
+      source code. Maven uses files called pom.xml to define projects and
+      modules.
+    </para>
+    <para>
+      Peers-demo is a command line demo project to show peers library usage
+      with a simple example. See next chapter.
     </para>
     <para>
       Peers-doc is a module which contains this documentation as docbook. It
@@ -411,10 +431,15 @@
     <para>
       Only three modules are used to generate peers desktop binary zip file:
       peers-gui, peers-lib and peers-javaxsound. Peers-gui is the graphical
-      user interface. Peers-javaxsound contains the classes using javax.sound
+      user interface based on
+      <link xl:href="http://docs.oracle.com/javase/tutorial/uiswing/">swing</link>.
+      Peers-javaxsound contains the classes using
+      <link xl:href="http://docs.oracle.com/javase/tutorial/sound/">javax.sound</link>
       java extension package for microphone capture and sound playback.
       Peers-lib implements everything that is not related to graphical user
       interface and sound capture/playback (network stacks, audio encoding, etc.).
+      It's actually the most important module in peers: it contains SIP, SDP
+      and RTP stacks.
     </para>
     <para>
       Actually, peers binary zip file is built by peers-gui. Peers-gui has a
@@ -423,16 +448,17 @@
       and files and packages the whole as a zip file.
     </para>
     <para>
-      In addition to those to simple modules, a few demo modules have been
-      added. The goal of those modules is to show how peers-lib library can
-      be used in various environments. Those demo applications are not fully
-      tested applications. You should not use those modules in a deployed
-      application, they give examples to create new applications based on
-      peers-lib. You can consider those demo applications as proofs of
-      concept.
+      In addition to peers-demo example, peers-jws and peers-js give two
+      demo applications to demonstrate how peers can be launched from browser
+      or used directly in browser. You should not use those
+      modules in a deployed application, they give examples to create new
+      applications based on peers-lib. You can consider those demo applications
+      as proofs of concept.
     </para>
     <para>
-      One of these demo modules is peers-jws. Peers-jws is a Java Web Start
+      Peers-jws is a
+      <link xl:href="http://docs.oracle.com/javase/tutorial/deployment/webstart/">Java
+      Web Start</link>
       application. A Java Web Start application is just a java application that
       can be launched from a web browser with a simple click. Actually, you
       generally need to grant system resources security access rights
@@ -441,13 +467,18 @@
    </para>
    <para>
       Peers-js is another demo application. Peers-js is a java applet running
-      inside browser. When you run this demo application, the java applet is
-      not visible, user interface is developed using html and javascript. In
+      in browser. When you run this demo application, the java applet is
+      not visible in browser, user interface is developed using html and javascript. In
       this case, peers interface is javascript, hence its name: peers-js.
-      Since java 1.7.0-51, applets not signed by a java certificate provided
+    </para>
+    <para>
+      Take care though with this module: since java 1.7.0-51, applets not signed
+      by a java certificate provided
       by a certification authority cannot be run. There is a workaround for
       developers. In java config panel security panel, a trusted source website
-      can be defined.
+      can be defined. In addition to this restriction added in java 1.7.0-51,
+      firefox is now blocking java applets by default since firefox 26. You can
+      force java applets execution in firefox but they are blocked by default.
     </para>
     <para>
       In addition to maven modules, peers root directory contains several
@@ -466,6 +497,8 @@
     </itemizedlist>
     <para>
       Conf directory contains peers xml configuration file and its grammar.
+      This is the file where you provide your user account info: username
+      (userpart), password and server (domain).
       Logs contains log files once you started peers in root directory and
       media directory contains binary files with raw audio data generated when
       media debug option is turned on.
@@ -477,12 +510,14 @@
     <section>
       <title>Overview</title>
       <para>
-        Peers provides one class to use sip and media stacks: UserAgent and
-        one interface to receive notifications from sip stack: SipListener. The UserAgent
-        constructor takes a few parameters: SipListener, Config, Logger and
-        AbstractSoundManager. SipListener must be a class implementing the
-        corresponding interface. It can be the class that creates
-        UserAgent so that there is only one class to communicate with peers
+        Peers provides one class to use sip and media stacks (UserAgent) and
+        one interface to receive notifications from sip stack (SipListener).
+        The UserAgent constructor takes a few parameters: SipListener, Config,
+        Logger and AbstractSoundManager. SipListener parameter in UserAgent
+        constructor must be a class implementing the corresponding interface.
+        It can be the class that creates
+        UserAgent so that there is only <link linkend="peers-demo">one
+        class</link> to communicate with peers
         API. Config is an interface which must be implemented by your
         application. This simple interface will provide configuration parameters
         to sip stack such as username, password and domain name. If you want
@@ -493,7 +528,9 @@
         output.
         The last parameter is AbstractSoundManager. Here you can provide your
         own implementation of AbstractSoundManager or you can use JavaxSoundManager
-        from peers-javaxsound module.
+        from peers-javaxsound module. This AbstractSoundManager is a class
+        that defines the way to access low level API to write sound to speakers
+        and read sound from microphone.
       </para>
       <figure>
         <title>Peers API</title>
@@ -510,11 +547,7 @@
     <section>
       <title>Example</title>
       <para>
-        Peers can be used as a library with no other dependencies. In this case,
-        you need to add peers jar library file(s) to your application classpath.
-        You can add it to your ant build.xml compile tasks or you can just add it
-        to your favorite IDE classpath. The simplest way to develop an application
-        based on peers is using maven.
+        The simplest way to develop an application based on peers is using maven.
       </para>
       <para>
         As peers is a maven project, you just have to add the right dependencies
@@ -522,10 +555,18 @@
         application.
       </para>
       <para>
+        If you want or need to use peers from a non-maven project, you can just
+        retrieve the appropriate jar files in your maven repository once you
+        have built peers (using "mvn clean install" in peers root directory) or
+        you can download peers standard desktop version and retrieve peers.jar
+        once you extracted the archive. This peers.jar contains peers-lib,
+        peers-javaxsound and peers-gui classes.
+      </para>
+      <para>
         The following example application will be a command line interface (cli)
         phone based on peers. Let's call this application peers-demo. This
         application will run from command line, notify user about events (remote
-        hangup, incoming call) and take commands from console. Those commands
+        hangup, etc.) and take commands from console. Those commands
         will be as simple as possible: call &lt;number&gt;, hangup.
         This application will support only one simultaneous call. SIP
         registration parameters will be provided using Config java interface.
@@ -603,7 +644,7 @@
         This application will just behave as a client, it will not support
         incoming calls. This is just to provide a very simple example.
       </para>
-      <figure>
+      <figure id="peers-demo">
         <title>peers-demo application UML class diagram</title>
         <mediaobject>
           <imageobject role="fo">
@@ -744,9 +785,11 @@ public class EventManager implements SipListener {
         </programlisting>
       </example>
       <para>
-        Here, we use a custom implementation of Config interface to provide
-        hardcoded accound parameters. The FileLogger(null) instance will
-        actually log messages to console on standard output. If you create a
+        Here, we use a custom implementation of Config interface (CustomConfig)
+        to provide
+        hardcoded account parameters. The FileLogger(null) instance will
+        actually log messages to console on standard output. Its name is pretty
+        dumb, but don't mind. If you create a
         logs dir in your project root directory (peers-demo), it would log
         messages to two text files: logs/peers.log and logs/transport.log.
         transport.log would give full traces of sip messages (outgoing and
@@ -794,9 +837,9 @@ public class CustomConfig implements Config {
 
     @Override
     public InetAddress getPublicInetAddress() { return publicIpAddress; }
-    @Override public String getUserPart() { return "ymartineau"; }
-    @Override public String getDomain() { return "ippi.fr"; }
-    @Override public String getPassword() { return "abc123"; }
+    @Override public String getUserPart() { return "alice"; }
+    @Override public String getDomain() { return "atlanta.com"; }
+    @Override public String getPassword() { return "secret1234"; }
     @Override  // use microphone and speakers to capture and playback sound
     public MediaMode getMediaMode() { return MediaMode.captureAndPlayback; }
 
@@ -879,7 +922,8 @@ public class EventManager implements SipListener {
       </example>
       <para>
         Here we use a null second parameter to invite so that callId is
-        generated automatically by sip stack. We also call userAgent methods
+        generated automatically by sip stack. A call id is just a unique call
+        identifier used in sip message. We also call userAgent methods
         in new threads so that console does not stick on commands input.
       </para>
       <para>
@@ -902,7 +946,9 @@ public class EventManager implements SipListener {
       </example>
       <para>
         Now run this demo project: in eclipse right-click EventManager and
-        Run As &gt; Java Application. You should see something like this:
+        Run As &gt; Java Application. You should see something like this
+        (credentials in traces don't match github sources code because
+        those traces corresponds to a real account):
       </para>
       <literallayout><literal>logging to stdout
 2014-03-22 00:20:07,893 INFO  [main] starting user agent
@@ -950,10 +996,14 @@ Server: OpenSIPS (1.8.2-tls (i386/linux))
 Content-Length: 0
 </literal></literallayout>
       <para>
-        It may be somehow tricky to write commands on console because of the
+        You could also run this application from the command line in your OS
+        console using the right dependencies in your java classpath.
+      </para>
+      <para>
+        It may be tricky to write commands on console because of the
         numerous messages displayed. If you have difficulties, write the command
         in your preferred text editor first and then copy paste it in the console
-        and hit return. Here is an example:
+        (eclipse console or OS console) and hit return. Here is an example:
       </para>
       <literallayout><literal>call sip:*1234@ippi.fr</literal></literallayout>
       <para>
@@ -995,7 +1045,7 @@ a=sendrecv
 2014-03-22 00:20:34,996 RECEIVED from 213.215.45.230/5060 [TransportManager 0]
 </literal></literallayout>
       <para>
-        If the callee pick-ups you should now be able to talk with the call
+        If the callee pick-ups you should now be able to talk with the callee
         using your computer microphone and you can use the following command
         to hangup:
       </para>
