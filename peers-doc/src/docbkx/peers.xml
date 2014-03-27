@@ -1095,7 +1095,84 @@ Content-Length: 0
 
   <chapter>
     <title>Build system</title>
-    <para></para>
+    <para>
+      Peers relies on maven to build all its modules, jar files and zip
+      files.
+    </para>
+    <para>
+      Here are dependencies amongst modules:
+    </para>
+    <figure>
+      <title>Peers modules</title>
+      <mediaobject>
+        <imageobject role="fo">
+          <imagedata fileref="modules.svg" width="140mm"/>
+        </imageobject>
+        <imageobject role="html">
+          <imagedata fileref="modules.png"/>
+        </imageobject>
+      </mediaobject>
+    </figure>
+    <para>
+      My advice is to use "mvn clean install" to build peers project or any
+      of its modules.
+      Generated files for all modules are in their target subdirectory. If you
+      run "mvn clean install" in peers source code root directory, the same
+      command will be run automatically in all modules declared in peers root
+      project pom.xml in &lt;modules&gt;. Actually, it's true for any maven
+      command that you invoke from root directory. If you take a look at
+      peers root pom.xml, you will see that most modules are "attached" to
+      peers parent project.
+    </para>
+    <para>
+      Peers-lib generates a simple jar file containing sip, rtp and sdp stacks.
+    </para>
+    <para>
+      Peers-javaxsound generates a simple jar file containing only
+      JavaxSoundManager class.
+    </para>
+    <para>
+      Peers-gui first generates a jar file containing all its dependencies
+      (peers-jws-with-dependencies.jar). Thus, this file includes classes from
+      peers-lib and peers-javaxsound jars combined in one jar. Then it creates
+      a zip file that can be extracted on standard pc to run peers. In this
+      archive, the previous peers-jws-with-dependencies.jar file is called
+      peers.jar. This archive also includes conf, media and logs directories
+      and two scripts files to start peers on linux or windows easily.
+    </para>
+    <para>
+      Peers-jws includes a demo web page. Peers-jws generates a zip file
+      including this web page and all dependencies. This zip file can be
+      extracted in web server directory. Then, you just have to browse the
+      corresponding url to test peers-jws.
+    </para>
+    <para>
+      Similarly, peers-js includes a demo web page and generates a zip file
+      that can be extracted on a web server. One significant difference though
+      with other modules is that peers-js is not "attached" to peers parent
+      root project. It implies that you have to run "mvn clean install" in
+      peers-js subdirectory if you want to build peers-js. The reason why
+      peers-js is not included in peers parent project is that it relies on
+      a jar provided only with sun or oracle java versions (provided in its
+      Java Runtime Environment install directory):
+      ${java.home}/lib/plugin.jar. This jar file contains a netscape.javascript
+      package containing objects used to invoke javascript functions from
+      java classes. To build this module, you must define a JAVA_HOME
+      environment variable that points to your JRE.
+    </para>
+    <para>
+      Peers-demo generates a jar file containing only its classes, it is not
+      reused by another module.
+    </para>
+    <para>
+      All zip files built by peers modules rely on <link
+      xl:href="https://maven.apache.org/plugins/maven-assembly-plugin/">maven
+      assembly</link> to define the content of the target zip file. This maven
+      <link xl:href="https://maven.apache.org/plugins/">plugin</link> is
+      explicitly invoked in the corresponding modules pom.xml. The archive is
+      defined in an xml file (often called bin.xml) in src/assembly
+      subdirectory.
+    </para>
   </chapter>
 
   <chapter>

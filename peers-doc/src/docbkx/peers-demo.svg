@@ -9,8 +9,8 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="452"
-   height="204.5"
+   width="522.57715"
+   height="191"
    id="svg4084"
    version="1.1"
    inkscape:version="0.48.4 r9939"
@@ -57,8 +57,8 @@
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
      inkscape:zoom="1"
-     inkscape:cx="270.7438"
-     inkscape:cy="47.012817"
+     inkscape:cx="105.71715"
+     inkscape:cy="46.012817"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -79,7 +79,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -87,10 +87,10 @@
      inkscape:label="Calque 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(-31,-414.875)">
+     transform="translate(-36.922852,-427.375)">
     <g
        id="g4110"
-       transform="translate(24,-16)">
+       transform="translate(133,-28.25)">
       <text
          sodipodi:linespacing="125%"
          id="text4092"
@@ -112,7 +112,7 @@
     </g>
     <g
        id="g4115"
-       transform="translate(-87,5.5)">
+       transform="translate(27,-73.25)">
       <text
          sodipodi:linespacing="125%"
          id="text4096"
@@ -134,7 +134,7 @@
     </g>
     <g
        id="g4120"
-       transform="translate(137,-44.5)">
+       transform="translate(246,-44.5)">
       <text
          sodipodi:linespacing="125%"
          id="text4100"
@@ -156,7 +156,7 @@
     </g>
     <g
        id="g4131"
-       transform="translate(-50,129)">
+       transform="translate(64,23.5)">
       <text
          sodipodi:linespacing="125%"
          id="text4125"
@@ -178,7 +178,7 @@
     </g>
     <g
        id="g4142"
-       transform="translate(142,-52)">
+       transform="translate(251,-66.75)">
       <text
          sodipodi:linespacing="125%"
          id="text4136"
@@ -200,7 +200,7 @@
     </g>
     <path
        style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)"
-       d="m 123.79032,594.86218 0.93145,-38.5"
+       d="m 237.70282,516.11218 1.10281,-65.25"
        id="path4147"
        inkscape:connector-type="polyline"
        inkscape:connector-curvature="3"
@@ -210,7 +210,7 @@
        inkscape:connection-end-point="d4" />
     <path
        style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)"
-       d="m 381.30952,593.86218 -0.62698,-39.5"
+       d="m 490.34566,593.86218 -0.69775,-54.25"
        id="path4149"
        inkscape:connector-type="polyline"
        inkscape:connector-curvature="3"
@@ -220,7 +220,7 @@
        inkscape:connection-end-point="d4" />
     <g
        id="g5291"
-       transform="translate(-248,54)">
+       transform="translate(-139,67)">
       <text
          sodipodi:linespacing="125%"
          id="text5285"
@@ -242,7 +242,7 @@
     </g>
     <path
        style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)"
-       d="m 247.39474,528.36218 -0.79825,-91"
+       d="m 356.36479,516.11218 -0.74085,-65.75"
        id="path5296"
        inkscape:connector-type="polyline"
        inkscape:connector-curvature="3"
@@ -252,7 +252,7 @@
        inkscape:connection-end-point="d4" />
     <g
        id="g5486"
-       transform="translate(-13,-143)">
+       transform="translate(96,-133.5)">
       <text
          sodipodi:linespacing="125%"
          id="text5480"
@@ -274,7 +274,7 @@
     </g>
     <path
        style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-start:url(#DiamondLstart)"
-       d="m 264.98416,528.36218 126.76018,-87"
+       d="m 378.26901,516.11218 118.36902,-65.25"
        id="path5491"
        inkscape:connector-type="polyline"
        inkscape:connector-curvature="3"
@@ -284,7 +284,7 @@
        inkscape:connection-end-point="d4" />
     <path
        style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-start:url(#DiamondLstart)"
-       d="m 272.04962,552.36218 84.90076,41.5"
+       d="m 377.18167,540.11218 92.63666,53.75"
        id="path5865"
        inkscape:connector-type="polyline"
        inkscape:connector-curvature="3"
@@ -292,11 +292,6 @@
        inkscape:connection-start-point="d4"
        inkscape:connection-end="#g4120"
        inkscape:connection-end-point="d4" />
-    <path
-       style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:4, 4;stroke-dashoffset:0"
-       d="m 31,482.36218 455,0"
-       id="path6053"
-       inkscape:connector-curvature="0" />
     <text
        xml:space="preserve"
        style="font-size:14px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
@@ -319,5 +314,11 @@
          id="tspan6061"
          x="36"
          y="501.36218">peers-demo application</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:4, 4;stroke-dashoffset:0"
+       d="m 6,55 519,0"
+       id="path3079"
+       inkscape:connector-curvature="0"
+       transform="translate(31,427.375)" />
   </g>
 </svg>
