@@ -505,7 +505,7 @@
     </para>
   </chapter>
 
-  <chapter>
+  <chapter id="peers-usage">
     <title>Peers library usage</title>
     <section>
       <title>Overview</title>
@@ -1178,23 +1178,51 @@ Content-Length: 0
   <chapter>
     <title>Peers source</title>
     <section>
-      <title>peers-lib</title>
-      <para></para>
-    </section>
-
-    <section>
-      <title>peers-gui</title>
-      <para></para>
-    </section>
-
-    <section>
-      <title>peers-jws</title>
-      <para></para>
-    </section>
-
-    <section>
-      <title>peers-js</title>
-      <para></para>
+      <title>Overview</title>
+      <para>
+        Here is an overview of peers maven modules and java packages:
+      </para>
+      <figure>
+        <title>Peers modules and java packages</title>
+        <mediaobject>
+          <imageobject role="fo">
+            <imagedata fileref="modules-packages.svg" width="110mm"/>
+          </imageobject>
+          <imageobject role="html">
+            <imagedata fileref="modules-packages.png"/>
+          </imageobject>
+        </mediaobject>
+      </figure>
+      <para>
+        Peers-demo source code has already been covered in peers usage
+        <link linkend="peers-usage">chapter</link>.
+      </para>
+      <para>
+        Peers-doc contains this documentation as a
+        <link xl:href="http://docbook.org/tdg/en/html/docbook.html">docbook</link>
+        file: peers.xml. Source svg images are created using
+        <link xl:href="http://www.inkscape.org/">Inkscape</link>.
+      </para>
+      <para>
+        Peers-javaxsound has already been covered, it only opens and closes
+        javax.sound target and source data lines. javax.sound is also known as
+        javasound.
+      </para>
+      <para>
+        Peers-js contains an implementation of Applet class to define the java
+        applet.
+      </para>
+      <para>
+        Peers-jws just invokes the standard peers desktop version but from
+        java web start environment (less rights at the beginning). This is the
+        reason why it depends on peers-gui and not peers-lib and
+        peers-javaxsound directly.
+      </para>
+      <para>
+        Peers-lib and peers-gui are more complex. Peers-gui relies on swing.
+        Swing is the graphical user interface library provided by oracle to
+        build graphical applications.
+      </para>
     </section>
 
 
@@ -1202,55 +1230,17 @@ Content-Length: 0
         <title>Architecture</title>
         <para>
           Peers has been developed in java, an object-oriented programming
-          language. Here is Peers architecture:
-        </para>
-        <figure>
-          <title>Peers architecture</title>
-          <mediaobject>
-            <imageobject role="fo">
-              <imagedata fileref="packages.svg" width="80mm"/>
-            </imageobject>
-            <imageobject role="html">
-              <imagedata fileref="packages.png"/>
-            </imageobject>
-          </mediaobject>
-        </figure>
-        <para>
-          Peers is separated in packages (gui, sip, core, etc.). It relies only
-          on standard java specification API, and two java "extensions" APIs:
-          javasound and swing. If you are using a standard java platform
-          (openjdk or sun jdk), everything is already included in your
+          language.
+          Peers relies on standard java specification API. If you are using a
+          standard java platform (openjdk or sun jdk), everything is already included in your
           environment, you need no other library. Peers has no external
-          dependency. If you don't want to download sources, and import them in
-          your preferred IDE, you can use the
-          <link xl:href="http://peers.svn.sourceforge.net/viewvc/peers/trunk/src/net/sourceforge/peers/">web
-          interface</link> to browse sources online. If you take a look
-          at the source (this will now be necessary), you will see that the
-          first categorization in the source code is done on protocols and very
-          high level capabilities:
+          dependency. If you don't want to download sources and import them in
+          your preferred IDE, you can browse the source code online, on
+          <link xl:href="https://github.com/ymartineau/peers">github</link>.
         </para>
-        <itemizedlist>
-          <listitem>
-            <para>net.sourceforge.peers.gui</para>
-          </listitem>
-          <listitem>
-            <para>net.sourceforge.peers.media</para>
-          </listitem>
-          <listitem>
-            <para>net.sourceforge.peers.nat</para>
-          </listitem>
-          <listitem>
-            <para>net.sourceforge.peers.sdp</para>
-          </listitem>
-          <listitem>
-            <para>net.sourceforge.peers.sip</para>
-          </listitem>
-          <listitem>
-            <para>net.sourceforge.peers.rtp</para>
-          </listitem>
-        </itemizedlist>
         <para>
-          For your information, nat package is not used for the moment, it was an
+          For your information, nat package in peers-lib is not used for the
+          moment, it was an
           experiment about Port Restricited Cone NAT traversal. media package is
           responsible for sound encoding. SDP and SIP do not rely on any external
           library. Of course, sdp and sip packages contains SDP related sources
@@ -1277,9 +1267,9 @@ Content-Length: 0
         </itemizedlist>
         <para>
           As you probably remarked, it corresponds to
-          <link xl:href="http://www.ietf.org/rfc/rfc3261.txt">RFC3261</link> layers: 
+          <link xl:href="http://tools.ietf.org/html/rfc3261">RFC3261</link> layers: 
         </para>
-        <figure>
+        <figure id="sip-stack">
           <title>SIP stack</title>
           <mediaobject>
             <imageobject role="fo">
@@ -1291,8 +1281,8 @@ Content-Length: 0
           </mediaobject>
         </figure>
         <para>
-          The reader will probably need to keep an eye on RFC3261 to fully
-          understand the following paragraphs. I did not reinvent the wheel. The
+          The reader will probably need to keep RFC3261 open to 
+          understand thoroughly the following paragraphs. I did not reinvent the wheel. The
           sip package has been implemented with simplicity and extensibility in
           mind. This implementation should not be obscure to a java developer
           that already knows SIP. The following paragraphs will contain
@@ -1307,12 +1297,12 @@ Content-Length: 0
           SIP defines several state machines, a
           <link xl:href="http://sourcemaking.com/design_patterns/state">design
           pattern</link> has been used for state machines. It consists of one
-          class for the object that handles its state, one mother class for all
+          class for the object that handles its state, one parent class for all
           states of this state machine and one class for each state. As there
           were several state machines, and as it was useful to log state
-          transitions, a generic abstract state class has been defined, it just
-          prints the old state, the new state and the transition employed. Then
-          each mother state class in state machines extends this abstract state
+          transitions, a general abstract state class has been defined, it just
+          prints the old state, the new state and the transition. Then
+          each parent state class in state machines extends this abstract state
           class: 
         </para>
         <figure>
@@ -1327,16 +1317,17 @@ Content-Length: 0
           </mediaobject>
         </figure>
         <para>
-          We won't detail the role of each state machine now, just keep in mind
+          We won't give more details about the role of each state machine now, just keep in mind
           the way they are managed and implemented, not what they are done for. 
         </para>
       </section>
       <section>
         <title>Managers</title>
         <para>
-          The second design pattern that has been used in Peers is Factory. It
+          The second design pattern that has been used in Peers is "Factory". It
           has been used in several packages. Actually, in Peers, factories are
-          called managers. Managers are more than factories, because they are
+          called managers. Those classes are called xxxManager. Managers are
+          more than factories, because they are
           employed to create object instances, but they are also used to store
           all references to those objects. For example, TransactionManager
           implements a method to create a new client transaction:
@@ -1364,7 +1355,8 @@ Content-Length: 0
           necessarily apply to pure beans or POJOs (plain old java objects). 
         </para>
         <para>
-          In SIP theory, only one layer relies on two other layers: transaction
+          In SIP <link linkend="sip-stack">theory</link>, only one layer relies on two
+          other layers: transaction
           user on transaction and transport layers. In peers implementation,
           you can find dependencies on several packages: syntaxencoding for
           message access, media for sound management, etc. This does not break
@@ -1384,15 +1376,15 @@ Content-Length: 0
           Let's start with sip-related packages. The best way to get in touch
           with SIP is probably using wireshark network analyzer and its sip
           filter, and trying to place calls. We have already seen that Peers
-          source code is separated in packages that correspond to SIP layers.
+          source code is made of several packages that correspond to SIP layers.
           We will start with the lowest layer (syntax/encoding) with simple
           message examples. Then we will climb up the layer stack. The next
           step is transport management, i.e. the way messages travel over the
-          network. Next, we will see how those messages are grouped to form
+          network. Next, we will see how those messages are grouped to make
           transactions. Then, we will explain how those transactions are
           grouped to manage dialogs. And last but not least, we will
           understand how dialogs are managed by core layer. But before we
-          explain how those high-level layers are translated in java, let's
+          explain how those high-level layers are implemented in java, let's
           discover SIP by its messages. 
         </para>
         <section>
@@ -1402,18 +1394,18 @@ Content-Length: 0
             contain a method (<emphasis>INVITE</emphasis> in the following
             example) that will give request aim and a request-uri
             (<emphasis>sip:bob@biloxi.example.com</emphasis>) for the
-            person/server we want to reach. And responses contain a status
+            person/server we want to reach. Responses contain a status
             code (an integer, <emphasis>200</emphasis> in next example) that
             gives response status: success, failure, etc. Each SIP message is
             made of several headers and one body. A header has a name, and
-            generally one value. But it may contain several values. A SIP
+            generally one value but it may contain several values. A SIP
             header can contain one or several parameters with the following
             syntax:
           </para>
           <literallayout><literal>header_name: header_value;param=param_value</literal></literallayout>
           <para>
             Here is an example message quoting
-            <link xl:href="http://www.ietf.org/rfc/rfc3665.txt">RFC3665</link>,
+            <link xl:href="http://tools.ietf.org/html/rfc3665">RFC3665</link>,
             which gives simple call-flow examples.
           </para>
           <literallayout><literal>INVITE sip:bob@biloxi.example.com SIP/2.0
@@ -1435,7 +1427,7 @@ t=0 0
 m=audio 49172 RTP/AVP 0
 a=rtpmap:0 PCMU/8000</literal></literallayout>
           <para>
-            This message is a request. Here is an example response. Here
+            This message is a request. Here, is an example response. Here
             message bodies are plain text. Generally, SIP message body is
             either empty, either text. But RFC3261 states that body can
             contain any type of data, even binary data.
@@ -1459,8 +1451,8 @@ t=0 0
 m=audio 3456 RTP/AVP 0
 a=rtpmap:0 PCMU/8000</literal></literallayout>
           <para>
-            Thus, here is how those messages have been separated in objects
-            to ease message content access in Peers. 
+            Thus, here is how those messages have been designed to enable message
+            content access in Peers. 
           </para>
           <figure>
             <title>SIP message and its components</title>
@@ -1474,7 +1466,7 @@ a=rtpmap:0 PCMU/8000</literal></literallayout>
             </mediaobject>
           </figure>
           <para>
-            For the moment, don't bother with body content, this is SDP
+            For the moment, don't mind body content, this is SDP
             (starting with v=0...). We will explain this syntax later. Just
             remember that this is not SIP but SDP, and thus, it's specified
             in another RFC. 
@@ -1492,12 +1484,13 @@ a=rtpmap:0 PCMU/8000</literal></literallayout>
             and server transports are called message senders and message
             receivers. Actually, behind the stage, DatagramSockets are doing
             the real job. It must be noted that TCP transport is not
-            supported in Peers. Most User-Agents first support UDP, and then
+            supported in Peers. Most SPI stacks first support UDP, and then
             TCP. Peers does not break the rules. That's why TCP does not
             appear on the following class diagram. The transport layer is
-            also generally responsible for message retransmissions. As SIP
+            almost always responsible for message retransmissions
+            (when first message sent has not been acknowledged). As SIP
             works over UDP, those message retransmissions are very important
-            to avoid losing messages. 
+            to avoid lost packets. 
           </para>
           <figure>
             <title>SIP transport management</title>
@@ -1511,7 +1504,7 @@ a=rtpmap:0 PCMU/8000</literal></literallayout>
             </mediaobject>
           </figure>
           <para>
-            To help NAT traversal, each message sender sends "empty" SIP
+            To enable simple NATs traversal, each message sender sends "empty" SIP
             packets at scheduled interval. Actually, those packets contain
             four bytes: 0x0d 0x0a 0x0d 0x0a. Those bytes correspond to a
             couple of carriage return / line feed ("\r\n" in java).
@@ -1520,7 +1513,8 @@ a=rtpmap:0 PCMU/8000</literal></literallayout>
             keep-alive / ping packet. Thus, a pong is sent, i.e. the same
             packet is sent back to the source of the previous packet. Sent
             and received at fixed rate, those packets prevent NATs from
-            closing binding sessions between local and remote sip stacks. 
+            closing binding sessions between local and remote sip stacks.
+            Nevertheless, it doesn't work with symmetric NATs.
           </para>
           <figure>
             <title>Sending and receiving keep-alive packets</title>
@@ -1536,11 +1530,11 @@ a=rtpmap:0 PCMU/8000</literal></literallayout>
           <para>
             For datagram sockets indexing (in transport manager hashtable),
             it must be noted that keys are not strings nor integers, but
-            SipTransportConnection objects. Those objects contain local
-            address, remote address, local port, remote port and transport
+            SipTransportConnection objects. Those objects contain local ip
+            address, remote ip address, local port, remote port and transport
             protocol used to convey packets. Thus when it's necessary to
             communicate with the same machine on the same port and using the
-            same transport protocol, the same object is employed. 
+            same transport protocol, the same object is used. 
           </para>
           <para>
             Thread management is not the same for message sending and message
@@ -1548,7 +1542,9 @@ a=rtpmap:0 PCMU/8000</literal></literallayout>
             started in its own Thread. It has been considered that was
             necessary to perform message reception in one Thread, as it can
             occur at any time. But message sending is not done in its own
-            Thread. It's done in caller's Thread. 
+            Thread. It's done in caller's Thread. This is the reason why
+            applications relying on peers API must call UserAgent methods
+            in a background thread.
           </para>
           <para>
             Transport management has been done in a very naive way. In
@@ -1557,7 +1553,7 @@ a=rtpmap:0 PCMU/8000</literal></literallayout>
             this would probably be very odd to receive several SIP messages
             in the same UDP packet. In day-to-day life, it never occurs.
             Several multi-SIP messages UDP packets generally only occur
-            between high-loaded servers, not on User-Agents. In theory, in
+            between high-loaded servers, not on User-Agents. In theory,
             SIP messages bigger than MTU or 1300 bytes if <link
             xl:href="http://en.wikipedia.org/wiki/Maximum_transmission_unit">MTU</link>
             is unknown are supposed to be sent on a reliable transport
@@ -1579,10 +1575,11 @@ a=rtpmap:0 PCMU/8000</literal></literallayout>
             Those of you who are familiar with databases probably already
             know transactions. We could also compare SIP transactions with
             financial transactions. In each case, transaction aim is the
-            same: do something if everything goes well, else do nothing. It's
-            exactly the same with SIP. If any error occurs during transaction
+            same: do something if each individual step is successful, otherwise
+            do nothing. It's exactly the same with SIP. If any error occurs
+            during transaction
             management, abort modifications on transaction-related objects
-            (generally dialog state, etc.) and come back to the original
+            (dialog state, etc.) and come back to the original
             state, before transaction management. Actually, this is quite
             dumb to start Peers transaction implementation description with
             transaction-fallback mechanism because no "failover" technique
@@ -1613,24 +1610,23 @@ a=rtpmap:0 PCMU/8000</literal></literallayout>
             Peers.
           </para>
           <para>
-            Transaction layer is probably the most complicated layer in SIP
+            Transaction layer is probably the most complex layer in SIP
             specification. There are several transaction families. To find
-            transaction family, you have to answer the two following
-            questions:
+            transaction family, you have to answer two questions:
           </para>
           <itemizedlist>
             <listitem>
               <para>
-                Did this transaction receive or sent the request on the
+                Does this transaction receive or sent the request on the
                 network?
               </para>
             </listitem>
             <listitem>
-              <para>this transaction create a Dialog?</para>
+              <para>Does this transaction create a Dialog?</para>
             </listitem>
           </itemizedlist>
           <para>
-            Both questions have two exclusive answers. Transactions that
+            Both questions have two mutually exclusive answers. Transactions that
             receive requests are called server transactions and transactions
             which send requests are called client transactions. Transactions
             that create a dialog are called invite transactions, as INVITE is
@@ -1700,7 +1696,7 @@ Contact: &lt;sip:bob@client.biloxi.example.com;transport=tcp&gt;
           <para>
             What makes transaction package particularly verbose in Peers is
             that each transaction type has its own state machine, thus its
-            corresponding mother state class and its corresponding classes
+            corresponding parent state class and its corresponding classes
             for each state. Those state machines are provided in RFC3261 but
             here is how they have been implemented in Peers: 
           </para>
@@ -2452,7 +2448,7 @@ a=rtpmap:0 PCMU/8000</literal></literallayout>
           <para>
             Peers defines a state machine to maintain the state of this
             window. This state machine uses the classical model employed in
-            peers (one class per state and a mother class for all states).
+            peers (one class per state and a parent class for all states).
             The same state machine is employed for calls originating from
             peers user and terminating towards peers user. Here is this state
             machine: 
