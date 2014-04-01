@@ -1484,7 +1484,7 @@ a=rtpmap:0 PCMU/8000</literal></literallayout>
             and server transports are called message senders and message
             receivers. Actually, behind the stage, DatagramSockets are doing
             the real job. It must be noted that TCP transport is not
-            supported in Peers. Most SPI stacks first support UDP, and then
+            supported in Peers. Most SIP stacks first support UDP, and then
             TCP. Peers does not break the rules. That's why TCP does not
             appear on the following class diagram. The transport layer is
             almost always responsible for message retransmissions
@@ -1505,7 +1505,7 @@ a=rtpmap:0 PCMU/8000</literal></literallayout>
           </figure>
           <para>
             To enable simple NATs traversal, each message sender sends "empty" SIP
-            packets at scheduled interval. Actually, those packets contain
+            packets at scheduled interval (ping). Actually, those packets contain
             four bytes: 0x0d 0x0a 0x0d 0x0a. Those bytes correspond to a
             couple of carriage return / line feed ("\r\n" in java).
             Furthermore, on packet reception, if the first line of this
@@ -1561,7 +1561,7 @@ a=rtpmap:0 PCMU/8000</literal></literallayout>
             all packets are sent over UDP. 
           </para>
           <para>
-            We won't explain all SIP routing philosophy, but remember that
+            We won't explain all SIP routing theory, but remember that
             requests are routed using Route header if it's present, and
             request-uri domain name or IP address if Route header is not in
             message. Responses are routed using Via header. It generally
@@ -1629,9 +1629,9 @@ a=rtpmap:0 PCMU/8000</literal></literallayout>
             Both questions have two mutually exclusive answers. Transactions that
             receive requests are called server transactions and transactions
             which send requests are called client transactions. Transactions
-            that create a dialog are called invite transactions, as INVITE is
-            the only method that can create dialogs in RFC3261. And
-            transactions that will not create a dialog are called non-invite
+            that create a dialog are called invite transactions as INVITE is
+            the only method that can create dialogs in RFC3261.
+            Transactions that will not create a dialog are called non-invite
             transactions. Thus there are four transaction types:
           </para>
           <itemizedlist>
@@ -1653,9 +1653,7 @@ a=rtpmap:0 PCMU/8000</literal></literallayout>
             header Via (<emphasis>z9hG4bK74bf9</emphasis> in the following
             example) and method name (<emphasis>INVITE</emphasis>). As
             requests and responses belong to a transaction, those parameters
-            are present in both request and response. They are in bold font
-            in the following example, which is just an extract from the
-            previous messages:
+            are present in both request and response.
           </para>
           <literallayout><literal>INVITE sip:bob@biloxi.example.com SIP/2.0
 Via: SIP/2.0/TCP client.atlanta.example.com:5060;branch=z9hG4bK74bf9
@@ -1671,8 +1669,8 @@ CSeq: 1 INVITE
 Contact: &lt;sip:bob@client.biloxi.example.com;transport=tcp&gt;
 [...]</literal></literallayout>
           <para>
-            Server and client aspects of transaction have been implemented as
-            interfaces in Peers, and invite and non-invite property have been
+            Server and client aspect of transactions has been implemented as
+            interfaces in Peers, and invite and non-invite property has been
             implemented in abstract classes. Thus those four transactions
             have been implemented in their own class in Peers, extending and
             implementing the appropriate class and interface, as shown in the
@@ -1694,11 +1692,11 @@ Contact: &lt;sip:bob@client.biloxi.example.com;transport=tcp&gt;
             layer using their corresponding SipXxxTransportUser interface. 
           </para>
           <para>
-            What makes transaction package particularly verbose in Peers is
-            that each transaction type has its own state machine, thus its
-            corresponding parent state class and its corresponding classes
-            for each state. Those state machines are provided in RFC3261 but
-            here is how they have been implemented in Peers: 
+            There are many classes in peers transaction package because each
+            transaction type has its own state machine and each state machine
+            has one parent class and one class for each state.
+            Those state machines are provided in RFC3261 but
+            here is the corresponding class diagram for peers: 
           </para>
           <figure>
             <title>Invite client transaction state machine</title>
@@ -1798,11 +1796,12 @@ Contact: &lt;sip:bob@client.biloxi.example.com;transport=tcp&gt;
             transaction can occur within a dialog or not. The parameter that
             will determine if a transaction is performed within a dialog is
             its Call-ID header. To be exhaustive, a dialog is identified by
-            its Call-ID, tag parameter in From header and tag parameter in To
-            header. This is what you will see in peers.log. Thus a
+            its Call-ID, the tag parameter in header From and the tag parameter
+            in header To. This is what you will see in peers.log. Thus a
             transaction which is performed within a dialog must use the same
             Call-ID, the same local-tag and the same remote-tag. Local-tag
-            and remote-tag are To-tag and From-tag but may be inverted if the
+            and remote-tag are To-tag and From-tag if the request is coming
+            from the UAC (User-Agent Client) but they may be switched if the
             request is coming from the UAS (User-Agent Server), i.e. the one
             who received the call. Here is an illustration of dialog
             identifier components in request and response:
@@ -1822,7 +1821,9 @@ To: Bob &lt;sip:bob@biloxi.example.com&gt;;tag=8321234356
 Call-ID: 3848276298220188511@atlanta.example.com
 [...]</literal></literallayout>
           <para>
-            In this example, the request does not contain a tag parameter in
+            In this example, the dialog id is the concatenation of
+            3848276298220188511@atlanta.example.com, 9fxced76sl and 8321234356.
+            The request does not contain a tag parameter in
             header To. Actually, at this time, the dialog does not exist yet. 
           </para>
         </section>
