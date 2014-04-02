@@ -384,7 +384,13 @@
       download peers source code, a git client must be available on your
       computer, then you have to run:
     </para>
-    <literallayout><literal>git clone https://github.com/ymartineau/peers.git</literal></literallayout>
+    <literallayout><literal>git clone https://github.com/ymartineau/peers.git
+cd peers
+git checkout 0.5</literal></literallayout>
+    <para>
+      Checkout command will put you in 0.5 tag. Thus you use the validated
+      version and not latest source versions from master branch.
+    </para>
     <para>
       If you take a look at peers source code, you will see that peers is
       actually a <link xl:href="http://maven.apache.org/">maven</link>
@@ -472,11 +478,11 @@
       this case, peers interface is javascript, hence its name: peers-js.
     </para>
     <para>
-      Take care though with this module: since java 1.7.0-51, applets not signed
+      Take care though with this module: since java 1.7.0-21, applets not signed
       by a java certificate provided
       by a certification authority cannot be run. There is a workaround for
       developers. In java config panel security panel, a trusted source website
-      can be defined. In addition to this restriction added in java 1.7.0-51,
+      can be defined. In addition to this restriction added in java 1.7.0-21,
       firefox is now blocking java applets by default since firefox 26. You can
       force java applets execution in firefox but they are blocked by default.
     </para>
@@ -591,13 +597,13 @@
       <literallayout><literal>    &lt;dependency&gt;
         &lt;groupId&gt;net.sourceforge.peers&lt;/groupId&gt;
         &lt;artifactId&gt;peers-lib&lt;/artifactId&gt;
-        &lt;version&gt;0.5-SNAPSHOT&lt;/version&gt;
+        &lt;version&gt;0.5&lt;/version&gt;
         &lt;scope&gt;compile&lt;/scope&gt;
       &lt;/dependency&gt;
       &lt;dependency&gt;
         &lt;groupId&gt;net.sourceforge.peers&lt;/groupId&gt;
         &lt;artifactId&gt;peers-javaxsound&lt;/artifactId&gt;
-        &lt;version&gt;0.5-SNAPSHOT&lt;/version&gt;
+        &lt;version&gt;0.5&lt;/version&gt;
         &lt;scope&gt;compile&lt;/scope&gt;
       &lt;/dependency&gt;</literal></literallayout>
       <para>
