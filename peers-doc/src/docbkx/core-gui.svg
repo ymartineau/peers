@@ -13,9 +13,9 @@
    height="226.26401"
    id="svg2"
    version="1.1"
-   inkscape:version="0.47 r22583"
+   inkscape:version="0.48.4 r9939"
    sodipodi:docname="core-gui.svg"
-   inkscape:export-filename="/media/data/peers/doc/docbook/core-gui.png"
+   inkscape:export-filename="D:\yohann\workspace\peers\peers-doc\src\docbkx\core-gui.png"
    inkscape:export-xdpi="90"
    inkscape:export-ydpi="90">
   <defs
@@ -75,10 +75,10 @@
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
-     inkscape:window-width="1440"
-     inkscape:window-height="825"
-     inkscape:window-x="0"
-     inkscape:window-y="25"
+     inkscape:window-width="1600"
+     inkscape:window-height="838"
+     inkscape:window-x="-8"
+     inkscape:window-y="-8"
      inkscape:window-maximized="1" />
   <metadata
      id="metadata7">
@@ -158,37 +158,14 @@
          sodipodi:role="line"
          id="tspan3636"
          x="286.8833"
-         y="199.79344">UAC</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-size:16px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
-       x="364.60416"
-       y="199.77312"
-       id="text3638"
-       inkscape:export-filename="/media/data/peers/doc/documentation-0.4/core-gui.png"
-       inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90"><tspan
-         sodipodi:role="line"
-         id="tspan3640"
-         x="364.60416"
-         y="199.77312">UAS</tspan></text>
+         y="199.79344">UserAgent</tspan></text>
     <rect
        style="fill:none;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
        id="rect3642"
-       width="68.690376"
-       height="38.385796"
+       width="112.12695"
+       height="36.36549"
        x="267.69043"
        y="175.52946"
-       inkscape:export-filename="/media/data/peers/doc/documentation-0.4/core-gui.png"
-       inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90" />
-    <rect
-       style="fill:none;stroke:#000000;stroke-width:1;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
-       id="rect3642-8"
-       width="68.690376"
-       height="38.385796"
-       x="345.47217"
-       y="175.54977"
        inkscape:export-filename="/media/data/peers/doc/documentation-0.4/core-gui.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90" />
@@ -243,39 +220,19 @@
        inkscape:export-filename="/media/data/peers/doc/documentation-0.4/core-gui.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90" />
-    <path
-       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1;marker-end:url(#Arrow1Lend)"
-       d="m 376.7869,114.94062 0,58.58885"
-       id="path4708"
-       inkscape:export-filename="/media/data/peers/doc/documentation-0.4/core-gui.png"
-       inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90" />
     <text
        xml:space="preserve"
        style="font-size:16px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
-       x="249.32494"
-       y="150.29596"
+       x="312.96457"
+       y="148.27565"
        id="text4894"
        inkscape:export-filename="/media/data/peers/doc/documentation-0.4/core-gui.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90"><tspan
          sodipodi:role="line"
          id="tspan4896"
-         x="249.32494"
-         y="150.29596">invite</tspan></text>
-    <text
-       xml:space="preserve"
-       style="font-size:16px;font-style:normal;font-weight:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:Bitstream Vera Sans"
-       x="382.82751"
-       y="149.28581"
-       id="text4898"
-       inkscape:export-filename="/media/data/peers/doc/documentation-0.4/core-gui.png"
-       inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90"><tspan
-         sodipodi:role="line"
-         id="tspan4900"
-         x="382.82751"
-         y="149.28581">acceptCall</tspan></text>
+         x="312.96457"
+         y="148.27565">invite, acceptCall, ...</tspan></text>
     <path
        style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:4, 4;stroke-dashoffset:0;marker-mid:none;marker-end:url(#Arrow1Lend)"
        d="m 199.00005,174.53962 0,-58.58885"
@@ -287,13 +244,6 @@
        style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:4, 4;stroke-dashoffset:0;marker-end:url(#Arrow1Lend)"
        d="m 303.04576,213.93557 0,61.61931"
        id="path5458"
-       inkscape:export-filename="/media/data/peers/doc/documentation-0.4/core-gui.png"
-       inkscape:export-xdpi="90"
-       inkscape:export-ydpi="90" />
-    <path
-       style="fill:none;stroke:#000000;stroke-width:1;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:4, 4;stroke-dashoffset:0;marker-end:url(#Arrow1Lend)"
-       d="m 378.8072,213.93557 0,62.62946"
-       id="path5644"
        inkscape:export-filename="/media/data/peers/doc/documentation-0.4/core-gui.png"
        inkscape:export-xdpi="90"
        inkscape:export-ydpi="90" />

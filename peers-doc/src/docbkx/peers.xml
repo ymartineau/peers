@@ -101,7 +101,7 @@
         - standards - as plain text files called RFC (Request For Comments).
         They have a number and a title, but engineers often refer to their
         number... Thus SIP is specified in
-        <link xl:href="http://www.ietf.org/rfc/rfc3261.txt">RFC3261</link>. 
+        <link xl:href="http://tools.ietf.org/html/rfc3261">RFC3261</link>. 
       </para>
       <para>
         Let's take a deep breath and dive in technical details...
@@ -357,7 +357,7 @@
         <para>
           Actually, codec negotiation relies on offer/answer model for SDP.
           This model is specified in
-          <link xl:href="http://www.ietf.org/rfc3264.txt">RFC3264</link>. Thus,
+          <link xl:href="http://tools.ietf.org/html/rfc3264">RFC3264</link>. Thus,
           the request that wants to create a new media session may be empty,
           without any offer. In this case, the User-Agent is telling: make me
           an offer, and I'll give you my supported codecs appropriately. In
@@ -1830,9 +1830,10 @@ Call-ID: 3848276298220188511@atlanta.example.com
         <section>
           <title>User-Agent</title>
           <para>
-            On the top of transaction user layer, we find core layer. Core
-            layer defines the SIP element role. On a SIP network, we've
-            already seen that there were serveral nodes:
+            On top of transaction user <link linkend="sip-stack">layer</link>,
+            we find core layer. Core layer defines the SIP element role. On a
+            SIP network, we've already seen that there were serveral nodes
+            (roles):
           </para>
           <itemizedlist>
             <listitem>
@@ -1915,7 +1916,7 @@ Call-ID: 3848276298220188511@atlanta.example.com
             of a request is whether this request occurs inside a dialog
             (subsequent request) or outside any dialog (initial request).
             This is really important because the processing in user-agent is
-            totally different. In one case, you may have to create a dialog,
+            absolutely different. In one case, you may have to create a dialog,
             in the other you may have to update this dialog. Some processing
             is the same for all methods for initial requests and some
             processing is the same for all subsequent requests. Request
@@ -1923,7 +1924,7 @@ Call-ID: 3848276298220188511@atlanta.example.com
             processing in creation process. Thus, in Peers,
             InitialRequestManager is responsible for initial requests
             specific handling and MidDialogRequestManager is responsible for
-            subsequent requests specific handling. 
+            the requests handling occurring in a dialog. 
           </para>
           <figure>
             <title>Request managers</title>
@@ -1965,7 +1966,7 @@ Call-ID: 3848276298220188511@atlanta.example.com
             </mediaobject>
           </figure>
           <para>
-            All core Handlers and Managers are instanciated within UserAgent
+            All core Handlers and Managers are instantiated within UserAgent
             constructor. Thus, when you instantiate a new UserAgent, you
             implicitly create its underlying layers objects. This is the
             reason why it's really easy to use Peers in external
@@ -1980,7 +1981,7 @@ Call-ID: 3848276298220188511@atlanta.example.com
             request, asking the sender a common secret, this is a Challenge.
             ChallengeManager is responsible for Challenge management.
             Challenges are specified in <link
-            xl:href="http://www.ietf.org/rfc/rfc2617.txt">RFC2617</link>.
+            xl:href="http://tools.ietf.org/html/rfc2617">RFC2617</link>.
             They provide a sort of authentication in SIP. Only two methods
             support challenges in peers: INVITE and REGISTER. And the only
             two response status codes supported by peers are 401 and 407. All
@@ -2013,7 +2014,7 @@ Call-ID: 3848276298220188511@atlanta.example.com
             user interface is done using an interface called SipListener.
             Thus, separation between SIP layers and user interface is clearly
             identified. The communication is done with gui package, but this
-            graphical user interface could be replaced with another gui, a
+            graphical user interface can be replaced with another gui, a
             web interface, or even a console interface thanks to this
             generic way of communicating between sip core layer and upper
             layer. 
@@ -2030,14 +2031,15 @@ Call-ID: 3848276298220188511@atlanta.example.com
             </mediaobject>
           </figure>
           <para>
-            A software which needs to use peers SIP stack with another gui
-            can instanciate a UserAgent object and then use this user agent
+            As already <link linkend="peers-usage">seen</link>, a software
+            which needs to use peers SIP stack with another gui
+            can instantiate a UserAgent object and then use this user agent
             instance to communicate with peers SIP stack. The SipListener
             interface offers the user interface a way to be notified of SIP
             incoming events: incoming call, callee pickup, remote hangup,
-            etc. and user actions are provided to sip core through UAC and
-            UAS via UserAgent.getUAC() and UserAgent.getUAS() methods:
-            invite(...), register(...), acceptCall(...) and rejectCall(...).
+            etc. and user actions are provided to sip core through UserAgent
+            methods:
+            invite(), register(), acceptCall(), rejectCall(), etc.
             Incoming events correspond to methods in SipListener interface.
             This interface is implemented by a main class in upper layer
             (EventManager in gui package), the upper layer processes the
@@ -2051,15 +2053,15 @@ Call-ID: 3848276298220188511@atlanta.example.com
         <para>
           SDP package is responsible for codec negotiation. SDP itself is the
           way media sessions are described, it's specified in <link
-          xl:href="http://www.ietf.org/rfc/rfc4566.txt">RFC4566</link>. This
+          xl:href="http://tools.ietf.org/html/rfc4566">RFC4566</link>. This
           codec negotiation is specified in <link
-          xl:href="http://www.ietf.org/rfc/rfc3264.txt">RFC3264</link>. The
+          xl:href="http://tools.ietf.org/html/rfc3264">RFC3264</link>. The
           negotiation principle is quite simple. At any time, an entity
           generates an offer, with all supported codecs. This offer is sent
           to another entity. Later, the entity that received the offer parses
           this offer, analyzes it, and generates an answer. There is always
           one answer for one offer. The answer depends on offer, it's not
-          always the same. 
+          always the same.
         </para>
         <para>
           In SIP theory, an offer can be present in either INVITE or 200
@@ -2067,7 +2069,7 @@ Call-ID: 3848276298220188511@atlanta.example.com
           offer is in 200, the answer is in ACK body and INVITE body is
           empty. In practice, this former case is extremely rare. SDP
           contains critical information about media streams. It provides the
-          IP address and the port on which it whishes to receive RTP packets,
+          IP address and the port on which the softphone wishes to receive RTP packets,
           but it also describes the payload types that it supports. Remember,
           SDP gives media description, not media content. The protocol that
           transports media streams is RTP. This protocol transports encoded
@@ -2086,7 +2088,7 @@ a=rtpmap:0 PCMU/8000</literal></literallayout>
           IP address 192.0.2.101 on port 49172 for RTP PCMU packets (payload
           type 0), sampled at 8000 Hz. Payload types and their corresponding
           codec are given in <link
-          xl:href="http://www.ietf.org/rfc/rfc3551.txt">RFC3551</link>. 
+          xl:href="http://tools.ietf.org/html/rfc3551">RFC3551</link>. 
         </para>
         <para>
           If we take a look at Peers source code, SDPManager is the place
@@ -2096,7 +2098,8 @@ a=rtpmap:0 PCMU/8000</literal></literallayout>
           object employed to describe an SDP body is SessionDescription. A
           SessionDescription can contain several MediaDescriptions. A
           MediaDescription typically corresponds to an audio stream or a
-          video stream. A MediaDescription can contain several Codecs. 
+          video stream (video is not supported in peers, but its sdp stack
+          could support it in theory). A MediaDescription can contain several Codecs. 
         </para>
         <figure>
           <title>SDP objects</title>
@@ -2110,10 +2113,10 @@ a=rtpmap:0 PCMU/8000</literal></literallayout>
           </mediaobject>
         </figure>
         <para>
-          The combination of IP address, port and Codec is grouped is a
+          The combination of IP address, port and Codec is grouped as a
           MediaDestination. This class eases RTP targets description. The
           content of those classes corresponds to <link
-          xl:href="http://www.ietf.org/rfc/rfc4566.txt">RFC4566</link>
+          xl:href="http://tools.ietf.org/html/rfc4566">RFC4566</link>
           parameters description. 
         </para>
       </section>
@@ -2122,15 +2125,15 @@ a=rtpmap:0 PCMU/8000</literal></literallayout>
         <para>
           The main classes of this package are IncomingRtpReader and
           CaptureRtpSender. Actually, IncomingRtpReader is responsible for
-          RTP depacketization, media decompression and media playback ; and
+          RTP header parsing, media decompression and media playback ; and
           CaptureRtpReader is responsible for microphone capture, media
-          encoding and RTP packetization. Thus, CaptureRtpSender has
+          encoding and RTP header insertion. Thus, CaptureRtpSender has
           references to Capture, Encoder and RtpSender instances. Each of
           this class implements Runnable, and is running in a separate
           Thread. Data is transmitted using pipes (PipedOutputStreams and
-          PipedInputStreams) amongst those media manipulation objects.
+          PipedInputStreams) amongst those media handling objects.
           Nevertheless, IncomingRtpReader does not use separate threads for
-          depacketization and media playback. 
+          parsing and media playback. 
         </para>
         <para>
           The following figure illustrates pipes between Capture, xxxEncoder
@@ -2149,15 +2152,16 @@ a=rtpmap:0 PCMU/8000</literal></literallayout>
           </mediaobject>
         </figure>
         <section>
-          <title>Javasound</title>
+          <title>Javaxsound</title>
           <para>
-            This media package relies on rtp peers package and javasound.
+            This module and its corresponding package relies on oracle javasound.
             Javasound is standard sun javasound API. Thus you can use their
             web pages for more information and <link
             xl:href="http://download.oracle.com/javase/tutorial/sound/TOC.html">tutorials</link>.
-            All interaction with javasound API is done in SoundManager.
-            Thus, if you want to use another sound API, you can only modify
-            this class. Bird view: javasound defines SourceDataLines for
+            All interaction with javasound API is done in JavaxSoundManager.
+            Thus, if you want to use another sound API, you can implement
+            your own version of AbstractSoundManager, defined in peers-lib.
+            Peers-javaxsound defines SourceDataLines for
             media playback and TargetDataLine for media capture. A global
             AudioSystem class is there to retrieve all information about
             sound card, etc. AudioDataFormats give description about codec
@@ -2179,25 +2183,32 @@ a=rtpmap:0 PCMU/8000</literal></literallayout>
             third-party libraries with native parts, etc.
           </para>
           <para>
-            SoundManager defines two methods to open and close lines on the
-            host sound card. Thus, the line used to play sound
+            AbstractSoundManager defines two methods to open and close lines on the
+            host sound card and one method to "write" data to speakers. To "read"
+            from microphone, the SoundSource interface has been defined. This
+            interface is implemented by AbstractSoundManager for standard usage
+            but also by FileReader to read raw media files and send them over
+            the network to the remote party. Check &lt;mediaFile&gt; in peers.xml
+            config file.
+          </para>
+          <para>
+            In peers-javaxsound, the line used to play sound
             (SourceDataLine) and the line used to capture sound
             (TargetDataLine) are opened one after another, not in parallel.
-            Tests have proved that it is more secure to open one line after
+            Tests proved that it is more secure to open one line after
             another. Parallel lines opening can create JVM crashes. Once
-            opened, those line take and provide data. The data that has to
-            be played can simply be provided to SoundManager through
-            writeData(...) and the capture sound data can be retrieved
-            through readData(...). 
+            opened, those line take and provide data.
           </para>
         </section>
         <section>
           <title>Media debug</title>
           <para>
             Peers provides an option in its configuration file called
-            mediaDebug. This parameter takes a boolean value. If true, almost
+            &lt;mediaDebug&gt;. This parameter takes a boolean value. If true, almost
             all media data will be written to several files in media/
             directory corresponding to each step in both directions.
+          </para>
+          <para>
             From peers user to remote contact:
           </para>
           <itemizedlist>
@@ -2242,10 +2253,13 @@ a=rtpmap:0 PCMU/8000</literal></literallayout>
           </itemizedlist>
           <para>
             As you can see, decoder input and output are not written to their
-            file, this is because this step has not required too much debug.
+            file, this is because this step didn't required too much debug
+            during implementation.
             All files start with date using the following format:
             yyyy-MM-dd_HH-mm-ss. Remember that this parameter is only
-            useful for debug purpose, it slows down media streams very much. 
+            useful for debug purpose, it slows down media streams very much
+            and it has not been extensively tested. It will probably work in
+            simple scenarios, but probably not in complex ones.
           </para>
           <para>
             PCM_SIGNED_... give the format of raw data contained in this
@@ -2304,7 +2318,7 @@ a=rtpmap:0 PCMU/8000</literal></literallayout>
             Encoder and Decoder classes only define a process(...) method
             that will work on input to generate an output depending on codec
             algorithm. Encoder is started at the beginning of a call and only
-            the codec-specific encoding is done in concrete class.
+            the codec-specific encoding is done in real codec class.
           </para>
         </section>
       </section>
@@ -2316,7 +2330,7 @@ a=rtpmap:0 PCMU/8000</literal></literallayout>
           It relies on java 5 ExecutorService to receive packets.
           Nevertheless it does not create a separate thread to send packets,
           it simply sends them on demand using send(RtpPacket) method. As
-          other packets, RTP package makes use of a listener to notify the
+          other packets, RTP package provides a listener to notify the
           reception of an RTP packet. When a packet is received, the raw data
           is parsed using RtpParser class. Thus a new RtpPacket is created
           and provided to the RtpListeners which subscribed to RTP packet
@@ -2336,16 +2350,17 @@ a=rtpmap:0 PCMU/8000</literal></literallayout>
         <para>
           An RtpPacket contains standard RTP headers and data (ssrc,
           sequenceNumber, payloadType, etc.). Peers RTP stack is based on
-          <link xl:href="http://www.ietf.org/rfc/rfc3550.txt">RFC3550</link>.
+          <link xl:href="http://tools.ietf.org/html/rfc3550">RFC3550</link>.
           Before it can be used, an RtpSession has to be started using
           start() method. Later it can be stopped using stop() method. An
           RtpSession uses an initial remote IP address and a port number to
           send first RTP packets before any RTP packet has been received from
-          remote RTP party. Once a packet has been received, if the IP
-          address or the port from which the packet is coming differs from
-          the previous ones, the remote IP address and port are updated with
-          latest ones. This enables NAT traversal in a few cases. Thus
-          peers RTP stack support symmetric RTP. 
+          remote RTP party. Once a packet has been received, if the source IP
+          address or the port differs from the previous received packet, the
+          remote IP address and port are updated with
+          latest one. This enables NAT traversal in a few cases.
+          <!-- Should be verified:
+          Thus peers RTP stack support symmetric RTP. -->
         </para>
       </section>
       <section>
@@ -2353,9 +2368,9 @@ a=rtpmap:0 PCMU/8000</literal></literallayout>
         <para>
           Last but not least, graphical user interface. Peers is based on
           swing for gui management. Once more, swing is already integrated in
-          sun JRE. It's light, efficient and uses staight-forward development
+          oracle JRE. It's light, efficient and uses staight-forward development
           methods. Peers uses OS native look and feel instead of sun's metal
-          look and feel. OS look and feel will probably be evolving faster
+          look and feel. OS look and feel will probably be moving faster
           than metal look and feel and OS integration is thus improved. 
         </para>
         <para>
@@ -2364,7 +2379,7 @@ a=rtpmap:0 PCMU/8000</literal></literallayout>
           This class is EventManager. This class receives invocations from
           sip layer using its SipListener interface. It then dispatches
           events to the appropriated frames. Several frames are implemented
-          in gui (from the most important one to the less important one):
+          in gui (from the most important one to the least important one):
         </para>
         <itemizedlist>
           <listitem>
@@ -2391,8 +2406,8 @@ a=rtpmap:0 PCMU/8000</literal></literallayout>
           <title>MainFrame</title>
           <para>
             MainFrame is actually the class that contains the main() method
-            of peers, so this is the first class to be instanciated.
-            MainFrame creates and references EventManager. Then
+            of peers, so this is the first class to be instantiated.
+            MainFrame creates and keeps a reference to EventManager. Then
             EventManager creates and manages other frames and their
             corresponding events. 
           </para>
@@ -2427,7 +2442,7 @@ a=rtpmap:0 PCMU/8000</literal></literallayout>
             implements ActionListener to receive events from MainFrame
             JMenu. Thus when user is clicking on Edit &gt; Account, the
             corresponding event reaches EventManager and EventManager
-            eventually instanciates a new AccountFrame to enable user
+            eventually instantiates a new AccountFrame to enable user
             configure sip account. 
           </para>
         </section>
@@ -2448,7 +2463,7 @@ a=rtpmap:0 PCMU/8000</literal></literallayout>
           </figure>
           <para>
             Peers defines a state machine to maintain the state of this
-            window. This state machine uses the classical model employed in
+            window. This state machine uses the standard model employed in
             peers (one class per state and a parent class for all states).
             The same state machine is employed for calls originating from
             peers user and terminating towards peers user. Here is this state
