@@ -773,7 +773,8 @@ public class EventManager implements SipListener {
     public EventManager() throws SocketException {
         Config config = new CustomConfig();
         Logger logger = new FileLogger(null);
-        JavaxSoundManager javaxSoundManager = new JavaxSoundManager(false, logger, null);
+        JavaxSoundManager javaxSoundManager = new JavaxSoundManager(false,
+            logger, null);
         userAgent = new UserAgent(this, config, logger, javaxSoundManager);
         new Thread() {
             public void run() {
@@ -958,11 +959,14 @@ public class EventManager implements SipListener {
       </para>
       <literallayout><literal>logging to stdout
 2014-03-22 00:20:07,893 INFO  [main] starting user agent
-    [myAddress: 192.168.1.11, sipPort: 0, userpart: ymartineau, domain: ippi.fr]
+    [myAddress: 192.168.1.11, sipPort: 0, userpart: ymartineau,
+    domain: ippi.fr]
 2014-03-22 00:20:07,977 DEBUG [main] new DatagramSocket(0, /192.168.1.11
-2014-03-22 00:20:07,985 INFO  [main] added datagram socket 192.168.1.11:60588/UDP
+2014-03-22 00:20:07,985 INFO  [main] added datagram socket
+    192.168.1.11:60588/UDP
 2014-03-22 00:20:07,986 INFO  [main] added 192.168.1.11:60588/UDP:
-    net.sourceforge.peers.sip.transport.UdpMessageReceiver@7436ef21 to message receivers
+    net.sourceforge.peers.sip.transport.UdpMessageReceiver@7436ef21 to message
+    receivers
 </literal></literallayout>
       <para>
         Then, you should see the sip REGISTER message sent and received:
@@ -987,7 +991,8 @@ Authorization: Digest username="ymartineau", realm="ippi.fr",
 2014-03-22 00:20:08,270 RECEIVED from 213.215.45.230/5060 [TransportManager 0]
 
 SIP/2.0 200 OK
-Via: SIP/2.0/UDP 192.168.1.11:60588;received=192.168.1.11;rport=60588;branch=z9hG4bKu62lFMeRS
+Via: SIP/2.0/UDP 192.168.1.11:60588;received=192.168.1.11;rport=60588;
+    branch=z9hG4bKu62lFMeRS
 To: &lt;sip:ymartineau@ippi.fr&gt;;tag=a910c8153188470b2841623c513a131f.db9b
 From: &lt;sip:ymartineau@ippi.fr&gt;;tag=tPpKyeqA
 Call-ID: F4vlP0Y4-1395444008026@192.168.1.11
@@ -1020,7 +1025,8 @@ Content-Length: 0
         InviteClientTransactionStateCalling] setState
 2014-03-22 00:20:34,965 DEBUG [Thread-6] UdpMessageSender.sendMessage
 2014-03-22 00:20:34,965 DEBUG [Thread-6] UdpMessageSender.sendBytes
-2014-03-22 00:20:34,965 DEBUG [Thread-6] UdpMessageSender.sendBytes 577 ippi.fr/213.215.45.230:5060
+2014-03-22 00:20:34,965 DEBUG [Thread-6] UdpMessageSender.sendBytes 577
+    ippi.fr/213.215.45.230:5060
 2014-03-22 00:20:34,965 DEBUG [Thread-6] /192.168.1.11
 2014-03-22 00:20:34,965 DEBUG [Thread-6] UdpMessageSender.sendBytes packet sent
 2014-03-22 00:20:34,965 SENT to 213.215.45.230/5060 [Thread-6]
@@ -1238,10 +1244,10 @@ Content-Length: 0
           Peers has been developed in java, an object-oriented programming
           language.
           Peers relies on standard java specification API. If you are using a
-          standard java platform (openjdk or sun jdk), everything is already included in your
-          environment, you need no other library. Peers has no external
-          dependency. If you don't want to download sources and import them in
-          your preferred IDE, you can browse the source code online, on
+          standard java platform (openjdk or sun jdk), everything is already
+          included in your environment, you need no other library. Peers has no
+          external dependency. If you don't want to download sources and import
+          them in your preferred IDE, you can browse the source code online, on
           <link xl:href="https://github.com/ymartineau/peers">github</link>.
         </para>
         <para>
