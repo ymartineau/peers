@@ -1118,7 +1118,7 @@ Content-Length: 0
       <title>Peers modules</title>
       <mediaobject>
         <imageobject role="fo">
-          <imagedata fileref="modules.svg" width="140mm"/>
+          <imagedata fileref="modules.svg" width="90mm"/>
         </imageobject>
         <imageobject role="html">
           <imagedata fileref="modules.png"/>

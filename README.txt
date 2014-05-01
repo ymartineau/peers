@@ -31,8 +31,8 @@ your favorite search engine.
 PREREQUISITES
 
 
-This software has been developed using Sun Java Development Kit
-version 6. You should install the latest Java Runtime Environment
+This software has been developed using Oracle Java Development Kit
+version 7. You should install the latest Java Runtime Environment
 on your computer if you just want to run the application. If you
 want to compile the sources yourself, you should use the JDK. In
 both cases, you can download the installation files here:
@@ -230,6 +230,16 @@ New features:
 Bugs fixed:
  - SIP:
    - 3392342 bad CANCEL sip request when other party doesn't picking up
+
+
+2014-05-01 0.5 Maven release
+
+
+ - moved source code from sourceforge subversion repository to git hosted
+   on github
+ - now using maven with multiple modules to build peers
+ - updated doc
+ - simplified SIP API
 
 
 AUTHOR
