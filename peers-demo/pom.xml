@@ -1,14 +1,15 @@
 <?xml version="1.0"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>net.sourceforge.peers</groupId>
     <artifactId>peers</artifactId>
-    <version>0.5</version>
+    <version>0.5-SNAPSHOT</version>
   </parent>
   <groupId>net.sourceforge.peers</groupId>
   <artifactId>peers-demo</artifactId>
-  <version>0.5</version>
+  <version>0.5-SNAPSHOT</version>
   <name>peers-demo</name>
   <url>http://maven.apache.org</url>
   <properties>
@@ -24,13 +25,13 @@
     <dependency>
       <groupId>net.sourceforge.peers</groupId>
       <artifactId>peers-lib</artifactId>
-      <version>0.5</version>
+      <version>0.5-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>net.sourceforge.peers</groupId>
       <artifactId>peers-javaxsound</artifactId>
-      <version>0.5</version>
+      <version>0.5-SNAPSHOT</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>
