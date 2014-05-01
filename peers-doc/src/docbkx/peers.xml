@@ -15,7 +15,7 @@
       </personname>
     </author>
     <copyright>
-      <year>2012</year>
+      <year>2014</year>
       <holder>Yohann Martineau</holder>
     </copyright>
     <abstract>
@@ -1160,17 +1160,12 @@ Content-Length: 0
     </para>
     <para>
       Similarly, peers-js includes a demo web page and generates a zip file
-      that can be extracted on a web server. One significant difference though
-      with other modules is that peers-js is not "attached" to peers parent
-      root project. It implies that you have to run "mvn clean install" in
-      peers-js subdirectory if you want to build peers-js. The reason why
-      peers-js is not included in peers parent project is that it relies on
-      a jar provided only with sun or oracle java versions (provided in its
-      Java Runtime Environment install directory):
-      ${java.home}/lib/plugin.jar. This jar file contains a netscape.javascript
-      package containing objects used to invoke javascript functions from
-      java classes. To build this module, you must define a JAVA_HOME
-      environment variable that points to your JRE.
+      that can be extracted on a web server. This module relies on a jar
+      provided only with sun or oracle java versions (provided in its Java
+      Runtime Environment install directory): ${java.home}/lib/plugin.jar. This
+      jar file contains a netscape.javascript package containing objects used
+      to invoke javascript functions from java classes. To build this module,
+      you must define a JAVA_HOME environment variable that points to your JRE.
     </para>
     <para>
       Peers-demo generates a jar file containing only its classes, it is not

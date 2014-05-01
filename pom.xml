@@ -4,7 +4,7 @@
 
   <groupId>net.sourceforge.peers</groupId>
   <artifactId>peers</artifactId>
-  <version>0.5-SNAPSHOT</version>
+  <version>0.5</version>
   <packaging>pom</packaging>
 
   <properties>
@@ -16,6 +16,7 @@
     <module>peers-doc</module>
     <module>peers-gui</module>
     <module>peers-javaxsound</module>
+    <module>peers-js</module>
     <module>peers-jws</module>
     <module>peers-lib</module>
   </modules>
