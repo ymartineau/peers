@@ -126,7 +126,33 @@
         </configuration>
       </plugin>
 
-    </plugins>
-  </build>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <compilerArguments>
+            <endorseddirs>${project.build.directory}/endorsed</endorseddirs>
+          </compilerArguments>
+        </configuration>
+      </plugin>
 
-</project>
+      <plugin>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-endorsed-dependencies</id>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+            <configuration>
+              <includeArtifactIds>plugin</includeArtifactIds>
+              <outputDirectory>${project.build.directory}/endorsed</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      </plugins>
+    </build>
+
+  </project>
