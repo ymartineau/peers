@@ -44,6 +44,7 @@ public class JavaxSoundManager extends AbstractSoundManager {
     private AudioFormat audioFormat;
     private TargetDataLine targetDataLine;
     private SourceDataLine sourceDataLine;
+    private Object sourceDataLineMutex;
     private DataLine.Info targetInfo;
     private DataLine.Info sourceInfo;
     private FileOutputStream microphoneOutput;
@@ -63,6 +64,7 @@ public class JavaxSoundManager extends AbstractSoundManager {
         audioFormat = new AudioFormat(8000, 16, 1, true, false);
         targetInfo = new DataLine.Info(TargetDataLine.class, audioFormat);
         sourceInfo = new DataLine.Info(SourceDataLine.class, audioFormat);
+        sourceDataLineMutex = new Object();
     }
 
     @Override
@@ -111,14 +113,16 @@ public class JavaxSoundManager extends AbstractSoundManager {
                         return null;
                     }
                     targetDataLine.start();
-                    try {
-                        sourceDataLine = (SourceDataLine) AudioSystem.getLine(sourceInfo);
-                        sourceDataLine.open(audioFormat);
-                    } catch (LineUnavailableException e) {
-                        logger.error("source line unavailable", e);
-                        return null;
+                    synchronized (sourceDataLineMutex) {
+                        try {
+                            sourceDataLine = (SourceDataLine) AudioSystem.getLine(sourceInfo);
+                            sourceDataLine.open(audioFormat);
+                        } catch (LineUnavailableException e) {
+                            logger.error("source line unavailable", e);
+                            return null;
+                        }
+                        sourceDataLine.start();
                     }
-                    sourceDataLine.start();
                     return null;
                 }
         });
@@ -153,11 +157,13 @@ public class JavaxSoundManager extends AbstractSoundManager {
                     targetDataLine.close();
                     targetDataLine = null;
                 }
-                if (sourceDataLine != null) {
-                    sourceDataLine.drain();
-                    sourceDataLine.stop();
-                    sourceDataLine.close();
-                    sourceDataLine = null;
+                synchronized (sourceDataLineMutex) {
+                    if (sourceDataLine != null) {
+                        sourceDataLine.drain();
+                        sourceDataLine.stop();
+                        sourceDataLine.close();
+                        sourceDataLine = null;
+                    }
                 }
                 return null;
             }
@@ -196,7 +202,13 @@ public class JavaxSoundManager extends AbstractSoundManager {
 
     @Override
     public int writeData(byte[] buffer, int offset, int length) {
-        int numberOfBytesWritten = sourceDataLine.write(buffer, offset, length);
+        int numberOfBytesWritten;
+        synchronized (sourceDataLineMutex) {
+            if (sourceDataLine == null) {
+                return 0;
+            }
+            numberOfBytesWritten = sourceDataLine.write(buffer, offset, length);
+        }
         if (mediaDebug) {
             try {
                 speakerInput.write(buffer, offset, numberOfBytesWritten);
