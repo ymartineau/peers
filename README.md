@@ -1,10 +1,9 @@
-============================================================
-                   Peers: java sip softphone
-                 http://peers.sourceforge.net/
-============================================================
+# Peers: java sip softphone
+
+http://peers.sourceforge.net/
 
 
-LICENSE
+## LICENSE
 
 
 This software is released under GPL License version 3 or
@@ -12,23 +11,25 @@ any later version. Please read this license in gpl.txt if
 not already done.
 
 
-SPECIFICATION
+## SPECIFICATION
 
 
 Peers is a software phone (softphone) compatible with the
 following specifications:
- - RFC 3261 (SIP),
- - RFC 4566 (SDP),
- - RFC 3550 (RTP),
- - RFC 3551 (RTP Audio/Video profile),
- - RFC 2617 (Digest Authentication),
- - RFC 4733 (DTMF),
- - ITU-T G.711 (PCMU, PCMA)
-You should easilly retrieve those specifications on internet with
+
+- RFC 3261 (SIP),
+- RFC 4566 (SDP),
+- RFC 3550 (RTP),
+- RFC 3551 (RTP Audio/Video profile),
+- RFC 2617 (Digest Authentication),
+- RFC 4733 (DTMF),
+- ITU-T G.711 (PCMU, PCMA)
+
+You should easily retrieve those specifications on internet with
 your favorite search engine.
 
 
-PREREQUISITES
+## PREREQUISITES
 
 
 This software has been developed using Oracle Java Development Kit
@@ -39,7 +40,7 @@ both cases, you can download the installation files here:
   http://www.oracle.com/technetwork/java/javase/downloads/index.html
 
 
-CONFIGURATION
+## CONFIGURATION
 
 
 Your SIP account credentials can be configured in conf/peers.xml.
@@ -54,18 +55,25 @@ You can also configure your SIP account using graphical user
 interface.
 
 
-RUNNING
+## RUNNING
 
 
 If you are a Windows user you can use the .bat batch script in root
-directory, if you use any Unix compatible sytem, you can use the
+directory, if you use any Unix compatible system, you can use the
 .sh script. You can also double click .jar file. You can then call
 any IP address using SIP protocol, if the remote host does not listen
 on the default SIP port (5060), you can use the following example URI:
-  sip:192.168.1.2:6060
-For some softphones, it is necessary to add a userpart to the called
+
+```
+sip:192.168.1.2:6060
+```
+
+For some softphones, it is necessary to add a user part to the called
 sip uri, for example:
-  sip:alice@192.168.1.2:6060
+
+```
+sip:alice@192.168.1.2:6060
+```
 
 If you configured a sip account in configuration file or using gui,
 you can also place calls with usual sip uris:
@@ -78,12 +86,13 @@ conf, logs and media. conf should contain peers.xml and peers.xsd for this
 instance. peers.xml will need to be updated with this instance
 parameters, peers.xsd can be copied from root conf directory. You will
 need to do this for each instance. <media> parameter in configuration file
-should be activated for at most one peers instance, this avoids comfusion
+should be activated for at most one peers instance, this avoids confusion
 in microphone capture and sound playback. You should also check that
 SIP and RTP ports are not the same in each configuration file.
 
 Here is an example configuration:
 
+```
   peers/
     user1/
       conf/
@@ -97,34 +106,38 @@ Here is an example configuration:
         peers.xsd
       logs/
       media/
+```
 
 Once all those files have been created and updated, each instance can
 be run providing a java system property giving peers home directory:
 
-  java -classpath build/classes -Dpeers.home=user1 net.sourceforge.peers.gui.MainFrame
+```
+java -classpath build/classes -Dpeers.home=user1 net.sourceforge.peers.gui.MainFrame
+```
 
 As a Main-Class has been defined in jar manifest, you can also use the following
 command line:
 
-  java -jar build/peers.jar -Dpeers.home=user1 net.sourceforge.peers.gui.MainFrame
+```
+java -jar build/peers.jar -Dpeers.home=user1 net.sourceforge.peers.gui.MainFrame
+```
+
+## HISTORY
 
 
-HISTORY
-
-
-2007-11-25 0.1 First release
+### 2007-11-25 0.1 First release
 
 
 minimalist UAC and UAS.
 
 
-2007-12-09 0.1.1 First release update
+### 2007-12-09 0.1.1 First release update
 
 
 moved startup scripts in root directory
 
 
-2008-03-29 0.2 Second release
+### 2008-03-29 0.2 Second release
 
 
 New features:
@@ -136,7 +149,7 @@ Bugs fixed:
  - 1900810 MTU too small management
 
 
-2008-06-08 0.3 Third release
+### 2008-06-08 0.3 Third release
 
 
 New features:
@@ -153,7 +166,7 @@ Bugs fixed:
  - 1994625 provisional responses with to-tag
 
 
-2009-09-23 0.3.1 Peers resurrection
+### 2009-09-23 0.3.1 Peers resurrection
 
 
 New features:
@@ -176,7 +189,7 @@ Improved features:
    g711 encoder)
 
 
-2010-12-13 0.4 Peers GUI
+### 2010-12-13 0.4 Peers GUI
 
 
 New features:
@@ -197,7 +210,7 @@ Bugs fixed:
    - 3098214 start CSeq at 1 instead of 0
 
 
-2011-05-19 0.4.1 Bug fixes
+### 2011-05-19 0.4.1 Bug fixes
 
 
 Bugs fixed:
@@ -208,7 +221,7 @@ Bugs fixed:
    - 3285107 added authentication on bye request
 
 
-2011-07-04 0.4.2 Bug fixes
+### 2011-07-04 0.4.2 Bug fixes
 
 
 Bugs fixed:
@@ -217,7 +230,7 @@ Bugs fixed:
    - 3324115 ACK does not contain Authorization header
 
 
-2011-09-06 0.4.3 Various improvements
+### 2011-09-06 0.4.3 Various improvements
 
 
 New features:
@@ -232,7 +245,7 @@ Bugs fixed:
    - 3392342 bad CANCEL sip request when other party doesn't picking up
 
 
-2014-05-01 0.5 Maven release
+### 2014-05-01 0.5 Maven release
 
 
  - moved source code from sourceforge subversion repository to git hosted
@@ -242,6 +255,6 @@ Bugs fixed:
  - simplified SIP API
 
 
-AUTHOR
+## AUTHOR
 
 Yohann Martineau yohann.martineau@gmail.com
