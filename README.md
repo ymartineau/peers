@@ -5,14 +5,12 @@ http://peers.sourceforge.net/
 
 ## LICENSE
 
-
 This software is released under GPL License version 3 or
 any later version. Please read this license in gpl.txt if
 not already done.
 
 
 ## SPECIFICATION
-
 
 Peers is a software phone (softphone) compatible with the
 following specifications:
@@ -31,24 +29,22 @@ your favorite search engine.
 
 ## PREREQUISITES
 
-
 This software has been developed using Oracle Java Development Kit
 version 7. You should install the latest Java Runtime Environment
 on your computer if you just want to run the application. If you
 want to compile the sources yourself, you should use the JDK. In
 both cases, you can download the installation files here:
-  http://www.oracle.com/technetwork/java/javase/downloads/index.html
+[Java SE Downloads](http://www.oracle.com/technetwork/java/javase/downloads/index.html)
 
 
 ## CONFIGURATION
 
-
-Your SIP account credentials can be configured in conf/peers.xml.
+Your SIP account credentials can be configured in `conf/peers.xml`.
 Please read comments in this file for configuration details.
-This configuration file is ruled by a grammar file: peers.xsd.
+This configuration file is ruled by a grammar file: `peers.xsd`.
 Thus to modify this file, you can use jEdit with XML and Error list
 plugins. You can download jEdit here:
-  http://www.jedit.org/index.php?page=download
+[jEdit download page](http://www.jedit.org/index.php?page=download)
 This provides xml completion and grammar checking which can be
 very useful to avoid simple configuration errors.
 You can also configure your SIP account using graphical user
@@ -57,10 +53,9 @@ interface.
 
 ## RUNNING
 
-
 If you are a Windows user you can use the .bat batch script in root
 directory, if you use any Unix compatible system, you can use the
-.sh script. You can also double click .jar file. You can then call
+`.sh` script. You can also double click `.jar` file. You can then call
 any IP address using SIP protocol, if the remote host does not listen
 on the default SIP port (5060), you can use the following example URI:
 
@@ -77,15 +72,18 @@ sip:alice@192.168.1.2:6060
 
 If you configured a sip account in configuration file or using gui,
 you can also place calls with usual sip uris:
-  sip:bob@biloxi.com
+
+```
+sip:bob@biloxi.com
+```
 
 Advanced users can run several peers instances on the same computer.
 In this case a folder should be created in peers root directory for
 each peers instance. This folder should contain three directories:
-conf, logs and media. conf should contain peers.xml and peers.xsd for this
-instance. peers.xml will need to be updated with this instance
-parameters, peers.xsd can be copied from root conf directory. You will
-need to do this for each instance. <media> parameter in configuration file
+conf, logs and media. conf should contain `peers.xml` and `peers.xsd` for this
+instance. `peers.xml` will need to be updated with this instance
+parameters, `peers.xsd` can be copied from root conf directory. You will
+need to do this for each instance. `<media>` parameter in configuration file
 should be activated for at most one peers instance, this avoids confusion
 in microphone capture and sound playback. You should also check that
 SIP and RTP ports are not the same in each configuration file.
