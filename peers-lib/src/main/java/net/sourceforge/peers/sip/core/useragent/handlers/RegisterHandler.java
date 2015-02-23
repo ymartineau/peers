@@ -117,6 +117,11 @@ public class RegisterHandler extends MethodHandler
         profileUriStr = NameAddress.nameAddressToUri(fromValue);
         callIDStr = sipHeaders.get(new SipHeaderFieldName(RFC3261.HDR_CALLID))
             .toString();
+        // added for buggy servers like cirpack which doesn't answer with a
+        // default expires value if it doesn't find any expires in request
+        sipHeaders.add(new SipHeaderFieldName(RFC3261.HDR_EXPIRES),
+                new SipHeaderFieldValue(String.valueOf(
+                        RFC3261.DEFAULT_EXPIRES)));
         return clientTransaction;
     }
 

@@ -44,6 +44,7 @@ public final class RFC3261 {
     public static final String HDR_CONTENT_LENGTH      = "Content-Length";
     public static final String HDR_CONTENT_TYPE        = "Content-Type";
     public static final String HDR_CSEQ                = "CSeq";
+    public static final String HDR_EXPIRES             = "Expires";
     public static final String HDR_FROM                = "From";
     public static final String HDR_MAX_FORWARDS        = "Max-Forwards";
     public static final String HDR_RECORD_ROUTE        = "Record-Route";
@@ -165,5 +166,6 @@ public final class RFC3261 {
     //CORE
     
     public static final String CONTENT_TYPE_SDP = "application/sdp";
+    public static final int DEFAULT_EXPIRES = 3600;
     
 }
