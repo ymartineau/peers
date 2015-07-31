@@ -43,6 +43,7 @@ public class NonInviteServerTransactionStateTrying extends
         NonInviteServerTransactionState nextState =
             nonInviteServerTransaction.COMPLETED;
         nonInviteServerTransaction.setState(nextState);
+        nonInviteServerTransaction.sendLastResponse();
     }
     
 }
