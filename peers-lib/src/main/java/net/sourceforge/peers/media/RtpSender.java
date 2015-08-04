@@ -33,6 +33,7 @@ import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 
 import net.sourceforge.peers.Logger;
+import net.sourceforge.peers.rtp.DtmfRtpPacket;
 import net.sourceforge.peers.rtp.RtpPacket;
 import net.sourceforge.peers.rtp.RtpSession;
 import net.sourceforge.peers.sdp.Codec;
@@ -144,8 +145,14 @@ public class RtpSender implements Runnable {
             }
             
             rtpPacket.setSequenceNumber(sequenceNumber++);
-            timestamp += buf_size;
-            rtpPacket.setTimestamp(timestamp);
+            if(rtpPacket instanceof DtmfRtpPacket&&!rtpPacket.isMarker()){
+              	DtmfRtpPacket previousDtmfRtpPacket =((DtmfRtpPacket) rtpPacket).getPreviousDtmfRtpPacket();
+             	rtpPacket.setTimestamp(previousDtmfRtpPacket.getTimestamp());
+            }else{
+                timestamp += buf_size;
+                rtpPacket.setTimestamp(timestamp);
+            }
+            
             if (firstTime) {
                 rtpSession.send(rtpPacket);
                 lastSentTime = System.nanoTime();
