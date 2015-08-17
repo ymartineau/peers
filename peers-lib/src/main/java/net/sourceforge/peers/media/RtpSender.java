@@ -136,14 +136,16 @@ public class RtpSender implements Runnable {
                 rtpPacket.setPayloadType(pushedPacket.getPayloadType());
                 byte[] data = pushedPacket.getData();
                 rtpPacket.setData(data);
-                
-                if(rtpPacket.isMarker()){
+                //if rtp packet is the first packet in one DTMF event.
+                if(pushedPacket instanceof DtmfRtpPacket&&pushedPacket.isMarker()){
                 	timestamp += buf_size;
                     rtpPacket.setTimestamp(timestamp);
-                }else{
-                   	DtmfRtpPacket previousDtmfRtpPacket =((DtmfRtpPacket) rtpPacket).getPreviousDtmfRtpPacket();
+                    pushedPacket.setTimestamp(timestamp);
+                 }else{
+                   	DtmfRtpPacket previousDtmfRtpPacket =((DtmfRtpPacket) pushedPacket).getPreviousDtmfRtpPacket();
                  	rtpPacket.setTimestamp(previousDtmfRtpPacket.getTimestamp());
                 }
+ 
             } else {
                 if (rtpPacket.getPayloadType() != codec.getPayloadType()) {
                     rtpPacket.setPayloadType(codec.getPayloadType());
