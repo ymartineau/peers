@@ -136,23 +136,26 @@ public class RtpSender implements Runnable {
                 rtpPacket.setPayloadType(pushedPacket.getPayloadType());
                 byte[] data = pushedPacket.getData();
                 rtpPacket.setData(data);
+                
+                if(rtpPacket.isMarker()){
+                	timestamp += buf_size;
+                    rtpPacket.setTimestamp(timestamp);
+                }else{
+                   	DtmfRtpPacket previousDtmfRtpPacket =((DtmfRtpPacket) rtpPacket).getPreviousDtmfRtpPacket();
+                 	rtpPacket.setTimestamp(previousDtmfRtpPacket.getTimestamp());
+                }
             } else {
                 if (rtpPacket.getPayloadType() != codec.getPayloadType()) {
                     rtpPacket.setPayloadType(codec.getPayloadType());
                     rtpPacket.setMarker(false);
                 }
                 rtpPacket.setData(trimmedBuffer);
-            }
-            
-            rtpPacket.setSequenceNumber(sequenceNumber++);
-            if(rtpPacket instanceof DtmfRtpPacket&&!rtpPacket.isMarker()){
-              	DtmfRtpPacket previousDtmfRtpPacket =((DtmfRtpPacket) rtpPacket).getPreviousDtmfRtpPacket();
-             	rtpPacket.setTimestamp(previousDtmfRtpPacket.getTimestamp());
-            }else{
                 timestamp += buf_size;
                 rtpPacket.setTimestamp(timestamp);
             }
             
+            rtpPacket.setSequenceNumber(sequenceNumber++);
+           
             if (firstTime) {
                 rtpSession.send(rtpPacket);
                 lastSentTime = System.nanoTime();
