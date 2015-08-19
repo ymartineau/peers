@@ -21,8 +21,6 @@ package net.sourceforge.peers.sip.transport;
 
 import java.net.InetAddress;
 
-import net.sourceforge.peers.sip.RFC3261;
-
 public class SipTransportConnection {
 
     public static final int EMPTY_PORT = -1;
@@ -45,21 +43,7 @@ public class SipTransportConnection {
         this.transport = transport;
     }
 
-    @Override
-    public boolean equals(Object obj) {
-        if (obj.getClass() != SipTransportConnection.class) {
-            return false;
-        }
-        SipTransportConnection other = (SipTransportConnection)obj;
-        if (!transport.equalsIgnoreCase(other.transport)) {
-            return false;
-        }
-        if (RFC3261.TRANSPORT_UDP.equalsIgnoreCase(transport)) {
-            return localInetAddress.equals(other.localInetAddress) &&
-                localPort == other.localPort;
-        }
-        return false;
-    }
+  
     
     @Override
     public String toString() {
@@ -68,12 +52,10 @@ public class SipTransportConnection {
         buf.append(':');
         appendPort(buf, localPort);
         buf.append('/');
-        if (!RFC3261.TRANSPORT_UDP.equalsIgnoreCase(transport)) {
-            appendInetAddress(buf, remoteInetAddress);
-            buf.append(':');
-            appendPort(buf, remotePort);
-            buf.append('/');
-        }
+        appendInetAddress(buf, remoteInetAddress);
+        buf.append(':');
+        appendPort(buf, remotePort);
+        buf.append('/');
         buf.append(transport.toUpperCase());
         return buf.toString();
     }
@@ -93,11 +75,7 @@ public class SipTransportConnection {
             buf.append("-");
         }
     }
-
-    @Override
-    public int hashCode() {
-        return toString().hashCode();
-    }
+ 
 
     public InetAddress getLocalInetAddress() {
         return localInetAddress;
@@ -107,7 +85,53 @@ public class SipTransportConnection {
         return localPort;
     }
 
-    public InetAddress getRemoteInetAddress() {
+    @Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((localInetAddress == null) ? 0 : localInetAddress.hashCode());
+		result = prime * result + localPort;
+		result = prime * result + ((remoteInetAddress == null) ? 0 : remoteInetAddress.hashCode());
+		result = prime * result + remotePort;
+		result = prime * result + ((transport == null) ? 0 : transport.hashCode());
+		return result;
+	}
+
+ 
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		SipTransportConnection other = (SipTransportConnection) obj;
+		if (localInetAddress == null) {
+			if (other.localInetAddress != null)
+				return false;
+		} else if (!localInetAddress.equals(other.localInetAddress))
+			return false;
+		if (localPort != other.localPort)
+			return false;
+		if (remoteInetAddress == null) {
+			if (other.remoteInetAddress != null)
+				return false;
+		} else if (!remoteInetAddress.equals(other.remoteInetAddress))
+			return false;
+		if (remotePort != other.remotePort)
+			return false;
+		if (transport == null) {
+			if (other.transport != null)
+				return false;
+		} else if (!transport.equals(other.transport))
+			return false;
+		return true;
+	}
+
+
+
+	public InetAddress getRemoteInetAddress() {
         return remoteInetAddress;
     }
 

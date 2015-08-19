@@ -24,6 +24,9 @@ import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.core.useragent.RequestManager;
 import net.sourceforge.peers.sip.core.useragent.SipListener;
 import net.sourceforge.peers.sip.core.useragent.UserAgent;
+import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldName;
+import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldValue;
+import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
 import net.sourceforge.peers.sip.transaction.ClientTransaction;
 import net.sourceforge.peers.sip.transaction.ClientTransactionUser;
 import net.sourceforge.peers.sip.transaction.NonInviteClientTransaction;
@@ -109,10 +112,27 @@ public class ByeHandler extends DialogMethodHandler
         if (sipListener != null) {
             sipListener.remoteHangup(sipRequest);
         }
+        
+        sendInviteIfNeedAlso(sipRequest);
 
 //        setChanged();
 //        notifyObservers(sipRequest);
     }
+
+	private void sendInviteIfNeedAlso(SipRequest sipRequest) {
+		SipHeaderFieldName alsoHeaderFieldName = new SipHeaderFieldName(RFC3261.HDR_ALSO);
+		SipHeaderFieldValue alsoHeaderFieldValue = sipRequest.getSipHeaders().get(alsoHeaderFieldName);
+		if(alsoHeaderFieldValue!=null&&(!alsoHeaderFieldValue.getValue().isEmpty())){
+			String alsoHeaderStr=alsoHeaderFieldValue.getValue();
+			SipHeaderFieldValue oldCallId = sipRequest.getSipHeaders().get(new SipHeaderFieldName(RFC3261.HDR_CALLID));
+			String newCallId = oldCallId.getValue()+"_also";
+			try {
+				this.userAgent.invite(alsoHeaderStr,newCallId);
+			} catch (SipUriSyntaxException e) {
+				throw new RuntimeException("sip url syntax exception for:"+e.getMessage(), e);
+			}
+		}
+	}
 
     ///////////////////////////////////////
     //ServerTransactionUser methods
