@@ -143,8 +143,10 @@ public class RtpSender implements Runnable {
                     pushedPacket.setTimestamp(timestamp);
                  }else{
                    	DtmfRtpPacket previousDtmfRtpPacket =((DtmfRtpPacket) pushedPacket).getPreviousDtmfRtpPacket();
-                 	rtpPacket.setTimestamp(previousDtmfRtpPacket.getTimestamp());
-                }
+                 	long previousTimeStamp = previousDtmfRtpPacket.getTimestamp();
+					rtpPacket.setTimestamp(previousTimeStamp);
+                 	pushedPacket.setTimestamp(timestamp);                
+                 }
  
             } else {
                 if (rtpPacket.getPayloadType() != codec.getPayloadType()) {
