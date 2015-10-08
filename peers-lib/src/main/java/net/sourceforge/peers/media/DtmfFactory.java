@@ -53,6 +53,7 @@ public class DtmfFactory {
         rtpPacket.setMarker(true);
         packets.add(rtpPacket);
 
+		/*
         // two classical packets
 
         rtpPacket = new RtpPacket();
@@ -74,20 +75,20 @@ public class DtmfFactory {
         rtpPacket.setMarker(false);
         rtpPacket.setPayloadType(RFC4733.PAYLOAD_TYPE_TELEPHONE_EVENT);
         packets.add(rtpPacket);
-
+		*/
         data = data.clone();
         // create three end event packets
         data[1] = -0x76; // end event flag + volume set to 10
         // set Duration to 640
         data[2] = 2; // duration 8 bits
         data[3] = -128; // duration 8 bits
-        for (int r = 0; r < 3; r++) {
+        //for (int r = 0; r < 1; r++) {
             rtpPacket = new RtpPacket();
             rtpPacket.setData(data);
             rtpPacket.setMarker(false);
             rtpPacket.setPayloadType(RFC4733.PAYLOAD_TYPE_TELEPHONE_EVENT);
             packets.add(rtpPacket);
-        }
+        //}
 
         return packets;
     }
