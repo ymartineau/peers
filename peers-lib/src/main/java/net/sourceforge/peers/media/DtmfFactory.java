@@ -58,11 +58,11 @@ public class DtmfFactory {
         // set Duration to 640
         data[2] = 2; // duration 8 bits
         data[3] = -128; // duration 8 bits
-		rtpPacket = new RtpPacket();
-		rtpPacket.setData(data);
-		rtpPacket.setMarker(false);
-		rtpPacket.setPayloadType(RFC4733.PAYLOAD_TYPE_TELEPHONE_EVENT);
-		packets.add(rtpPacket);
+        rtpPacket = new RtpPacket();
+        rtpPacket.setData(data);
+        rtpPacket.setMarker(false);
+        rtpPacket.setPayloadType(RFC4733.PAYLOAD_TYPE_TELEPHONE_EVENT);
+        packets.add(rtpPacket);
 
         return packets;
     }
