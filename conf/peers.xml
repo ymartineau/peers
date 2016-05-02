@@ -44,6 +44,9 @@
  	<!-- you can specify an even rtp port to use for incoming and outgoing rtp
  	     traffic, 0 can be used to choose a random even free port -->
   <rtpPort>0</rtpPort>
+  <!-- if you need to specify an authorization username different than
+       the userPart -->
+  <authorizationUsername></authorizationUsername>
   <!-- mediaMode corresponds to the way media is managed. Three values are
        possible for this parameter:
          - captureAndPlayback: capture sound from microphone, send
