@@ -54,6 +54,7 @@ public class ChallengeManager implements MessageInterceptor {
     private String profileUri;
     private String qop;
     private String cnonce;
+    private String authorizationUsername;
     
     private static volatile int nonceCount = 1;
     private String nonceCountHex;
@@ -84,6 +85,10 @@ public class ChallengeManager implements MessageInterceptor {
 
     private void init() {
         username = config.getUserPart();
+        authorizationUsername = config.getAuthorizationUsername();
+        if (authorizationUsername == null || authorizationUsername.isEmpty()) {
+            authorizationUsername = username;
+        }
         password = config.getPassword();
         profileUri = RFC3261.SIP_SCHEME + RFC3261.SCHEME_SEPARATOR
             + username + RFC3261.AT + config.getDomain();
@@ -173,7 +178,7 @@ public class ChallengeManager implements MessageInterceptor {
     
     private String getRequestDigest(String method) {
         StringBuffer buf = new StringBuffer();
-        buf.append(username);
+        buf.append(authorizationUsername);
         buf.append(RFC2617.DIGEST_SEPARATOR);
         buf.append(realm);
         buf.append(RFC2617.DIGEST_SEPARATOR);
@@ -242,7 +247,7 @@ public class ChallengeManager implements MessageInterceptor {
         digest = getRequestDigest(method);
         StringBuffer buf = new StringBuffer();
         buf.append(RFC2617.SCHEME_DIGEST).append(" ");
-        appendParameter(buf, RFC2617.PARAM_USERNAME, username);
+        appendParameter(buf, RFC2617.PARAM_USERNAME, authorizationUsername);
         buf.append(RFC2617.PARAM_SEPARATOR).append(" ");
         appendParameter(buf, RFC2617.PARAM_REALM, realm);
         buf.append(RFC2617.PARAM_SEPARATOR).append(" ");
@@ -251,6 +256,10 @@ public class ChallengeManager implements MessageInterceptor {
         appendParameter(buf, RFC2617.PARAM_URI, requestUri);
         buf.append(RFC2617.PARAM_SEPARATOR).append(" ");
         appendParameter(buf, RFC2617.PARAM_RESPONSE, digest);
+        buf.append(RFC2617.PARAM_SEPARATOR).append(" ");
+        buf.append(RFC2617.PARAM_ALGORITHM);
+        buf.append(RFC2617.PARAM_VALUE_SEPARATOR);
+        buf.append(ALGORITHM_MD5);
         if("auth".equals(qop)) {
             buf.append(RFC2617.PARAM_SEPARATOR).append(" ");
             appendParameter(buf, RFC2617.PARAM_NC, nonceCountHex);

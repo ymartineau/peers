@@ -38,6 +38,7 @@ public interface Config {
     public boolean isMediaDebug();
     public String getMediaFile();
     public int getRtpPort();
+    public String getAuthorizationUsername();
     public void setLocalInetAddress(InetAddress inetAddress);
     public void setPublicInetAddress(InetAddress inetAddress);
     public void setUserPart(String userPart);
@@ -49,5 +50,6 @@ public interface Config {
     public void setMediaDebug(boolean mediaDebug);
     public void setMediaFile(String mediaFile);
     public void setRtpPort(int rtpPort);
+    public void setAuthorizationUsername(String authorizationUsername);
 
 }
