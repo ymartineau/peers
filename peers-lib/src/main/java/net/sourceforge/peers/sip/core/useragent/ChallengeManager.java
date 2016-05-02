@@ -256,10 +256,6 @@ public class ChallengeManager implements MessageInterceptor {
         appendParameter(buf, RFC2617.PARAM_URI, requestUri);
         buf.append(RFC2617.PARAM_SEPARATOR).append(" ");
         appendParameter(buf, RFC2617.PARAM_RESPONSE, digest);
-        buf.append(RFC2617.PARAM_SEPARATOR).append(" ");
-        buf.append(RFC2617.PARAM_ALGORITHM);
-        buf.append(RFC2617.PARAM_VALUE_SEPARATOR);
-        buf.append(ALGORITHM_MD5);
         if("auth".equals(qop)) {
             buf.append(RFC2617.PARAM_SEPARATOR).append(" ");
             appendParameter(buf, RFC2617.PARAM_NC, nonceCountHex);

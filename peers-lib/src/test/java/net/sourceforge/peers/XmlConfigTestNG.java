@@ -67,7 +67,7 @@ public class XmlConfigTestNG {
         assert mediaMode == config.getMediaMode();
         assert mediaDebug == config.isMediaDebug();
         assert rtpPort == config.getRtpPort();
-        assert authorizationUsername == config.getAuthorizationUsername();
+        assert authorizationUsername.equals(config.getAuthorizationUsername());
     }
 
 }
