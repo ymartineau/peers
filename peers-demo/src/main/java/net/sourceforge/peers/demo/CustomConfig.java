@@ -36,6 +36,8 @@ public class CustomConfig implements Config {
     @Override
     public MediaMode getMediaMode() { return MediaMode.captureAndPlayback; }
 
+    @Override public String getAuthorizationUsername() { return getUserPart(); }
+
     @Override
     public void setPublicInetAddress(InetAddress inetAddress) {
         publicIpAddress = inetAddress;
@@ -57,5 +59,6 @@ public class CustomConfig implements Config {
     @Override public void setMediaFile(String mediaFile) { }
     @Override public void setRtpPort(int rtpPort) { }
     @Override public void save() { }
+    @Override public void setAuthorizationUsername(String authorizationUsername) { }
     
 }

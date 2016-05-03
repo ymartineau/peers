@@ -68,6 +68,7 @@ public class XmlConfig implements Config {
     private boolean mediaDebug;
     private String mediaFile;
     private int rtpPort;
+    private String authorizationUsername;
     
     // corresponding DOM nodes
     
@@ -81,6 +82,7 @@ public class XmlConfig implements Config {
     private Node mediaDebugNode;
     private Node mediaFileNode;
     private Node rtpPortNode;
+    private Node authUserNode;
 
     // non-persistent variables
 
@@ -129,6 +131,10 @@ public class XmlConfig implements Config {
             logger.error("userpart not found in configuration file");
         } else {
             userPart = userPartNode.getTextContent();
+        }
+        authUserNode = getFirstChild(documentElement, "authorizationUsername");
+        if (! isNullOrEmpty(authUserNode)) {
+            authorizationUsername = authUserNode.getTextContent();
         }
         domainNode = getFirstChild(documentElement, "domain");
         if (isNullOrEmpty(domainNode)) {
@@ -285,6 +291,11 @@ public class XmlConfig implements Config {
     }
 
     @Override
+    public String getAuthorizationUsername() {
+        return authorizationUsername;
+    }
+
+    @Override
     public void setLocalInetAddress(InetAddress inetAddress) {
         this.localInetAddress = inetAddress;
         ipAddressNode.setTextContent(inetAddress.getHostAddress());
@@ -346,6 +357,12 @@ public class XmlConfig implements Config {
     public void setRtpPort(int rtpPort) {
         this.rtpPort = rtpPort;
         rtpPortNode.setTextContent(Integer.toString(rtpPort));
+    }
+
+    @Override
+    public void setAuthorizationUsername(String authorizationUsername) {
+        this.authorizationUsername = authorizationUsername;
+        authUserNode.setTextContent(authorizationUsername);
     }
 
     @Override
