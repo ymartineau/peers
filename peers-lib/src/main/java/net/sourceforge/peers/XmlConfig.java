@@ -19,11 +19,15 @@
 
 package net.sourceforge.peers;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import net.sourceforge.peers.media.MediaMode;
+import net.sourceforge.peers.sip.RFC3261;
+import net.sourceforge.peers.sip.syntaxencoding.SipURI;
+import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -34,17 +38,11 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-
-import net.sourceforge.peers.media.MediaMode;
-import net.sourceforge.peers.sip.RFC3261;
-import net.sourceforge.peers.sip.syntaxencoding.SipURI;
-import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 
 public class XmlConfig implements Config {
@@ -87,6 +85,7 @@ public class XmlConfig implements Config {
     // non-persistent variables
 
     private InetAddress publicInetAddress;
+    private String mediaDir;
 
     //private InetAddress
     public XmlConfig(String fileName, Logger logger) {
@@ -373,6 +372,16 @@ public class XmlConfig implements Config {
     @Override
     public void setMediaFile(String mediaFile) {
         this.mediaFile = mediaFile;
+    }
+
+    @Override
+    public String getMediaDir() {
+        return mediaDir;
+    }
+
+    @Override
+    public void setMediaDir(String dir) {
+        this.mediaDir = dir;
     }
 
 }
