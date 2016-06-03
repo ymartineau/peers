@@ -19,11 +19,6 @@
 
 package net.sourceforge.peers.sip.core.useragent;
 
-import java.io.File;
-import java.net.SocketException;
-import java.util.ArrayList;
-import java.util.List;
-
 import net.sourceforge.peers.Config;
 import net.sourceforge.peers.FileLogger;
 import net.sourceforge.peers.Logger;
@@ -49,6 +44,11 @@ import net.sourceforge.peers.sip.transport.SipMessage;
 import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.SipResponse;
 import net.sourceforge.peers.sip.transport.TransportManager;
+
+import java.io.File;
+import java.net.SocketException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class UserAgent {
@@ -387,6 +387,13 @@ public class UserAgent {
 
     public String getPeersHome() {
         return peersHome;
+    }
+
+    public String getRecordingDir() {
+        String mediaDir = getConfig().getMediaDir();
+        String dir = (mediaDir == null || mediaDir == "" ? getPeersHome() + File.separator
+                + AbstractSoundManager.MEDIA_DIR : mediaDir) + File.separator;
+        return dir;
     }
 
     public TransportManager getTransportManager() {
