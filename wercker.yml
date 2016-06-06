@@ -22,7 +22,7 @@ deploy:
   steps:
     - xenoterracide/maven:
         name: Compile, test and build jar
-        goals: -Dmaven.test.failure.ignore=false install
+        goals: -Dmaven.test.failure.ignore=false clean install
         
     - xenoterracide/maven:
         name: Deploy to artifactory
