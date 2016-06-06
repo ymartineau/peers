@@ -1,0 +1,35 @@
+box:
+  id: $DOCKER_REPO/alz-java-build
+  username: $DOCKER_REPO_USERNAME
+  password: $DOCKER_REPO_PASSWORD
+  tag: latest
+  registry: $DOCKER_REGISTRY
+
+
+build:
+  steps:
+    - xenoterracide/maven:
+      name: Compile and Test
+      goals: -Dmaven.test.failure.ignore=false test
+      
+  after-steps:
+      - slack-notifier:
+          url: $SLACK_URL
+          channel: "#automation"
+          username: wercker
+      
+deploy:
+  steps:
+    - xenoterracide/maven:
+        name: Compile, test and build jar
+        goals: -Dmaven.test.failure.ignore=false install
+        
+    - xenoterracide/maven:
+        name: Deploy to artifactory
+        goals: deploy
+        
+  after-steps:
+      - slack-notifier:
+          url: $SLACK_URL
+          channel: "#automation"
+          username: wercker
