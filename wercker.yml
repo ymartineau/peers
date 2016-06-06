@@ -10,7 +10,7 @@ build:
   steps:
     - xenoterracide/maven:
       name: Compile and Test
-      goals: -Dmaven.test.failure.ignore=false -pl '!peers-js,!peers-jws,!peers-gui,!peers-doc,!peers-demo' test
+      goals: -Dmaven.test.failure.ignore=false -pl peers-lib,peers-javaxsound test
       
   after-steps:
       - slack-notifier:
@@ -22,7 +22,7 @@ deploy:
   steps:
     - xenoterracide/maven:
         name: Compile, test and build jar
-        goals: -Dmaven.test.failure.ignore=false -pl '!peers-js,!peers-jws,!peers-gui,!peers-doc,!peers-demo' clean install
+        goals: -Dmaven.test.failure.ignore=false -pl peers-lib,peers-javaxsound clean install
         
     - xenoterracide/maven:
         name: Deploy to artifactory
