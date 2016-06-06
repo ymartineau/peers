@@ -26,7 +26,7 @@ deploy:
         
     - xenoterracide/maven:
         name: Deploy to artifactory
-        goals: deploy
+        goals: -pl peers-lib,peers-javaxsound deploy
         
   after-steps:
       - slack-notifier:
