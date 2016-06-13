@@ -59,6 +59,7 @@ public class RtpSender implements Runnable {
         this.codec = codec;
         this.peersHome = peersHome;
         this.latch = latch;
+        this.logger = logger;
         isStopped = false;
         pushedPackets = Collections.synchronizedList(
                 new ArrayList<RtpPacket>());
