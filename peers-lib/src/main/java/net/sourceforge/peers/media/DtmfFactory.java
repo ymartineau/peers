@@ -22,6 +22,7 @@ package net.sourceforge.peers.media;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sourceforge.peers.rtp.DtmfRtpPacket;
 import net.sourceforge.peers.rtp.RFC4733;
 import net.sourceforge.peers.rtp.RtpPacket;
 
@@ -47,7 +48,7 @@ public class DtmfFactory {
         // duration 8 bits
         data[3] = -96;
 
-        RtpPacket rtpPacket = new RtpPacket();
+        DtmfRtpPacket rtpPacket = new DtmfRtpPacket();
         rtpPacket.setData(data);
         rtpPacket.setPayloadType(RFC4733.PAYLOAD_TYPE_TELEPHONE_EVENT);
         rtpPacket.setMarker(true);
@@ -55,7 +56,7 @@ public class DtmfFactory {
 
         // two classical packets
 
-        rtpPacket = new RtpPacket();
+        rtpPacket = new DtmfRtpPacket(rtpPacket);
         // set duration to 320
         data = data.clone();
         data[2] = 1;
@@ -65,7 +66,7 @@ public class DtmfFactory {
         rtpPacket.setPayloadType(RFC4733.PAYLOAD_TYPE_TELEPHONE_EVENT);
         packets.add(rtpPacket);
 
-        rtpPacket = new RtpPacket();
+        rtpPacket = new DtmfRtpPacket(rtpPacket);
         // set duration to 320
         data = data.clone();
         data[2] = 1;
@@ -82,7 +83,7 @@ public class DtmfFactory {
         data[2] = 2; // duration 8 bits
         data[3] = -128; // duration 8 bits
         for (int r = 0; r < 3; r++) {
-            rtpPacket = new RtpPacket();
+            rtpPacket = new DtmfRtpPacket(rtpPacket);
             rtpPacket.setData(data);
             rtpPacket.setMarker(false);
             rtpPacket.setPayloadType(RFC4733.PAYLOAD_TYPE_TELEPHONE_EVENT);

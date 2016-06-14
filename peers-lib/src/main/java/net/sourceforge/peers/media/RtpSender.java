@@ -33,6 +33,7 @@ import java.util.Random;
 import java.util.concurrent.CountDownLatch;
 
 import net.sourceforge.peers.Logger;
+import net.sourceforge.peers.rtp.DtmfRtpPacket;
 import net.sourceforge.peers.rtp.RtpPacket;
 import net.sourceforge.peers.rtp.RtpSession;
 import net.sourceforge.peers.sdp.Codec;
@@ -136,17 +137,30 @@ public class RtpSender implements Runnable {
                 rtpPacket.setPayloadType(pushedPacket.getPayloadType());
                 byte[] data = pushedPacket.getData();
                 rtpPacket.setData(data);
+                //if rtp packet is the first packet in one DTMF event.
+                if(pushedPacket instanceof DtmfRtpPacket&&pushedPacket.isMarker()){
+                	timestamp += buf_size;
+                    rtpPacket.setTimestamp(timestamp);
+                    pushedPacket.setTimestamp(timestamp);
+                 }else{
+                   	DtmfRtpPacket previousDtmfRtpPacket =((DtmfRtpPacket) pushedPacket).getPreviousDtmfRtpPacket();
+                 	long previousTimeStamp = previousDtmfRtpPacket.getTimestamp();
+					rtpPacket.setTimestamp(previousTimeStamp);
+                 	pushedPacket.setTimestamp(timestamp);                
+                 }
+ 
             } else {
                 if (rtpPacket.getPayloadType() != codec.getPayloadType()) {
                     rtpPacket.setPayloadType(codec.getPayloadType());
                     rtpPacket.setMarker(false);
                 }
                 rtpPacket.setData(trimmedBuffer);
+                timestamp += buf_size;
+                rtpPacket.setTimestamp(timestamp);
             }
             
             rtpPacket.setSequenceNumber(sequenceNumber++);
-            timestamp += buf_size;
-            rtpPacket.setTimestamp(timestamp);
+           
             if (firstTime) {
                 rtpSession.send(rtpPacket);
                 lastSentTime = System.nanoTime();

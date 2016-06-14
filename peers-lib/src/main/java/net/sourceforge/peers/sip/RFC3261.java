@@ -56,6 +56,9 @@ public final class RFC3261 {
     public static final String HDR_TO                  = "To";
     public static final String HDR_VIA                 = "Via";
     public static final String HDR_WWW_AUTHENTICATE    = "WWW-Authenticate";
+    public static final String HDR_ALSO    			   = "Also";
+
+    
     
         //Compact form
     
