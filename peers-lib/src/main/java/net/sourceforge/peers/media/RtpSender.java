@@ -59,6 +59,7 @@ public class RtpSender implements Runnable {
         this.codec = codec;
         this.peersHome = peersHome;
         this.latch = latch;
+        this.logger = logger;
         isStopped = false;
         pushedPackets = Collections.synchronizedList(
                 new ArrayList<RtpPacket>());
@@ -133,6 +134,7 @@ public class RtpSender implements Runnable {
                 RtpPacket pushedPacket = pushedPackets.remove(0);
                 rtpPacket.setMarker(pushedPacket.isMarker());
                 rtpPacket.setPayloadType(pushedPacket.getPayloadType());
+                rtpPacket.setIncrementTimeStamp(pushedPacket.isIncrementTimeStamp());
                 byte[] data = pushedPacket.getData();
                 rtpPacket.setData(data);
             } else {
@@ -144,7 +146,9 @@ public class RtpSender implements Runnable {
             }
             
             rtpPacket.setSequenceNumber(sequenceNumber++);
-            timestamp += buf_size;
+            if (rtpPacket.isIncrementTimeStamp()) {
+                    timestamp += buf_size;
+                }
             rtpPacket.setTimestamp(timestamp);
             if (firstTime) {
                 rtpSession.send(rtpPacket);
