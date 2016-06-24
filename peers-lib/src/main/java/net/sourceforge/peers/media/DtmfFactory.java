@@ -19,11 +19,11 @@
 
 package net.sourceforge.peers.media;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.sourceforge.peers.rtp.RFC4733;
 import net.sourceforge.peers.rtp.RtpPacket;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class DtmfFactory {
 
@@ -61,6 +61,7 @@ public class DtmfFactory {
         data[2] = 1;
         data[3] = 64;
         rtpPacket.setData(data);
+        rtpPacket.setIncrementTimeStamp(false);
         rtpPacket.setMarker(false);
         rtpPacket.setPayloadType(RFC4733.PAYLOAD_TYPE_TELEPHONE_EVENT);
         packets.add(rtpPacket);
@@ -71,6 +72,7 @@ public class DtmfFactory {
         data[2] = 1;
         data[3] = -32;
         rtpPacket.setData(data);
+        rtpPacket.setIncrementTimeStamp(false);
         rtpPacket.setMarker(false);
         rtpPacket.setPayloadType(RFC4733.PAYLOAD_TYPE_TELEPHONE_EVENT);
         packets.add(rtpPacket);

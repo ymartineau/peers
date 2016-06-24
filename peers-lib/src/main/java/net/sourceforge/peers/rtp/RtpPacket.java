@@ -32,6 +32,7 @@ public class RtpPacket {
     private long ssrc;
     private long[] csrcList;
     private byte[] data;
+    private boolean incrementTimeStamp = true;
 
     public int getVersion() {
         return version;
@@ -121,4 +122,11 @@ public class RtpPacket {
         this.data = data;
     }
 
+    public boolean isIncrementTimeStamp() {
+        return incrementTimeStamp;
+    }
+
+    public void setIncrementTimeStamp(boolean incrementTimeStamp) {
+        this.incrementTimeStamp = incrementTimeStamp;
+    }
 }
