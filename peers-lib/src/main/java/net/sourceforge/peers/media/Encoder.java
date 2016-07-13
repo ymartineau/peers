@@ -57,7 +57,10 @@ public abstract class Encoder implements Runnable {
     }
     
     public void run() {
-        byte[] buffer;
+        int buf_size = Capture.BUFFER_SIZE;
+        byte[] buffer = new byte[buf_size];
+        int numBytesRead;
+        int tempBytesRead;
         if (mediaDebug) {
             SimpleDateFormat simpleDateFormat =
                 new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
@@ -74,23 +77,19 @@ public abstract class Encoder implements Runnable {
                 return;
             }
         }
-        int ready;
+        //int ready;
         while (!isStopped) {
             try {
-                ready = rawData.available();
-                while (ready == 0 && !isStopped) {
-                    try {
-                        Thread.sleep(2);
-                        ready = rawData.available();
-                    } catch (InterruptedException e) {
-                        logger.error("interrupt exception", e);
-                    }
+                numBytesRead = 0;
+                while (!isStopped && numBytesRead < buf_size) {
+                    // expect that the buffer is full
+                    tempBytesRead = rawData.read(buffer, numBytesRead,
+                            buf_size - numBytesRead);
+                    numBytesRead += tempBytesRead;
                 }
                 if (isStopped) {
                     break;
                 }
-                buffer = new byte[ready];
-                rawData.read(buffer);
                 if (mediaDebug) {
                     try {
                         encoderInput.write(buffer);
