@@ -24,23 +24,23 @@
        network interfaces, or several addresses on a specific interface,
        you can specify an address to bind on here. -->
   <!-- Example: 192.168.1.20 -->
-  <ipAddress>192.168.201.115</ipAddress>
+  <ipAddress></ipAddress>
   <!-- username (corresponding to the user part of your sip uri) -->
   <!-- Example: alice -->
-  <userPart>2208</userPart>
+  <userPart></userPart>
   <!-- domain (corresponding to the domain part of your sip uri) -->
   <!-- Example: atlanta.com -->
   <domain></domain>
   <!-- if password is empty, no REGISTER message is sent -->
   <!-- Example: 1234 -->
-  <password>jr2208</password>
+  <password></password>
   <!-- you can specify an outbound proxy for registration and calls -->
   <!-- Example: sip:192.168.1.20;lr -->
   <outboundProxy></outboundProxy>
   <!-- you can specify the sip listening port you want, 0 can be used to
        choose a random free port -->
   <!-- Example: 5060 -->
-  <sipPort>5062</sipPort>
+  <sipPort>0</sipPort>
  	<!-- you can specify an even rtp port to use for incoming and outgoing rtp
  	     traffic, 0 can be used to choose a random even free port -->
   <rtpPort>0</rtpPort>
@@ -56,7 +56,7 @@
            those packets to remote party
          - none: no media is capture, played, send nor received
          - file: stream audio from audio file provided in mediaFile -->
-  <mediaMode>file</mediaMode>
+  <mediaMode>captureAndPlayback</mediaMode>
   <!-- mediaDebug is a boolean parameter. If set to true, files will be
        created in a media directory in peers.home directory. Those files will
        contain raw data at input and output of microphone, encoder, rtp
