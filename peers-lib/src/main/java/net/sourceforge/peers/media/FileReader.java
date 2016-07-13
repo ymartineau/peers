@@ -78,8 +78,10 @@ public class FileReader implements SoundSource {
         }
         byte buffer[] = new byte[BUFFER_SIZE];
         try {
-            if (fileInputStream.read(buffer) >= 0) {
-                Thread.sleep(15);
+            int read;
+            if ((read = fileInputStream.read(buffer)) >= 0) {
+                // TODO There is a problem if not the entire buffer was filled. That is not communicated to the reader of the returned byte-array
+                if (read < buffer.length) System.out.println("Buffer was not completely filled, but we are sending it all through anyway");
                 return buffer;
             } else {
                 fileInputStream.close();
@@ -87,8 +89,6 @@ public class FileReader implements SoundSource {
             }
         } catch (IOException e) {
             logger.error("io exception", e);
-        } catch (InterruptedException e) {
-            logger.debug("file reader interrupted");
         }
         return null;
     }
