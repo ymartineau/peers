@@ -101,7 +101,10 @@ public class RtpSender implements Runnable {
         long lastSentTime = System.nanoTime();
         // indicate if its the first time that we send a packet (dont wait)
         boolean firstTime = true;
-        
+
+        int sleeps = 0;
+        long sumOversleep = 0;
+        long avgOversleep = 0;
         while (!isStopped) {
             numBytesRead = 0;
             try {
@@ -151,25 +154,34 @@ public class RtpSender implements Runnable {
                 }
             rtpPacket.setTimestamp(timestamp);
             if (firstTime) {
-                rtpSession.send(rtpPacket);
                 lastSentTime = System.nanoTime();
+                rtpSession.send(rtpPacket);
                 firstTime = false;
                 continue;
             }
-            sleepTime = 19500000 - (System.nanoTime() - lastSentTime) + offset;
+            long beforeSleep = System.nanoTime();
+            sleepTime = 20000000 - (beforeSleep - lastSentTime) - avgOversleep + offset;
             if (sleepTime > 0) {
                 try {
-                    Thread.sleep(Math.round(sleepTime / 1000000f));
+                    Thread.sleep(sleepTime / 1000000, (int)sleepTime % 1000000);
                 } catch (InterruptedException e) {
                     logger.error("Thread interrupted", e);
                     return;
                 }
-                rtpSession.send(rtpPacket);
                 lastSentTime = System.nanoTime();
+                long slept = (lastSentTime - beforeSleep);
+                long oversleep =  slept - sleepTime;
+                sumOversleep += oversleep;
+                if (sleeps++ == 10) {
+                    avgOversleep = (sumOversleep / sleeps);
+                    sleeps = 0;
+                    sumOversleep = 0;
+                }
+                rtpSession.send(rtpPacket);
                 offset = 0;
             } else {
-                rtpSession.send(rtpPacket);
                 lastSentTime = System.nanoTime();
+                rtpSession.send(rtpPacket);
                 if (sleepTime < -20000000) {
                     offset = sleepTime + 20000000;
                 }
