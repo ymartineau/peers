@@ -126,7 +126,8 @@ public class MediaManager {
             break;
         case file:
             String fileName = userAgent.getConfig().getMediaFile();
-            fileReader = new FileReader(fileName, logger);
+            SoundSource.DataFormat dataFormat = userAgent.getConfig().getMediaFileDataFormat();
+            fileReader = new FileReader(fileName, dataFormat, logger);
             startRtpSessionOnSuccessResponse(localAddress, remoteAddress,
                     remotePort, codec, fileReader);
             try {
@@ -216,7 +217,8 @@ public class MediaManager {
                 fileReader.close();
             }
             String fileName = userAgent.getConfig().getMediaFile();
-            fileReader = new FileReader(fileName, logger);
+            SoundSource.DataFormat dataFormat = userAgent.getConfig().getMediaFileDataFormat();
+            fileReader = new FileReader(fileName, dataFormat, logger);
             startRtpSession(destAddress, destPort, codec, fileReader);
             try {
                 incomingRtpReader = new IncomingRtpReader(rtpSession,

@@ -36,6 +36,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 
 import net.sourceforge.peers.media.MediaMode;
+import net.sourceforge.peers.media.SoundSource;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.syntaxencoding.SipURI;
 import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
@@ -67,6 +68,7 @@ public class XmlConfig implements Config {
     private MediaMode mediaMode;
     private boolean mediaDebug;
     private String mediaFile;
+    private SoundSource.DataFormat mediaFileDataFormat;
     private int rtpPort;
     private String authorizationUsername;
     
@@ -80,6 +82,7 @@ public class XmlConfig implements Config {
     private Node sipPortNode;
     private Node mediaModeNode;
     private Node mediaDebugNode;
+    private Node mediaFileDataFormatNode;
     private Node mediaFileNode;
     private Node rtpPortNode;
     private Node authUserNode;
@@ -172,6 +175,10 @@ public class XmlConfig implements Config {
             mediaDebug = false;
         } else {
             mediaDebug = Boolean.parseBoolean(mediaDebugNode.getTextContent());
+        }
+        mediaFileDataFormatNode = getFirstChild(documentElement, "mediaFileDataFormat");
+        if (!isNullOrEmpty(mediaFileDataFormatNode)) {
+            mediaFileDataFormat = SoundSource.DataFormat.fromShortAlias(mediaFileDataFormatNode.getTextContent());
         }
         mediaFileNode = getFirstChild(documentElement, "mediaFile");
         if (!isNullOrEmpty(mediaFileNode)) {
@@ -296,6 +303,14 @@ public class XmlConfig implements Config {
     }
 
     @Override
+    public SoundSource.DataFormat getMediaFileDataFormat() { return mediaFileDataFormat; }
+
+    @Override
+    public String getMediaFile() {
+        return mediaFile;
+    }
+
+    @Override
     public void setLocalInetAddress(InetAddress inetAddress) {
         this.localInetAddress = inetAddress;
         ipAddressNode.setTextContent(inetAddress.getHostAddress());
@@ -366,8 +381,8 @@ public class XmlConfig implements Config {
     }
 
     @Override
-    public String getMediaFile() {
-        return mediaFile;
+    public void setMediaFileDataFormat(SoundSource.DataFormat mediaFileDataFormat) {
+        this.mediaFileDataFormat = mediaFileDataFormat;
     }
 
     @Override

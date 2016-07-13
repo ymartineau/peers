@@ -43,6 +43,13 @@
     </xs:restriction>
   </xs:simpleType>
 
+  <xs:simpleType name="mediaFileDataFormatType">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="pcm_8khz_16_bits_mono"/>
+      <xs:enumeration value="a_law"/>
+    </xs:restriction>
+  </xs:simpleType>
+
   <!-- Complex Types -->
 
   <xs:complexType name="peersType">
@@ -56,6 +63,7 @@
       <xs:element name="rtpPort" type="portType"/>
       <xs:element name="mediaMode" type="mediaModeType"/>
       <xs:element name="mediaDebug" type="xs:boolean"/>
+      <xs:element name="mediaFileDataFormat" type="mediaFileDataFormatType"/>
       <xs:element name="mediaFile" type="xs:string"/>
     </xs:sequence>
   </xs:complexType>

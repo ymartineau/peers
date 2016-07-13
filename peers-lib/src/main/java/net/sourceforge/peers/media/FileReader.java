@@ -40,7 +40,8 @@ import net.sourceforge.peers.Logger;
 //
 // File > Export
 //
-// - File name: test.raw
+// - File type: AIFF (Apple) signed 16-bit PCM, File name: test.raw
+// - or, File type: Other uncompressed files, Header: RAW (header-less), Encoding: A-law, File name: test.alaw
 //
 // Validate
 
@@ -49,15 +50,17 @@ public class FileReader implements SoundSource {
     public final static int BUFFER_SIZE = 256;
 
     private FileInputStream fileInputStream;
+    private DataFormat fileDataFormat;
     private Logger logger;
 
-    public FileReader(String fileName, Logger logger) {
+    public FileReader(String fileName, DataFormat fileDataFormat, Logger logger) {
         this.logger = logger;
         try {
             fileInputStream = new FileInputStream(fileName);
         } catch (FileNotFoundException e) {
             logger.error("file not found: " + fileName, e);
         }
+        this.fileDataFormat = fileDataFormat;
     }
 
     public synchronized void close() {
@@ -69,6 +72,11 @@ public class FileReader implements SoundSource {
             }
             fileInputStream = null;
         }
+    }
+
+    @Override
+    public DataFormat dataProduced() {
+        return (fileDataFormat != null)?fileDataFormat:DataFormat.DEFAULT;
     }
 
     @Override

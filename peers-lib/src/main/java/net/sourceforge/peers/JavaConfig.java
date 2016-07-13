@@ -22,6 +22,7 @@ package net.sourceforge.peers;
 import java.net.InetAddress;
 
 import net.sourceforge.peers.media.MediaMode;
+import net.sourceforge.peers.media.SoundSource;
 import net.sourceforge.peers.sip.syntaxencoding.SipURI;
 
 public class JavaConfig implements Config {
@@ -35,6 +36,7 @@ public class JavaConfig implements Config {
     private int sipPort;
     private MediaMode mediaMode;
     private boolean mediaDebug;
+    private SoundSource.DataFormat mediaFileDataFormat;
     private String mediaFile;
     private int rtpPort;
     private String authorizationUsername;
@@ -99,6 +101,14 @@ public class JavaConfig implements Config {
     }
 
     @Override
+    public SoundSource.DataFormat getMediaFileDataFormat() { return mediaFileDataFormat; }
+
+    @Override
+    public String getMediaFile() {
+        return mediaFile;
+    }
+
+    @Override
     public void setLocalInetAddress(InetAddress inetAddress) {
         localInetAddress = inetAddress;
     }
@@ -153,8 +163,8 @@ public class JavaConfig implements Config {
     }
 
     @Override
-    public String getMediaFile() {
-        return mediaFile;
+    public void setMediaFileDataFormat(SoundSource.DataFormat mediaFileDataFormat) {
+        this.mediaFileDataFormat = mediaFileDataFormat;
     }
 
     @Override

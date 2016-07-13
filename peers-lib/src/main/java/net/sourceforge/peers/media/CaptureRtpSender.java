@@ -69,19 +69,33 @@ public class CaptureRtpSender {
             return;
         }
         capture = new Capture(rawDataOutput, soundSource, logger, latch);
+        String cannotProducePayloadReason = null;
         switch (codec.getPayloadType()) {
-        case RFC3551.PAYLOAD_TYPE_PCMU:
-            encoder = new PcmuEncoder(rawDataInput, encodedDataOutput,
-                    mediaDebug, logger, peersHome, latch);
-            break;
-        case RFC3551.PAYLOAD_TYPE_PCMA:
-            encoder = new PcmaEncoder(rawDataInput, encodedDataOutput,
-                    mediaDebug, logger, peersHome, latch);
-            break;
-        default:
+            case RFC3551.PAYLOAD_TYPE_PCMU:
+                if (soundSource.dataProduced() == SoundSource.DataFormat.LINEAR_PCM_8KHZ_16BITS_SIGNED_MONO_LITTLE_ENDIAN) {
+                    encoder = new PcmuEncoder(rawDataInput, encodedDataOutput,
+                            mediaDebug, logger, peersHome, latch);
+                } else {
+                    cannotProducePayloadReason = "Cannot convert " + soundSource.dataProduced().getDescription() + " to PCMU";
+                }
+                break;
+            case RFC3551.PAYLOAD_TYPE_PCMA:
+                if (soundSource.dataProduced() == SoundSource.DataFormat.LINEAR_PCM_8KHZ_16BITS_SIGNED_MONO_LITTLE_ENDIAN) {
+                    encoder = new PcmaEncoder(rawDataInput, encodedDataOutput,
+                            mediaDebug, logger, peersHome, latch);
+                } else if (soundSource.dataProduced() == SoundSource.DataFormat.ALAW_8KHZ_MONO_LITTLE_ENDIAN) {
+                    encoder = new NoEncodingEncoder(rawDataInput, encodedDataOutput, mediaDebug, logger, peersHome, latch);
+                } else {
+                    cannotProducePayloadReason = "Cannot convert " + soundSource.dataProduced().getDescription() + " to PCMA";
+                }
+                break;
+            default:
+                cannotProducePayloadReason = "unknown payload type";
+        }
+        if (cannotProducePayloadReason != null) {
             encodedDataInput.close();
             rawDataInput.close();
-            throw new RuntimeException("unknown payload type");
+            throw new RuntimeException(cannotProducePayloadReason);
         }
         rtpSender = new RtpSender(encodedDataInput, rtpSession, mediaDebug,
                 codec, logger, peersHome, latch);
