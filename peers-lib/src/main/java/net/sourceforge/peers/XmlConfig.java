@@ -383,11 +383,13 @@ public class XmlConfig implements Config {
     @Override
     public void setMediaFileDataFormat(SoundSource.DataFormat mediaFileDataFormat) {
         this.mediaFileDataFormat = mediaFileDataFormat;
+        mediaFileDataFormatNode.setTextContent(mediaFileDataFormat.getShortAlias());
     }
 
     @Override
     public void setMediaFile(String mediaFile) {
         this.mediaFile = mediaFile;
+        mediaFileNode.setTextContent(mediaFile);
     }
 
 }
