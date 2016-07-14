@@ -323,4 +323,10 @@ public class MediaManager {
 
     }
 
+    public void waitFinishedSending() throws IOException, InterruptedException {
+        if (connected()) {
+            captureRtpSender.getRtpSender().waitEmpty();
+        }
+    }
+
 }

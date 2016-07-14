@@ -19,11 +19,7 @@
 
 package net.sourceforge.peers.media;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PipedInputStream;
+import java.io.*;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -207,6 +203,14 @@ public class RtpSender implements Runnable {
 
     public synchronized void setStopped(boolean isStopped) {
         this.isStopped = isStopped;
+    }
+
+    public void waitEmpty() throws IOException, InterruptedException {
+        // FIXME This is the poor mans waiting. Really ought to be able to do it blocking. Besides that available() cannot really be trusted - it may
+        // return 0 even though data is in the pipe arriving soon
+        while (encodedData.available() > 0) {
+            Thread.sleep(5);
+        }
     }
 
     public void pushPackets(List<RtpPacket> rtpPackets) {
