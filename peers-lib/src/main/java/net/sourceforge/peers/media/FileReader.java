@@ -49,6 +49,7 @@ public class FileReader implements SoundSource {
 
     public final static int BUFFER_SIZE = 256;
 
+    private Object finishedSync = new Object();
     private FileInputStream fileInputStream;
     private DataFormat fileDataFormat;
     private Logger logger;
@@ -71,6 +72,9 @@ public class FileReader implements SoundSource {
                 logger.error("io exception", e);
             }
             fileInputStream = null;
+            synchronized (finishedSync) {
+                finishedSync.notifyAll();
+            }
         }
     }
 
@@ -92,8 +96,7 @@ public class FileReader implements SoundSource {
                 if (read < buffer.length) System.out.println("Buffer was not completely filled, but we are sending it all through anyway");
                 return buffer;
             } else {
-                fileInputStream.close();
-                fileInputStream = null;
+                close();
             }
         } catch (IOException e) {
             logger.error("io exception", e);
@@ -101,4 +104,20 @@ public class FileReader implements SoundSource {
         return null;
     }
 
+    @Override
+    public boolean finished() {
+        return fileInputStream == null;
+    }
+
+    @Override
+    public void waitFinished() throws InterruptedException {
+        if (!finished()) {
+            synchronized (finishedSync) {
+                while (!finished()) {
+                    finishedSync.wait();
+                }
+            }
+        }
+        return;
+    }
 }
