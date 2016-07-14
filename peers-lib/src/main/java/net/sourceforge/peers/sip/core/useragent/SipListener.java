@@ -20,26 +20,25 @@
 
 package net.sourceforge.peers.sip.core.useragent;
 
-import net.sourceforge.peers.media.AbstractSoundManager;
 import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.SipResponse;
 
 public interface SipListener {
 
-    public void registering(SipRequest sipRequest);
+    void registering(SipRequest sipRequest);
 
-    public void registerSuccessful(SipResponse sipResponse);
+    void registerSuccessful(SipResponse sipResponse);
 
-    public void registerFailed(SipResponse sipResponse);
+    void registerFailed(SipResponse sipResponse);
 
-    public void incomingCall(SipRequest sipRequest, SipResponse provResponse);
+    void incomingCall(SipRequest sipRequest, SipResponse provResponse);
 
-    public void remoteHangup(SipRequest sipRequest);
+    void remoteHangup(SipRequest sipRequest);
 
-    public void ringing(SipResponse sipResponse);
+    void ringing(SipResponse sipResponse);
 
-    public void calleePickup(SipResponse sipResponse);
+    void calleePickup(SipResponse sipResponse);
 
-    public void error(SipResponse sipResponse);
+    void error(SipResponse sipResponse);
 
 }
