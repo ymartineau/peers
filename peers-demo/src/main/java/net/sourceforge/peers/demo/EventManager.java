@@ -6,6 +6,7 @@ import net.sourceforge.peers.Config;
 import net.sourceforge.peers.FileLogger;
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.javaxsound.JavaxSoundManager;
+import net.sourceforge.peers.media.AbstractSoundManager;
 import net.sourceforge.peers.sip.core.useragent.SipListener;
 import net.sourceforge.peers.sip.core.useragent.UserAgent;
 import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
@@ -17,12 +18,13 @@ public class EventManager implements SipListener {
     private UserAgent userAgent;
     private SipRequest sipRequest;
     private CommandsReader commandsReader;
+    private AbstractSoundManager soundManager;
     
     public EventManager() throws SocketException {
         Config config = new CustomConfig();
         Logger logger = new FileLogger(null);
-        JavaxSoundManager javaxSoundManager = new JavaxSoundManager(false, logger, null);
-        userAgent = new UserAgent(this, config, logger, javaxSoundManager);
+        soundManager = new JavaxSoundManager(false, logger, null);
+        userAgent = new UserAgent(this, config, logger);
         new Thread() {
             public void run() {
                 try {
@@ -83,6 +85,11 @@ public class EventManager implements SipListener {
 
     @Override
     public void calleePickup(SipResponse sipResponse) { }
+
+    @Override
+    public AbstractSoundManager getSoundManager() {
+        return soundManager;
+    }
 
     @Override
     public void error(SipResponse sipResponse) { }

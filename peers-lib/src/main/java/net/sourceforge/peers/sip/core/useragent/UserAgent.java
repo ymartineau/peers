@@ -79,23 +79,19 @@ public class UserAgent {
     private SipListener sipListener;
     
     private SDPManager sdpManager;
-    private AbstractSoundManager soundManager;
     private MediaManager mediaManager;
 
-    public UserAgent(SipListener sipListener, String peersHome,
-            Logger logger, AbstractSoundManager soundManager)
+    public UserAgent(SipListener sipListener, String peersHome, Logger logger)
                     throws SocketException {
-        this(sipListener, null, peersHome, logger, soundManager);
+        this(sipListener, null, peersHome, logger);
     }
 
-    public UserAgent(SipListener sipListener, Config config,
-            Logger logger, AbstractSoundManager soundManager)
+    public UserAgent(SipListener sipListener, Config config, Logger logger)
                     throws SocketException {
-        this(sipListener, config, null, logger, soundManager);
+        this(sipListener, config, null, logger);
     }
 
-    private UserAgent(SipListener sipListener, Config config, String peersHome,
-            Logger logger, AbstractSoundManager soundManager)
+    private UserAgent(SipListener sipListener, Config config, String peersHome, Logger logger)
                     throws SocketException {
         this.sipListener = sipListener;
         if (peersHome == null) {
@@ -222,9 +218,6 @@ public class UserAgent {
         sdpManager = new SDPManager(this, logger);
         inviteHandler.setSdpManager(sdpManager);
         optionsHandler.setSdpManager(sdpManager);
-        // soundManager  = new SoundManager(config.isMediaDebug(), logger,
-        // this.peersHome);
-        this.soundManager = soundManager;
         mediaManager = new MediaManager(this, logger);
     }
     
@@ -371,10 +364,6 @@ public class UserAgent {
 
     public SipListener getSipListener() {
         return sipListener;
-    }
-
-    public AbstractSoundManager getSoundManager() {
-        return soundManager;
     }
 
     public MediaManager getMediaManager() {

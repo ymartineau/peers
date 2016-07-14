@@ -20,6 +20,7 @@
 
 package net.sourceforge.peers.sip.core.useragent;
 
+import net.sourceforge.peers.media.AbstractSoundManager;
 import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.SipResponse;
 
@@ -38,6 +39,8 @@ public interface SipListener {
     public void ringing(SipResponse sipResponse);
 
     public void calleePickup(SipResponse sipResponse);
+
+    public AbstractSoundManager getSoundManager();
 
     public void error(SipResponse sipResponse);
 

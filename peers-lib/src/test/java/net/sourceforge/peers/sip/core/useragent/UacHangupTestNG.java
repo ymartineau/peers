@@ -41,6 +41,8 @@ import org.testng.annotations.Test;
 
 public class UacHangupTestNG {
 
+    private AbstractSoundManager soundManager;
+
     private UserAgent testUser1;
     private UserAgent testUser2;
 
@@ -55,16 +57,14 @@ public class UacHangupTestNG {
         config.setLocalInetAddress(InetAddress.getLocalHost());
         config.setMediaMode(MediaMode.none);
         user1SipListener = new UserSipListener();
-        AbstractSoundManager soundManager = new DummySoundManager();
-        testUser1 = new UserAgent(user1SipListener, config, null,
-                soundManager);
+        soundManager = new DummySoundManager();
+        testUser1 = new UserAgent(user1SipListener, config, null);
 
         config = new JavaConfig();
         config.setLocalInetAddress(InetAddress.getLocalHost());
         config.setMediaMode(MediaMode.none);
         user2SipListener = new UserSipListener();
-        testUser2 = new UserAgent(user2SipListener, config, null,
-                soundManager);
+        testUser2 = new UserAgent(user2SipListener, config, null);
 
     }
 
@@ -108,6 +108,11 @@ public class UacHangupTestNG {
         @Override
         public void calleePickup(SipResponse sipResponse) {
             calleePickup = true;
+        }
+
+        @Override
+        public AbstractSoundManager getSoundManager() {
+            return soundManager;
         }
 
         @Override

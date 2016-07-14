@@ -68,17 +68,19 @@ public class EventManager implements SipListener, MainFrameListener,
     private Map<String, CallFrame> callFrames;
     private boolean closed;
     private Logger logger;
+    private AbstractSoundManager soundManager;
 
     public EventManager(MainFrame mainFrame, String peersHome,
             Logger logger, AbstractSoundManager soundManager) {
         this.mainFrame = mainFrame;
         this.logger = logger;
+        this.soundManager = soundManager;
         callFrames = Collections.synchronizedMap(
                 new HashMap<String, CallFrame>());
         closed = false;
         // create sip stack
         try {
-            userAgent = new UserAgent(this, peersHome, logger, soundManager);
+            userAgent = new UserAgent(this, peersHome, logger);
         } catch (SocketException e) {
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
@@ -160,6 +162,11 @@ public class EventManager implements SipListener, MainFrameListener,
             }
         });
 
+    }
+
+    @Override
+    public AbstractSoundManager getSoundManager() {
+        return soundManager;
     }
 
     @Override

@@ -36,6 +36,7 @@ public class MediaManager {
     public static final int DEFAULT_CLOCK = 8000; // Hz
 
     private UserAgent userAgent;
+    private Object connectedSync = new Object();
     private CaptureRtpSender captureRtpSender;
     private IncomingRtpReader incomingRtpReader;
     private RtpSession rtpSession;
@@ -44,10 +45,19 @@ public class MediaManager {
     private DatagramSocket datagramSocket;
     private FileReader fileReader;
 
+    private AbstractSoundManager soundManager;
+
     public MediaManager(UserAgent userAgent, Logger logger) {
         this.userAgent = userAgent;
         this.logger = logger;
         dtmfFactory = new DtmfFactory();
+    }
+
+    private void setCaptureRtpSender(CaptureRtpSender captureRtpSender) {
+        this.captureRtpSender = captureRtpSender;
+        synchronized (connectedSync) {
+            connectedSync.notifyAll();
+        }
     }
 
     private void startRtpSessionOnSuccessResponse(String localAddress,
@@ -74,9 +84,9 @@ public class MediaManager {
         
         
         try {
-            captureRtpSender = new CaptureRtpSender(rtpSession,
+            setCaptureRtpSender(new CaptureRtpSender(rtpSession,
                     soundSource, userAgent.isMediaDebug(), codec, logger,
-                    userAgent.getPeersHome());
+                    userAgent.getPeersHome()));
         } catch (IOException e) {
             logger.error("input/output error", e);
             return;
@@ -93,7 +103,7 @@ public class MediaManager {
             String remoteAddress, int remotePort, Codec codec) {
         switch (userAgent.getMediaMode()) {
         case captureAndPlayback:
-            AbstractSoundManager soundManager = userAgent.getSoundManager();
+            soundManager = userAgent.getSipListener().getSoundManager();
             soundManager.init();
             startRtpSessionOnSuccessResponse(localAddress, remoteAddress,
                     remotePort, codec, soundManager);
@@ -162,9 +172,9 @@ public class MediaManager {
         rtpSession.setRemotePort(destPort);
         
         try {
-            captureRtpSender = new CaptureRtpSender(rtpSession,
+            setCaptureRtpSender(new CaptureRtpSender(rtpSession,
                     soundSource, userAgent.isMediaDebug(), codec, logger,
-                    userAgent.getPeersHome());
+                    userAgent.getPeersHome()));
         } catch (IOException e) {
             logger.error("input/output error", e);
             return;
@@ -180,8 +190,7 @@ public class MediaManager {
     public void handleAck(String destAddress, int destPort, Codec codec) {
         switch (userAgent.getMediaMode()) {
         case captureAndPlayback:
-
-            AbstractSoundManager soundManager = userAgent.getSoundManager();
+            soundManager = userAgent.getSipListener().getSoundManager();
             soundManager.init();
 
             startRtpSession(destAddress, destPort, codec, soundManager);
@@ -266,7 +275,7 @@ public class MediaManager {
     }
     
     public void sendDtmf(char digit) {
-        if (captureRtpSender != null) {
+        if (connected()) {
             List<RtpPacket> rtpPackets = dtmfFactory.createDtmfPackets(digit);
             RtpSender rtpSender = captureRtpSender.getRtpSender();
             rtpSender.pushPackets(rtpPackets);
@@ -290,7 +299,7 @@ public class MediaManager {
         }
         if (captureRtpSender != null) {
             captureRtpSender.stop();
-            captureRtpSender = null;
+            setCaptureRtpSender(null);
         }
         if (datagramSocket != null) {
             datagramSocket = null;
@@ -298,7 +307,6 @@ public class MediaManager {
 
         switch (userAgent.getMediaMode()) {
         case captureAndPlayback:
-            AbstractSoundManager soundManager = userAgent.getSoundManager();
             if (soundManager != null) {
                 soundManager.close();
             }
@@ -326,8 +334,33 @@ public class MediaManager {
         return datagramSocket;
     }
 
-    public FileReader getFileReader() {
-        return fileReader;
+    public SoundSource getSoundSource() {
+        switch (userAgent.getMediaMode()) {
+            case captureAndPlayback:
+                return soundManager;
+            case echo:
+                return null;
+            case file:
+                return fileReader;
+            default:
+                return null;
+        }
+    }
+
+    public boolean connected() {
+        return captureRtpSender != null;
+    }
+
+    public void waitConnected() throws InterruptedException {
+        if (!connected()) {
+            synchronized (connectedSync) {
+                while (!connected()) {
+                    connectedSync.wait();
+                }
+            }
+        }
+        return;
+
     }
 
 }

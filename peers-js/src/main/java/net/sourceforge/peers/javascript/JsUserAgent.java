@@ -56,6 +56,7 @@ public class JsUserAgent extends Applet implements SipListener, WebLoggerOutput 
     private UserAgent userAgent;
     private Config config;
     private Logger logger;
+    private AbstractSoundManager soundManager;
     private ExecutorService executorService;
 
     public void instantiatePeers(String ipAddress) {
@@ -65,7 +66,7 @@ public class JsUserAgent extends Applet implements SipListener, WebLoggerOutput 
             logger = new WebLogger(this);
             config = new JavaConfig();
             String peersHome = Utils.DEFAULT_PEERS_HOME;
-            final AbstractSoundManager soundManager = new JavaxSoundManager(
+            soundManager = new JavaxSoundManager(
                     false, //TODO config.isMediaDebug(),
                     logger, peersHome);
             InetAddress inetAddress;
@@ -84,8 +85,7 @@ public class JsUserAgent extends Applet implements SipListener, WebLoggerOutput 
                 public void run() {
 
                     try {
-                        userAgent = new UserAgent(JsUserAgent.this, config,
-                                logger, soundManager);
+                        userAgent = new UserAgent(JsUserAgent.this, config, logger);
                         System.out.println("useragent created");
                     } catch (SocketException e) {
                         logger.error(e.getMessage());
@@ -332,6 +332,11 @@ public class JsUserAgent extends Applet implements SipListener, WebLoggerOutput 
             }
         });
 
+    }
+
+    @Override
+    public AbstractSoundManager getSoundManager() {
+        return soundManager;
     }
 
     @Override
