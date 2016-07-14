@@ -39,6 +39,8 @@ public interface SoundSource {
             return description;
         }
 
+        public String getShortAlias() { return shortAlias; }
+
         public static DataFormat fromShortAlias(String shortAlias) {
             for (DataFormat df : DataFormat.values()) {
                 if (df.shortAlias.equals(shortAlias)) return df;
@@ -56,6 +58,12 @@ public interface SoundSource {
      * read raw data linear PCM 8kHz, 16 bits signed, mono-channel, little endian
      * @return
      */
-    public byte[] readData();
+    byte[] readData();
+
+    default boolean finished() { return false; }
+
+    default void waitFinished() throws InterruptedException {
+        throw new RuntimeException("Waiting for finished not supported");
+    }
 
 }
