@@ -43,7 +43,7 @@ import javax.swing.border.Border;
 
 import net.sourceforge.peers.FileLogger;
 import net.sourceforge.peers.Logger;
-import net.sourceforge.peers.javaxsound.JavaxSoundManager;
+import net.sourceforge.peers.media.javaxsound.JavaxSoundManager;
 import net.sourceforge.peers.media.AbstractSoundManager;
 import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.transport.SipRequest;

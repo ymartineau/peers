@@ -22,8 +22,6 @@ package net.sourceforge.peers.sip.core.useragent;
 import java.net.SocketException;
 
 import net.sourceforge.peers.FileLogger;
-import net.sourceforge.peers.media.AbstractSoundManager;
-
 
 public class UASTestMain {
 
@@ -31,9 +29,8 @@ public class UASTestMain {
      * @param args
      */
     public static void main(String[] args) {
-        AbstractSoundManager soundManager = new DummySoundManager();
         try {
-            new UserAgent(new DummySipListener(soundManager), (String)null, new FileLogger(null));
+            new UserAgent(new DummySipListener(), new DummyAbstractSoundManagerFactory(), null, null, new FileLogger(null));
         } catch (SocketException e) {
             e.printStackTrace();
         }

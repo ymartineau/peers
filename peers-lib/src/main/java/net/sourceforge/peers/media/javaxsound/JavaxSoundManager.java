@@ -17,7 +17,7 @@
     Copyright 2010, 2011, 2012 Yohann Martineau 
 */
 
-package net.sourceforge.peers.javaxsound;
+package net.sourceforge.peers.media.javaxsound;
 
 import java.io.File;
 import java.io.FileNotFoundException;

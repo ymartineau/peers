@@ -29,7 +29,7 @@ import java.util.concurrent.Executors;
 import net.sourceforge.peers.Config;
 import net.sourceforge.peers.JavaConfig;
 import net.sourceforge.peers.Logger;
-import net.sourceforge.peers.javaxsound.JavaxSoundManager;
+import net.sourceforge.peers.media.javaxsound.JavaxSoundManager;
 import net.sourceforge.peers.media.AbstractSoundManager;
 import net.sourceforge.peers.media.MediaManager;
 import net.sourceforge.peers.media.MediaMode;
@@ -56,7 +56,6 @@ public class JsUserAgent extends Applet implements SipListener, WebLoggerOutput 
     private UserAgent userAgent;
     private Config config;
     private Logger logger;
-    private AbstractSoundManager soundManager;
     private ExecutorService executorService;
 
     public void instantiatePeers(String ipAddress) {
@@ -66,9 +65,6 @@ public class JsUserAgent extends Applet implements SipListener, WebLoggerOutput 
             logger = new WebLogger(this);
             config = new JavaConfig();
             String peersHome = Utils.DEFAULT_PEERS_HOME;
-            soundManager = new JavaxSoundManager(
-                    false, //TODO config.isMediaDebug(),
-                    logger, peersHome);
             InetAddress inetAddress;
             try {
                 inetAddress = InetAddress.getByName(ipAddress);
@@ -332,11 +328,6 @@ public class JsUserAgent extends Applet implements SipListener, WebLoggerOutput 
             }
         });
 
-    }
-
-    @Override
-    public AbstractSoundManager getSoundManager() {
-        return soundManager;
     }
 
     @Override

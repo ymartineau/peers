@@ -20,11 +20,6 @@
       <artifactId>peers-lib</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>peers-javaxsound</artifactId>
-      <version>${project.version}</version>
-    </dependency>
   </dependencies>
 
   <build>

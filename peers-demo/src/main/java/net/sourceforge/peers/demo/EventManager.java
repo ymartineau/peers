@@ -5,7 +5,8 @@ import java.net.SocketException;
 import net.sourceforge.peers.Config;
 import net.sourceforge.peers.FileLogger;
 import net.sourceforge.peers.Logger;
-import net.sourceforge.peers.javaxsound.JavaxSoundManager;
+import net.sourceforge.peers.media.AbstractSoundManagerFactory;
+import net.sourceforge.peers.media.javaxsound.JavaxSoundManager;
 import net.sourceforge.peers.media.AbstractSoundManager;
 import net.sourceforge.peers.sip.core.useragent.SipListener;
 import net.sourceforge.peers.sip.core.useragent.UserAgent;
@@ -13,7 +14,7 @@ import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
 import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.SipResponse;
 
-public class EventManager implements SipListener {
+public class EventManager implements SipListener, AbstractSoundManagerFactory {
 
     private UserAgent userAgent;
     private SipRequest sipRequest;

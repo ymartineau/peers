@@ -33,12 +33,6 @@
       <scope>system</scope>
       <systemPath>${java.home}/lib/plugin.jar</systemPath>
     </dependency>
-
-    <dependency>
-      <groupId>${project.groupId}</groupId>
-      <artifactId>peers-javaxsound</artifactId>
-      <version>${project.version}</version>
-    </dependency>
   </dependencies>
 
   <build>

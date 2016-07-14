@@ -26,6 +26,7 @@ import java.net.UnknownHostException;
 import net.sourceforge.peers.Config;
 import net.sourceforge.peers.JavaConfig;
 import net.sourceforge.peers.media.AbstractSoundManager;
+import net.sourceforge.peers.media.AbstractSoundManagerFactory;
 import net.sourceforge.peers.media.MediaMode;
 import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
 import net.sourceforge.peers.sip.transport.SipRequest;
@@ -37,8 +38,6 @@ import org.testng.annotations.Test;
 
 
 public class CancelTestNG {
-
-    private AbstractSoundManager soundManager;
 
     private UserAgent testUser1;
     private UserAgent testUser2;
@@ -54,14 +53,14 @@ public class CancelTestNG {
         config.setLocalInetAddress(InetAddress.getLocalHost());
         config.setMediaMode(MediaMode.none);
         user1SipListener = new UserSipListener();
-        soundManager = new DummySoundManager();
-        testUser1 = new UserAgent(user1SipListener, config, null);
+        AbstractSoundManagerFactory abstractSoundManagerFactory = new DummyAbstractSoundManagerFactory();
+        testUser1 = new UserAgent(user1SipListener, abstractSoundManagerFactory, config, null, null);
 
         config = new JavaConfig();
         config.setLocalInetAddress(InetAddress.getLocalHost());
         config.setMediaMode(MediaMode.none);
         user2SipListener = new UserSipListener();
-        testUser2 = new UserAgent(user2SipListener, config, null);
+        testUser2 = new UserAgent(user2SipListener, abstractSoundManagerFactory, config, null, null);
 
     }
 
@@ -100,11 +99,6 @@ public class CancelTestNG {
 
         @Override
         public void calleePickup(SipResponse sipResponse) { }
-
-        @Override
-        public AbstractSoundManager getSoundManager() {
-            return soundManager;
-        }
 
         @Override
         public void error(SipResponse sipResponse) {

@@ -43,7 +43,6 @@ public class MediaManager {
     private DtmfFactory dtmfFactory;
     private Logger logger;
     private DatagramSocket datagramSocket;
-    private FileReader fileReader;
 
     private AbstractSoundManager soundManager;
 
@@ -103,7 +102,11 @@ public class MediaManager {
             String remoteAddress, int remotePort, Codec codec) {
         switch (userAgent.getMediaMode()) {
         case captureAndPlayback:
-            soundManager = userAgent.getSipListener().getSoundManager();
+        case file:
+            if (soundManager != null) {
+                soundManager.close();
+            }
+            soundManager = userAgent.getAbstractSoundManagerFactory().getSoundManager();
             soundManager.init();
             startRtpSessionOnSuccessResponse(localAddress, remoteAddress,
                     remotePort, codec, soundManager);
@@ -133,23 +136,6 @@ public class MediaManager {
             userAgent.setEcho(echo);
             Thread echoThread = new Thread(echo, Echo.class.getSimpleName());
             echoThread.start();
-            break;
-        case file:
-            String fileName = userAgent.getConfig().getMediaFile();
-            SoundSource.DataFormat dataFormat = userAgent.getConfig().getMediaFileDataFormat();
-            fileReader = new FileReader(fileName, dataFormat, logger);
-            startRtpSessionOnSuccessResponse(localAddress, remoteAddress,
-                    remotePort, codec, fileReader);
-            try {
-                incomingRtpReader = new IncomingRtpReader(
-                        captureRtpSender.getRtpSession(), null, codec,
-                        logger);
-            } catch (IOException e) {
-                logger.error("input/output error", e);
-                return;
-            }
-
-            incomingRtpReader.start();
             break;
         case none:
         default:
@@ -190,7 +176,11 @@ public class MediaManager {
     public void handleAck(String destAddress, int destPort, Codec codec) {
         switch (userAgent.getMediaMode()) {
         case captureAndPlayback:
-            soundManager = userAgent.getSipListener().getSoundManager();
+        case file:
+            if (soundManager != null) {
+                soundManager.close();
+            }
+            soundManager = userAgent.getAbstractSoundManagerFactory().getSoundManager();
             soundManager.init();
 
             startRtpSession(destAddress, destPort, codec, soundManager);
@@ -221,23 +211,6 @@ public class MediaManager {
             Thread echoThread = new Thread(echo, Echo.class.getSimpleName());
             echoThread.start();
             break;
-        case file:
-            if (fileReader != null) {
-                fileReader.close();
-            }
-            String fileName = userAgent.getConfig().getMediaFile();
-            SoundSource.DataFormat dataFormat = userAgent.getConfig().getMediaFileDataFormat();
-            fileReader = new FileReader(fileName, dataFormat, logger);
-            startRtpSession(destAddress, destPort, codec, fileReader);
-            try {
-                incomingRtpReader = new IncomingRtpReader(rtpSession,
-                        null, codec, logger);
-            } catch (IOException e) {
-                logger.error("input/output error", e);
-                return;
-            }
-            incomingRtpReader.start();
-            break;
         case none:
         default:
             break;
@@ -247,6 +220,7 @@ public class MediaManager {
     public void updateRemote(String destAddress, int destPort, Codec codec) {
         switch (userAgent.getMediaMode()) {
         case captureAndPlayback:
+        case file:
             try {
                 InetAddress inetAddress = InetAddress.getByName(destAddress);
                 rtpSession.setRemoteAddress(inetAddress);
@@ -258,16 +232,6 @@ public class MediaManager {
         case echo:
             //TODO update echo socket
             break;
-        case file:
-            try {
-                InetAddress inetAddress = InetAddress.getByName(destAddress);
-                rtpSession.setRemoteAddress(inetAddress);
-            } catch (UnknownHostException e) {
-                logger.error("unknown host: " + destAddress, e);
-            }
-            rtpSession.setRemotePort(destPort);
-            break;
-
         default:
             break;
         }
@@ -307,6 +271,7 @@ public class MediaManager {
 
         switch (userAgent.getMediaMode()) {
         case captureAndPlayback:
+        case file:
             if (soundManager != null) {
                 soundManager.close();
             }
@@ -317,9 +282,6 @@ public class MediaManager {
                 echo.stop();
                 userAgent.setEcho(null);
             }
-            break;
-        case file:
-            fileReader.close();
             break;
         default:
             break;
@@ -337,11 +299,9 @@ public class MediaManager {
     public SoundSource getSoundSource() {
         switch (userAgent.getMediaMode()) {
             case captureAndPlayback:
+            case file:
                 return soundManager;
             case echo:
-                return null;
-            case file:
-                return fileReader;
             default:
                 return null;
         }

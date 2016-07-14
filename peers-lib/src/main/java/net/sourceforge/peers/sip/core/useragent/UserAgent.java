@@ -28,10 +28,7 @@ import net.sourceforge.peers.Config;
 import net.sourceforge.peers.FileLogger;
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.XmlConfig;
-import net.sourceforge.peers.media.AbstractSoundManager;
-import net.sourceforge.peers.media.Echo;
-import net.sourceforge.peers.media.MediaManager;
-import net.sourceforge.peers.media.MediaMode;
+import net.sourceforge.peers.media.*;
 import net.sourceforge.peers.sdp.SDPManager;
 import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.core.useragent.handlers.ByeHandler;
@@ -76,6 +73,7 @@ public class UserAgent {
     private TransportManager transportManager;
 
     private int cseqCounter;
+    private AbstractSoundManagerFactory abstractSoundManagerFactory;
     private SipListener sipListener;
     
     private SDPManager sdpManager;
@@ -92,8 +90,14 @@ public class UserAgent {
     }
 
     private UserAgent(SipListener sipListener, Config config, String peersHome, Logger logger)
+            throws SocketException {
+        this(sipListener, null, config, peersHome, logger);
+    }
+
+    public UserAgent(SipListener sipListener, AbstractSoundManagerFactory abstractSoundManagerFactory, Config config, String peersHome, Logger logger)
                     throws SocketException {
         this.sipListener = sipListener;
+        this.abstractSoundManagerFactory = abstractSoundManagerFactory;
         if (peersHome == null) {
             peersHome = Utils.DEFAULT_PEERS_HOME;
         }
@@ -107,6 +111,10 @@ public class UserAgent {
                     + CONFIG_FILE, this.logger);
         }
         this.config = config;
+        if (abstractSoundManagerFactory == null) {
+            abstractSoundManagerFactory = new ConfigAbstractSoundManagerFactory(this.config, this.peersHome, this.logger);
+        }
+        this.abstractSoundManagerFactory = abstractSoundManagerFactory;
 
         cseqCounter = 1;
         
@@ -360,6 +368,10 @@ public class UserAgent {
 
     public void setEcho(Echo echo) {
         this.echo = echo;
+    }
+
+    public AbstractSoundManagerFactory getAbstractSoundManagerFactory() {
+        return abstractSoundManagerFactory;
     }
 
     public SipListener getSipListener() {
