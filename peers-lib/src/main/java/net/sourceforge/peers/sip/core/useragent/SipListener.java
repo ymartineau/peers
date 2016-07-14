@@ -40,8 +40,6 @@ public interface SipListener {
 
     public void calleePickup(SipResponse sipResponse);
 
-    public AbstractSoundManager getSoundManager();
-
     public void error(SipResponse sipResponse);
 
 }
