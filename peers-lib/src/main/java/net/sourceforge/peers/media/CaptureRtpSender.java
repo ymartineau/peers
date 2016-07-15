@@ -33,7 +33,7 @@ import net.sourceforge.peers.sdp.Codec;
 
 public class CaptureRtpSender {
 
-    public static final int PIPE_SIZE = 4096;
+    public static final int PIPE_SIZE = 16384;
 
     private RtpSession rtpSession;
     private Capture capture;

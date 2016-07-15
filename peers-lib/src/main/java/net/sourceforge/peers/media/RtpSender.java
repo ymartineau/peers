@@ -35,6 +35,9 @@ import net.sourceforge.peers.sdp.Codec;
 
 public class RtpSender implements Runnable {
 
+    private static int BUF_SIZE = Capture.BUFFER_SIZE / 2;
+    public static int CONSUMING_BYTES_PER_MS = BUF_SIZE / 20; // Consuming BUF_SIZE bytes every 20 ms
+
     private PipedInputStream encodedData;
     private RtpSession rtpSession;
     private boolean isStopped;
@@ -87,8 +90,7 @@ public class RtpSender implements Runnable {
         int sequenceNumber = random.nextInt();
         rtpPacket.setSequenceNumber(sequenceNumber);
         rtpPacket.setSsrc(random.nextInt());
-        int buf_size = Capture.BUFFER_SIZE / 2;
-        byte[] buffer = new byte[buf_size];
+        byte[] buffer = new byte[BUF_SIZE];
         int timestamp = 0;
         int numBytesRead;
         int tempBytesRead;
@@ -104,10 +106,10 @@ public class RtpSender implements Runnable {
         while (!isStopped) {
             numBytesRead = 0;
             try {
-                while (!isStopped && numBytesRead < buf_size) {
+                while (!isStopped && numBytesRead < BUF_SIZE) {
                     // expect that the buffer is full
                     tempBytesRead = encodedData.read(buffer, numBytesRead,
-                            buf_size - numBytesRead);
+                            BUF_SIZE - numBytesRead);
                     numBytesRead += tempBytesRead;
                 }
             } catch (IOException e) {
@@ -146,7 +148,7 @@ public class RtpSender implements Runnable {
             
             rtpPacket.setSequenceNumber(sequenceNumber++);
             if (rtpPacket.isIncrementTimeStamp()) {
-                    timestamp += buf_size;
+                    timestamp += BUF_SIZE;
                 }
             rtpPacket.setTimestamp(timestamp);
             if (firstTime) {

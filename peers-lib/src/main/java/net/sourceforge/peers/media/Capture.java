@@ -20,6 +20,7 @@
 package net.sourceforge.peers.media;
 
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.io.PipedOutputStream;
 import java.util.concurrent.CountDownLatch;
 
@@ -55,7 +56,18 @@ public class Capture implements Runnable {
                 if (buffer == null) {
                     break;
                 }
-                rawData.write(buffer);
+                int maxWaitForWriteMS = (buffer.length / RtpSender.CONSUMING_BYTES_PER_MS) + 1000; // plus 1 sec to be on the safe size
+                long startWrite = System.currentTimeMillis();
+                // TODO solve problem about never being able to write the data provided by the SoundSource
+                // if the provided byte-array is bigger than the max-capacity of rawData (CaptureRtpSender.PIPE_SIZE)
+                try {
+                    rawData.write(buffer);
+                } catch (InterruptedIOException e) {
+                    // PipedOutputStream only has 1 sec (hardcoded) patience to be able to write, so if the byte-arrays
+                    // provided by soundSource is big enough we may get in trouble. Lets way at least for the time a well
+                    // running RtpSender could use consuming the bytes we want to write. Only after that, throw the exception
+                    if ((System.currentTimeMillis() - startWrite) > maxWaitForWriteMS) throw e;
+                }
                 rawData.flush();
             } catch (IOException e) {
                 logger.error("input/output error", e);
