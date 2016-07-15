@@ -30,8 +30,8 @@ public class JavaConfig implements Config {
     private InetAddress localInetAddress;
     private InetAddress publicInetAddress;
     private String userPart;
-    private String domain;
     private String password;
+    private String domain;
     private SipURI outboundProxy;
     private int sipPort;
     private MediaMode mediaMode;
@@ -40,6 +40,25 @@ public class JavaConfig implements Config {
     private String mediaFile;
     private int rtpPort;
     private String authorizationUsername;
+
+    public JavaConfig() {}
+
+    public JavaConfig(InetAddress localInetAddress, String userPart, String password, String domain,
+                      SipURI outboundProxy, int sipPort, MediaMode mediaMode, boolean mediaDebug,
+                      SoundSource.DataFormat mediaFileDataFormat, String mediaFile, int rtpPort, String authorizationUsername) {
+        this.localInetAddress = localInetAddress;
+        this.userPart = userPart;
+        this.password = password;
+        this.domain = domain;
+        this.outboundProxy = outboundProxy;
+        this.sipPort = sipPort;
+        this.mediaMode = mediaMode;
+        this.mediaDebug = mediaDebug;
+        this.mediaFileDataFormat = mediaFileDataFormat;
+        this.mediaFile = mediaFile;
+        this.rtpPort = rtpPort;
+        this.authorizationUsername = authorizationUsername;
+    }
 
     @Override
     public void save() {
