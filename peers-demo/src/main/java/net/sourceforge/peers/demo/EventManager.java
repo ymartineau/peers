@@ -8,6 +8,7 @@ import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.media.AbstractSoundManagerFactory;
 import net.sourceforge.peers.media.javaxsound.JavaxSoundManager;
 import net.sourceforge.peers.media.AbstractSoundManager;
+import net.sourceforge.peers.rtp.RFC4733;
 import net.sourceforge.peers.sip.core.useragent.SipListener;
 import net.sourceforge.peers.sip.core.useragent.UserAgent;
 import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
@@ -94,6 +95,11 @@ public class EventManager implements SipListener, AbstractSoundManagerFactory {
 
     @Override
     public void error(SipResponse sipResponse) { }
+
+    @Override
+    public void dtmfEvent(RFC4733.DTMFEvent dtmfEvent, int duration) {
+        //TODO implement
+    }
 
     public static void main(String[] args) {
         try {

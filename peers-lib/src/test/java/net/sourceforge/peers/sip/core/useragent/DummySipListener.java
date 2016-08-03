@@ -1,5 +1,6 @@
 package net.sourceforge.peers.sip.core.useragent;
 
+import net.sourceforge.peers.rtp.RFC4733;
 import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.SipResponse;
 
@@ -28,4 +29,7 @@ public class DummySipListener implements SipListener {
 
     @Override
     public void error(SipResponse sipResponse) {}
+
+    @Override
+    public void dtmfEvent(RFC4733.DTMFEvent dtmfEvent, int duration) {}
 }

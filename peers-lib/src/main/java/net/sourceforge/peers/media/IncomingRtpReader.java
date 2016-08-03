@@ -22,10 +22,7 @@ package net.sourceforge.peers.media;
 import java.io.IOException;
 
 import net.sourceforge.peers.Logger;
-import net.sourceforge.peers.rtp.RFC3551;
-import net.sourceforge.peers.rtp.RtpListener;
-import net.sourceforge.peers.rtp.RtpPacket;
-import net.sourceforge.peers.rtp.RtpSession;
+import net.sourceforge.peers.rtp.*;
 import net.sourceforge.peers.sdp.Codec;
 
 public class IncomingRtpReader implements RtpListener {
@@ -33,9 +30,11 @@ public class IncomingRtpReader implements RtpListener {
     private RtpSession rtpSession;
     private AbstractSoundManager soundManager;
     private Decoder decoder;
+    private DtmfDecoder dtmfDecoder;
+
 
     public IncomingRtpReader(RtpSession rtpSession,
-            AbstractSoundManager soundManager, Codec codec, Logger logger)
+            AbstractSoundManager soundManager, Codec codec, DtmfEventHandler dtmfHandler, Logger logger)
             throws IOException {
         logger.debug("playback codec:" + codec.toString().trim());
         this.rtpSession = rtpSession;
@@ -50,6 +49,7 @@ public class IncomingRtpReader implements RtpListener {
         default:
             throw new RuntimeException("unsupported payload type");
         }
+        dtmfDecoder = new DtmfDecoder(dtmfHandler);
         rtpSession.addRtpListener(this);
     }
     
@@ -59,9 +59,13 @@ public class IncomingRtpReader implements RtpListener {
 
     @Override
     public void receivedRtpPacket(RtpPacket rtpPacket) {
-        byte[] rawBuf = decoder.process(rtpPacket.getData());
-        if (soundManager != null) {
-            soundManager.writeData(rawBuf, 0, rawBuf.length);
+        if(rtpPacket.getPayloadType() == RFC4733.PAYLOAD_TYPE_TELEPHONE_EVENT) {
+            dtmfDecoder.processPacket(rtpPacket);
+        } else {
+            byte[] rawBuf = decoder.process(rtpPacket.getData());
+            if (soundManager != null) {
+                soundManager.writeData(rawBuf, 0, rawBuf.length);
+            }
         }
     }
 

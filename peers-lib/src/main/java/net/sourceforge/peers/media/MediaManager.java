@@ -45,9 +45,11 @@ public class MediaManager {
     private DatagramSocket datagramSocket;
 
     private AbstractSoundManager soundManager;
+    private DtmfEventHandler dtmfEventHandler;
 
-    public MediaManager(UserAgent userAgent, Logger logger) {
+    public MediaManager(UserAgent userAgent, DtmfEventHandler dtmfEventHandler,  Logger logger) {
         this.userAgent = userAgent;
+        this.dtmfEventHandler = dtmfEventHandler;
         this.logger = logger;
         dtmfFactory = new DtmfFactory();
     }
@@ -113,7 +115,7 @@ public class MediaManager {
             
             try {
                 incomingRtpReader = new IncomingRtpReader(
-                        captureRtpSender.getRtpSession(), soundManager, codec,
+                        captureRtpSender.getRtpSession(), soundManager, codec, dtmfEventHandler,
                         logger);
             } catch (IOException e) {
                 logger.error("input/output error", e);
@@ -188,7 +190,7 @@ public class MediaManager {
             try {
                 //FIXME RTP sessions can be different !
                 incomingRtpReader = new IncomingRtpReader(rtpSession,
-                        soundManager, codec, logger);
+                        soundManager, codec, dtmfEventHandler, logger);
             } catch (IOException e) {
                 logger.error("input/output error", e);
                 return;

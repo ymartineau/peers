@@ -37,6 +37,7 @@ import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.media.AbstractSoundManager;
 import net.sourceforge.peers.media.AbstractSoundManagerFactory;
 import net.sourceforge.peers.media.MediaManager;
+import net.sourceforge.peers.rtp.RFC4733;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.core.useragent.SipListener;
@@ -183,6 +184,11 @@ public class EventManager implements SipListener, AbstractSoundManagerFactory, M
             }
         });
 
+    }
+
+    @Override
+    public void dtmfEvent(RFC4733.DTMFEvent dtmfEvent, int duration) {
+        //TODO Implement
     }
 
     @Override

@@ -28,6 +28,7 @@ import net.sourceforge.peers.JavaConfig;
 import net.sourceforge.peers.media.AbstractSoundManager;
 import net.sourceforge.peers.media.AbstractSoundManagerFactory;
 import net.sourceforge.peers.media.MediaMode;
+import net.sourceforge.peers.rtp.RFC4733;
 import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
 import net.sourceforge.peers.sip.transactionuser.Dialog;
@@ -111,6 +112,9 @@ public class UacHangupTestNG {
 
         @Override
         public void error(SipResponse sipResponse) { }
+
+        @Override
+        public void dtmfEvent(RFC4733.DTMFEvent dtmfEvent, int duration) { }
 
         @Override
         public void incomingCall(SipRequest sipRequest, SipResponse provResponse) {

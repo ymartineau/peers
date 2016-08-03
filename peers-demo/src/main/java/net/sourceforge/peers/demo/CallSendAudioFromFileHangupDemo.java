@@ -5,6 +5,7 @@ import net.sourceforge.peers.FileLogger;
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.XmlConfig;
 import net.sourceforge.peers.media.*;
+import net.sourceforge.peers.rtp.RFC4733;
 import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.core.useragent.SipListener;
 import net.sourceforge.peers.sip.core.useragent.UserAgent;
@@ -98,6 +99,10 @@ public class CallSendAudioFromFileHangupDemo implements SipListener {
 
     @Override
     public void error(SipResponse sipResponse) { System.out.println("Error " + sipResponse); }
+
+    @Override
+    public void dtmfEvent(RFC4733.DTMFEvent dtmfEvent, int duration) { System.out.println(" DTMF " + dtmfEvent.name()); }
+
 
     public static void main(String[] args) {
         try {

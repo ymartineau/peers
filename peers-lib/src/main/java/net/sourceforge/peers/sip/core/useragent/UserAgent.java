@@ -29,6 +29,7 @@ import net.sourceforge.peers.FileLogger;
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.XmlConfig;
 import net.sourceforge.peers.media.*;
+import net.sourceforge.peers.rtp.RFC4733;
 import net.sourceforge.peers.sdp.SDPManager;
 import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.core.useragent.handlers.ByeHandler;
@@ -48,7 +49,7 @@ import net.sourceforge.peers.sip.transport.SipResponse;
 import net.sourceforge.peers.sip.transport.TransportManager;
 
 
-public class UserAgent {
+public class UserAgent implements DtmfEventHandler {
 
     public final static String CONFIG_FILE = "conf" + File.separator + "peers.xml";
     public final static int RTP_DEFAULT_PORT = 8000;
@@ -226,7 +227,7 @@ public class UserAgent {
         sdpManager = new SDPManager(this, logger);
         inviteHandler.setSdpManager(sdpManager);
         optionsHandler.setSdpManager(sdpManager);
-        mediaManager = new MediaManager(this, logger);
+        mediaManager = new MediaManager(this, this, logger);
     }
     
     // client methods
@@ -392,5 +393,10 @@ public class UserAgent {
 
     public TransportManager getTransportManager() {
         return transportManager;
+    }
+
+    @Override
+    public void dtmfDetected(RFC4733.DTMFEvent dtmfEvent, int duration) {
+        sipListener.dtmfEvent(dtmfEvent, duration);
     }
 }

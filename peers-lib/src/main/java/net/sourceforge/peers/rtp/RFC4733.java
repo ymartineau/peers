@@ -29,4 +29,46 @@ public class RFC4733 {
 
     public static final String TELEPHONE_EVENT = "telephone-event";
 
+
+    // DTMF values
+
+    public static enum DTMFEvent {
+        DTMF_DIGIT_0     (0),
+        DTMF_DIGIT_1     (1),
+        DTMF_DIGIT_2     (2),
+        DTMF_DIGIT_3     (3),
+        DTMF_DIGIT_4     (4),
+        DTMF_DIGIT_5     (5),
+        DTMF_DIGIT_6     (6),
+        DTMF_DIGIT_7     (7),
+        DTMF_DIGIT_8     (8),
+        DTMF_DIGIT_9     (9),
+        DTMF_DIGIT_STAR  (10),
+        DTMF_DIGIT_HASH  (11),
+        DTMF_DIGIT_A     (12),
+        DTMF_DIGIT_B     (13),
+        DTMF_DIGIT_C     (14),
+        DTMF_DIGIT_D     (15),
+        DTMF_DIGIT_FLASH (16);
+
+        private int value;
+
+        DTMFEvent(int value) {
+            this.value = value;
+        }
+
+        public int getValue() {
+            return value;
+        }
+
+        public static DTMFEvent fromValue(int value) {
+            for (DTMFEvent type : DTMFEvent.values()) {
+                if (type.getValue() == value) {
+                    return type;
+                }
+            }
+            return null;
+        }
+    }
+
 }

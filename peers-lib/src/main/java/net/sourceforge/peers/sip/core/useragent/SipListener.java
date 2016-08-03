@@ -20,6 +20,7 @@
 
 package net.sourceforge.peers.sip.core.useragent;
 
+import net.sourceforge.peers.rtp.RFC4733;
 import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.SipResponse;
 
@@ -40,5 +41,7 @@ public interface SipListener {
     void calleePickup(SipResponse sipResponse);
 
     void error(SipResponse sipResponse);
+
+    void dtmfEvent(RFC4733.DTMFEvent dtmfEvent, int duration);
 
 }
