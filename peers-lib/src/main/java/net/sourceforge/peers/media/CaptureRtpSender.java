@@ -121,14 +121,14 @@ public class CaptureRtpSender {
     }
 
     public void stop() {
-        if (capture != null) {
-            capture.setStopped(true);
+        if (rtpSender != null) {
+            rtpSender.setStopped(true);
         }
         if (encoder != null) {
             encoder.setStopped(true);
         }
-        if (rtpSender != null) {
-            rtpSender.setStopped(true);
+        if (capture != null) {
+            capture.setStopped(true);
         }
     }
 

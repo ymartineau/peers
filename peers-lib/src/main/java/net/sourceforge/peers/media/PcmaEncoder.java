@@ -54,8 +54,8 @@ public class PcmaEncoder extends Encoder {
     }
 
     @Override
-    public byte[] process(byte[] media) {
-        byte[] compressed = new byte[media.length / 2];
+    public byte[] process(byte[] media, int len) {
+        byte[] compressed = new byte[len / 2];
 
         int j = 0;
         for (int i = 0; i < compressed.length; i++) {

@@ -49,10 +49,10 @@ public class Capture implements Runnable {
 
     public void run() {
         byte[] buffer;
-        
-        while (!isStopped) {
-            buffer = soundSource.readData();
-            try {
+
+        try {
+            while (!isStopped) {
+                buffer = soundSource.readData();
                 if (buffer == null) {
                     break;
                 }
@@ -72,17 +72,22 @@ public class Capture implements Runnable {
                     }
                 }
                 rawData.flush();
-            } catch (IOException e) {
-                logger.error("input/output error", e);
-                return;
             }
-        }
-        latch.countDown();
-        if (latch.getCount() != 0) {
+        } catch (IOException e) {
+            logger.error("Error writing raw data", e);
+        } finally {
             try {
-                latch.await();
-            } catch (InterruptedException e) {
-                logger.error("interrupt exception", e);
+                rawData.close();
+            } catch (IOException e) {
+                logger.error("Error closing raw data output pipe", e);
+            }
+            latch.countDown();
+            if (latch.getCount() != 0) {
+                try {
+                    latch.await();
+                } catch (InterruptedException e) {
+                    logger.error("interrupt exception", e);
+                }
             }
         }
     }

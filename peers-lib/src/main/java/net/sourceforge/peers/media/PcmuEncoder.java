@@ -115,8 +115,9 @@ public class PcmuEncoder extends Encoder {
      * @param media the input uncompressed media
      * @return the output compressed media.
      */
-    public byte[] process(byte[] media) {
-        byte[] compressed = new byte[media.length / 2];
+    @Override
+    public byte[] process(byte[] media, int len) {
+        byte[] compressed = new byte[len / 2];
 
         int j = 0;
         for (int i = 0; i < compressed.length; i++) {

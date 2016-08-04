@@ -57,83 +57,88 @@ public abstract class Encoder implements Runnable {
     }
     
     public void run() {
-        int buf_size = Capture.BUFFER_SIZE;
-        byte[] buffer = new byte[buf_size];
-        int numBytesRead;
-        int tempBytesRead;
-        if (mediaDebug) {
-            SimpleDateFormat simpleDateFormat =
-                new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
-            String date = simpleDateFormat.format(new Date());
-            String dir = peersHome + File.separator
-                    + AbstractSoundManager.MEDIA_DIR + File.separator;
-            String fileName = dir + date + "_g711_encoder.output";
-            try {
-                encoderOutput = new FileOutputStream(fileName);
-                fileName = dir + date + "_g711_encoder.input";
-                encoderInput = new FileOutputStream(fileName);
-            } catch (FileNotFoundException e) {
-                logger.error("cannot create file", e);
-                return;
+        try {
+            int buf_size = Capture.BUFFER_SIZE;
+            byte[] buffer = new byte[buf_size];
+            int numBytesRead;
+            int tempBytesRead;
+            if (mediaDebug) {
+                SimpleDateFormat simpleDateFormat =
+                        new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+                String date = simpleDateFormat.format(new Date());
+                String dir = peersHome + File.separator
+                        + AbstractSoundManager.MEDIA_DIR + File.separator;
+                String fileName = dir + date + "_g711_encoder.output";
+                try {
+                    encoderOutput = new FileOutputStream(fileName);
+                    fileName = dir + date + "_g711_encoder.input";
+                    encoderInput = new FileOutputStream(fileName);
+                } catch (FileNotFoundException e) {
+                    logger.error("cannot create file", e);
+                    return;
+                }
             }
-        }
-        //int ready;
-        while (!isStopped) {
-            try {
+            //int ready;
+            while (!isStopped || rawDataAvailable() > 0) {
                 numBytesRead = 0;
-                while (!isStopped && numBytesRead < buf_size) {
-                    // expect that the buffer is full
-                    tempBytesRead = rawData.read(buffer, numBytesRead,
-                            buf_size - numBytesRead);
-                    numBytesRead += tempBytesRead;
+                try {
+                    while (numBytesRead < buf_size) {
+                        // expect that the buffer is full
+                        tempBytesRead = rawData.read(buffer, numBytesRead, buf_size - numBytesRead);
+                        if (tempBytesRead < 0) {
+                            setStopped(true);
+                            break;
+                        }
+                        numBytesRead += tempBytesRead;
+                    }
+                    if (mediaDebug) {
+                        try {
+                            encoderInput.write(buffer, 0, numBytesRead);
+                        } catch (IOException e) {
+                            logger.error("cannot write to file", e);
+                        }
+                    }
+                } catch (IOException e) {
+                    // Getting an IOException reading from rawData is expected after the encoder has been stopped
+                    if (!isStopped) logger.error("Error reading raw data", e);
                 }
-                if (isStopped) {
-                    break;
-                }
+
+                byte[] encodedBuffer = process(buffer, numBytesRead);
                 if (mediaDebug) {
                     try {
-                        encoderInput.write(buffer);
+                        encoderOutput.write(encodedBuffer);
                     } catch (IOException e) {
                         logger.error("cannot write to file", e);
                     }
                 }
-            } catch (IOException e) {
-                logger.error("input/output error", e);
-                return;
+                try {
+                    encodedData.write(encodedBuffer);
+                    encodedData.flush();
+                } catch (IOException e) {
+                    logger.error("Error writing encoded data", e);
+                }
             }
-            
-            byte[] ulawData = process(buffer);
+        } finally {
             if (mediaDebug) {
                 try {
-                    encoderOutput.write(ulawData);
+                    encoderOutput.close();
+                    encoderInput.close();
                 } catch (IOException e) {
-                    logger.error("cannot write to file", e);
-                    break;
+                    logger.error("cannot close file", e);
                 }
             }
             try {
-                encodedData.write(ulawData);
-                encodedData.flush();
+                encodedData.close();
             } catch (IOException e) {
-                logger.error("input/output error", e);
-                return;
+                logger.error("Error closing encoded data output pipe", e);
             }
-        }
-        if (mediaDebug) {
-            try {
-                encoderOutput.close();
-                encoderInput.close();
-            } catch (IOException e) {
-                logger.error("cannot close file", e);
-                return;
-            }
-        }
-        latch.countDown();
-        if (latch.getCount() != 0) {
-            try {
-                latch.await();
-            } catch (InterruptedException e) {
-                logger.error("interrupt exception", e);
+            latch.countDown();
+            if (latch.getCount() != 0) {
+                try {
+                    latch.await();
+                } catch (InterruptedException e) {
+                    logger.error("interrupt exception", e);
+                }
             }
         }
     }
@@ -142,6 +147,16 @@ public abstract class Encoder implements Runnable {
         this.isStopped = isStopped;
     }
 
-    public abstract byte[] process(byte[] media);
+    public abstract byte[] process(byte[] media, int len);
+
+    private int rawDataAvailable() {
+        try {
+            return rawData.available();
+        } catch (IOException e) {
+            // PipedInputStream.available never throws IOException in practice
+            logger.error("Error getting amount available raw data. Should never happen", e);
+            return 0;
+        }
+    }
 
 }

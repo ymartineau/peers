@@ -65,140 +65,147 @@ public class RtpSender implements Runnable {
     }
 
     public void run() {
-        if (mediaDebug) {
-            SimpleDateFormat simpleDateFormat =
-                new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
-            String date = simpleDateFormat.format(new Date());
-            String fileName = peersHome + File.separator
-                + AbstractSoundManager.MEDIA_DIR + File.separator + date
-                + "_rtp_sender.input";
-            try {
-                rtpSenderInput = new FileOutputStream(fileName);
-            } catch (FileNotFoundException e) {
-                logger.error("cannot create file", e);
-                return;
-            }
-        }
-        RtpPacket rtpPacket = new RtpPacket();
-        rtpPacket.setVersion(2);
-        rtpPacket.setPadding(false);
-        rtpPacket.setExtension(false);
-        rtpPacket.setCsrcCount(0);
-        rtpPacket.setMarker(false);
-        rtpPacket.setPayloadType(codec.getPayloadType());
-        Random random = new Random();
-        int sequenceNumber = random.nextInt();
-        rtpPacket.setSequenceNumber(sequenceNumber);
-        rtpPacket.setSsrc(random.nextInt());
-        byte[] buffer = new byte[BUF_SIZE];
-        int timestamp = 0;
-        int numBytesRead;
-        int tempBytesRead;
-        long sleepTime = 0;
-        long offset = 0;
-        long lastSentTime = System.nanoTime();
-        // indicate if its the first time that we send a packet (dont wait)
-        boolean firstTime = true;
-
-        int sleeps = 0;
-        long sumOversleep = 0;
-        long avgOversleep = 0;
-        while (!isStopped) {
-            numBytesRead = 0;
-            try {
-                while (!isStopped && numBytesRead < BUF_SIZE) {
-                    // expect that the buffer is full
-                    tempBytesRead = encodedData.read(buffer, numBytesRead,
-                            BUF_SIZE - numBytesRead);
-                    numBytesRead += tempBytesRead;
-                }
-            } catch (IOException e) {
-                logger.error("input/output error", e);
-                return;
-            }
-            byte[] trimmedBuffer;
-            if (numBytesRead < buffer.length) {
-                trimmedBuffer = new byte[numBytesRead];
-                System.arraycopy(buffer, 0, trimmedBuffer, 0, numBytesRead);
-            } else {
-                trimmedBuffer = buffer;
-            }
+        try {
             if (mediaDebug) {
+                SimpleDateFormat simpleDateFormat =
+                        new SimpleDateFormat("yyyy-MM-dd_HH-mm-ss");
+                String date = simpleDateFormat.format(new Date());
+                String fileName = peersHome + File.separator
+                        + AbstractSoundManager.MEDIA_DIR + File.separator + date
+                        + "_rtp_sender.input";
                 try {
-                    rtpSenderInput.write(trimmedBuffer); // TODO use classpath
-                } catch (IOException e) {
-                    logger.error("cannot write to file", e);
-                    break;
-                }
-            }
-            if (pushedPackets.size() > 0) {
-                RtpPacket pushedPacket = pushedPackets.remove(0);
-                rtpPacket.setMarker(pushedPacket.isMarker());
-                rtpPacket.setPayloadType(pushedPacket.getPayloadType());
-                rtpPacket.setIncrementTimeStamp(pushedPacket.isIncrementTimeStamp());
-                byte[] data = pushedPacket.getData();
-                rtpPacket.setData(data);
-            } else {
-                if (rtpPacket.getPayloadType() != codec.getPayloadType()) {
-                    rtpPacket.setPayloadType(codec.getPayloadType());
-                    rtpPacket.setMarker(false);
-                }
-                rtpPacket.setData(trimmedBuffer);
-            }
-            
-            rtpPacket.setSequenceNumber(sequenceNumber++);
-            if (rtpPacket.isIncrementTimeStamp()) {
-                    timestamp += BUF_SIZE;
-                }
-            rtpPacket.setTimestamp(timestamp);
-            if (firstTime) {
-                lastSentTime = System.nanoTime();
-                rtpSession.send(rtpPacket);
-                firstTime = false;
-                continue;
-            }
-            long beforeSleep = System.nanoTime();
-            sleepTime = 20000000 - (beforeSleep - lastSentTime) - avgOversleep + offset;
-            if (sleepTime > 0) {
-                try {
-                    Thread.sleep(sleepTime / 1000000, (int)sleepTime % 1000000);
-                } catch (InterruptedException e) {
-                    logger.error("Thread interrupted", e);
+                    rtpSenderInput = new FileOutputStream(fileName);
+                } catch (FileNotFoundException e) {
+                    logger.error("cannot create file", e);
                     return;
                 }
-                lastSentTime = System.nanoTime();
-                long slept = (lastSentTime - beforeSleep);
-                long oversleep =  slept - sleepTime;
-                sumOversleep += oversleep;
-                if (sleeps++ == 10) {
-                    avgOversleep = (sumOversleep / sleeps);
-                    sleeps = 0;
-                    sumOversleep = 0;
+            }
+            RtpPacket rtpPacket = new RtpPacket();
+            rtpPacket.setVersion(2);
+            rtpPacket.setPadding(false);
+            rtpPacket.setExtension(false);
+            rtpPacket.setCsrcCount(0);
+            rtpPacket.setMarker(false);
+            rtpPacket.setPayloadType(codec.getPayloadType());
+            Random random = new Random();
+            int sequenceNumber = random.nextInt();
+            rtpPacket.setSequenceNumber(sequenceNumber);
+            rtpPacket.setSsrc(random.nextInt());
+            byte[] buffer = new byte[BUF_SIZE];
+            int timestamp = 0;
+            int numBytesRead;
+            int tempBytesRead;
+            long sleepTime = 0;
+            long offset = 0;
+            long lastSentTime = System.nanoTime();
+            // indicate if its the first time that we send a packet (dont wait)
+            boolean firstTime = true;
+
+            int sleeps = 0;
+            long sumOversleep = 0;
+            long avgOversleep = 0;
+            while (!isStopped || encodedDataAvailable() > 0 || pushedPackets.size() > 0) {
+                if (pushedPackets.size() > 0) {
+                    RtpPacket pushedPacket = pushedPackets.remove(0);
+                    rtpPacket.setMarker(pushedPacket.isMarker());
+                    rtpPacket.setPayloadType(pushedPacket.getPayloadType());
+                    rtpPacket.setIncrementTimeStamp(pushedPacket.isIncrementTimeStamp());
+                    byte[] data = pushedPacket.getData();
+                    rtpPacket.setData(data);
+                } else {
+                    numBytesRead = 0;
+                    try {
+                        while (numBytesRead < BUF_SIZE) {
+                            // expect that the buffer is full
+                            tempBytesRead = encodedData.read(buffer, numBytesRead, BUF_SIZE - numBytesRead);
+                            if (tempBytesRead < 0) {
+                                setStopped(true);
+                                break;
+                            }
+                            numBytesRead += tempBytesRead;
+                        }
+                    } catch (IOException e) {
+                        // Getting an IOException reading from rawData is expected after the encoder has been stopped
+                        if (!isStopped) logger.error("Error reading encoded data", e);
+                    }
+
+                    byte[] trimmedBuffer;
+                    if (numBytesRead < buffer.length) {
+                        trimmedBuffer = new byte[numBytesRead];
+                        System.arraycopy(buffer, 0, trimmedBuffer, 0, numBytesRead);
+                    } else {
+                        trimmedBuffer = buffer;
+                    }
+                    if (mediaDebug) {
+                        try {
+                            rtpSenderInput.write(trimmedBuffer); // TODO use classpath
+                        } catch (IOException e) {
+                            logger.error("cannot write to file", e);
+                        }
+                    }
+
+                    if (rtpPacket.getPayloadType() != codec.getPayloadType()) {
+                        rtpPacket.setPayloadType(codec.getPayloadType());
+                        rtpPacket.setMarker(false);
+                    }
+                    rtpPacket.setData(trimmedBuffer);
                 }
-                rtpSession.send(rtpPacket);
-                offset = 0;
-            } else {
-                lastSentTime = System.nanoTime();
-                rtpSession.send(rtpPacket);
-                if (sleepTime < -20000000) {
-                    offset = sleepTime + 20000000;
+
+                rtpPacket.setSequenceNumber(sequenceNumber++);
+                if (rtpPacket.isIncrementTimeStamp()) {
+                    timestamp += BUF_SIZE;
+                }
+                rtpPacket.setTimestamp(timestamp);
+                if (firstTime) {
+                    lastSentTime = System.nanoTime();
+                    rtpSession.send(rtpPacket);
+                    firstTime = false;
+                    continue;
+                }
+                long beforeSleep = System.nanoTime();
+                sleepTime = 20000000 - (beforeSleep - lastSentTime) - avgOversleep + offset;
+                if (sleepTime > 0) {
+                    try {
+                        Thread.sleep(sleepTime / 1000000, (int) sleepTime % 1000000);
+                    } catch (InterruptedException e) {
+                        logger.error("Thread interrupted", e);
+                        return;
+                    }
+                    lastSentTime = System.nanoTime();
+                    long slept = (lastSentTime - beforeSleep);
+                    long oversleep = slept - sleepTime;
+                    sumOversleep += oversleep;
+                    if (sleeps++ == 10) {
+                        avgOversleep = (sumOversleep / sleeps);
+                        sleeps = 0;
+                        sumOversleep = 0;
+                    }
+                    rtpSession.send(rtpPacket);
+                    offset = 0;
+                } else {
+                    lastSentTime = System.nanoTime();
+                    rtpSession.send(rtpPacket);
+                    if (sleepTime < -20000000) {
+                        offset = sleepTime + 20000000;
+                    }
                 }
             }
-        }
-        if (mediaDebug) {
-            try {
-                rtpSenderInput.close();
-            } catch (IOException e) {
-                logger.error("cannot close file", e);
-                return;
+        } finally {
+            if (mediaDebug) {
+                try {
+                    rtpSenderInput.close();
+                } catch (IOException e) {
+                    logger.error("cannot close file", e);
+                    return;
+                }
             }
-        }
-        latch.countDown();
-        if (latch.getCount() != 0) {
-            try {
-                latch.await();
-            } catch (InterruptedException e) {
-                logger.error("interrupt exception", e);
+            latch.countDown();
+            if (latch.getCount() != 0) {
+                try {
+                    latch.await();
+                } catch (InterruptedException e) {
+                    logger.error("interrupt exception", e);
+                }
             }
         }
     }
@@ -218,5 +225,16 @@ public class RtpSender implements Runnable {
     public void pushPackets(List<RtpPacket> rtpPackets) {
         this.pushedPackets.addAll(rtpPackets);
     }
+
+    private int encodedDataAvailable() {
+        try {
+            return encodedData.available();
+        } catch (IOException e) {
+            // PipedInputStream.available never throws IOException in practice
+            logger.error("Error getting amount available encoded data. Should never happen", e);
+            return 0;
+        }
+    }
+
 
 }

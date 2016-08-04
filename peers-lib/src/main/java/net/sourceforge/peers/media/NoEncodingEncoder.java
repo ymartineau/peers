@@ -13,7 +13,7 @@ public class NoEncodingEncoder extends Encoder {
     }
 
     @Override
-    public byte[] process(byte[] media) {
+    public byte[] process(byte[] media, int len) {
         return media;
     }
 
