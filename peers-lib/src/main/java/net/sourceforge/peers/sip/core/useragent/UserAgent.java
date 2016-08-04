@@ -19,11 +19,6 @@
 
 package net.sourceforge.peers.sip.core.useragent;
 
-import java.io.File;
-import java.net.SocketException;
-import java.util.ArrayList;
-import java.util.List;
-
 import net.sourceforge.peers.Config;
 import net.sourceforge.peers.FileLogger;
 import net.sourceforge.peers.Logger;
@@ -47,6 +42,11 @@ import net.sourceforge.peers.sip.transport.SipMessage;
 import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.SipResponse;
 import net.sourceforge.peers.sip.transport.TransportManager;
+
+import java.io.File;
+import java.net.SocketException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class UserAgent implements DtmfEventHandler {
@@ -72,6 +72,7 @@ public class UserAgent implements DtmfEventHandler {
     private DialogManager dialogManager;
     private TransactionManager transactionManager;
     private TransportManager transportManager;
+    private InviteHandler inviteHandler;
 
     private int cseqCounter;
     private AbstractSoundManagerFactory abstractSoundManagerFactory;
@@ -148,7 +149,7 @@ public class UserAgent implements DtmfEventHandler {
         
         //core
         
-        InviteHandler inviteHandler = new InviteHandler(this,
+        inviteHandler = new InviteHandler(this,
                 dialogManager,
                 transactionManager,
                 transportManager,
@@ -234,6 +235,9 @@ public class UserAgent implements DtmfEventHandler {
 
     public void close() {
         transportManager.closeTransports();
+        transactionManager.closeTimers();
+        inviteHandler.closeTimers();
+        mediaManager.stopSession();
         config.setPublicInetAddress(null);
     }
     

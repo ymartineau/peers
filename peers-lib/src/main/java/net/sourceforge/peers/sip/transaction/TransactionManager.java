@@ -56,6 +56,10 @@ public class TransactionManager {
         timer = new Timer(TransactionManager.class.getSimpleName()
                 + " " + Timer.class.getSimpleName());
     }
+
+    public void closeTimers() {
+        timer.cancel();
+    }
     
     public ClientTransaction createClientTransaction(SipRequest sipRequest,
             InetAddress inetAddress, int port, String transport,
