@@ -51,6 +51,7 @@ public class CallSendAudioFromFileHangupDemo implements SipListener {
             System.out.println("Hanging up");
             userAgent.terminate(sipRequest);
         } finally {
+            userAgent.unregister();
             userAgent.close();
         }
     }
