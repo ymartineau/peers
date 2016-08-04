@@ -49,6 +49,7 @@ public class RtpSession {
     private InetAddress remoteAddress;
     private int remotePort;
     private DatagramSocket datagramSocket;
+    private int executorServiceThreadNo = 0;
     private ExecutorService executorService;
     private List<RtpListener> rtpListeners;
     private RtpParser rtpParser;
@@ -66,7 +67,7 @@ public class RtpSession {
         this.datagramSocket = datagramSocket;
         rtpListeners = new ArrayList<RtpListener>();
         rtpParser = new RtpParser(logger);
-        executorService = Executors.newSingleThreadExecutor();
+        executorService = Executors.newSingleThreadExecutor((runnable) -> new Thread(runnable, RtpSession.class.getSimpleName() + "-" + ++executorServiceThreadNo));
     }
 
     public synchronized void start() {

@@ -57,12 +57,13 @@ public class JsUserAgent extends Applet implements SipListener, WebLoggerOutput 
     private UserAgent userAgent;
     private Config config;
     private Logger logger;
+    private int executorServiceThreadNo = 0;
     private ExecutorService executorService;
 
     public void instantiatePeers(String ipAddress) {
         try {
             System.out.println("instantiatePeers");
-            executorService = Executors.newCachedThreadPool();
+            executorService = Executors.newCachedThreadPool((runnable) -> new Thread(runnable, JsUserAgent.class.getSimpleName() + "-" + ++executorServiceThreadNo) );
             logger = new WebLogger(this);
             config = new JavaConfig();
             String peersHome = Utils.DEFAULT_PEERS_HOME;
