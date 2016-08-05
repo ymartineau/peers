@@ -22,9 +22,9 @@ package net.sourceforge.peers.sip.core.useragent.handlers;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Hashtable;
-import java.util.Timer;
 import java.util.TimerTask;
 
+import net.sourceforge.peers.Timer;
 import net.sourceforge.peers.Config;
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.RFC3261;

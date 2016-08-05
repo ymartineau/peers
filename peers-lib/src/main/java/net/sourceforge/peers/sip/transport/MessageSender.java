@@ -21,9 +21,9 @@ package net.sourceforge.peers.sip.transport;
 
 import java.io.IOException;
 import java.net.InetAddress;
-import java.util.Timer;
 import java.util.TimerTask;
 
+import net.sourceforge.peers.Timer;
 import net.sourceforge.peers.Config;
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.RFC3261;

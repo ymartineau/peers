@@ -22,8 +22,8 @@ package net.sourceforge.peers.sip.transaction;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Timer;
 
+import net.sourceforge.peers.Timer;
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.SipResponse;
