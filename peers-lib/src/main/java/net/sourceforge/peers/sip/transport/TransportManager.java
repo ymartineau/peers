@@ -377,7 +377,7 @@ public class TransportManager {
             DatagramSocket datagramSocket = datagramSockets.get(conn);
             if (datagramSocket == null) {
                 logger.debug("new DatagramSocket(" + conn.getLocalPort()
-                        + ", " + conn.getLocalInetAddress());
+                        + ", " + conn.getLocalInetAddress() + ")");
                 // AccessController.doPrivileged added for plugin compatibility
                 datagramSocket = AccessController.doPrivileged(
                         new PrivilegedAction<DatagramSocket>() {
