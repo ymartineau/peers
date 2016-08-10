@@ -24,6 +24,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -37,6 +38,7 @@ import javax.xml.transform.stream.StreamResult;
 
 import net.sourceforge.peers.media.MediaMode;
 import net.sourceforge.peers.media.SoundSource;
+import net.sourceforge.peers.sdp.Codec;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.syntaxencoding.SipURI;
 import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
@@ -71,6 +73,7 @@ public class XmlConfig implements Config {
     private SoundSource.DataFormat mediaFileDataFormat;
     private int rtpPort;
     private String authorizationUsername;
+    private List<Codec> supportedCodecs;
     
     // corresponding DOM nodes
     
@@ -199,6 +202,8 @@ public class XmlConfig implements Config {
                         + " rtp port must be even");
             }
         }
+
+        // TODO supportedCodecs
     }
 
     private boolean isNullOrEmpty(Node node) {
@@ -303,6 +308,11 @@ public class XmlConfig implements Config {
     }
 
     @Override
+    public List<Codec> getSupportedCodecs() {
+        return supportedCodecs;
+    }
+
+    @Override
     public SoundSource.DataFormat getMediaFileDataFormat() { return mediaFileDataFormat; }
 
     @Override
@@ -378,6 +388,11 @@ public class XmlConfig implements Config {
     public void setAuthorizationUsername(String authorizationUsername) {
         this.authorizationUsername = authorizationUsername;
         authUserNode.setTextContent(authorizationUsername);
+    }
+
+    @Override
+    public void setSupportedCodecs(List<Codec> supportedCodecs) {
+       this.supportedCodecs = supportedCodecs;
     }
 
     @Override

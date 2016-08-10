@@ -45,22 +45,8 @@ public class SDPManager {
         this.userAgent = userAgent;
         this.logger = logger;
         sdpParser = new SdpParser();
-        supportedCodecs = new ArrayList<Codec>();
+        supportedCodecs = userAgent.getConfig().getSupportedCodecs();
         random = new Random();
-        //TODO retrieve codecs from configuration file
-        Codec codec = new Codec();
-        codec.setPayloadType(RFC3551.PAYLOAD_TYPE_PCMU);
-        codec.setName(RFC3551.PCMU);
-        supportedCodecs.add(codec);
-        codec = new Codec();
-        codec.setPayloadType(RFC3551.PAYLOAD_TYPE_PCMA);
-        codec.setName(RFC3551.PCMA);
-        supportedCodecs.add(codec);
-        codec = new Codec();
-        codec.setPayloadType(RFC4733.PAYLOAD_TYPE_TELEPHONE_EVENT);
-        codec.setName(RFC4733.TELEPHONE_EVENT);
-        //TODO add fmtp:101 0-15 attribute
-        supportedCodecs.add(codec);
     }
     
     public SessionDescription parse(byte[] sdp) {

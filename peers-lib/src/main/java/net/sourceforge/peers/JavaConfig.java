@@ -20,9 +20,14 @@
 package net.sourceforge.peers;
 
 import java.net.InetAddress;
+import java.util.ArrayList;
+import java.util.List;
 
 import net.sourceforge.peers.media.MediaMode;
 import net.sourceforge.peers.media.SoundSource;
+import net.sourceforge.peers.rtp.RFC3551;
+import net.sourceforge.peers.rtp.RFC4733;
+import net.sourceforge.peers.sdp.Codec;
 import net.sourceforge.peers.sip.syntaxencoding.SipURI;
 
 public class JavaConfig implements Config {
@@ -40,12 +45,33 @@ public class JavaConfig implements Config {
     private String mediaFile;
     private int rtpPort;
     private String authorizationUsername;
+    private List<Codec> supportedCodecs;
 
-    public JavaConfig() {}
+    public JavaConfig()
+    {
+        // Add default codecs
+        supportedCodecs = new ArrayList<Codec>();
+
+        Codec codec = new Codec();
+        codec.setPayloadType(RFC3551.PAYLOAD_TYPE_PCMU);
+        codec.setName(RFC3551.PCMU);
+        supportedCodecs.add(codec);
+
+        codec = new Codec();
+        codec.setPayloadType(RFC3551.PAYLOAD_TYPE_PCMA);
+        codec.setName(RFC3551.PCMA);
+        supportedCodecs.add(codec);
+
+        codec = new Codec();
+        codec.setPayloadType(RFC4733.PAYLOAD_TYPE_TELEPHONE_EVENT);
+        codec.setName(RFC4733.TELEPHONE_EVENT);
+        //TODO add fmtp:101 0-15 attribute
+        supportedCodecs.add(codec);
+    }
 
     public JavaConfig(InetAddress localInetAddress, String userPart, String password, String domain,
                       SipURI outboundProxy, int sipPort, MediaMode mediaMode, boolean mediaDebug,
-                      SoundSource.DataFormat mediaFileDataFormat, String mediaFile, int rtpPort, String authorizationUsername) {
+                      SoundSource.DataFormat mediaFileDataFormat, String mediaFile, int rtpPort, String authorizationUsername, List<Codec> supportedCodecs) {
         this.localInetAddress = localInetAddress;
         this.userPart = userPart;
         this.password = password;
@@ -58,6 +84,7 @@ public class JavaConfig implements Config {
         this.mediaFile = mediaFile;
         this.rtpPort = rtpPort;
         this.authorizationUsername = authorizationUsername;
+        this.supportedCodecs = supportedCodecs;
     }
 
     @Override
@@ -120,6 +147,11 @@ public class JavaConfig implements Config {
     }
 
     @Override
+    public List<Codec> getSupportedCodecs() {
+        return supportedCodecs;
+    }
+
+    @Override
     public SoundSource.DataFormat getMediaFileDataFormat() { return mediaFileDataFormat; }
 
     @Override
@@ -179,6 +211,11 @@ public class JavaConfig implements Config {
 
     public void setAuthorizationUsername(String authorizationUsername) {
         this.authorizationUsername = authorizationUsername;
+    }
+
+    @Override
+    public void setSupportedCodecs(List<Codec> supportedCodecs) {
+       this.supportedCodecs = supportedCodecs;
     }
 
     @Override

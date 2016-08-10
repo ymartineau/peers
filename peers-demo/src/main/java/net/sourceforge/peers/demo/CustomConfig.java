@@ -2,10 +2,12 @@ package net.sourceforge.peers.demo;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.List;
 
 import net.sourceforge.peers.Config;
 import net.sourceforge.peers.media.MediaMode;
 import net.sourceforge.peers.media.SoundSource;
+import net.sourceforge.peers.sdp.Codec;
 import net.sourceforge.peers.sip.syntaxencoding.SipURI;
 
 public class CustomConfig implements Config {
@@ -40,6 +42,11 @@ public class CustomConfig implements Config {
     @Override public String getAuthorizationUsername() { return getUserPart(); }
 
     @Override
+    public List<Codec> getSupportedCodecs() {
+        return null; // TODO
+    }
+
+    @Override
     public void setPublicInetAddress(InetAddress inetAddress) {
         publicIpAddress = inetAddress;
     }
@@ -63,5 +70,9 @@ public class CustomConfig implements Config {
     @Override public void setRtpPort(int rtpPort) { }
     @Override public void save() { }
     @Override public void setAuthorizationUsername(String authorizationUsername) { }
-    
+
+    @Override
+    public void setSupportedCodecs(List<Codec> supportedCodecs) {
+     // TODO
+    }
 }
