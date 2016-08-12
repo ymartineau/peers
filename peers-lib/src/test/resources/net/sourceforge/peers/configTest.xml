@@ -61,4 +61,11 @@
        contain raw data at input and output of microphone, encoder, rtp
        sender, rtp receiver, and speaker. -->
   <mediaDebug>false</mediaDebug>
+
+  <supportedCodecs>
+    <codec name="PCMU" payloadType="0"/>
+    <codec name="PCMA" payloadType="8"/>
+    <codec name="telephone-event" payloadType="101"/>
+  </supportedCodecs>
+
 </peers>

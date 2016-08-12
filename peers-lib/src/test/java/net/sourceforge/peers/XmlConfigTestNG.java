@@ -21,8 +21,11 @@ package net.sourceforge.peers;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.List;
 
 import net.sourceforge.peers.media.MediaMode;
+import net.sourceforge.peers.sdp.Codec;
 import net.sourceforge.peers.sip.syntaxencoding.SipURI;
 import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
 
@@ -45,6 +48,15 @@ public class XmlConfigTestNG {
         boolean mediaDebug = true;
         int rtpPort = 8002;
         String authorizationUsername = "authUser";
+        List<Codec> supportedCodecs = new ArrayList<Codec>();
+        Codec codec = new Codec();
+        codec.setName("testCodec1");
+        codec.setPayloadType(128);
+        supportedCodecs.add(codec);
+        codec = new Codec();
+        codec.setName("testCodec2");
+        codec.setPayloadType(129);
+        supportedCodecs.add(codec);
 
         config.setLocalInetAddress(localHost);
         config.setUserPart(userPart);
@@ -56,6 +68,7 @@ public class XmlConfigTestNG {
         config.setMediaDebug(mediaDebug);
         config.setRtpPort(rtpPort);
         config.setAuthorizationUsername(authorizationUsername);
+        config.setSupportedCodecs(supportedCodecs);
         config.save();
         config = new XmlConfig(fileName, logger);
         assert localHost.equals(config.getLocalInetAddress());
@@ -68,6 +81,7 @@ public class XmlConfigTestNG {
         assert mediaDebug == config.isMediaDebug();
         assert rtpPort == config.getRtpPort();
         assert authorizationUsername.equals(config.getAuthorizationUsername());
+        assert supportedCodecs.equals(config.getSupportedCodecs());
     }
 
 }

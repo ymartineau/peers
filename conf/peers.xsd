@@ -52,6 +52,17 @@
 
   <!-- Complex Types -->
 
+  <xs:complexType name="supportedCodecsType">
+    <xs:sequence>
+      <xs:element name="codec">
+        <xs:complexType>
+          <xs:attribute name="name" type="xs:string"/>
+          <xs:attribute name="payloadType" type="xs:integer"/>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
   <xs:complexType name="peersType">
     <xs:sequence>
       <xs:element name="ipAddress" type="xs:string"/>
@@ -65,6 +76,7 @@
       <xs:element name="mediaDebug" type="xs:boolean"/>
       <xs:element name="mediaFileDataFormat" type="mediaFileDataFormatType"/>
       <xs:element name="mediaFile" type="xs:string"/>
+      <xs:element name="supportedCodecs" type="supportedCodecsType"/>
     </xs:sequence>
   </xs:complexType>
 

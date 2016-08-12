@@ -44,6 +44,17 @@
 
   <!-- Complex Types -->
 
+  <xs:complexType name="supportedCodecsType">
+    <xs:sequence>
+      <xs:element name="codec">
+        <xs:complexType>
+          <xs:attribute name="name" type="xs:string"/>
+          <xs:attribute name="payloadType" type="xs:integer"/>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
   <xs:complexType name="peersType">
     <xs:sequence>
       <xs:element name="ipAddress" type="xs:string"/>
@@ -55,6 +66,7 @@
       <xs:element name="rtpPort" type="portType"/>
       <xs:element name="mediaMode" type="mediaModeType"/>
       <xs:element name="mediaDebug" type="xs:boolean"/>
+      <xs:element name="supportedCodecs" type="supportedCodecsType"/>
     </xs:sequence>
   </xs:complexType>
 

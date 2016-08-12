@@ -74,4 +74,11 @@
          - media/message.raw (data-format: pcm_8khz_16_bits_mono)
          - media/message.alaw (data-format: a_law) -->
   <mediaFile></mediaFile>
+
+  <supportedCodecs>
+    <codec name="PCMU" payloadType="0"/>
+    <codec name="PCMA" payloadType="8"/>
+    <codec name="telephone-event" payloadType="101"/>
+  </supportedCodecs>
+
 </peers>
