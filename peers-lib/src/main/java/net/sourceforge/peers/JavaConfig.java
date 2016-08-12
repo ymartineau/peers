@@ -53,13 +53,14 @@ public class JavaConfig implements Config {
         supportedCodecs = new ArrayList<Codec>();
 
         Codec codec = new Codec();
-        codec.setPayloadType(RFC3551.PAYLOAD_TYPE_PCMU);
-        codec.setName(RFC3551.PCMU);
-        supportedCodecs.add(codec);
-
         codec = new Codec();
         codec.setPayloadType(RFC3551.PAYLOAD_TYPE_PCMA);
         codec.setName(RFC3551.PCMA);
+        supportedCodecs.add(codec);
+
+        codec = new Codec();
+        codec.setPayloadType(RFC3551.PAYLOAD_TYPE_PCMU);
+        codec.setName(RFC3551.PCMU);
         supportedCodecs.add(codec);
 
         codec = new Codec();
