@@ -2,11 +2,13 @@ package net.sourceforge.peers.demo;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.List;
 
 import net.sourceforge.peers.Config;
 import net.sourceforge.peers.media.MediaMode;
 import net.sourceforge.peers.media.SoundSource;
+import net.sourceforge.peers.rtp.RFC3551;
 import net.sourceforge.peers.sdp.Codec;
 import net.sourceforge.peers.sip.syntaxencoding.SipURI;
 
@@ -43,7 +45,14 @@ public class CustomConfig implements Config {
 
     @Override
     public List<Codec> getSupportedCodecs() {
-        return null; // TODO
+       List<Codec> supportedCodecs = new ArrayList<Codec>();
+
+       Codec codec = new Codec();
+       codec.setPayloadType(RFC3551.PAYLOAD_TYPE_PCMA);
+       codec.setName(RFC3551.PCMA);
+
+       supportedCodecs.add(codec);
+       return supportedCodecs;
     }
 
     @Override
@@ -72,7 +81,5 @@ public class CustomConfig implements Config {
     @Override public void setAuthorizationUsername(String authorizationUsername) { }
 
     @Override
-    public void setSupportedCodecs(List<Codec> supportedCodecs) {
-     // TODO
-    }
+    public void setSupportedCodecs(List<Codec> supportedCodecs) { }
 }
