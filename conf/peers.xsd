@@ -54,6 +54,7 @@
       <xs:element name="outboundProxy" type="xs:string"/>
       <xs:element name="sipPort" type="portType"/>
       <xs:element name="rtpPort" type="portType"/>
+      <xs:element name="authorizationUsername" type="xs:string"/>
       <xs:element name="mediaMode" type="mediaModeType"/>
       <xs:element name="mediaDebug" type="xs:boolean"/>
       <xs:element name="mediaFile" type="xs:string"/>
