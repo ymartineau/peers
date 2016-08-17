@@ -96,7 +96,6 @@ public class RtpSender implements Runnable {
             int numBytesRead;
             int tempBytesRead;
             long sleepTime = 0;
-            long offset = 0;
             long lastSentTime = System.nanoTime();
             // indicate if its the first time that we send a packet (dont wait)
             boolean firstTime = true;
@@ -163,7 +162,7 @@ public class RtpSender implements Runnable {
                     continue;
                 }
                 long beforeSleep = System.nanoTime();
-                sleepTime = 20000000 - (beforeSleep - lastSentTime) - avgOversleep + offset;
+                sleepTime = 20000000 - (beforeSleep - lastSentTime) - avgOversleep;
                 if (sleepTime > 0) {
                     try {
                         Thread.sleep(sleepTime / 1000000, (int) sleepTime % 1000000);
@@ -181,13 +180,9 @@ public class RtpSender implements Runnable {
                         sumOversleep = 0;
                     }
                     rtpSession.send(rtpPacket);
-                    offset = 0;
                 } else {
                     lastSentTime = System.nanoTime();
                     rtpSession.send(rtpPacket);
-                    if (sleepTime < -20000000) {
-                        offset = sleepTime + 20000000;
-                    }
                 }
             }
         } finally {
