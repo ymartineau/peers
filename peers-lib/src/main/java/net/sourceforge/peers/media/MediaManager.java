@@ -262,7 +262,11 @@ public class MediaManager {
         }
 
     }
-    
+
+    public RtpSession getRtpSession() {
+        return rtpSession;
+    }
+
     public void sendDtmf(char digit) {
         if (captureRtpSender != null) {
             List<RtpPacket> rtpPackets = dtmfFactory.createDtmfPackets(digit);
