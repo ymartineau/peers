@@ -41,6 +41,8 @@ public class RtpSender implements Runnable {
     private PipedInputStream encodedData;
     private RtpSession rtpSession;
     private boolean isStopped;
+    private Object pauseSync;
+    private boolean isPaused;
     private FileOutputStream rtpSenderInput;
     private boolean mediaDebug;
     private Codec codec;
@@ -60,6 +62,8 @@ public class RtpSender implements Runnable {
         this.latch = latch;
         this.logger = logger;
         isStopped = false;
+        pauseSync = new Object();
+        isPaused = false;
         pushedPackets = Collections.synchronizedList(
                 new ArrayList<RtpPacket>());
     }
@@ -116,6 +120,18 @@ public class RtpSender implements Runnable {
                     try {
                         while (numBytesRead < BUF_SIZE) {
                             // expect that the buffer is full
+                            if (isPaused) {
+                                synchronized (pauseSync) {
+                                    while (isPaused) {
+                                        try {
+                                            pauseSync.wait();
+                                        } catch (InterruptedException e) {
+                                            logger.error("Interrupted pausing");
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
                             tempBytesRead = encodedData.read(buffer, numBytesRead, BUF_SIZE - numBytesRead);
                             if (tempBytesRead < 0) {
                                 setStopped(true);
@@ -205,8 +221,20 @@ public class RtpSender implements Runnable {
         }
     }
 
-    public synchronized void setStopped(boolean isStopped) {
+    public void setStopped(boolean isStopped) {
         this.isStopped = isStopped;
+        resume();
+    }
+
+    public void pause() {
+        isPaused = true;
+    }
+
+    public synchronized void resume() {
+        isPaused = false;
+        synchronized (pauseSync) {
+            pauseSync.notifyAll();
+        }
     }
 
     public void waitEmpty() throws IOException, InterruptedException {

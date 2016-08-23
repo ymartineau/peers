@@ -61,6 +61,10 @@ public class MediaManager {
         }
     }
 
+    public CaptureRtpSender getCaptureRtpSender() {
+        return captureRtpSender;
+    }
+
     private void startRtpSessionOnSuccessResponse(String localAddress,
             String remoteAddress, int remotePort, Codec codec,
             SoundSource soundSource) {
