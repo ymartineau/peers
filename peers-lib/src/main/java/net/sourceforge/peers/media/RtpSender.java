@@ -21,14 +21,11 @@ package net.sourceforge.peers.media;
 
 import java.io.*;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.CountDownLatch;
 
 import net.sourceforge.peers.Logger;
+import net.sourceforge.peers.rtp.RFC3551;
 import net.sourceforge.peers.rtp.RtpPacket;
 import net.sourceforge.peers.rtp.RtpSession;
 import net.sourceforge.peers.sdp.Codec;
@@ -96,6 +93,8 @@ public class RtpSender implements Runnable {
             rtpPacket.setSequenceNumber(sequenceNumber);
             rtpPacket.setSsrc(random.nextInt());
             byte[] buffer = new byte[BUF_SIZE];
+            byte[] pauseBuffer = new byte[BUF_SIZE];
+            Arrays.fill(pauseBuffer, silenceByte(codec));
             int timestamp = 0;
             int numBytesRead;
             int tempBytesRead;
@@ -118,26 +117,34 @@ public class RtpSender implements Runnable {
                 } else {
                     numBytesRead = 0;
                     try {
-                        while (numBytesRead < BUF_SIZE) {
-                            // expect that the buffer is full
-                            if (isPaused) {
-                                synchronized (pauseSync) {
-                                    while (isPaused) {
-                                        try {
-                                            pauseSync.wait();
-                                        } catch (InterruptedException e) {
-                                            logger.error("Interrupted pausing");
-                                            break;
-                                        }
+                        if (isPaused) {
+                            synchronized (pauseSync) {
+                                if (isPaused) {
+                                    try {
+                                        // When paused, send a small fragment of audio every 5th sec. Some components (SIP-servers, networks,
+                                        // handsets, etc) hang up if no data is received for a while. You never know if such a component is involved
+                                        // from here to the final client
+                                        pauseSync.wait(5000);
+                                    } catch (InterruptedException e) {
+                                        logger.error("Interrupted pausing");
+                                        break;
                                     }
                                 }
                             }
-                            tempBytesRead = encodedData.read(buffer, numBytesRead, BUF_SIZE - numBytesRead);
-                            if (tempBytesRead < 0) {
-                                setStopped(true);
-                                break;
+                        }
+                        if (isPaused) {
+                            System.arraycopy(pauseBuffer, 0, buffer, 0, BUF_SIZE);
+                            numBytesRead = BUF_SIZE;
+                        } else {
+                            while (numBytesRead < BUF_SIZE) {
+                                // expect that the buffer is full
+                                tempBytesRead = encodedData.read(buffer, numBytesRead, BUF_SIZE - numBytesRead);
+                                if (tempBytesRead < 0) {
+                                    setStopped(true);
+                                    break;
+                                }
+                                numBytesRead += tempBytesRead;
                             }
-                            numBytesRead += tempBytesRead;
                         }
                     } catch (IOException e) {
                         // Getting an IOException reading from rawData is expected after the encoder has been stopped
@@ -259,5 +266,12 @@ public class RtpSender implements Runnable {
         }
     }
 
+    private byte silenceByte(Codec codec) {
+        switch (codec.getPayloadType()) {
+            case RFC3551.PAYLOAD_TYPE_PCMA: return RFC3551.PCMA_SILENCE;
+            case RFC3551.PAYLOAD_TYPE_PCMU: return RFC3551.PCMU_SILENCE;
+            default: return 0;
+        }
+    }
 
 }

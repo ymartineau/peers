@@ -31,4 +31,8 @@ public class RFC3551 {
     public static final String PCMU = "PCMU";
     public static final String PCMA = "PCMA";
 
+    // silence
+    public static final byte PCMU_SILENCE = (byte)0xFF;
+    public static final byte PCMA_SILENCE = (byte)0xD5;
+
 }
