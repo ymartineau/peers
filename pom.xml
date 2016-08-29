@@ -2,9 +2,15 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
 
-  <groupId>net.sourceforge.peers</groupId>
+  <parent>
+    <groupId>ae.teletronics</groupId>
+    <artifactId>godfather</artifactId>
+    <version>RELEASE</version>
+  </parent>
+  
+  <groupId>ae.teletronics.peers</groupId>
   <artifactId>peers</artifactId>
-  <version>0.5.1-SNAPSHOT</version>
+  <version>0.5.1</version>
   <packaging>pom</packaging>
 
   <properties>
@@ -15,8 +21,8 @@
     <module>peers-demo</module>
     <module>peers-doc</module>
     <module>peers-gui</module>
-    <module>peers-js</module>
-    <module>peers-jws</module>
+    <!-- module>peers-js</module -->
+    <!-- module>peers-jws</module -->
     <module>peers-lib</module>
   </modules>
 
@@ -30,6 +36,26 @@
           <configuration>
             <source>1.8</source>
             <target>1.8</target>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>external.atlassian.jgitflow</groupId>
+          <artifactId>jgitflow-maven-plugin</artifactId>
+          <version>1.0-m5.1</version>
+          <configuration>
+            <enableSshAgent>true</enableSshAgent>
+            <pushReleases>true</pushReleases>
+            <autoVersionSubmodules>true</autoVersionSubmodules>
+            <allowSnapshots>true</allowSnapshots>
+            <enableFeatureVersions>true</enableFeatureVersions>
+            <flowInitContext>
+              <masterBranchName>master</masterBranchName>
+              <developBranchName>develop</developBranchName>
+              <featureBranchPrefix>feature/</featureBranchPrefix>
+              <releaseBranchPrefix>release/</releaseBranchPrefix>
+              <hotfixBranchPrefix>hotfix/</hotfixBranchPrefix>
+              <versionTagPrefix>tlt_v</versionTagPrefix>
+            </flowInitContext>
           </configuration>
         </plugin>
       </plugins>
