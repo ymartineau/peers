@@ -4,7 +4,7 @@
   <parent>
     <groupId>ae.teletronics.peers</groupId>
     <artifactId>peers</artifactId>
-    <version>0.5.2-SNAPSHOT</version>
+    <version>0.5.1</version>
   </parent>
   <artifactId>peers-gui</artifactId>
   <packaging>jar</packaging>
