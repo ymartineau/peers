@@ -28,6 +28,7 @@ import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.core.useragent.handlers.ByeHandler;
 import net.sourceforge.peers.sip.core.useragent.handlers.CancelHandler;
 import net.sourceforge.peers.sip.core.useragent.handlers.InviteHandler;
+import net.sourceforge.peers.sip.core.useragent.handlers.NotifyHandler;
 import net.sourceforge.peers.sip.core.useragent.handlers.OptionsHandler;
 import net.sourceforge.peers.sip.core.useragent.handlers.RegisterHandler;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldName;
@@ -59,7 +60,8 @@ public class MidDialogRequestManager extends RequestManager
             DialogManager dialogManager,
             TransactionManager transactionManager,
             TransportManager transportManager,
-            Logger logger) {
+            Logger logger,
+            NotifyHandler notifyHandler) {
         super(userAgent,
                 inviteHandler,
                 cancelHandler,
@@ -69,7 +71,8 @@ public class MidDialogRequestManager extends RequestManager
                 dialogManager,
                 transactionManager,
                 transportManager,
-                logger);
+                logger,
+                notifyHandler);
     }
 
 

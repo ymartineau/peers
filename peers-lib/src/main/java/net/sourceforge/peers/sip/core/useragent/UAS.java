@@ -19,9 +19,6 @@
 
 package net.sourceforge.peers.sip.core.useragent;
 
-import java.net.SocketException;
-import java.util.ArrayList;
-
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldName;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldValue;
@@ -36,6 +33,9 @@ import net.sourceforge.peers.sip.transport.SipResponse;
 import net.sourceforge.peers.sip.transport.SipServerTransportUser;
 import net.sourceforge.peers.sip.transport.TransportManager;
 
+import java.net.SocketException;
+import java.util.ArrayList;
+
 public class UAS implements SipServerTransportUser {
 
     public final static ArrayList<String> SUPPORTED_METHODS;
@@ -47,6 +47,7 @@ public class UAS implements SipServerTransportUser {
         SUPPORTED_METHODS.add(RFC3261.METHOD_CANCEL);
         SUPPORTED_METHODS.add(RFC3261.METHOD_OPTIONS);
         SUPPORTED_METHODS.add(RFC3261.METHOD_BYE);
+        SUPPORTED_METHODS.add(RFC3261.METHOD_NOTIFY);
     };
     
     private InitialRequestManager initialRequestManager;

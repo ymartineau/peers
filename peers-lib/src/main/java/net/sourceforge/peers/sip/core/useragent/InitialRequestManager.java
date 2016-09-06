@@ -25,6 +25,7 @@ import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.core.useragent.handlers.ByeHandler;
 import net.sourceforge.peers.sip.core.useragent.handlers.CancelHandler;
 import net.sourceforge.peers.sip.core.useragent.handlers.InviteHandler;
+import net.sourceforge.peers.sip.core.useragent.handlers.NotifyHandler;
 import net.sourceforge.peers.sip.core.useragent.handlers.OptionsHandler;
 import net.sourceforge.peers.sip.core.useragent.handlers.RegisterHandler;
 import net.sourceforge.peers.sip.syntaxencoding.NameAddress;
@@ -47,15 +48,16 @@ public class InitialRequestManager extends RequestManager
         implements ServerTransactionUser {
 
     public InitialRequestManager(UserAgent userAgent,
-            InviteHandler inviteHandler,
-            CancelHandler cancelHandler,
-            ByeHandler byeHandler,
-            OptionsHandler optionsHandler,
-            RegisterHandler registerHandler,
-            DialogManager dialogManager,
-            TransactionManager transactionManager,
-            TransportManager transportManager,
-            Logger logger) {
+                                 InviteHandler inviteHandler,
+                                 CancelHandler cancelHandler,
+                                 ByeHandler byeHandler,
+                                 OptionsHandler optionsHandler,
+                                 RegisterHandler registerHandler,
+                                 DialogManager dialogManager,
+                                 TransactionManager transactionManager,
+                                 TransportManager transportManager,
+                                 Logger logger,
+                                 NotifyHandler notifyHandler) {
         super(userAgent,
                 inviteHandler,
                 cancelHandler,
@@ -65,7 +67,8 @@ public class InitialRequestManager extends RequestManager
                 dialogManager,
                 transactionManager,
                 transportManager,
-                logger);
+                logger,
+                notifyHandler);
         registerHandler.setInitialRequestManager(this);
     }
 
@@ -273,6 +276,8 @@ public class InitialRequestManager extends RequestManager
             cancelHandler.handleCancel(sipRequest);
         } else if (RFC3261.METHOD_OPTIONS.equals(method)) {
             optionsHandler.handleOptions(sipRequest);
+        } else if (RFC3261.METHOD_NOTIFY.equals(method)) {
+            notifyHandler.handleNotify(sipRequest);
         }
     }
 

@@ -24,6 +24,7 @@ import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.core.useragent.handlers.ByeHandler;
 import net.sourceforge.peers.sip.core.useragent.handlers.CancelHandler;
 import net.sourceforge.peers.sip.core.useragent.handlers.InviteHandler;
+import net.sourceforge.peers.sip.core.useragent.handlers.NotifyHandler;
 import net.sourceforge.peers.sip.core.useragent.handlers.OptionsHandler;
 import net.sourceforge.peers.sip.core.useragent.handlers.RegisterHandler;
 import net.sourceforge.peers.sip.syntaxencoding.NameAddress;
@@ -96,6 +97,7 @@ public abstract class RequestManager {
     protected ByeHandler byeHandler;
     protected OptionsHandler optionsHandler;
     protected RegisterHandler registerHandler;
+    protected NotifyHandler notifyHandler;
     
     protected UserAgent userAgent;
     protected TransactionManager transactionManager;
@@ -111,7 +113,8 @@ public abstract class RequestManager {
             DialogManager dialogManager,
             TransactionManager transactionManager,
             TransportManager transportManager,
-            Logger logger) {
+            Logger logger,
+            NotifyHandler notifyHandler) {
         this.userAgent = userAgent;
         this.inviteHandler = inviteHandler;
         this.cancelHandler = cancelHandler;
@@ -121,6 +124,7 @@ public abstract class RequestManager {
         this.transactionManager = transactionManager;
         this.transportManager = transportManager;
         this.logger = logger;
+        this.notifyHandler = notifyHandler;
     }
 
     public InviteHandler getInviteHandler() {
