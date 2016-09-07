@@ -21,10 +21,12 @@ package net.sourceforge.peers.sip.core.useragent;
 
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.RFC3261;
+import net.sourceforge.peers.sip.RFC3265;
 import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.core.useragent.handlers.ByeHandler;
 import net.sourceforge.peers.sip.core.useragent.handlers.CancelHandler;
 import net.sourceforge.peers.sip.core.useragent.handlers.InviteHandler;
+import net.sourceforge.peers.sip.core.useragent.handlers.NotifyHandler;
 import net.sourceforge.peers.sip.core.useragent.handlers.OptionsHandler;
 import net.sourceforge.peers.sip.core.useragent.handlers.RegisterHandler;
 import net.sourceforge.peers.sip.syntaxencoding.NameAddress;
@@ -55,7 +57,8 @@ public class InitialRequestManager extends RequestManager
             DialogManager dialogManager,
             TransactionManager transactionManager,
             TransportManager transportManager,
-            Logger logger) {
+            Logger logger,
+            NotifyHandler notifyHandler) {
         super(userAgent,
                 inviteHandler,
                 cancelHandler,
@@ -65,7 +68,8 @@ public class InitialRequestManager extends RequestManager
                 dialogManager,
                 transactionManager,
                 transportManager,
-                logger);
+                logger,
+                notifyHandler);
         registerHandler.setInitialRequestManager(this);
     }
 
@@ -273,6 +277,8 @@ public class InitialRequestManager extends RequestManager
             cancelHandler.handleCancel(sipRequest);
         } else if (RFC3261.METHOD_OPTIONS.equals(method)) {
             optionsHandler.handleOptions(sipRequest);
+        } else if (RFC3265.METHOD_NOTIFY.equals(method)) {
+            notifyHandler.handleNotify(sipRequest);
         }
     }
 

@@ -32,6 +32,7 @@ import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.core.useragent.handlers.ByeHandler;
 import net.sourceforge.peers.sip.core.useragent.handlers.CancelHandler;
 import net.sourceforge.peers.sip.core.useragent.handlers.InviteHandler;
+import net.sourceforge.peers.sip.core.useragent.handlers.NotifyHandler;
 import net.sourceforge.peers.sip.core.useragent.handlers.OptionsHandler;
 import net.sourceforge.peers.sip.core.useragent.handlers.RegisterHandler;
 import net.sourceforge.peers.sip.syntaxencoding.SipURI;
@@ -166,6 +167,11 @@ public class UserAgent {
                 transactionManager,
                 transportManager,
                 logger);
+        NotifyHandler notifyHandler = new NotifyHandler(this,
+                dialogManager,
+                transactionManager,
+                transportManager,
+                logger);
         
         InitialRequestManager initialRequestManager =
             new InitialRequestManager(
@@ -178,7 +184,8 @@ public class UserAgent {
                 dialogManager,
                 transactionManager,
                 transportManager,
-                logger);
+                logger,
+                notifyHandler);
         MidDialogRequestManager midDialogRequestManager =
             new MidDialogRequestManager(
                 this,
@@ -190,7 +197,8 @@ public class UserAgent {
                 dialogManager,
                 transactionManager,
                 transportManager,
-                logger);
+                logger,
+                notifyHandler);
         
         uas = new UAS(this,
                 initialRequestManager,
