@@ -33,7 +33,6 @@ public final class RFC3261 {
     public static final String METHOD_BYE      = "BYE";
     public static final String METHOD_OPTIONS  = "OPTIONS";
     public static final String METHOD_CANCEL   = "CANCEL";
-    public static final String METHOD_NOTIFY   = "NOTIFY";
     
         //Classical form
     

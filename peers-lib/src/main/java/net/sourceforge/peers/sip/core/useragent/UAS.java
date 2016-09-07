@@ -20,6 +20,7 @@
 package net.sourceforge.peers.sip.core.useragent;
 
 import net.sourceforge.peers.sip.RFC3261;
+import net.sourceforge.peers.sip.RFC3265;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldName;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldValue;
 import net.sourceforge.peers.sip.syntaxencoding.SipHeaderParamName;
@@ -47,7 +48,7 @@ public class UAS implements SipServerTransportUser {
         SUPPORTED_METHODS.add(RFC3261.METHOD_CANCEL);
         SUPPORTED_METHODS.add(RFC3261.METHOD_OPTIONS);
         SUPPORTED_METHODS.add(RFC3261.METHOD_BYE);
-        SUPPORTED_METHODS.add(RFC3261.METHOD_NOTIFY);
+        SUPPORTED_METHODS.add(RFC3265.METHOD_NOTIFY);
     };
     
     private InitialRequestManager initialRequestManager;

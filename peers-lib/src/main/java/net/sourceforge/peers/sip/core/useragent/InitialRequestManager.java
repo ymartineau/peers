@@ -21,6 +21,7 @@ package net.sourceforge.peers.sip.core.useragent;
 
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.RFC3261;
+import net.sourceforge.peers.sip.RFC3265;
 import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.core.useragent.handlers.ByeHandler;
 import net.sourceforge.peers.sip.core.useragent.handlers.CancelHandler;
@@ -48,16 +49,16 @@ public class InitialRequestManager extends RequestManager
         implements ServerTransactionUser {
 
     public InitialRequestManager(UserAgent userAgent,
-                                 InviteHandler inviteHandler,
-                                 CancelHandler cancelHandler,
-                                 ByeHandler byeHandler,
-                                 OptionsHandler optionsHandler,
-                                 RegisterHandler registerHandler,
-                                 DialogManager dialogManager,
-                                 TransactionManager transactionManager,
-                                 TransportManager transportManager,
-                                 Logger logger,
-                                 NotifyHandler notifyHandler) {
+            InviteHandler inviteHandler,
+            CancelHandler cancelHandler,
+            ByeHandler byeHandler,
+            OptionsHandler optionsHandler,
+            RegisterHandler registerHandler,
+            DialogManager dialogManager,
+            TransactionManager transactionManager,
+            TransportManager transportManager,
+            Logger logger,
+            NotifyHandler notifyHandler) {
         super(userAgent,
                 inviteHandler,
                 cancelHandler,
@@ -276,7 +277,7 @@ public class InitialRequestManager extends RequestManager
             cancelHandler.handleCancel(sipRequest);
         } else if (RFC3261.METHOD_OPTIONS.equals(method)) {
             optionsHandler.handleOptions(sipRequest);
-        } else if (RFC3261.METHOD_NOTIFY.equals(method)) {
+        } else if (RFC3265.METHOD_NOTIFY.equals(method)) {
             notifyHandler.handleNotify(sipRequest);
         }
     }
