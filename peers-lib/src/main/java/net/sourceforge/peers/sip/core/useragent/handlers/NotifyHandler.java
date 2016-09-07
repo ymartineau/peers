@@ -51,67 +51,13 @@ public class NotifyHandler extends DialogMethodHandler implements ServerTransact
 
     private synchronized void sendSuccessfulResponse(SipRequest sipRequest, Dialog dialog) {
         sdpManager = new SDPManager(userAgent, logger);
-        SipHeaders reqHeaders = sipRequest.getSipHeaders();
-        SipHeaderFieldValue contentType =
-                reqHeaders.get(new SipHeaderFieldName(RFC3261.HDR_CONTENT_TYPE));
 
-
-        if (RFC3261.CONTENT_TYPE_SDP.equals(contentType)) {
-            //TODO
-//            String sdpResponse;
-//            try {
-//                sdpResponse = sdpManager.handleOffer(
-//                        new String(sipRequest.getBody()));
-//            } catch (NoCodecException e) {
-//                sdpResponse = sdpManager.generateErrorResponse();
-//            }
-        } else {
-            // TODO manage empty bodies and non-application/sdp content type
-        }
-
-
-        //TODO if mode autoanswer just send 200 without asking any question
         SipResponse sipResponse =
                 RequestManager.generateResponse(
                         sipRequest,
                         dialog,
                         RFC3261.CODE_200_OK,
                         RFC3261.REASON_200_OK);
-
-        // TODO 13.3 dialog invite-specific processing
-
-        // TODO timer if there is an Expires header in INVITE
-
-        // TODO 3xx
-
-        // TODO 486 or 600
-
-        byte[] offerBytes = sipRequest.getBody();
-        SessionDescription answer;
-        try {
-            DatagramSocket datagramSocket = getDatagramSocket();
-
-            if (offerBytes != null && contentType != null &&
-                    RFC3261.CONTENT_TYPE_SDP.equals(contentType.getValue())) {
-                // create response in 200
-                try {
-                    SessionDescription offer = sdpManager.parse(offerBytes);
-                    answer = sdpManager.createSessionDescription(offer,
-                            datagramSocket.getLocalPort());
-                    mediaDestination = sdpManager.getMediaDestination(offer);
-                } catch (NoCodecException e) {
-                    answer = sdpManager.createSessionDescription(null,
-                            datagramSocket.getLocalPort());
-                }
-            } else {
-                // create offer in 200 (never tested...)
-                answer = sdpManager.createSessionDescription(null,
-                        datagramSocket.getLocalPort());
-            }
-            sipResponse.setBody(answer.toString().getBytes());
-        } catch (IOException e) {
-            logger.error(e.getMessage(), e);
-        }
 
         SipHeaders respHeaders = sipResponse.getSipHeaders();
         respHeaders.add(new SipHeaderFieldName(RFC3261.HDR_CONTENT_TYPE),
@@ -123,7 +69,6 @@ public class NotifyHandler extends DialogMethodHandler implements ServerTransact
         ServerTransaction serverTransaction = transactionManager
                 .getServerTransaction(sipRequest);
         if (serverTransaction == null) {
-            // in re-INVITE case, no serverTransaction has been created
             serverTransaction = transactionManager.createServerTransaction(sipResponse,
                             userAgent.getSipPort(), RFC3261.TRANSPORT_UDP, this,
                             sipRequest);
@@ -133,12 +78,6 @@ public class NotifyHandler extends DialogMethodHandler implements ServerTransact
         serverTransaction.receivedRequest(sipRequest);
 
         serverTransaction.sendReponse(sipResponse);
-        // TODO manage retransmission of the response (send to the transport)
-        // until ACK arrives, if no ACK is received within 64*T1, confirm dialog
-        // and terminate it with a BYE
-
-//        logger.getInstance().debug("before dialog.receivedOrSent2xx();");
-//        logger.getInstance().debug("dialog state: " + dialog.getState());
     }
 
     private DatagramSocket getDatagramSocket() {
