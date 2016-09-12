@@ -5,9 +5,6 @@ import net.sourceforge.peers.sdp.SDPManager;
 import net.sourceforge.peers.sip.RFC3261;
 import net.sourceforge.peers.sip.core.useragent.RequestManager;
 import net.sourceforge.peers.sip.core.useragent.UserAgent;
-import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldName;
-import net.sourceforge.peers.sip.syntaxencoding.SipHeaderFieldValue;
-import net.sourceforge.peers.sip.syntaxencoding.SipHeaders;
 import net.sourceforge.peers.sip.transaction.ServerTransaction;
 import net.sourceforge.peers.sip.transaction.ServerTransactionUser;
 import net.sourceforge.peers.sip.transaction.Transaction;
@@ -37,10 +34,6 @@ public class NotifyHandler extends DialogMethodHandler implements ServerTransact
                         dialog,
                         RFC3261.CODE_200_OK,
                         RFC3261.REASON_200_OK);
-
-        SipHeaders respHeaders = sipResponse.getSipHeaders();
-        respHeaders.add(new SipHeaderFieldName(RFC3261.HDR_CONTENT_TYPE),
-                new SipHeaderFieldValue(RFC3261.CONTENT_TYPE_SDP));
 
         ServerTransaction serverTransaction = transactionManager
                 .getServerTransaction(sipRequest);
