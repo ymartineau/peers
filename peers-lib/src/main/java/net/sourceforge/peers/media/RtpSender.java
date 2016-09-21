@@ -136,7 +136,7 @@ public class RtpSender implements Runnable {
                             System.arraycopy(pauseBuffer, 0, buffer, 0, BUF_SIZE);
                             numBytesRead = BUF_SIZE;
                         } else {
-                            while (numBytesRead < BUF_SIZE) {
+                            while ((numBytesRead < BUF_SIZE) && (encodedDataAvailable() > 0)) {
                                 // expect that the buffer is full
                                 tempBytesRead = encodedData.read(buffer, numBytesRead, BUF_SIZE - numBytesRead);
                                 if (tempBytesRead < 0) {
