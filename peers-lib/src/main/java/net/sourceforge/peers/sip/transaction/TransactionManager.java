@@ -133,7 +133,7 @@ public class TransactionManager {
             SipRequest sipRequest = transaction.getRequest();
             String reqCallId = Utils.getMessageCallId(sipRequest);
             String reqMethod = sipRequest.getMethod();
-            if (callId.equals(reqCallId) && method.equals(reqMethod)) {
+            if (reqCallId.equals(callId) && method.equals(reqMethod)) {
                 clientTransactionsFromCallId.add(clientTransaction);
             }
         }
