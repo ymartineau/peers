@@ -96,7 +96,8 @@ public class RtpSender implements Runnable {
             byte[] pauseBuffer = new byte[BUF_SIZE];
             Arrays.fill(pauseBuffer, silenceByte(codec));
             int timestamp = 0;
-            int numBytesRead;
+            int numBytesRead = 0;
+            boolean currentlyReading = false;
             int tempBytesRead;
             long sleepTime = 0;
             long lastSentTime = System.nanoTime();
@@ -115,7 +116,9 @@ public class RtpSender implements Runnable {
                     byte[] data = pushedPacket.getData();
                     rtpPacket.setData(data);
                 } else {
-                    numBytesRead = 0;
+                    if (!currentlyReading) {
+                        numBytesRead = 0;
+                    }
                     try {
                         if (isPaused) {
                             synchronized (pauseSync) {
@@ -136,8 +139,7 @@ public class RtpSender implements Runnable {
                             System.arraycopy(pauseBuffer, 0, buffer, 0, BUF_SIZE);
                             numBytesRead = BUF_SIZE;
                         } else {
-                            while (numBytesRead < BUF_SIZE) {
-                                // expect that the buffer is full
+                            while ((numBytesRead < BUF_SIZE) && (encodedDataAvailable() > 0)) {
                                 tempBytesRead = encodedData.read(buffer, numBytesRead, BUF_SIZE - numBytesRead);
                                 if (tempBytesRead < 0) {
                                     setStopped(true);
@@ -145,10 +147,17 @@ public class RtpSender implements Runnable {
                                 }
                                 numBytesRead += tempBytesRead;
                             }
+                            // Make sure numBytesRead is not reset in next loop if available data is less than BUF_SIZE
+                            currentlyReading = ((numBytesRead > 0) && (numBytesRead < BUF_SIZE));
                         }
                     } catch (IOException e) {
                         // Getting an IOException reading from rawData is expected after the encoder has been stopped
                         if (!isStopped) logger.error("Error reading encoded data", e);
+                    }
+
+                    //Only send full buffers
+                    if(currentlyReading) {
+                        continue;
                     }
 
                     byte[] trimmedBuffer;

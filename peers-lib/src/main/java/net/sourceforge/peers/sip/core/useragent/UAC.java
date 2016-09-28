@@ -161,7 +161,7 @@ public class UAC {
 
     void terminate(SipRequest sipRequest) {
         String callId = Utils.getMessageCallId(sipRequest);
-        if (!guiClosedCallIds.contains(callId)) {
+        if (callId != null && !guiClosedCallIds.contains(callId)) {
             guiClosedCallIds.add(callId);
         }
         Dialog dialog = dialogManager.getDialog(callId);

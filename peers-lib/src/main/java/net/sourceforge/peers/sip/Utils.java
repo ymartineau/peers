@@ -69,8 +69,10 @@ public class Utils {
     }
     
     public final static String getMessageCallId(SipMessage sipMessage) {
+        if (sipMessage == null || sipMessage.getSipHeaders() == null) return null;
         SipHeaderFieldValue callId = sipMessage.getSipHeaders().get(
                 new SipHeaderFieldName(RFC3261.HDR_CALLID));
+        if (callId == null) return null;
         return callId.getValue();
     }
     

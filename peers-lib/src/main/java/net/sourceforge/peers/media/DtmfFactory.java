@@ -87,6 +87,9 @@ public class DtmfFactory {
             rtpPacket = new RtpPacket();
             rtpPacket.setData(data);
             rtpPacket.setMarker(false);
+            if(r > 0) {
+                rtpPacket.setIncrementTimeStamp(false);
+            }
             rtpPacket.setPayloadType(RFC4733.PAYLOAD_TYPE_TELEPHONE_EVENT);
             packets.add(rtpPacket);
         }
