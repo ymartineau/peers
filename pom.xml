@@ -10,7 +10,7 @@
   
   <groupId>ae.teletronics.peers</groupId>
   <artifactId>peers</artifactId>
-  <version>0.5.2-SNAPSHOT</version>
+  <version>0.5.3-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <properties>
