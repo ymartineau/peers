@@ -226,6 +226,11 @@ public class RtpSender implements Runnable {
                     return;
                 }
             }
+            try {
+                encodedData.close();
+            } catch (IOException e) {
+                logger.error("Error closing encoded data input pipe", e);
+            }
             latch.countDown();
             if (latch.getCount() != 0) {
                 try {

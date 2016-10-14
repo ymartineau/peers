@@ -128,6 +128,11 @@ public abstract class Encoder implements Runnable {
                 }
             }
             try {
+                rawData.close();
+            } catch (IOException e) {
+                logger.error("Error closing raw data input pipe", e);
+            }
+            try {
                 encodedData.close();
             } catch (IOException e) {
                 logger.error("Error closing encoded data output pipe", e);
