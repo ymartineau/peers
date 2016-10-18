@@ -166,20 +166,20 @@ public class UAC {
         }
         Dialog dialog = dialogManager.getDialog(callId);
         SipRequest inviteWithAuth = getInviteWithAuth(callId);
+        SipRequest originatingRequest;
+        if (inviteWithAuth != null) {
+            originatingRequest = inviteWithAuth;
+        } else {
+            originatingRequest = sipRequest;
+        }
         if (dialog != null) {
-            SipRequest originatingRequest;
-            if (inviteWithAuth != null) {
-                originatingRequest = inviteWithAuth;
-            } else {
-                originatingRequest = sipRequest;
-            }
             ClientTransaction clientTransaction =
-                transactionManager.getClientTransaction(originatingRequest);
+                (originatingRequest != null)?transactionManager.getClientTransaction(originatingRequest):null;
             if (clientTransaction != null) {
                 synchronized (clientTransaction) {
                     DialogState dialogState = dialog.getState();
                     if (dialog.EARLY.equals(dialogState)) {
-                        initialRequestManager.createCancel(inviteWithAuth,
+                        initialRequestManager.createCancel(originatingRequest,
                                 midDialogRequestManager, profileUri);
                     } else if (dialog.CONFIRMED.equals(dialogState)) {
                         // clientTransaction not yet removed
@@ -197,8 +197,7 @@ public class UAC {
             }
         } else {
             InviteClientTransaction inviteClientTransaction =
-                (InviteClientTransaction)transactionManager
-                    .getClientTransaction(inviteWithAuth);
+                (originatingRequest != null)?(InviteClientTransaction)transactionManager.getClientTransaction(originatingRequest):null;
             if (inviteClientTransaction == null) {
                 logger.error("cannot find invite client transaction" +
                         " for call " + callId);
@@ -208,7 +207,7 @@ public class UAC {
                 if (sipResponse != null) {
                     int statusCode = sipResponse.getStatusCode();
                     if (statusCode < RFC3261.CODE_200_OK) {
-                        initialRequestManager.createCancel(inviteWithAuth,
+                        initialRequestManager.createCancel(originatingRequest,
                                 midDialogRequestManager, profileUri);
                     }
                 }
