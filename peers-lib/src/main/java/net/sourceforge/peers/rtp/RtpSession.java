@@ -234,15 +234,15 @@ public class RtpSession {
             int length = datagramPacket.getLength();
             byte[] trimmedData = new byte[length];
             System.arraycopy(data, offset, trimmedData, 0, length);
+            RtpPacket rtpPacket = rtpParser.decode(trimmedData);
             if (mediaDebug) {
                 try {
-                    rtpSessionInput.write(trimmedData);
+                    rtpSessionInput.write(rtpPacket.getData());
                 } catch (IOException e) {
                     logger.error("cannot write to file", e);
                     return;
                 }
             }
-            RtpPacket rtpPacket = rtpParser.decode(trimmedData);
             for (RtpListener rtpListener: rtpListeners) {
                 rtpListener.receivedRtpPacket(rtpPacket);
             }
