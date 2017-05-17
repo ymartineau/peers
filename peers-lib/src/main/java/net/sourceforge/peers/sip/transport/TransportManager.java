@@ -27,6 +27,7 @@ import static net.sourceforge.peers.sip.RFC3261.TRANSPORT_DEFAULT_PORT;
 import static net.sourceforge.peers.sip.RFC3261.TRANSPORT_PORT_SEP;
 import static net.sourceforge.peers.sip.RFC3261.TRANSPORT_SCTP;
 import static net.sourceforge.peers.sip.RFC3261.TRANSPORT_TCP;
+import static net.sourceforge.peers.sip.RFC3261.TRANSPORT_TLS;
 import static net.sourceforge.peers.sip.RFC3261.TRANSPORT_TLS_PORT;
 import static net.sourceforge.peers.sip.RFC3261.TRANSPORT_UDP;
 import static net.sourceforge.peers.sip.RFC3261.TRANSPORT_UDP_USUAL_MAX_SIZE;
@@ -138,7 +139,7 @@ public class TransportManager {
             if (TRANSPORT_TCP.equals(transport) || TRANSPORT_UDP.equals(transport)
                     || TRANSPORT_SCTP.equals(transport)) {
                 sipPort = TRANSPORT_DEFAULT_PORT;
-            } else if (TRANSPORT_SCTP.equals(transport)) {
+            } else if (TRANSPORT_TLS.equals(transport)) {
                 sipPort = TRANSPORT_TLS_PORT;
             } else {
                 throw new RuntimeException("unknown transport type");
