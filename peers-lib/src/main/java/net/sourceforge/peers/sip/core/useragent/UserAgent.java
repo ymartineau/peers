@@ -19,11 +19,6 @@
 
 package net.sourceforge.peers.sip.core.useragent;
 
-import java.io.File;
-import java.net.SocketException;
-import java.util.ArrayList;
-import java.util.List;
-
 import net.sourceforge.peers.Config;
 import net.sourceforge.peers.FileLogger;
 import net.sourceforge.peers.Logger;
@@ -37,6 +32,7 @@ import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.core.useragent.handlers.ByeHandler;
 import net.sourceforge.peers.sip.core.useragent.handlers.CancelHandler;
 import net.sourceforge.peers.sip.core.useragent.handlers.InviteHandler;
+import net.sourceforge.peers.sip.core.useragent.handlers.NotifyHandler;
 import net.sourceforge.peers.sip.core.useragent.handlers.OptionsHandler;
 import net.sourceforge.peers.sip.core.useragent.handlers.RegisterHandler;
 import net.sourceforge.peers.sip.syntaxencoding.SipURI;
@@ -49,6 +45,11 @@ import net.sourceforge.peers.sip.transport.SipMessage;
 import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.SipResponse;
 import net.sourceforge.peers.sip.transport.TransportManager;
+
+import java.io.File;
+import java.net.SocketException;
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class UserAgent {
@@ -166,6 +167,11 @@ public class UserAgent {
                 transactionManager,
                 transportManager,
                 logger);
+        NotifyHandler notifyHandler = new NotifyHandler(this,
+                dialogManager,
+                transactionManager,
+                transportManager,
+                logger);
         
         InitialRequestManager initialRequestManager =
             new InitialRequestManager(
@@ -178,7 +184,8 @@ public class UserAgent {
                 dialogManager,
                 transactionManager,
                 transportManager,
-                logger);
+                logger,
+                notifyHandler);
         MidDialogRequestManager midDialogRequestManager =
             new MidDialogRequestManager(
                 this,
@@ -190,7 +197,8 @@ public class UserAgent {
                 dialogManager,
                 transactionManager,
                 transportManager,
-                logger);
+                logger,
+                notifyHandler);
         
         uas = new UAS(this,
                 initialRequestManager,
@@ -387,6 +395,13 @@ public class UserAgent {
 
     public String getPeersHome() {
         return peersHome;
+    }
+
+    public String getRecordingDir() {
+        String mediaDir = getConfig().getMediaDir();
+        String dir = (mediaDir == null || mediaDir == "" ? getPeersHome() + File.separator
+                + AbstractSoundManager.MEDIA_DIR : mediaDir) + File.separator;
+        return dir;
     }
 
     public TransportManager getTransportManager() {

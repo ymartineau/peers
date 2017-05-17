@@ -23,13 +23,13 @@
       <version>${project.version}</version>
     </dependency>
 
-    <dependency>
-      <groupId>sun.plugin</groupId>
-      <artifactId>plugin</artifactId>
-      <version>1.6</version>
-      <scope>system</scope>
-      <systemPath>${java.home}/lib/plugin.jar</systemPath>
-    </dependency>
+    <!--<dependency>-->
+      <!--<groupId>sun.plugin</groupId>-->
+      <!--<artifactId>plugin</artifactId>-->
+      <!--<version>1.6</version>-->
+      <!--<scope>system</scope>-->
+      <!--<systemPath>${java.home}/lib/plugin.jar</systemPath>-->
+    <!--</dependency>-->
 
     <dependency>
       <groupId>${project.groupId}</groupId>

@@ -67,4 +67,6 @@
        mono-channel, little endian.  -->
   <!-- Example: media/message.raw -->
   <mediaFile></mediaFile>
+  <!-- any call recording made from mediaDebug will be saved to directory specified -->
+  <mediaDir></mediaDir>
 </peers>
