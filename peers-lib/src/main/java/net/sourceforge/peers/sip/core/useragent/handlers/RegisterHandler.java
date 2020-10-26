@@ -249,6 +249,9 @@ public class RegisterHandler extends MethodHandler
             	if (delay == -1) {
             		delay = Integer.parseInt(expires) - REFRESH_MARGIN;
             	}
+                if (timer != null) {
+                    timer.cancel();
+                }
                 timer = new Timer(getClass().getSimpleName()
                         + " refresh timer");
                 timer.schedule(new RefreshTimerTask(), delay * 1000);

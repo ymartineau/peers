@@ -62,6 +62,11 @@ public class UdpMessageReceiver extends MessageReceiver {
                         datagramSocket.receive(packet);
                     } catch (SocketTimeoutException e) {
                         return socketTimeoutException;
+                    } catch(SocketException e) {
+                        if (e.getMessage().equals("Socket closed") && ! isListening()) // race condition
+                            return noException;
+                        else
+                            return ioException;
                     } catch (IOException e) {
                         logger.error("cannot receive packet", e);
                         return ioException;

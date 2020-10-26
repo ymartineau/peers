@@ -339,6 +339,10 @@ public class InviteHandler extends DialogMethodHandler
     //////////////////////////////////////////////////////////
     // UAC methods
     //////////////////////////////////////////////////////////
+
+    public void closeTimers() {
+        ackTimer.cancel();
+    }
     
     public ClientTransaction preProcessInvite(SipRequest sipRequest)
             throws SipUriSyntaxException {

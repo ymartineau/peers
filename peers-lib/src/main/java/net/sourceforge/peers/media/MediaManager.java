@@ -19,17 +19,17 @@
 
 package net.sourceforge.peers.media;
 
-import java.io.IOException;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.List;
-
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.rtp.RtpPacket;
 import net.sourceforge.peers.rtp.RtpSession;
 import net.sourceforge.peers.sdp.Codec;
 import net.sourceforge.peers.sip.core.useragent.UserAgent;
+
+import java.io.IOException;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.List;
 
 public class MediaManager {
 
@@ -309,7 +309,9 @@ public class MediaManager {
             }
             break;
         case file:
-            fileReader.close();
+            if (fileReader != null) {
+                fileReader.close();
+            }
             break;
         default:
             break;
