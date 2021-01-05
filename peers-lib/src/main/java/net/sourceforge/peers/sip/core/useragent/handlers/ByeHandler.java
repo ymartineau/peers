@@ -27,6 +27,7 @@ import net.sourceforge.peers.sip.core.useragent.UserAgent;
 import net.sourceforge.peers.sip.transaction.ClientTransaction;
 import net.sourceforge.peers.sip.transaction.ClientTransactionUser;
 import net.sourceforge.peers.sip.transaction.NonInviteClientTransaction;
+import net.sourceforge.peers.sip.transaction.NonInviteServerTransaction;
 import net.sourceforge.peers.sip.transaction.ServerTransaction;
 import net.sourceforge.peers.sip.transaction.ServerTransactionUser;
 import net.sourceforge.peers.sip.transaction.Transaction;
@@ -103,7 +104,11 @@ public class ByeHandler extends DialogMethodHandler
         
         serverTransaction.sendReponse(sipResponse);
         
-        dialogManager.removeDialog(dialog.getId());
+        // repeat with line 78.
+        // reply ACK to server, when get BYE signal
+        if (serverTransaction instanceof NonInviteServerTransaction) {
+            ((NonInviteServerTransaction)serverTransaction).sendLastResponse();
+        }
 
         SipListener sipListener = userAgent.getSipListener();
         if (sipListener != null) {

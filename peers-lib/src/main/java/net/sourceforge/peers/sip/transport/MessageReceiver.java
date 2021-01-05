@@ -52,6 +52,8 @@ public abstract class MessageReceiver implements Runnable {
     private Config config;
     protected Logger logger;
 
+    protected long stopTime = -1L;
+
     public MessageReceiver(int port, TransactionManager transactionManager,
             TransportManager transportManager, Config config, Logger logger) {
         super();
@@ -187,7 +189,12 @@ public abstract class MessageReceiver implements Runnable {
     }
     
     public synchronized void setListening(boolean isListening) {
+        logger.info("execute stop listen ...");
         this.isListening = isListening;
+
+        if(!isListening){
+            this.stopTime = System.currentTimeMillis();
+        }
     }
 
     public synchronized boolean isListening() {
