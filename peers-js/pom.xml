@@ -6,6 +6,7 @@
   <artifactId>peers-js</artifactId>
   <version>0.5.1-SNAPSHOT</version>
   <packaging>jar</packaging>
+  <name>Peers JavaScript demo page</name>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -132,6 +133,8 @@
           <compilerArguments>
             <endorseddirs>${project.build.directory}/endorsed</endorseddirs>
           </compilerArguments>
+            <source>1.6</source>
+            <target>1.6</target>
         </configuration>
       </plugin>
 

@@ -21,7 +21,7 @@ calling one phase automatically calls all previous phases.
 
 1 phase: n goals
 
-goals are independant tasks that can be bound to a phase or not
+goals are independent tasks that can be bound to a phase or not
 
 packaging defines the way goals and phases associated:
 
