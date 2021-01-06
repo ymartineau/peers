@@ -29,4 +29,10 @@ public class InviteClientTransactionStateTerminated extends
         super(id, inviteClientTransaction, logger);
     }
 
+    @Override
+    public void received2xx() {
+        // when receive 2xx, reply ACK to server, In case some server think this call not succeed, and terminate this call
+        logger.info("received 2xx on terminated.");
+        inviteClientTransaction.createAndSendAck();
+    }
 }

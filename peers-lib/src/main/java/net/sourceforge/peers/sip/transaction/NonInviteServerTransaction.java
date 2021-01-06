@@ -96,7 +96,7 @@ public class NonInviteServerTransaction extends NonInviteTransaction
         }
     }
     
-    void sendLastResponse() {
+    public void sendLastResponse() {
         //sipServerTransport.sendResponse(responses.get(responses.size() - 1));
         int nbOfResponses = responses.size();
         if (nbOfResponses > 0) {

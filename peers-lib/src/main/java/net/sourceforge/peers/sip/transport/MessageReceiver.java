@@ -52,6 +52,8 @@ public abstract class MessageReceiver implements Runnable {
     private Config config;
     protected Logger logger;
 
+    protected long stopTime = -1L;
+
     public MessageReceiver(int port, TransactionManager transactionManager,
             TransportManager transportManager, Config config, Logger logger) {
         super();
@@ -64,7 +66,8 @@ public abstract class MessageReceiver implements Runnable {
     }
     
     public void run() {
-        while (isListening) {
+        // delay to hang up the call when send CANCEL, the server will answer 487, then hang up, in case the server constantly answer 487 with no response
+        while (isListening || (stopTime > 0 && System.currentTimeMillis() - stopTime < 100)) {
             try {
                 listen();
             } catch (IOException e) {
@@ -187,7 +190,12 @@ public abstract class MessageReceiver implements Runnable {
     }
     
     public synchronized void setListening(boolean isListening) {
+        logger.info("execute stop listen ...");
         this.isListening = isListening;
+
+        if(!isListening){
+            this.stopTime = System.currentTimeMillis();
+        }
     }
 
     public synchronized boolean isListening() {
