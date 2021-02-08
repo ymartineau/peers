@@ -19,17 +19,17 @@
 
 package net.sourceforge.peers.media;
 
-import java.io.IOException;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.List;
-
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.rtp.RtpPacket;
 import net.sourceforge.peers.rtp.RtpSession;
 import net.sourceforge.peers.sdp.Codec;
 import net.sourceforge.peers.sip.core.useragent.UserAgent;
+
+import java.io.IOException;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.List;
 
 public class MediaManager {
 
@@ -62,7 +62,7 @@ public class MediaManager {
         }
         
         rtpSession = new RtpSession(inetAddress, datagramSocket,
-                userAgent.isMediaDebug(), logger, userAgent.getPeersHome());
+                userAgent.isMediaDebug(), logger, userAgent.getRecordingDir());
         
         try {
             inetAddress = InetAddress.getByName(remoteAddress);
@@ -76,7 +76,7 @@ public class MediaManager {
         try {
             captureRtpSender = new CaptureRtpSender(rtpSession,
                     soundSource, userAgent.isMediaDebug(), codec, logger,
-                    userAgent.getPeersHome());
+                    userAgent.getRecordingDir());
         } catch (IOException e) {
             logger.error("input/output error", e);
             return;
@@ -150,7 +150,7 @@ public class MediaManager {
         Codec codec, SoundSource soundSource) {
         rtpSession = new RtpSession(userAgent.getConfig()
                 .getLocalInetAddress(), datagramSocket,
-                userAgent.isMediaDebug(), logger, userAgent.getPeersHome());
+                userAgent.isMediaDebug(), logger, userAgent.getRecordingDir());
 
         try {
             InetAddress inetAddress = InetAddress.getByName(destAddress);
@@ -163,7 +163,7 @@ public class MediaManager {
         try {
             captureRtpSender = new CaptureRtpSender(rtpSession,
                     soundSource, userAgent.isMediaDebug(), codec, logger,
-                    userAgent.getPeersHome());
+                    userAgent.getRecordingDir());
         } catch (IOException e) {
             logger.error("input/output error", e);
             return;

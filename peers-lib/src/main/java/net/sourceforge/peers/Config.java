@@ -19,10 +19,10 @@
 
 package net.sourceforge.peers;
 
-import java.net.InetAddress;
-
 import net.sourceforge.peers.media.MediaMode;
 import net.sourceforge.peers.sip.syntaxencoding.SipURI;
+
+import java.net.InetAddress;
 
 public interface Config {
 
@@ -49,6 +49,8 @@ public interface Config {
     public void setMediaMode(MediaMode mediaMode);
     public void setMediaDebug(boolean mediaDebug);
     public void setMediaFile(String mediaFile);
+    public String getMediaDir();
+    public void setMediaDir(String dir);
     public void setRtpPort(int rtpPort);
     public void setAuthorizationUsername(String authorizationUsername);
 

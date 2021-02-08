@@ -57,8 +57,10 @@ public class CustomConfig implements Config {
     @Override public void setMediaMode(MediaMode mediaMode) { }
     @Override public void setMediaDebug(boolean mediaDebug) { }
     @Override public void setMediaFile(String mediaFile) { }
+    @Override public void setMediaDir(String dir) {}
+    @Override public String getMediaDir() { return "someDir"; }
     @Override public void setRtpPort(int rtpPort) { }
     @Override public void save() { }
     @Override public void setAuthorizationUsername(String authorizationUsername) { }
-    
+
 }

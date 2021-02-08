@@ -54,6 +54,7 @@ public class RtpSession {
     private RtpParser rtpParser;
     private FileOutputStream rtpSessionOutput;
     private FileOutputStream rtpSessionInput;
+    private FileOutputStream rtpSessionRawAudio;
     private boolean mediaDebug;
     private Logger logger;
     private String peersHome;
@@ -81,6 +82,8 @@ public class RtpSession {
                 rtpSessionOutput = new FileOutputStream(fileName);
                 fileName = dir + date + "_rtp_session.input";
                 rtpSessionInput = new FileOutputStream(fileName);
+                fileName = dir + date + "_rtp_session.raw";
+                rtpSessionRawAudio = new FileOutputStream(fileName);
             } catch (FileNotFoundException e) {
                 logger.error("cannot create file", e);
                 return;
@@ -156,6 +159,7 @@ public class RtpSession {
             try {
                 rtpSessionOutput.close();
                 rtpSessionInput.close();
+                rtpSessionRawAudio.close();
             } catch (IOException e) {
                 logger.error("cannot close file", e);
             }
@@ -234,15 +238,16 @@ public class RtpSession {
             int length = datagramPacket.getLength();
             byte[] trimmedData = new byte[length];
             System.arraycopy(data, offset, trimmedData, 0, length);
+            RtpPacket rtpPacket = rtpParser.decode(trimmedData);
             if (mediaDebug) {
                 try {
                     rtpSessionInput.write(trimmedData);
+                    rtpSessionRawAudio.write(rtpPacket.getData());
                 } catch (IOException e) {
                     logger.error("cannot write to file", e);
                     return;
                 }
             }
-            RtpPacket rtpPacket = rtpParser.decode(trimmedData);
             for (RtpListener rtpListener: rtpListeners) {
                 rtpListener.receivedRtpPacket(rtpPacket);
             }
