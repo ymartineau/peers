@@ -38,11 +38,15 @@ public class CustomConfig implements Config {
 
     @Override public String getAuthorizationUsername() { return getUserPart(); }
 
+    public String getUserAgentString() {
+        return "peers-lib";
+    }
+
     @Override
     public void setPublicInetAddress(InetAddress inetAddress) {
         publicIpAddress = inetAddress;
     }
-    
+
     @Override public SipURI getOutboundProxy() { return null; }
     @Override public int getSipPort() { return 0; }
     @Override public boolean isMediaDebug() { return false; }
@@ -60,5 +64,7 @@ public class CustomConfig implements Config {
     @Override public void setRtpPort(int rtpPort) { }
     @Override public void save() { }
     @Override public void setAuthorizationUsername(String authorizationUsername) { }
-    
+
+    public void setUserAgentString(String uaString) { }
+
 }
