@@ -13,8 +13,8 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-    
-    Copyright 2012 Yohann Martineau 
+
+    Copyright 2012 Yohann Martineau
 */
 
 package net.sourceforge.peers;
@@ -87,6 +87,8 @@ public class JavaConfig implements Config {
         this.supportedCodecs = supportedCodecs;
     }
 
+    private String userAgentString;
+
     @Override
     public void save() {
         throw new RuntimeException("not implemented");
@@ -144,6 +146,10 @@ public class JavaConfig implements Config {
 
     public String getAuthorizationUsername() {
         return authorizationUsername;
+    }
+
+    public String getUserAgentString() {
+        return userAgentString;
     }
 
     @Override
@@ -211,6 +217,10 @@ public class JavaConfig implements Config {
 
     public void setAuthorizationUsername(String authorizationUsername) {
         this.authorizationUsername = authorizationUsername;
+    }
+
+    public void setUserAgentString(String uaString) {
+        this.userAgentString = uaString;
     }
 
     @Override

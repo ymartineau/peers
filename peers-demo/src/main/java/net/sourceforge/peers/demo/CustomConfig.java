@@ -41,7 +41,12 @@ public class CustomConfig implements Config {
     @Override
     public MediaMode getMediaMode() { return MediaMode.captureAndPlayback; }
 
-    @Override public String getAuthorizationUsername() { return getUserPart(); }
+    public String getAuthorizationUsername() { return getUserPart(); }
+
+
+    public String getUserAgentString() {
+        return "peers-lib";
+    }
 
     @Override
     public List<Codec> getSupportedCodecs() {
@@ -59,7 +64,7 @@ public class CustomConfig implements Config {
     public void setPublicInetAddress(InetAddress inetAddress) {
         publicIpAddress = inetAddress;
     }
-    
+
     @Override public SipURI getOutboundProxy() { return null; }
     @Override public int getSipPort() { return 0; }
     @Override public boolean isMediaDebug() { return false; }
@@ -82,4 +87,8 @@ public class CustomConfig implements Config {
 
     @Override
     public void setSupportedCodecs(List<Codec> supportedCodecs) { }
+
+    @Override
+    public void setUserAgentString(String uaString) { }
+
 }

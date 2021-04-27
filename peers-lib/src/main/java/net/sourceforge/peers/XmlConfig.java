@@ -13,8 +13,8 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-    
-    Copyright 2010-2013 Yohann Martineau 
+
+    Copyright 2010-2013 Yohann Martineau
 */
 
 package net.sourceforge.peers;
@@ -72,9 +72,10 @@ public class XmlConfig implements Config {
     private int rtpPort;
     private String authorizationUsername;
     private List<Codec> supportedCodecs;
-    
+    private String userAgentString;
+
     // corresponding DOM nodes
-    
+
     private Node ipAddressNode;
     private Node userPartNode;
     private Node domainNode;
@@ -337,6 +338,11 @@ public class XmlConfig implements Config {
     }
 
     @Override
+    public String getUserAgentString() {
+        return userAgentString;
+    }
+
+    @Override
     public void setLocalInetAddress(InetAddress inetAddress) {
         this.localInetAddress = inetAddress;
         ipAddressNode.setTextContent(inetAddress.getHostAddress());
@@ -403,6 +409,10 @@ public class XmlConfig implements Config {
     public void setAuthorizationUsername(String authorizationUsername) {
         this.authorizationUsername = authorizationUsername;
         authUserNode.setTextContent(authorizationUsername);
+    }
+
+    public void setUserAgentString(String uaString) {
+        this.userAgentString = uaString;
     }
 
     @Override

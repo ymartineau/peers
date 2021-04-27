@@ -68,7 +68,7 @@ public class SipHeaders {
     }
     
     public void remove(SipHeaderFieldName name) {
-        headers.remove(name);
+        headers.remove(new SipHeader(name, null));
     }
     
     public boolean contains(SipHeaderFieldName name) {

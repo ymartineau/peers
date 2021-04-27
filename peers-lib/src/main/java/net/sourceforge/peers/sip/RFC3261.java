@@ -13,29 +13,29 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-    
-    Copyright 2007, 2008, 2009, 2010 Yohann Martineau 
+
+    Copyright 2007, 2008, 2009, 2010 Yohann Martineau
 */
 
 package net.sourceforge.peers.sip;
 
 public final class RFC3261 {
-    
+
     //SYNTAX ENCODING
-    
+
       //HEADERS
-    
+
         //Methods
-    
+
     public static final String METHOD_INVITE   = "INVITE";
     public static final String METHOD_ACK      = "ACK";
     public static final String METHOD_REGISTER = "REGISTER";
     public static final String METHOD_BYE      = "BYE";
     public static final String METHOD_OPTIONS  = "OPTIONS";
     public static final String METHOD_CANCEL   = "CANCEL";
-    
+
         //Classical form
-    
+
     public static final String HDR_ALLOW               = "Allow";
     public static final String HDR_AUTHORIZATION       = "Authorization";
     public static final String HDR_CALLID              = "Call-ID";
@@ -56,9 +56,10 @@ public final class RFC3261 {
     public static final String HDR_TO                  = "To";
     public static final String HDR_VIA                 = "Via";
     public static final String HDR_WWW_AUTHENTICATE    = "WWW-Authenticate";
-    
+    public static final String HRD_USER_AGENT          = "User-Agent";
+
         //Compact form
-    
+
     public static final char COMPACT_HDR_CALLID           = 'i';
     public static final char COMPACT_HDR_CONTACT          = 'm';
     public static final char COMPACT_HDR_CONTENT_ENCODING = 'e';
@@ -69,9 +70,9 @@ public final class RFC3261 {
     public static final char COMPACT_HDR_SUPPORTED        = 'k';
     public static final char COMPACT_HDR_TO               = 't';
     public static final char COMPACT_HDR_VIA              = 'v';
-    
+
         //Parameters
-    
+
     public static final String PARAM_BRANCH     = "branch";
     public static final String PARAM_EXPIRES    = "expires";
     public static final String PARAM_MADDR      = "maddr";
@@ -96,7 +97,7 @@ public final class RFC3261 {
     public static final char   LEFT_ANGLE_BRACKET   = '<';
     public static final char   RIGHT_ANGLE_BRACKET  = '>';
     public static final String HEADER_SEPARATOR     = ",";
-    
+
       //STATUS CODES
     public static final int CODE_MIN_PROV                            = 100;
     public static final int CODE_MIN_SUCCESS                         = 200;
@@ -113,7 +114,7 @@ public final class RFC3261 {
     public static final int CODE_486_BUSYHERE                        = 486;
     public static final int CODE_487_REQUEST_TERMINATED              = 487;
     public static final int CODE_500_SERVER_INTERNAL_ERROR           = 500;
-    
+
       //REASON PHRASES
     public static final String REASON_180_RINGING  = "Ringing";
     public static final String REASON_200_OK       = "OK";
@@ -126,9 +127,9 @@ public final class RFC3261 {
         "Request Terminated";
     public static final String REASON_500_SERVER_INTERNAL_ERROR =
         "Server Internal Error";
-    
+
     //TRANSPORT
-    
+
     public static final String TRANSPORT_UDP                = "UDP";
     public static final String TRANSPORT_TCP                = "TCP";
     public static final String TRANSPORT_SCTP               = "SCTP";
@@ -140,32 +141,32 @@ public final class RFC3261 {
     public static final int    TRANSPORT_DEFAULT_PORT       = 5060;
     public static final int    TRANSPORT_TLS_PORT           = 5061;
     public static final char   TRANSPORT_PORT_SEP           = ':';
-    
-    
+
+
     //TRANSACTION
-    
-    
+
+
     //TRANSACTION USER
-    
+
     public static final int    DEFAULT_MAXFORWARDS   = 70;
     public static final String BRANCHID_MAGIC_COOKIE = "z9hG4bK";
     public static final String SIP_SCHEME            = "sip";
     public static final char   SCHEME_SEPARATOR      = ':';
-    
+
     //TIMERS (in milliseconds)
-    
+
     public static final int TIMER_T1 = 500;
     public static final int TIMER_T2 = 4000;
     public static final int TIMER_T4 = 5000;
     public static final int TIMER_INVITE_CLIENT_TRANSACTION = 32000;
- 
-    
+
+
     //TRANSACTION USER
-    
-    
+
+
     //CORE
-    
+
     public static final String CONTENT_TYPE_SDP = "application/sdp";
     public static final int DEFAULT_EXPIRES = 3600;
-    
+
 }

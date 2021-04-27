@@ -13,8 +13,8 @@
 
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
-    
-    Copyright 2010 Yohann Martineau 
+
+    Copyright 2010 Yohann Martineau
 */
 
 package net.sourceforge.peers;
@@ -44,6 +44,7 @@ public interface Config {
     public int getRtpPort();
     public String getAuthorizationUsername();
     public List<Codec> getSupportedCodecs();
+    String getUserAgentString();
     public void setLocalInetAddress(InetAddress inetAddress);
     public void setPublicInetAddress(InetAddress inetAddress);
     public void setUserPart(String userPart);
@@ -58,5 +59,6 @@ public interface Config {
     public void setRtpPort(int rtpPort);
     public void setAuthorizationUsername(String authorizationUsername);
     public void setSupportedCodecs(List<Codec> supportedCodecs);
+    void setUserAgentString(String uaString);
 
 }
