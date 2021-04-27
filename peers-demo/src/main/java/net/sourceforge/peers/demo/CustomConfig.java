@@ -36,7 +36,8 @@ public class CustomConfig implements Config {
     @Override
     public MediaMode getMediaMode() { return MediaMode.captureAndPlayback; }
 
-    @Override public String getAuthorizationUsername() { return getUserPart(); }
+    public String getAuthorizationUsername() { return getUserPart(); }
+
 
     public String getUserAgentString() {
         return "peers-lib";
@@ -63,7 +64,7 @@ public class CustomConfig implements Config {
     @Override public void setMediaFile(String mediaFile) { }
     @Override public void setRtpPort(int rtpPort) { }
     @Override public void save() { }
-    @Override public void setAuthorizationUsername(String authorizationUsername) { }
+     public void setAuthorizationUsername(String authorizationUsername) { }
 
     public void setUserAgentString(String uaString) { }
 

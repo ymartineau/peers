@@ -1,24 +1,98 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
 
-  <groupId>net.sourceforge.peers</groupId>
-  <artifactId>peers</artifactId>
-  <version>0.5.1-SNAPSHOT</version>
-  <packaging>pom</packaging>
+    <groupId>net.sourceforge.peers</groupId>
+    <artifactId>peers</artifactId>
+    <version>0.5.1-SNAPSHOT</version>
+    <packaging>pom</packaging>
 
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <maven-deploy-plugin.version>2.8.2</maven-deploy-plugin.version>
+        <deploy_releases_url>https://repo/url/proj-release</deploy_releases_url>
+        <deploy_snapshots_url>https://repo/url/proj-snapshot</deploy_snapshots_url>
+    </properties>
 
-  <modules>
-    <module>peers-demo</module>
-    <module>peers-doc</module>
-    <module>peers-gui</module>
-    <module>peers-javaxsound</module>
-    <module>peers-js</module>
-    <module>peers-jws</module>
-    <module>peers-lib</module>
-  </modules>
+<!--    <modules>-->
+<!--        <module>peers-demo</module>-->
+<!--        <module>peers-doc</module>-->
+<!--        <module>peers-gui</module>-->
+<!--        <module>peers-javaxsound</module>-->
+<!--        <module>peers-js</module>-->
+<!--        <module>peers-jws</module>-->
+<!--        <module>peers-lib</module>-->
+<!--    </modules>-->
 
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>${maven-deploy-plugin.version}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+
+    <distributionManagement>
+        <repository>
+            <id>art-libs</id>
+            <url>${deploy_releases_url}</url>
+        </repository>
+        <snapshotRepository>
+            <id>art-libs</id>
+            <url>${deploy_snapshots_url}</url>
+        </snapshotRepository>
+    </distributionManagement>
+
+    <profiles>
+        <profile>
+            <id>peers-lib</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+                <property>
+                    <name>peers-lib</name>
+                    <value>true</value>
+                </property>
+            </activation>
+            <modules>
+                <module>peers-javaxsound</module>
+                <module>peers-lib</module>
+            </modules>
+        </profile>
+
+        <profile>
+            <id>shared</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <properties>
+                <deploy.releases.url>${deploy_releases_url}</deploy.releases.url>
+                <deploy.snapshots.url>${deploy_snapshots_url}</deploy.snapshots.url>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-source-plugin</artifactId>
+                        <configuration>
+                            <skipSource>true</skipSource>
+                        </configuration>
+                    </plugin>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-dependency-plugin</artifactId>
+                    </plugin>
+                    <plugin>
+                        <!-- wird hier 2mal ausgefuehrt?!?! -->
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-antrun-plugin</artifactId>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>
