@@ -152,6 +152,10 @@ public class JavaConfig implements Config {
         this.authorizationUsername = authorizationUsername;
     }
 
+    public long getRtpSendInterval() {
+        return 19562000;
+    }
+
     @Override
     public String getMediaFile() {
         return mediaFile;

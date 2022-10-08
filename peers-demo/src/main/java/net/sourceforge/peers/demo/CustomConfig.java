@@ -60,5 +60,9 @@ public class CustomConfig implements Config {
     @Override public void setRtpPort(int rtpPort) { }
     @Override public void save() { }
     @Override public void setAuthorizationUsername(String authorizationUsername) { }
-    
+
+    public long getRtpSendInterval() {
+        return 0;
+    }
+
 }

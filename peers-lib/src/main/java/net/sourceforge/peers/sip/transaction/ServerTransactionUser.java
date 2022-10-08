@@ -21,5 +21,5 @@ package net.sourceforge.peers.sip.transaction;
 
 public interface ServerTransactionUser {
 
-    public void transactionFailure();
+    void transactionFailure();
 }

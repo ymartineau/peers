@@ -51,5 +51,5 @@ public interface Config {
     public void setMediaFile(String mediaFile);
     public void setRtpPort(int rtpPort);
     public void setAuthorizationUsername(String authorizationUsername);
-
+    public long getRtpSendInterval();
 }

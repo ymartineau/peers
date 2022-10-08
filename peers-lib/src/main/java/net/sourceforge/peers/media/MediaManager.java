@@ -274,7 +274,7 @@ public class MediaManager {
     public void stopSession() {
         if (rtpSession != null) {
             rtpSession.stop();
-            while (!rtpSession.isSocketClosed()) {
+            while (rtpSession !=null && !rtpSession.isSocketClosed()) {
                 try {
                     Thread.sleep(15);
                 } catch (InterruptedException e) {
