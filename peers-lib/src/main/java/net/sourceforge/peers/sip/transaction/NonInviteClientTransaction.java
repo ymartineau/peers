@@ -87,7 +87,7 @@ public class NonInviteClientTransaction extends NonInviteTransaction
         
         remotePort = port;
         remoteInetAddress = inetAddress;
-        
+
         try {
             messageSender = transportManager.createClientTransport(
                     request, remoteInetAddress, remotePort, transport);

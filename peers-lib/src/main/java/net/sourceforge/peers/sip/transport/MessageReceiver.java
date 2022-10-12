@@ -136,7 +136,7 @@ public abstract class MessageReceiver implements Runnable {
         // RFC3261 18.2
 
         if (sipMessage instanceof SipRequest) {
-            SipRequest sipRequest = (SipRequest)sipMessage;
+            SipRequest sipRequest = (SipRequest) sipMessage;
             
             
             SipHeaderFieldValue topVia = Utils.getTopVia(sipRequest);

@@ -34,7 +34,7 @@ import net.sourceforge.peers.sip.RFC3261;
 
 public class UdpMessageSender extends MessageSender {
 
-    private DatagramSocket datagramSocket;
+    private final DatagramSocket datagramSocket;
     
     public UdpMessageSender(InetAddress inetAddress, int port,
             DatagramSocket datagramSocket, Config config,
@@ -68,16 +68,15 @@ public class UdpMessageSender extends MessageSender {
         // AccessController.doPrivileged added for plugin compatibility
         AccessController.doPrivileged(
             new PrivilegedAction<Void>() {
-
                 @Override
                 public Void run() {
-                    try {
-                        logger.debug(datagramSocket.getLocalAddress().toString());
-                        datagramSocket.send(packet);
-                    } catch (Throwable t) {
-                        logger.error("throwable", new Exception(t));
-                    }
-                    return null;
+                try {
+                    logger.debug(datagramSocket.getLocalAddress().toString());
+                    datagramSocket.send(packet);
+                } catch (Throwable t) {
+                    logger.error("throwable", new Exception(t));
+                }
+                return null;
                 }
             }
         );

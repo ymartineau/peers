@@ -33,15 +33,17 @@ import static net.sourceforge.peers.sip.RFC3261.TRANSPORT_UDP_USUAL_MAX_SIZE;
 import static net.sourceforge.peers.sip.RFC3261.TRANSPORT_VIA_SEP;
 import static net.sourceforge.peers.sip.RFC3261.TRANSPORT_VIA_SEP2;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.net.DatagramSocket;
+import java.net.Socket;
 import java.net.Inet4Address;
 import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.Hashtable;
+import java.util.HashMap;
 
 import net.sourceforge.peers.Config;
 import net.sourceforge.peers.Logger;
@@ -59,30 +61,30 @@ public class TransportManager {
 
     public static final int SOCKET_TIMEOUT = RFC3261.TIMER_T1;
 
-    private static int NO_TTL = -1;
+    private static final int NO_TTL = -1;
     
-    private Logger logger;
+    private final Logger logger;
 
     //private UAS uas;
     private SipServerTransportUser sipServerTransportUser;
     
     protected SipParser sipParser;
     
-    private Hashtable<SipTransportConnection, DatagramSocket> datagramSockets;
-    private Hashtable<SipTransportConnection, MessageSender> messageSenders;
-    private Hashtable<SipTransportConnection, MessageReceiver> messageReceivers;
+    private final HashMap<SipTransportConnection, Closeable> closableSockets;
+    private final HashMap<SipTransportConnection, MessageSender> messageSenders;
+    private final HashMap<SipTransportConnection, MessageReceiver> messageReceivers;
 
-    private TransactionManager transactionManager;
+    private final TransactionManager transactionManager;
 
-    private Config config;
+    private final Config config;
     private int sipPort;
 
     public TransportManager(TransactionManager transactionManager,
             Config config, Logger logger) {
         sipParser = new SipParser();
-        datagramSockets = new Hashtable<SipTransportConnection, DatagramSocket>();
-        messageSenders = new Hashtable<SipTransportConnection, MessageSender>();
-        messageReceivers = new Hashtable<SipTransportConnection, MessageReceiver>();
+        closableSockets = new HashMap<SipTransportConnection, Closeable>();
+        messageSenders = new HashMap<SipTransportConnection, MessageSender>();
+        messageReceivers = new HashMap<SipTransportConnection, MessageReceiver>();
         this.transactionManager = transactionManager;
         this.config = config;
         this.logger = logger;
@@ -102,7 +104,7 @@ public class TransportManager {
         
         //via created by transaction layer to add branchid
         SipHeaderFieldValue via = Utils.getTopVia(sipRequest);
-        StringBuffer buf = new StringBuffer(DEFAULT_SIP_VERSION);
+        StringBuilder buf = new StringBuilder(DEFAULT_SIP_VERSION);
         buf.append(TRANSPORT_VIA_SEP);
         if (sipRequest.toString().getBytes().length > TRANSPORT_UDP_USUAL_MAX_SIZE) {
             transport = TRANSPORT_TCP;
@@ -135,8 +137,7 @@ public class TransportManager {
 
         if (sipPort < 1) {
             //use default port
-            if (TRANSPORT_TCP.equals(transport) || TRANSPORT_UDP.equals(transport)
-                    || TRANSPORT_SCTP.equals(transport)) {
+            if (TRANSPORT_TCP.equals(transport) || TRANSPORT_UDP.equals(transport)) {
                 sipPort = TRANSPORT_DEFAULT_PORT;
             } else if (TRANSPORT_SCTP.equals(transport)) {
                 sipPort = TRANSPORT_TLS_PORT;
@@ -291,8 +292,6 @@ public class TransportManager {
             messageSender.sendMessage(sipResponse);
 
         }
-        
-        
     }
     
     private MessageSender createMessageSender(final SipTransportConnection conn)
@@ -301,14 +300,13 @@ public class TransportManager {
         Object socket = null;
         if (RFC3261.TRANSPORT_UDP.equalsIgnoreCase(conn.getTransport())) {
             //TODO use Utils.getMyAddress to create socket on appropriate NIC
-            DatagramSocket datagramSocket = datagramSockets.get(conn);
+            DatagramSocket datagramSocket = (DatagramSocket) closableSockets.get(conn);
             if (datagramSocket == null) {
                 logger.debug("new DatagramSocket(" + conn.getLocalPort()
                         + ", " + conn.getLocalInetAddress() + ")");
                 // AccessController.doPrivileged added for plugin compatibility
                 datagramSocket = AccessController.doPrivileged(
                     new PrivilegedAction<DatagramSocket>() {
-
                         @Override
                         public DatagramSocket run() {
                             try {
@@ -327,8 +325,8 @@ public class TransportManager {
                     throw new SocketException();
                 }
                 datagramSocket.setSoTimeout(SOCKET_TIMEOUT);
-                datagramSockets.put(conn, datagramSocket);
-                logger.info("added datagram socket " + conn);
+                closableSockets.put(conn, datagramSocket);
+                logger.info("added datagram socket sender " + conn);
             }
             socket = datagramSocket;
             messageSender = new UdpMessageSender(conn.getRemoteInetAddress(),
@@ -336,6 +334,36 @@ public class TransportManager {
         } else {
             // TODO
             // messageReceiver = new TcpMessageReceiver(port);
+            Socket regularSocket = (Socket) closableSockets.get(conn);
+            if (regularSocket == null) {
+                logger.debug("new Socket(" + conn.getRemotePort()
+                        + ", " + conn.getRemoteInetAddress() + ")");
+                // AccessController.doPrivileged added for plugin compatibility
+                regularSocket = AccessController.doPrivileged(
+                    new PrivilegedAction<Socket>() {
+                        @Override
+                        public Socket run() {
+                            try {
+                                return new Socket(conn.getRemoteInetAddress(), conn.getRemotePort());
+                            } catch (IOException e) {
+                                logger.error("IO exception", e);
+                            } catch (SecurityException e) {
+                                logger.error("security exception", e);
+                            }
+                            return null;
+                        }
+                    }
+                );
+                if (regularSocket == null) {
+                    throw new SocketException();
+                }
+                regularSocket.setSoTimeout(SOCKET_TIMEOUT);
+                closableSockets.put(conn, regularSocket);
+                logger.info("added server socket " + conn);
+            }
+            socket = regularSocket;
+            messageSender = new TcpMessageSender(conn.getRemoteInetAddress(),
+                    conn.getRemotePort(), regularSocket, config, logger);
         }
         messageSenders.put(conn, messageSender);
         //when a mesage is sent over a transport, the transport layer
@@ -360,8 +388,13 @@ public class TransportManager {
             Object socket) throws IOException {
         MessageReceiver messageReceiver = null;
         if (RFC3261.TRANSPORT_UDP.equalsIgnoreCase(conn.getTransport())) {
-            DatagramSocket datagramSocket = (DatagramSocket)socket;
+            DatagramSocket datagramSocket = (DatagramSocket) socket;
             messageReceiver = new UdpMessageReceiver(datagramSocket,
+                    transactionManager, this, config, logger);
+            messageReceiver.setSipServerTransportUser(sipServerTransportUser);
+        } else {
+            Socket regularSocket = (Socket) socket;
+            messageReceiver = new TcpMessageReceiver(regularSocket,
                     transactionManager, this, config, logger);
             messageReceiver.setSipServerTransportUser(sipServerTransportUser);
         }
@@ -374,28 +407,27 @@ public class TransportManager {
         MessageReceiver messageReceiver = null;
         SipTransportConnection sipTransportConnection = conn;
         if (RFC3261.TRANSPORT_UDP.equals(conn.getTransport())) {
-            DatagramSocket datagramSocket = datagramSockets.get(conn);
+            DatagramSocket datagramSocket = (DatagramSocket) closableSockets.get(conn);
             if (datagramSocket == null) {
                 logger.debug("new DatagramSocket(" + conn.getLocalPort()
                         + ", " + conn.getLocalInetAddress());
                 // AccessController.doPrivileged added for plugin compatibility
                 datagramSocket = AccessController.doPrivileged(
-                        new PrivilegedAction<DatagramSocket>() {
-
-                            @Override
-                            public DatagramSocket run() {
-                                try {
-                                    return new DatagramSocket(conn.getLocalPort(),
-                                            conn.getLocalInetAddress());
-                                } catch (SocketException e) {
-                                    logger.error("cannot create socket", e);
-                                } catch (SecurityException e) {
-                                    logger.error("security exception", e);
-                                }
-                                return null;
+                    new PrivilegedAction<DatagramSocket>() {
+                        @Override
+                        public DatagramSocket run() {
+                            try {
+                                return new DatagramSocket(conn.getLocalPort(),
+                                        conn.getLocalInetAddress());
+                            } catch (SocketException e) {
+                                logger.error("cannot create socket", e);
+                            } catch (SecurityException e) {
+                                logger.error("security exception", e);
                             }
+                            return null;
                         }
-                    );
+                    }
+                );
                 datagramSocket.setSoTimeout(SOCKET_TIMEOUT);
                 if (conn.getLocalPort() == 0) {
                     sipTransportConnection = new SipTransportConnection(
@@ -407,8 +439,8 @@ public class TransportManager {
                     //config.setSipPort(datagramSocket.getLocalPort());
                 }
                 sipPort = datagramSocket.getLocalPort();
-                datagramSockets.put(sipTransportConnection, datagramSocket);
-                logger.info("added datagram socket " + sipTransportConnection);
+                closableSockets.put(sipTransportConnection, datagramSocket);
+                logger.info("added datagram socket receiver " + sipTransportConnection);
             }
             messageReceiver = new UdpMessageReceiver(datagramSocket,
                     transactionManager, this, config, logger);
@@ -436,12 +468,9 @@ public class TransportManager {
         for (MessageSender messageSender: messageSenders.values()) {
             messageSender.stopKeepAlives();
         }
-        try
-		{
+        try {
 			Thread.sleep(SOCKET_TIMEOUT);
-		}
-		catch (InterruptedException e)
-		{
+		} catch (InterruptedException e) {
 			return;
 		}
         // AccessController.doPrivileged added for plugin compatibility
@@ -449,15 +478,19 @@ public class TransportManager {
             new PrivilegedAction<Void>() {
                 @Override
                 public Void run() {
-                    for (DatagramSocket datagramSocket: datagramSockets.values()) {
-                        datagramSocket.close();
+                    for (Closeable socket: closableSockets.values()) {
+                        try {
+                            socket.close();
+                        } catch (IOException e) {
+                            logger.error("IO Exception: " + socket, e);
+                        }
                     }
                     return null;
                 }
             }
         );
 
-		datagramSockets.clear();
+		closableSockets.clear();
 		messageReceivers.clear();
 		messageSenders.clear();
     }

@@ -23,6 +23,8 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -31,12 +33,14 @@ import javax.swing.SwingUtilities;
 
 import net.sourceforge.peers.gui.MainFrame;
 
+import static net.sourceforge.peers.sip.Utils.DEFAULT_PEERS_HOME;
+
 public class JavaWebStart extends MainFrame {
     
     public static void main(final String[] args) {
 
         String peersDir = ".peers";
-        String home = System.getProperty("user.home");
+        String home = System.getProperty("user.home", DEFAULT_PEERS_HOME);
         SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmssSSS");
         String peersHome = home + File.separator + peersDir + File.separator
             + format.format(new Date());
@@ -67,23 +71,19 @@ public class JavaWebStart extends MainFrame {
             dirFile.mkdirs();
         }
     }
-    
+
     private static void copyFile(String source, String dest) {
-        ClassLoader classLoader = JavaWebStart.class.getClassLoader();
-        InputStream inputStream = classLoader.getResourceAsStream(source);
-        try {
-            FileOutputStream out = new FileOutputStream(dest);
-            byte[] buf = new byte[256];
-            int readBytes;
-            while ((readBytes = inputStream.read(buf)) != -1) {
-                out.write(buf, 0, readBytes);
+        try (InputStream inputStream = Files.newInputStream(Paths.get(source))) {
+            try (FileOutputStream out = new FileOutputStream(dest)) {
+                byte[] buf = new byte[256];
+                int readBytes;
+                while ((readBytes = inputStream.read(buf)) != -1) {
+                    out.write(buf, 0, readBytes);
+                }
             }
-            out.close();
         } catch (IOException e) {
-            System.err.println(e);
+            e.printStackTrace();
         }
-
-
     }
     
     public JavaWebStart(String[] args) {

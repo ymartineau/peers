@@ -54,8 +54,7 @@ public class Utils {
         StringBuffer buf = new StringBuffer();
         buf.append(randomString(8));
         buf.append('-');
-        buf.append(String.valueOf(System.currentTimeMillis()));
-        buf.append('@');
+        buf.append(System.currentTimeMillis());
         buf.append(inetAddress.getHostName());
         return buf.toString();
     }

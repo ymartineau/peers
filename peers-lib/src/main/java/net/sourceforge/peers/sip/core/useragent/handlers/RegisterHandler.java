@@ -28,6 +28,7 @@ import java.util.TimerTask;
 import net.sourceforge.peers.Config;
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.sip.RFC3261;
+import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.core.useragent.InitialRequestManager;
 import net.sourceforge.peers.sip.core.useragent.RequestManager;
 import net.sourceforge.peers.sip.core.useragent.SipListener;
@@ -119,6 +120,8 @@ public class RegisterHandler extends MethodHandler
             .toString();
         // added for buggy servers like cirpack which doesn't answer with a
         // default expires value if it doesn't find any expires in request
+        sipHeaders.add(new SipHeaderFieldName(RFC3261.HDR_ALLOW),
+                new SipHeaderFieldValue(Utils.generateAllowHeader()));
         sipHeaders.add(new SipHeaderFieldName(RFC3261.HDR_EXPIRES),
                 new SipHeaderFieldValue(String.valueOf(
                         RFC3261.DEFAULT_EXPIRES)));

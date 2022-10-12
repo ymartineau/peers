@@ -142,7 +142,7 @@ public class MainFrame implements WindowListener, ActionListener {
                 }
                 eventManager = new EventManager(MainFrame.this,
                         peersHome, logger, soundManager);
-                    eventManager.register();
+                eventManager.register();
             }
         }, "gui-event-manager");
         thread.start();

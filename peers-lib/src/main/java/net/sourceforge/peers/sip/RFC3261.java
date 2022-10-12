@@ -33,6 +33,11 @@ public final class RFC3261 {
     public static final String METHOD_BYE      = "BYE";
     public static final String METHOD_OPTIONS  = "OPTIONS";
     public static final String METHOD_CANCEL   = "CANCEL";
+    public static final String METHOD_MESSAGE  = "MESSAGE";
+    public static final String METHOD_INFO     = "INFO";
+    public static final String METHOD_UPDATE   = "UPDATE";
+    public static final String METHOD_REFER    = "REFER";
+    public static final String METHOD_NOTIFY   = "NOTIFY";
     
         //Classical form
     
@@ -133,7 +138,7 @@ public final class RFC3261 {
     public static final String TRANSPORT_TCP                = "TCP";
     public static final String TRANSPORT_SCTP               = "SCTP";
     public static final String TRANSPORT_TLS                = "TLS";
-    public static final int    TRANSPORT_UDP_USUAL_MAX_SIZE = 1300;
+    public static final int    TRANSPORT_UDP_USUAL_MAX_SIZE = 0;
     public static final int    TRANSPORT_UDP_MAX_SIZE       = 65535;
     public static final char   TRANSPORT_VIA_SEP            = '/';
     public static final char   TRANSPORT_VIA_SEP2           = ' ';

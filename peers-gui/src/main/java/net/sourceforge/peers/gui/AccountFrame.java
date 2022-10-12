@@ -40,7 +40,7 @@ public class AccountFrame extends javax.swing.JFrame {
 
     private static final long serialVersionUID = 1L;
 
-    private Logger logger;
+    private final Logger logger;
 
     /** Creates new form AccountFrame */
     public AccountFrame(UserAgent userAgent, Logger logger) {
