@@ -34,7 +34,7 @@ public class JavaWebStart {
     
     public static void main(final String[] args) {
 
-        String peersDir = ".peers";
+        String peersDir = "peers";
         String home = System.getProperty("user.home", DEFAULT_PEERS_HOME);
         SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmssSSS");
         String peersHome = home + File.separator + peersDir + File.separator
