@@ -17,12 +17,7 @@
     Copyright 2010 Yohann Martineau 
 */
 
-package net.sourceforge.peers.gui;
-
-import java.net.URL;
-
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
+package net.sourceforge.peers.javawebstart;
 
 import net.sourceforge.peers.Logger;
 
@@ -33,11 +28,12 @@ public class Registration {
     public final RegistrationState SUCCESS;
     public final RegistrationState FAILED;
 
-    protected JLabel label;
+    private Logger logger;
+
     private RegistrationState state;
 
-    public Registration(JLabel label, Logger logger) {
-        this.label = label;
+    public Registration(Logger logger) {
+        this.logger = logger;
 
         String id = String.valueOf(hashCode());
         UNREGISTERED = new RegistrationStateUnregsitered(id, this, logger);
@@ -65,15 +61,7 @@ public class Registration {
     }
 
     protected void displayRegistering() {
-        URL url = getClass().getResource("working.gif");
-//        String folder = MainFrame.class.getPackage().getName().replace(".",
-//                File.separator);
-//        String filename = folder + File.separator + "working.gif";
-//        Logger.debug("filename: " + filename);
-//        URL url = MainFrame.class.getClassLoader().getResource(filename);
-        ImageIcon imageIcon = new ImageIcon(url);
-        label.setIcon(imageIcon);
-        label.setText("Registering");
+        logger.info("Registeration in Progress.");
     }
 
 }

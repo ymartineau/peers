@@ -1,0 +1,59 @@
+package net.sourceforge.peers.javawebstart;
+
+import net.sourceforge.peers.FileLogger;
+import net.sourceforge.peers.Logger;
+import net.sourceforge.peers.javaxsound.JavaxSoundManager;
+import net.sourceforge.peers.media.AbstractSoundManager;
+import net.sourceforge.peers.sip.Utils;
+import net.sourceforge.peers.sip.transport.SipRequest;
+import net.sourceforge.peers.sip.transport.SipResponse;
+
+public class RegisterSIPClient {
+    private EventManager eventManager;
+    private Registration registration;
+    private Logger logger;
+
+    public RegisterSIPClient(final String[] args) {
+        String peersHome = Utils.DEFAULT_PEERS_HOME;
+        if (args.length > 0) {
+            peersHome = args[0];
+        }
+        logger = new FileLogger(peersHome);
+        registration = new Registration(logger);
+
+        final AbstractSoundManager soundManager = new JavaxSoundManager(
+                false, logger, peersHome);
+
+        Thread thread = new Thread(new Runnable() {
+            public void run() {
+                String peersHome = Utils.DEFAULT_PEERS_HOME;
+                if (args.length > 0) {
+                    peersHome = args[0];
+                }
+                eventManager = new EventManager(RegisterSIPClient.this, peersHome, logger, soundManager);
+                eventManager.register();
+            }
+        }, "event-manager");
+        thread.start();
+
+        try {
+            while (eventManager == null) {
+                Thread.sleep(100);
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+    }
+
+    public void registerFailed(SipResponse sipResponse) {
+        registration.registerFailed();
+    }
+
+    public void registerSuccessful(SipResponse sipResponse) {
+        registration.registerSuccessful();
+    }
+
+    public void registering(SipRequest sipRequest) {
+        registration.registerSent();
+    }
+}

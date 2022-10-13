@@ -17,21 +17,23 @@
     Copyright 2010 Yohann Martineau 
 */
 
-package net.sourceforge.peers.gui;
+package net.sourceforge.peers.javawebstart;
 
 import net.sourceforge.peers.Logger;
+import net.sourceforge.peers.sip.AbstractState;
 
-public class RegistrationStateFailed extends RegistrationState {
+public abstract class RegistrationState extends AbstractState {
 
-    public RegistrationStateFailed(String id, Registration registration,
+    protected Registration registration;
+
+    public RegistrationState(String id, Registration registration,
             Logger logger) {
-        super(id, registration, logger);
+        super(id, logger);
+        this.registration = registration;
     }
 
-    @Override
-    public void registerSent() {
-        registration.setState(registration.REGISTERING);
-        registration.displayRegistering();
-    }
+    public void registerSent() {}
+    public void registerSuccessful() {}
+    public void registerFailed() {}
 
 }

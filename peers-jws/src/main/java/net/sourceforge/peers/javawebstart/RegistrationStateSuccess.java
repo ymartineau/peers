@@ -17,31 +17,21 @@
     Copyright 2010 Yohann Martineau 
 */
 
-package net.sourceforge.peers.gui;
-
-import javax.swing.JButton;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
+package net.sourceforge.peers.javawebstart;
 
 import net.sourceforge.peers.Logger;
 
-public class CallFrameStateRemoteHangup extends CallFrameState {
+public class RegistrationStateSuccess extends RegistrationState {
 
-    public CallFrameStateRemoteHangup(String id, CallFrame callFrame,
+    public RegistrationStateSuccess(String id, Registration registration,
             Logger logger) {
-        super(id, callFrame, logger);
-        callPanel = new JPanel();
-        callPanel.add(new JLabel("Remote hangup"));
-        JButton closeButton = new JButton("Close");
-        closeButton.setActionCommand(CallFrame.CLOSE_ACTION_COMMAND);
-        closeButton.addActionListener(callFrame);
-        callPanel.add(closeButton);
+        super(id, registration, logger);
     }
 
     @Override
-    public void closeClicked() {
-        callFrame.setState(callFrame.TERMINATED);
-        callFrame.close();
+    public void registerSent() {
+        registration.setState(registration.REGISTERING);
+        registration.displayRegistering();
     }
 
 }

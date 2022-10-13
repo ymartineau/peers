@@ -162,6 +162,7 @@ public final class RFC3261 {
     public static final int TIMER_T1 = 500;
     public static final int TIMER_T2 = 4000;
     public static final int TIMER_T4 = 5000;
+    public static final int TCP_SOCKET_TIMEOUT = 30000;
     public static final int TIMER_INVITE_CLIENT_TRANSACTION = 32000;
  
     

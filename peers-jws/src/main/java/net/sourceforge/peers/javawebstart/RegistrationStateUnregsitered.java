@@ -17,13 +17,13 @@
     Copyright 2010 Yohann Martineau 
 */
 
-package net.sourceforge.peers.gui;
+package net.sourceforge.peers.javawebstart;
 
 import net.sourceforge.peers.Logger;
 
-public class RegistrationStateSuccess extends RegistrationState {
+public class RegistrationStateUnregsitered extends RegistrationState {
 
-    public RegistrationStateSuccess(String id, Registration registration,
+    public RegistrationStateUnregsitered(String id, Registration registration,
             Logger logger) {
         super(id, registration, logger);
     }

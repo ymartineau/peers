@@ -14,14 +14,24 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2013 Yohann Martineau 
+    Copyright 2010 Yohann Martineau 
 */
 
-package net.sourceforge.peers.javascript;
+package net.sourceforge.peers.javawebstart;
 
-public interface WebLoggerOutput {
+import net.sourceforge.peers.Logger;
 
-    public void javaLog(String message);
-    public void javaNetworkLog(String message);
+public class RegistrationStateFailed extends RegistrationState {
+
+    public RegistrationStateFailed(String id, Registration registration,
+            Logger logger) {
+        super(id, registration, logger);
+    }
+
+    @Override
+    public void registerSent() {
+        registration.setState(registration.REGISTERING);
+        registration.displayRegistering();
+    }
 
 }

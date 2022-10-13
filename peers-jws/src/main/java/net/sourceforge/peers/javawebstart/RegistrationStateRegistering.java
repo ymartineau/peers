@@ -14,16 +14,30 @@
     You should have received a copy of the GNU General Public License
     along with this program.  If not, see <http://www.gnu.org/licenses/>.
     
-    Copyright 2010-2013 Yohann Martineau 
+    Copyright 2010 Yohann Martineau 
 */
 
-package net.sourceforge.peers.gui;
+package net.sourceforge.peers.javawebstart;
 
+import net.sourceforge.peers.Logger;
 
-public interface MainFrameListener {
+public class RegistrationStateRegistering extends RegistrationState {
 
-    public void callClicked(String callee);
-    public void windowClosed();
-    public void register();
+    public RegistrationStateRegistering(String id, Registration registration,
+            Logger logger) {
+        super(id, registration, logger);
+    }
+
+    @Override
+    public void registerSuccessful() {
+        registration.setState(registration.SUCCESS);
+        logger.info("Registered");
+    }
+
+    @Override
+    public void registerFailed() {
+        registration.setState(registration.FAILED);
+        logger.error("Registration failed");
+    }
 
 }

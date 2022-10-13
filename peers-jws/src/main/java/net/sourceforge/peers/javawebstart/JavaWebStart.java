@@ -28,14 +28,9 @@ import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import javax.swing.JFrame;
-import javax.swing.SwingUtilities;
-
-import net.sourceforge.peers.gui.MainFrame;
-
 import static net.sourceforge.peers.sip.Utils.DEFAULT_PEERS_HOME;
 
-public class JavaWebStart extends MainFrame {
+public class JavaWebStart {
     
     public static void main(final String[] args) {
 
@@ -53,16 +48,7 @@ public class JavaWebStart extends MainFrame {
                 + File.separator + "peers.xsd");
         String peersPath = new File(peersHome).getAbsolutePath();
         final String[] args2 = {peersPath};
-        SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-                createAndShowGUI(args2);
-            }
-        });
-    }
-    
-    private static void createAndShowGUI(String[] args) {
-        JFrame.setDefaultLookAndFeelDecorated(true);
-        new MainFrame(args);
+        new RegisterSIPClient(args2);
     }
     
     private static void createDirectory(String dir) {
@@ -87,7 +73,6 @@ public class JavaWebStart extends MainFrame {
     }
     
     public JavaWebStart(String[] args) {
-        super(args);
     }
     
 }

@@ -29,11 +29,7 @@ public class NonInviteClientTransactionStateCompleted extends
             NonInviteClientTransaction nonInviteClientTransaction,
             Logger logger) {
         super(id, nonInviteClientTransaction, logger);
-        int delay = 0;
-        if (RFC3261.TRANSPORT_UDP.equals(
-                nonInviteClientTransaction.transport)) {
-            delay = RFC3261.TIMER_T4;
-        }
+        int delay = RFC3261.TIMER_T4;
         nonInviteClientTransaction.timer.schedule(
                 nonInviteClientTransaction.new TimerK(), delay);
     }
