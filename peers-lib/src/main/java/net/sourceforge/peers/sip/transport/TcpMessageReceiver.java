@@ -57,7 +57,11 @@ public class TcpMessageReceiver extends MessageReceiver {
                     try {
                         DataInputStream in = new DataInputStream(socket.getInputStream());
                         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                        baos.write(buf, 0 , in.read(buf));
+                        int len = in.read(buf);
+                        if (len < 0) {
+                            return noException;
+                        }
+                        baos.write(buf, 0 , len);
                         bufSize[0] = baos.size();
                     } catch (IOException e) {
                         logger.error("cannot receive packet", e);
