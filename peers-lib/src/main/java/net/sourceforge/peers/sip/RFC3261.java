@@ -134,7 +134,7 @@ public final class RFC3261 {
     public static final String TRANSPORT_TCP                = "TCP";
     public static final String TRANSPORT_SCTP               = "SCTP";
     public static final String TRANSPORT_TLS                = "TLS";
-    public static final int    TRANSPORT_UDP_USUAL_MAX_SIZE = 0;
+    public static final int    TRANSPORT_UDP_USUAL_MAX_SIZE = 1300;
     public static final int    TRANSPORT_UDP_MAX_SIZE       = 65535;
     public static final char   TRANSPORT_VIA_SEP            = '/';
     public static final char   TRANSPORT_VIA_SEP2           = ' ';

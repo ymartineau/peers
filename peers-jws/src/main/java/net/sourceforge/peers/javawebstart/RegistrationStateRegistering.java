@@ -32,12 +32,14 @@ public class RegistrationStateRegistering extends RegistrationState {
     public void registerSuccessful() {
         registration.setState(registration.SUCCESS);
         logger.info("Registered");
+        System.out.println("Registered");
     }
 
     @Override
     public void registerFailed() {
         registration.setState(registration.FAILED);
         logger.error("Registration failed");
+        System.out.println("Registration Failed");
     }
 
 }
