@@ -23,26 +23,12 @@ public class RegisterSIPClient {
 
         final AbstractSoundManager soundManager = new JavaxSoundManager(
                 false, logger, peersHome);
-
-        Thread thread = new Thread(new Runnable() {
-            public void run() {
-                String peersHome = Utils.DEFAULT_PEERS_HOME;
-                if (args.length > 0) {
-                    peersHome = args[0];
-                }
-                eventManager = new EventManager(RegisterSIPClient.this, peersHome, logger, soundManager);
-                eventManager.register();
-            }
-        }, "event-manager");
-        thread.start();
-
-        try {
-            while (eventManager == null) {
-                Thread.sleep(100);
-            }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+        
+        if (args.length > 0) {
+            peersHome = args[0];
         }
+        eventManager = new EventManager(RegisterSIPClient.this, peersHome, logger, soundManager);
+        eventManager.register();
     }
 
     public void registerFailed(SipResponse sipResponse) {

@@ -120,8 +120,6 @@ public class RegisterHandler extends MethodHandler
             .toString();
         // added for buggy servers like cirpack which doesn't answer with a
         // default expires value if it doesn't find any expires in request
-        sipHeaders.add(new SipHeaderFieldName(RFC3261.HDR_ALLOW),
-                new SipHeaderFieldValue(Utils.generateAllowHeader()));
         sipHeaders.add(new SipHeaderFieldName(RFC3261.HDR_EXPIRES),
                 new SipHeaderFieldValue(String.valueOf(
                         RFC3261.DEFAULT_EXPIRES)));

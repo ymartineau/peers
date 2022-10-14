@@ -173,7 +173,7 @@ public abstract class MessageReceiver implements Runnable {
                 serverTransaction.receivedRequest(sipRequest);
             }
         } else {
-            SipResponse sipResponse = (SipResponse)sipMessage;
+            SipResponse sipResponse = (SipResponse) sipMessage;
             ClientTransaction clientTransaction =
                 transactionManager.getClientTransaction(sipResponse);
             logger.debug("ClientTransaction = " + clientTransaction);

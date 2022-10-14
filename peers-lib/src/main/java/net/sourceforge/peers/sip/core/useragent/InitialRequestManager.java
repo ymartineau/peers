@@ -137,6 +137,21 @@ public class InitialRequestManager extends RequestManager
         
         headers.add(new SipHeaderFieldName(RFC3261.HDR_CSEQ),
                 new SipHeaderFieldValue(userAgent.generateCSeq(method)));
+
+        //Allow
+
+        headers.add(new SipHeaderFieldName(RFC3261.HDR_ALLOW),
+                new SipHeaderFieldValue(Utils.generateAllowHeader()));
+
+        //User Agent
+
+        headers.add(new SipHeaderFieldName(RFC3261.HDR_USER_AGENT),
+                new SipHeaderFieldValue(RFC3261.USER_AGENT));
+
+        //Content Length
+
+        headers.add(new SipHeaderFieldName(RFC3261.HDR_CONTENT_LENGTH),
+                new SipHeaderFieldValue("0"));
         
         return request;
     }

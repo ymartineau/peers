@@ -85,5 +85,4 @@ public class TcpMessageReceiver extends MessageReceiver {
                 socket.getPort(), RFC3261.TRANSPORT_TCP);
     }
 
-
 }
