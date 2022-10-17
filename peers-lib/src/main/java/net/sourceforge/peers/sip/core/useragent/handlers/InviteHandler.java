@@ -88,17 +88,51 @@ public class InviteHandler extends DialogMethodHandler
     // UAS methods
     //////////////////////////////////////////////////////////
 
+    public void handle100(SipRequest sipRequest) {
+        System.out.println("Sending 100");
+        SipResponse sipResponse = buildGenericResponse(sipRequest,
+                RFC3261.CODE_100_TRYING, RFC3261.REASON_100_RINGING);
+        Dialog dialog = buildDialogForUas(sipResponse, sipRequest);
+        //here dialog is already stored in dialogs in DialogManager
+        InviteServerTransaction inviteServerTransaction = (InviteServerTransaction)
+                transactionManager.createServerTransaction(sipResponse,
+                        userAgent.getSipPort(), RFC3261.TRANSPORT_TCP, this,
+                        sipRequest);
+
+        inviteServerTransaction.start();
+
+        inviteServerTransaction.receivedRequest(sipRequest);
+
+        //TODO send 180 more than once
+        inviteServerTransaction.sendReponse(sipResponse);
+
+        dialog.receivedOrSent1xx();
+
+        SipListener sipListener = userAgent.getSipListener();
+        if (sipListener != null) {
+            sipListener.incomingCall(sipRequest, sipResponse);
+        }
+
+        List<String> peers = userAgent.getPeers();
+        String responseTo = sipRequest.getSipHeaders().get(
+                new SipHeaderFieldName(RFC3261.HDR_FROM)).getValue();
+        if (!peers.contains(responseTo)) {
+            peers.add(responseTo);
+        }
+    }
     public void handleInitialInvite(SipRequest sipRequest) {
+        System.out.println("In Invite");
         initialIncomingInvite = true;
         //generate 180 Ringing
+        handle100(sipRequest);
+        System.out.println("Sending 108");
         SipResponse sipResponse = buildGenericResponse(sipRequest,
                 RFC3261.CODE_180_RINGING, RFC3261.REASON_180_RINGING);
         Dialog dialog = buildDialogForUas(sipResponse, sipRequest);
         //here dialog is already stored in dialogs in DialogManager
-        
         InviteServerTransaction inviteServerTransaction = (InviteServerTransaction)
             transactionManager.createServerTransaction(sipResponse,
-                    userAgent.getSipPort(), RFC3261.TRANSPORT_UDP, this,
+                    userAgent.getSipPort(), RFC3261.TRANSPORT_TCP, this,
                     sipRequest);
         
         inviteServerTransaction.start();
@@ -109,7 +143,7 @@ public class InviteHandler extends DialogMethodHandler
         inviteServerTransaction.sendReponse(sipResponse);
 
         dialog.receivedOrSent1xx();
-
+        acceptCall(sipRequest,dialog);
         SipListener sipListener = userAgent.getSipListener();
         if (sipListener != null) {
             sipListener.incomingCall(sipRequest, sipResponse);

@@ -19,17 +19,17 @@
 
 package net.sourceforge.peers.sip.syntaxencoding;
 
+import net.sourceforge.peers.sip.RFC3261;
+import net.sourceforge.peers.sip.transport.SipMessage;
+import net.sourceforge.peers.sip.transport.SipRequest;
+import net.sourceforge.peers.sip.transport.SipResponse;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
-
-import net.sourceforge.peers.sip.RFC3261;
-import net.sourceforge.peers.sip.transport.SipMessage;
-import net.sourceforge.peers.sip.transport.SipRequest;
-import net.sourceforge.peers.sip.transport.SipResponse;
 
 
 public class SipParser {
@@ -63,6 +63,9 @@ public class SipParser {
         reader = new BufferedReader(inputStreamReader);
         
         String startLine = reader.readLine();
+        if (startLine != null) {
+            System.out.println(startLine);
+        }
         while (startLine == null || startLine.equals("")) {
             startLine = reader.readLine();
         }

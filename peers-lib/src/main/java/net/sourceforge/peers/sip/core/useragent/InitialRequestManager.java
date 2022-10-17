@@ -273,7 +273,7 @@ public class InitialRequestManager extends RequestManager
         if (sipResponse != null) {
             ServerTransaction serverTransaction =
                 transactionManager.createServerTransaction(
-                    sipResponse, userAgent.getSipPort(), RFC3261.TRANSPORT_UDP,
+                    sipResponse, userAgent.getSipPort(), RFC3261.TRANSPORT_TCP,
                     this, sipRequest);
             serverTransaction.start();
             serverTransaction.receivedRequest(sipRequest);

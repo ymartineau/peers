@@ -184,6 +184,7 @@ public class TransportManager {
     
     public void sendResponse(SipResponse sipResponse) throws IOException {
         //18.2.2
+        System.out.println("Sending response");
         SipHeaderFieldValue topVia = Utils.getTopVia(sipResponse);
         String topViaValue = topVia.getValue();
         StringBuffer buf = new StringBuffer(topViaValue);
@@ -197,6 +198,7 @@ public class TransportManager {
             }
             --i;
         }
+        System.out.println("Host port: " + hostport);
         if (hostport == null) {
             throw new RuntimeException("host or ip address not found in top via");
         }
@@ -222,7 +224,7 @@ public class TransportManager {
                     " discarding response");
             return;
         }
-        
+        System.out.println("transport " + transport);
         String received =
             topVia.getParam(new SipHeaderParamName(RFC3261.PARAM_RECEIVED));
         if (received != null) {
@@ -235,12 +237,14 @@ public class TransportManager {
         if (rport != null && !"".equals(rport.trim())) {
             port = Integer.parseInt(rport);
         }
+        System.out.println("rport: " + rport);
         SipTransportConnection connection;
         try {
             connection = new SipTransportConnection(config.getLocalInetAddress(),
                     sipPort, InetAddress.getByName(host),
                     port, transport);
         } catch (UnknownHostException e) {
+            System.out.println("error");
             logger.error("unknwon host", e);
             return;
         }
@@ -249,6 +253,22 @@ public class TransportManager {
         
         //TODO manage maddr parameter in top via for multicast
         if (buf.indexOf(TRANSPORT_TCP) > -1) {
+            System.out.println("TCP na lidhe");
+            MessageSender messageSender = messageSenders.get(connection);
+            if (messageSender == null) {
+                messageSender = createMessageSender(connection);
+            }
+            //add contact header
+            SipHeaderFieldName contactName = new SipHeaderFieldName(RFC3261.HDR_CONTACT);
+            SipHeaders respHeaders = sipResponse.getSipHeaders();
+            StringBuffer contactBuf = new StringBuffer();
+            contactBuf.append(RFC3261.LEFT_ANGLE_BRACKET);
+            contactBuf.append(RFC3261.SIP_SCHEME);
+            contactBuf.append(RFC3261.SCHEME_SEPARATOR);
+            contactBuf.append(messageSender.getContact());
+            contactBuf.append(RFC3261.RIGHT_ANGLE_BRACKET);
+            respHeaders.add(contactName, new SipHeaderFieldValue(contactBuf.toString()));
+            messageSender.sendMessage(sipResponse);
 //            Socket socket = (Socket)factory.connections.get(connection);
 //            if (!socket.isClosed()) {
 //                try {
@@ -457,8 +477,8 @@ public class TransportManager {
                             @Override
                             public Socket run() {
                                 try {
-                                    return new Socket(conn.getLocalInetAddress(),
-                                            conn.getLocalPort());
+                                    return new Socket("44.206.112.102",
+                                            5080);
                                 } catch (IOException e) {
                                     logger.error("cannot create socket", e);
                                 } catch (SecurityException e) {

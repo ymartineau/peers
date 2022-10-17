@@ -83,6 +83,7 @@ public class TransactionManager {
             int port, String transport,
             ServerTransactionUser serverTransactionUser,
             SipRequest sipRequest) {
+        System.out.println("transport: " + transport);
         SipHeaderFieldValue via = Utils.getTopVia(sipResponse);
         String branchId = via.getParam(new SipHeaderParamName(
                 RFC3261.PARAM_BRANCH));
@@ -92,6 +93,7 @@ public class TransactionManager {
         ServerTransaction serverTransaction;
         // TODO create server transport user and pass it to server transaction
         if (RFC3261.METHOD_INVITE.equals(method)) {
+            System.out.println("if invite");
             serverTransaction = new InviteServerTransaction(branchId, port,
                     transport, sipResponse, serverTransactionUser, sipRequest,
                     timer, this, transportManager, logger);
