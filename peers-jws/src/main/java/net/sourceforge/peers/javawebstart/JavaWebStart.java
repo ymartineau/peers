@@ -39,9 +39,11 @@ public class JavaWebStart {
         SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmssSSS");
         String peersHome = home + File.separator + peersDir + File.separator
             + format.format(new Date());
+
         createDirectory(peersHome + File.separator + "conf");
         createDirectory(peersHome + File.separator + "logs");
         createDirectory(peersHome + File.separator + "media");
+
         copyFile("conf/peers.xml", peersHome + File.separator + "conf"
                 + File.separator + "peers.xml");
         copyFile("conf/peers.xsd", peersHome + File.separator + "conf"
