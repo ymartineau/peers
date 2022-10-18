@@ -69,9 +69,10 @@ public class XmlConfig implements Config {
     private String mediaFile;
     private int rtpPort;
     private String authorizationUsername;
-    
+    private boolean serverStart;
+
     // corresponding DOM nodes
-    
+
     private Node ipAddressNode;
     private Node userPartNode;
     private Node domainNode;
@@ -83,6 +84,7 @@ public class XmlConfig implements Config {
     private Node mediaFileNode;
     private Node rtpPortNode;
     private Node authUserNode;
+    private Node serverStartNode;
 
     // non-persistent variables
 
@@ -97,7 +99,7 @@ public class XmlConfig implements Config {
             return;
         }
         DocumentBuilderFactory documentBuilderFactory =
-            DocumentBuilderFactory.newInstance();
+                DocumentBuilderFactory.newInstance();
         DocumentBuilder documentBuilder;
         try {
             documentBuilder = documentBuilderFactory.newDocumentBuilder();
@@ -191,6 +193,12 @@ public class XmlConfig implements Config {
                 logger.error("rtp port provided is " + rtpPort
                         + " rtp port must be even");
             }
+        }
+        serverStartNode = getFirstChild(documentElement, "serverStart");
+        if (isNullOrEmpty(serverStartNode)) {
+            serverStart = false;
+        } else {
+            serverStart = Boolean.parseBoolean(serverStartNode.getTextContent());
         }
     }
 
@@ -296,6 +304,11 @@ public class XmlConfig implements Config {
     }
 
     @Override
+    public boolean isServerStart() {
+        return serverStart;
+    }
+
+    @Override
     public void setLocalInetAddress(InetAddress inetAddress) {
         this.localInetAddress = inetAddress;
         ipAddressNode.setTextContent(inetAddress.getHostAddress());
@@ -332,7 +345,7 @@ public class XmlConfig implements Config {
         } else {
             outboundProxyNode.setTextContent(outboundProxy.toString());
         }
-        
+
     }
 
     @Override
@@ -375,4 +388,9 @@ public class XmlConfig implements Config {
         this.mediaFile = mediaFile;
     }
 
+    @Override
+    public void setServerStart(boolean serverStart) {
+        this.serverStart = serverStart;
+        serverStartNode.setTextContent(Boolean.toString(serverStart));
+    }
 }

@@ -68,8 +68,13 @@ public class UAS implements SipServerTransportUser {
         this.midDialogRequestManager = midDialogRequestManager;
         this.dialogManager = dialogManager;
         transportManager.setSipServerTransportUser(this);
-        transportManager.createServerTransport(
-                RFC3261.TRANSPORT_TCP, userAgent.getConfig().getSipPort());
+        if (userAgent.getConfig().isServerStart()) {
+            String transport = RFC3261.TRANSPORT_UDP;
+            if (userAgent.getConfig().getDomain().contains(RFC3261.TRANSPORT_TCP)) {
+                transport = RFC3261.TRANSPORT_TCP;
+            }
+            transportManager.createServerTransport(transport, userAgent.getConfig().getSipPort());
+        }
     }
     
     public void messageReceived(SipMessage sipMessage) {

@@ -58,6 +58,7 @@
       <xs:element name="mediaMode" type="mediaModeType"/>
       <xs:element name="mediaDebug" type="xs:boolean"/>
       <xs:element name="mediaFile" type="xs:string"/>
+      <xs:element name="startServer" type="xs:boolean"/>
     </xs:sequence>
   </xs:complexType>
 

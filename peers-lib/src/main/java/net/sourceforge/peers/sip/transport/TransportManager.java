@@ -249,70 +249,24 @@ public class TransportManager {
             return;
         }
         
-        //actual sending
-        
-        //TODO manage maddr parameter in top via for multicast
-        if (buf.indexOf(TRANSPORT_TCP) > -1) {
-            System.out.println("TCP na lidhe");
-            MessageSender messageSender = messageSenders.get(connection);
-            if (messageSender == null) {
-                messageSender = createMessageSender(connection);
-            }
-            //add contact header
-            SipHeaderFieldName contactName = new SipHeaderFieldName(RFC3261.HDR_CONTACT);
-            SipHeaders respHeaders = sipResponse.getSipHeaders();
-            StringBuffer contactBuf = new StringBuffer();
-            contactBuf.append(RFC3261.LEFT_ANGLE_BRACKET);
-            contactBuf.append(RFC3261.SIP_SCHEME);
-            contactBuf.append(RFC3261.SCHEME_SEPARATOR);
-            contactBuf.append(messageSender.getContact());
-            contactBuf.append(RFC3261.RIGHT_ANGLE_BRACKET);
-            respHeaders.add(contactName, new SipHeaderFieldValue(contactBuf.toString()));
-            messageSender.sendMessage(sipResponse);
-//            Socket socket = (Socket)factory.connections.get(connection);
-//            if (!socket.isClosed()) {
-//                try {
-//                    socket.getOutputStream().write(data);
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                    return;
-//                    //TODO
-//                }
-//            } else {
-//                try {
-//                    socket = new Socket(host, port);
-//                    factory.connections.put(connection, socket);
-//                    socket.getOutputStream().write(data);
-//                } catch (IOException e) {
-//                    // TODO Auto-generated catch block
-//                    e.printStackTrace();
-//                    /*
-//                     * TODO
-//                     * If connection attempt fails, use the procedures in RFC3263
-//                     * for servers in order to determine the IP address and
-//                     * port to open the connection and send the response to.
-//                     */
-//                    return;
-//                }
-//            }
-        } else {
-            MessageSender messageSender = messageSenders.get(connection);
-            if (messageSender == null) {
-                messageSender = createMessageSender(connection);
-            }
-            //add contact header
-            SipHeaderFieldName contactName = new SipHeaderFieldName(RFC3261.HDR_CONTACT);
-            SipHeaders respHeaders = sipResponse.getSipHeaders();
-            StringBuffer contactBuf = new StringBuffer();
-            contactBuf.append(RFC3261.LEFT_ANGLE_BRACKET);
-            contactBuf.append(RFC3261.SIP_SCHEME);
-            contactBuf.append(RFC3261.SCHEME_SEPARATOR);
-            contactBuf.append(messageSender.getContact());
-            contactBuf.append(RFC3261.RIGHT_ANGLE_BRACKET);
-            respHeaders.add(contactName, new SipHeaderFieldValue(contactBuf.toString()));
-            messageSender.sendMessage(sipResponse);
+        //actual sending - same for TCP/UDP
 
+        System.out.println("TCP/UDP SIP Response");
+        MessageSender messageSender = messageSenders.get(connection);
+        if (messageSender == null) {
+            messageSender = createMessageSender(connection);
         }
+        //add contact header
+        SipHeaderFieldName contactName = new SipHeaderFieldName(RFC3261.HDR_CONTACT);
+        SipHeaders respHeaders = sipResponse.getSipHeaders();
+        StringBuffer contactBuf = new StringBuffer();
+        contactBuf.append(RFC3261.LEFT_ANGLE_BRACKET);
+        contactBuf.append(RFC3261.SIP_SCHEME);
+        contactBuf.append(RFC3261.SCHEME_SEPARATOR);
+        contactBuf.append(messageSender.getContact());
+        contactBuf.append(RFC3261.RIGHT_ANGLE_BRACKET);
+        respHeaders.add(contactName, new SipHeaderFieldValue(contactBuf.toString()));
+        messageSender.sendMessage(sipResponse);
     }
     
     private MessageSender createMessageSender(final SipTransportConnection conn)
@@ -477,8 +431,7 @@ public class TransportManager {
                             @Override
                             public Socket run() {
                                 try {
-                                    return new Socket("44.206.112.102",
-                                            5080);
+                                    return new Socket("44.206.112.102", 5080);
                                 } catch (IOException e) {
                                     logger.error("cannot create socket", e);
                                 } catch (SecurityException e) {
@@ -488,7 +441,7 @@ public class TransportManager {
                             }
                         }
                 );
-                regularSocket.setSoTimeout(SOCKET_TIMEOUT);
+                regularSocket.setSoTimeout(TCP_SOCKET_TIMEOUT);
                 if (conn.getLocalPort() == 0) {
                     sipTransportConnection = new SipTransportConnection(
                             conn.getLocalInetAddress(),

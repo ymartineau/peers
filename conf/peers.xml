@@ -24,16 +24,16 @@
        network interfaces, or several addresses on a specific interface,
        you can specify an address to bind on here. -->
   <!-- Example: 192.168.1.20 -->
-  <ipAddress></ipAddress>
+  <ipAddress/>
   <!-- username (corresponding to the user part of your sip uri) -->
   <!-- Example: alice -->
-  <userPart></userPart>
+  <userPart>1000</userPart>
   <!-- domain (corresponding to the domain part of your sip uri) -->
   <!-- Example: atlanta.com -->
-  <domain></domain>
+  <domain>a.b.c.d:e;transport=UDP</domain>
   <!-- if password is empty, no REGISTER message is sent -->
   <!-- Example: 1234 -->
-  <password></password>
+  <password>xxxx</password>
   <!-- you can specify an outbound proxy for registration and calls -->
   <!-- Example: sip:192.168.1.20;lr -->
   <outboundProxy></outboundProxy>
@@ -67,4 +67,5 @@
        mono-channel, little endian.  -->
   <!-- Example: media/message.raw -->
   <mediaFile></mediaFile>
+  <startServer>false</startServer>
 </peers>
