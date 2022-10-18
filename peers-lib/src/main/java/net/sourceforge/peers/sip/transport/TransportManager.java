@@ -277,16 +277,14 @@ public class TransportManager {
             //TODO use Utils.getMyAddress to create socket on appropriate NIC
             DatagramSocket datagramSocket = (DatagramSocket) closableSockets.get(conn);
             if (datagramSocket == null) {
-                logger.debug("new DatagramSocket(" + conn.getLocalPort()
-                        + ", " + conn.getLocalInetAddress() + ")");
+                logger.debug("new DatagramSocket(" + conn.getLocalPort() + ")");
                 // AccessController.doPrivileged added for plugin compatibility
                 datagramSocket = AccessController.doPrivileged(
                     new PrivilegedAction<DatagramSocket>() {
                         @Override
                         public DatagramSocket run() {
                             try {
-                                return new DatagramSocket(conn.getLocalPort(),
-                                        conn.getLocalInetAddress());
+                                return new DatagramSocket(conn.getLocalPort());
                             } catch (SocketException e) {
                                 logger.error("cannot create socket", e);
                             } catch (SecurityException e) {
@@ -384,16 +382,14 @@ public class TransportManager {
         if (RFC3261.TRANSPORT_UDP.equals(conn.getTransport())) {
             DatagramSocket datagramSocket = (DatagramSocket) closableSockets.get(conn);
             if (datagramSocket == null) {
-                logger.debug("new DatagramSocket(" + conn.getLocalPort()
-                        + ", " + conn.getLocalInetAddress());
+                logger.debug("new DatagramSocket(" + conn.getLocalPort() + ")");
                 // AccessController.doPrivileged added for plugin compatibility
                 datagramSocket = AccessController.doPrivileged(
                     new PrivilegedAction<DatagramSocket>() {
                         @Override
                         public DatagramSocket run() {
                             try {
-                                return new DatagramSocket(conn.getLocalPort(),
-                                        conn.getLocalInetAddress());
+                                return new DatagramSocket(conn.getLocalPort());
                             } catch (SocketException e) {
                                 logger.error("cannot create socket", e);
                             } catch (SecurityException e) {
