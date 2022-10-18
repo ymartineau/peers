@@ -117,6 +117,7 @@ public final class RFC3261 {
     
       //REASON PHRASES
     public static final String REASON_180_RINGING  = "Ringing";
+    public static final String REASON_100_RINGING  = "Trying";
     public static final String REASON_200_OK       = "OK";
     public static final String REASON_405_METHOD_NOT_ALLOWED =
         "Method Not Allowed";

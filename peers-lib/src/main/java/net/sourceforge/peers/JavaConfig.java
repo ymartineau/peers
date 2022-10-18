@@ -38,6 +38,7 @@ public class JavaConfig implements Config {
     private String mediaFile;
     private int rtpPort;
     private String authorizationUsername;
+    private boolean serverStart;
 
     @Override
     public void save() {
@@ -99,6 +100,11 @@ public class JavaConfig implements Config {
     }
 
     @Override
+    public boolean isServerStart() {
+        return serverStart;
+    }
+
+    @Override
     public void setLocalInetAddress(InetAddress inetAddress) {
         localInetAddress = inetAddress;
     }
@@ -150,6 +156,11 @@ public class JavaConfig implements Config {
 
     public void setAuthorizationUsername(String authorizationUsername) {
         this.authorizationUsername = authorizationUsername;
+    }
+
+    @Override
+    public void setServerStart(boolean serverStart) {
+        this.serverStart = serverStart;
     }
 
     @Override

@@ -63,6 +63,9 @@ public class SipParser {
         reader = new BufferedReader(inputStreamReader);
         
         String startLine = reader.readLine();
+        if (startLine != null) {
+            System.out.println(startLine);
+        }
         while (startLine == null || startLine.equals("")) {
             startLine = reader.readLine();
         }

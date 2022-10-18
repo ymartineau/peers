@@ -100,13 +100,16 @@ public class InviteServerTransaction extends InviteTransaction
     }
 
     public void sendReponse(SipResponse sipResponse) {
+        System.out.println("In invite response");
         //TODO check that a retransmission response will be considered as
         //equal (for contains) to the first response
         if (!responses.contains(sipResponse)) {
             responses.add(sipResponse);
         }
         int statusCode = sipResponse.getStatusCode();
+        System.out.println("Status code: " + statusCode);
         if (statusCode == RFC3261.CODE_MIN_PROV) {
+            state.received101To199();
             // TODO 100 trying
         } else if (statusCode < RFC3261.CODE_MIN_SUCCESS) {
             state.received101To199();

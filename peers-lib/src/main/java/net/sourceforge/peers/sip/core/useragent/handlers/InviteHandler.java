@@ -89,16 +89,21 @@ public class InviteHandler extends DialogMethodHandler
     //////////////////////////////////////////////////////////
 
     public void handleInitialInvite(SipRequest sipRequest) {
+        System.out.println("In Invite");
         initialIncomingInvite = true;
         //generate 180 Ringing
+        System.out.println("Sending 108");
         SipResponse sipResponse = buildGenericResponse(sipRequest,
                 RFC3261.CODE_180_RINGING, RFC3261.REASON_180_RINGING);
         Dialog dialog = buildDialogForUas(sipResponse, sipRequest);
         //here dialog is already stored in dialogs in DialogManager
-        
+        String transport = RFC3261.TRANSPORT_UDP;
+        if (userAgent.getConfig().getDomain().contains(RFC3261.TRANSPORT_TCP)) {
+            transport = RFC3261.TRANSPORT_TCP;
+        }
         InviteServerTransaction inviteServerTransaction = (InviteServerTransaction)
             transactionManager.createServerTransaction(sipResponse,
-                    userAgent.getSipPort(), RFC3261.TRANSPORT_UDP, this,
+                    userAgent.getSipPort(), transport, this,
                     sipRequest);
         
         inviteServerTransaction.start();
@@ -109,7 +114,7 @@ public class InviteHandler extends DialogMethodHandler
         inviteServerTransaction.sendReponse(sipResponse);
 
         dialog.receivedOrSent1xx();
-
+        acceptCall(sipRequest, dialog);
         SipListener sipListener = userAgent.getSipListener();
         if (sipListener != null) {
             sipListener.incomingCall(sipRequest, sipResponse);

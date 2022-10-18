@@ -31,9 +31,40 @@ import java.util.Date;
 import static net.sourceforge.peers.sip.Utils.DEFAULT_PEERS_HOME;
 
 public class JavaWebStart {
-    
-    public static void main(final String[] args) {
 
+    static class CloseProgramme extends Thread {
+        private long lastActiveTime;
+        private final long timeout;
+
+        public CloseProgramme(long timeout) {
+            this.timeout = timeout;
+            this.active();
+        }
+
+        // call inside event loop to reset
+        public void active() {
+            this.lastActiveTime = System.currentTimeMillis();
+        }
+
+        @Override
+        public void run() {
+            while(true) {
+                if (System.currentTimeMillis() - lastActiveTime > this.timeout) {
+                    System.exit(0);
+                }
+
+                try {
+                    Thread.sleep(1000);
+                } catch(InterruptedException e) {
+                    System.exit(-1);
+                }
+            }
+        }
+    }
+
+    public static void main(final String[] args) {
+        CloseProgramme closeProgramme = new CloseProgramme(300_000L); // 5 minutes
+        closeProgramme.start();
         String peersDir = "peers";
         String home = System.getProperty("user.home", DEFAULT_PEERS_HOME);
         SimpleDateFormat format = new SimpleDateFormat("yyyyMMddHHmmssSSS");
