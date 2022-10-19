@@ -24,6 +24,7 @@ import java.io.PipedInputStream;
 import java.io.PipedOutputStream;
 import java.util.concurrent.CountDownLatch;
 
+import net.sourceforge.peers.Config;
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.rtp.RFC3551;
 import net.sourceforge.peers.rtp.RtpSession;
@@ -33,7 +34,7 @@ import net.sourceforge.peers.sdp.Codec;
 
 public class CaptureRtpSender {
 
-    public static final int PIPE_SIZE = 4096;
+    public static final int PIPE_SIZE = 16384;
 
     private RtpSession rtpSession;
     private Capture capture;
@@ -41,7 +42,7 @@ public class CaptureRtpSender {
     private RtpSender rtpSender;
 
     public CaptureRtpSender(RtpSession rtpSession, SoundSource soundSource,
-            boolean mediaDebug, Codec codec, Logger logger, String peersHome)
+                            boolean mediaDebug, Codec codec, Logger logger, String peersHome, Config config)
             throws IOException {
         super();
         this.rtpSession = rtpSession;
@@ -68,7 +69,7 @@ public class CaptureRtpSender {
             rawDataInput.close();
             return;
         }
-        capture = new Capture(rawDataOutput, soundSource, logger, latch);
+        capture = new Capture(rawDataOutput, soundSource, logger, latch, config);
         switch (codec.getPayloadType()) {
         case RFC3551.PAYLOAD_TYPE_PCMU:
             encoder = new PcmuEncoder(rawDataInput, encodedDataOutput,

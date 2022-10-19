@@ -25,6 +25,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.List;
 
+import net.sourceforge.peers.Config;
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.rtp.RtpPacket;
 import net.sourceforge.peers.rtp.RtpSession;
@@ -43,11 +44,13 @@ public class MediaManager {
     private Logger logger;
     private DatagramSocket datagramSocket;
     private FileReader fileReader;
+    private Config config;
 
-    public MediaManager(UserAgent userAgent, Logger logger) {
+    public MediaManager(UserAgent userAgent, Logger logger, Config config) {
         this.userAgent = userAgent;
         this.logger = logger;
         dtmfFactory = new DtmfFactory();
+        this.config = config;
     }
 
     private void startRtpSessionOnSuccessResponse(String localAddress,
@@ -76,7 +79,7 @@ public class MediaManager {
         try {
             captureRtpSender = new CaptureRtpSender(rtpSession,
                     soundSource, userAgent.isMediaDebug(), codec, logger,
-                    userAgent.getPeersHome());
+                    userAgent.getPeersHome(), config);
         } catch (IOException e) {
             logger.error("input/output error", e);
             return;
@@ -163,7 +166,7 @@ public class MediaManager {
         try {
             captureRtpSender = new CaptureRtpSender(rtpSession,
                     soundSource, userAgent.isMediaDebug(), codec, logger,
-                    userAgent.getPeersHome());
+                    userAgent.getPeersHome(), config);
         } catch (IOException e) {
             logger.error("input/output error", e);
             return;

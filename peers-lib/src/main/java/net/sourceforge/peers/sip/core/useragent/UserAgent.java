@@ -53,8 +53,9 @@ import net.sourceforge.peers.sip.transport.TransportManager;
 
 public class UserAgent {
 
-    public final static String CONFIG_FILE = "conf" + File.separator + "peers.xml";
-    public final static int RTP_DEFAULT_PORT = 8000;
+    public static final String CONFIG_FILE = "conf" + File.separator + "peers.xml";
+
+    public static final int RTP_DEFAULT_PORT = 8000;
 
     private String peersHome;
     private Logger logger;
@@ -225,7 +226,7 @@ public class UserAgent {
         // soundManager  = new SoundManager(config.isMediaDebug(), logger,
         // this.peersHome);
         this.soundManager = soundManager;
-        mediaManager = new MediaManager(this, logger);
+        mediaManager = new MediaManager(this, logger, config);
     }
     
     // client methods

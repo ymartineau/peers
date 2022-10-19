@@ -19,11 +19,15 @@
 
 package net.sourceforge.peers;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import net.sourceforge.peers.media.MediaMode;
+import net.sourceforge.peers.sip.RFC3261;
+import net.sourceforge.peers.sip.syntaxencoding.SipURI;
+import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -34,17 +38,11 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
-
-import net.sourceforge.peers.media.MediaMode;
-import net.sourceforge.peers.sip.RFC3261;
-import net.sourceforge.peers.sip.syntaxencoding.SipURI;
-import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 
 public class XmlConfig implements Config {
@@ -69,6 +67,7 @@ public class XmlConfig implements Config {
     private String mediaFile;
     private int rtpPort;
     private String authorizationUsername;
+    private boolean microPhoneEnable;
     private boolean serverStart;
 
     // corresponding DOM nodes
@@ -85,6 +84,7 @@ public class XmlConfig implements Config {
     private Node rtpPortNode;
     private Node authUserNode;
     private Node serverStartNode;
+    private Node microPhoneEnableNode;
 
     // non-persistent variables
 
@@ -200,6 +200,12 @@ public class XmlConfig implements Config {
         } else {
             serverStart = Boolean.parseBoolean(serverStartNode.getTextContent());
         }
+        microPhoneEnableNode = getFirstChild(documentElement, "microPhoneEnable");
+        if (isNullOrEmpty(microPhoneEnableNode)) {
+            microPhoneEnable = false;
+        } else {
+            microPhoneEnable = Boolean.parseBoolean(microPhoneEnableNode.getTextContent());
+        }
     }
 
     private boolean isNullOrEmpty(Node node) {
@@ -291,6 +297,16 @@ public class XmlConfig implements Config {
     @Override
     public boolean isMediaDebug() {
         return mediaDebug;
+    }
+
+    @Override
+    public void setMicroPhoneEnable(boolean microPhoneEnable) {
+        this.microPhoneEnable = microPhoneEnable;
+    }
+
+    @Override
+    public boolean isMicroPhoneEnable() {
+        return microPhoneEnable;
     }
 
     @Override

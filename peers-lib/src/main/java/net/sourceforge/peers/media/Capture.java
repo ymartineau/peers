@@ -19,11 +19,14 @@
 
 package net.sourceforge.peers.media;
 
+import net.sourceforge.peers.Config;
+import net.sourceforge.peers.Logger;
+
+import java.io.File;
 import java.io.IOException;
 import java.io.PipedOutputStream;
+import java.nio.file.Files;
 import java.util.concurrent.CountDownLatch;
-
-import net.sourceforge.peers.Logger;
 
 
 public class Capture implements Runnable {
@@ -36,21 +39,44 @@ public class Capture implements Runnable {
     private SoundSource soundSource;
     private Logger logger;
     private CountDownLatch latch;
-    
+    private Config config;
+
     public Capture(PipedOutputStream rawData, SoundSource soundSource,
-            Logger logger, CountDownLatch latch) {
+            Logger logger, CountDownLatch latch, Config config) {
         this.rawData = rawData;
         this.soundSource = soundSource;
         this.logger = logger;
         this.latch = latch;
         isStopped = false;
+
+        this.config = config;
     }
 
     public void run() {
         byte[] buffer;
-        
+        File file = new File("media/sampleAudio.wav");
+        byte[] audioBytes = null;
+        try {
+            audioBytes = Files.readAllBytes(file.toPath());
+        } catch (IOException e) {
+            logger.error("Error while reading Bytes in capture " , e);
+        }
+//        System.out.println("length : "+ audioBytes.length);
+//        InputStream byteArrayInputStream = new ByteArrayInputStream(audioBytes);
+//        //System.out.println("length2 "+byteArrayInputStream.);
+//        AudioInputStream audioInputStream = null;
+//        try {
+//            audioInputStream = AudioSystem.getAudioInputStream(byteArrayInputStream);
+//        } catch (UnsupportedAudioFileException | IOException e) {
+//            logger.error("Error while making AudioInputStream " , e);
+//        }
+        //System.out.println("Received audio : " + format + " frame length : " + audioInputStream.getFrameLength());
         while (!isStopped) {
-            buffer = soundSource.readData();
+            if (config.isMicroPhoneEnable()) {
+                buffer = soundSource.readData();
+            } else {
+                buffer = audioBytes;
+            }
             try {
                 if (buffer == null) {
                     break;

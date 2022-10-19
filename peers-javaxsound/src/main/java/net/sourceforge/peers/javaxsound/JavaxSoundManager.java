@@ -19,6 +19,12 @@
 
 package net.sourceforge.peers.javaxsound;
 
+import net.sourceforge.peers.Config;
+import net.sourceforge.peers.Logger;
+import net.sourceforge.peers.media.AbstractSoundManager;
+import net.sourceforge.peers.sip.Utils;
+
+import javax.sound.sampled.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -27,17 +33,6 @@ import java.security.AccessController;
 import java.security.PrivilegedAction;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.DataLine;
-import javax.sound.sampled.LineUnavailableException;
-import javax.sound.sampled.SourceDataLine;
-import javax.sound.sampled.TargetDataLine;
-
-import net.sourceforge.peers.Logger;
-import net.sourceforge.peers.media.AbstractSoundManager;
-import net.sourceforge.peers.sip.Utils;
 
 public class JavaxSoundManager extends AbstractSoundManager {
 
@@ -52,11 +47,13 @@ public class JavaxSoundManager extends AbstractSoundManager {
     private boolean mediaDebug;
     private Logger logger;
     private String peersHome;
-    
-    public JavaxSoundManager(boolean mediaDebug, Logger logger, String peersHome) {
+    private Config config;
+
+    public JavaxSoundManager(boolean mediaDebug, Logger logger, String peersHome, Config config) {
         this.mediaDebug = mediaDebug;
         this.logger = logger;
         this.peersHome = peersHome;
+        this.config = config;
         if (peersHome == null) {
             this.peersHome = Utils.DEFAULT_PEERS_HOME;
         }
@@ -99,6 +96,9 @@ public class JavaxSoundManager extends AbstractSoundManager {
 
                 @Override
                 public Void run() {
+                    if (!config.isMicroPhoneEnable()) {
+                        return null;
+                    }
                     try {
                         targetDataLine = (TargetDataLine) AudioSystem.getLine(targetInfo);
                         targetDataLine.open(audioFormat);

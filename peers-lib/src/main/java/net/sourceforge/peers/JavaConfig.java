@@ -39,6 +39,7 @@ public class JavaConfig implements Config {
     private int rtpPort;
     private String authorizationUsername;
     private boolean serverStart;
+    private boolean microPhoneEnable;
 
     @Override
     public void save() {
@@ -88,6 +89,16 @@ public class JavaConfig implements Config {
     @Override
     public boolean isMediaDebug() {
         return mediaDebug;
+    }
+
+    @Override
+    public void setMicroPhoneEnable(boolean microPhoneEnable) {
+        this.microPhoneEnable = microPhoneEnable;
+    }
+
+    @Override
+    public boolean isMicroPhoneEnable() {
+        return microPhoneEnable;
     }
 
     @Override
