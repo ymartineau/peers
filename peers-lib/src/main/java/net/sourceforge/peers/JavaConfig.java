@@ -91,6 +91,11 @@ public class JavaConfig implements Config {
     }
 
     @Override
+    public boolean isMicroPhoneEnable() {
+        return false;
+    }
+
+    @Override
     public int getRtpPort() {
         return rtpPort;
     }

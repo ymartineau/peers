@@ -19,17 +19,18 @@
 
 package net.sourceforge.peers.media;
 
-import java.io.IOException;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.List;
-
+import net.sourceforge.peers.Config;
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.rtp.RtpPacket;
 import net.sourceforge.peers.rtp.RtpSession;
 import net.sourceforge.peers.sdp.Codec;
 import net.sourceforge.peers.sip.core.useragent.UserAgent;
+
+import java.io.IOException;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.List;
 
 public class MediaManager {
 
@@ -43,11 +44,13 @@ public class MediaManager {
     private Logger logger;
     private DatagramSocket datagramSocket;
     private FileReader fileReader;
+    private Config config;
 
-    public MediaManager(UserAgent userAgent, Logger logger) {
+    public MediaManager(UserAgent userAgent, Logger logger, Config config) {
         this.userAgent = userAgent;
         this.logger = logger;
         dtmfFactory = new DtmfFactory();
+        this.config = config;
     }
 
     private void startRtpSessionOnSuccessResponse(String localAddress,
@@ -76,7 +79,7 @@ public class MediaManager {
         try {
             captureRtpSender = new CaptureRtpSender(rtpSession,
                     soundSource, userAgent.isMediaDebug(), codec, logger,
-                    userAgent.getPeersHome());
+                    userAgent.getPeersHome(), config);
         } catch (IOException e) {
             logger.error("input/output error", e);
             return;
@@ -94,7 +97,9 @@ public class MediaManager {
         switch (userAgent.getMediaMode()) {
         case captureAndPlayback:
             AbstractSoundManager soundManager = userAgent.getSoundManager();
-            soundManager.init();
+            if (soundManager != null) {
+                soundManager.init();
+            }
             startRtpSessionOnSuccessResponse(localAddress, remoteAddress,
                     remotePort, codec, soundManager);
             
@@ -163,7 +168,7 @@ public class MediaManager {
         try {
             captureRtpSender = new CaptureRtpSender(rtpSession,
                     soundSource, userAgent.isMediaDebug(), codec, logger,
-                    userAgent.getPeersHome());
+                    userAgent.getPeersHome(), config);
         } catch (IOException e) {
             logger.error("input/output error", e);
             return;
@@ -181,7 +186,9 @@ public class MediaManager {
         case captureAndPlayback:
 
             AbstractSoundManager soundManager = userAgent.getSoundManager();
-            soundManager.init();
+            if (soundManager != null) {
+                soundManager.init();
+            }
 
             startRtpSession(destAddress, destPort, codec, soundManager);
 

@@ -68,4 +68,5 @@
   <!-- Example: media/message.raw -->
   <mediaFile></mediaFile>
   <startServer>false</startServer>
+  <isMicroPhoneEnable>false</isMicroPhoneEnable>
 </peers>

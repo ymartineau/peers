@@ -8,11 +8,13 @@ import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.transport.SipRequest;
 import net.sourceforge.peers.sip.transport.SipResponse;
 
+import java.io.File;
+
 public class RegisterSIPClient {
     private EventManager eventManager;
     private Registration registration;
     private Logger logger;
-
+    public final static String CONFIG_FILE = "conf" + File.separator + "peers.xml";
     public RegisterSIPClient(final String[] args) {
         String peersHome = Utils.DEFAULT_PEERS_HOME;
         if (args.length > 0) {
@@ -20,10 +22,11 @@ public class RegisterSIPClient {
         }
         logger = new FileLogger(peersHome);
         registration = new Registration(logger);
+        AbstractSoundManager soundManager = new JavaxSoundManager(false, logger, peersHome);;
+//        if (config.getMicroPhoneEnable()) {
+//            soundManager = new JavaxSoundManager(false, logger, peersHome);
+//        }
 
-        final AbstractSoundManager soundManager = new JavaxSoundManager(
-                false, logger, peersHome);
-        
         if (args.length > 0) {
             peersHome = args[0];
         }

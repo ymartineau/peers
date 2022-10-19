@@ -225,7 +225,7 @@ public class UserAgent {
         // soundManager  = new SoundManager(config.isMediaDebug(), logger,
         // this.peersHome);
         this.soundManager = soundManager;
-        mediaManager = new MediaManager(this, logger);
+        mediaManager = new MediaManager(this, logger, config);
     }
     
     // client methods

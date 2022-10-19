@@ -36,6 +36,7 @@ public interface Config {
     public int getSipPort();
     public MediaMode getMediaMode();
     public boolean isMediaDebug();
+    public boolean isMicroPhoneEnable();
     public String getMediaFile();
     public int getRtpPort();
     public String getAuthorizationUsername();
