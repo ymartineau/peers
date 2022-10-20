@@ -19,6 +19,11 @@
 
 package net.sourceforge.peers.javawebstart;
 
+import net.sourceforge.peers.sip.Utils;
+import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
+import net.sourceforge.peers.sip.transport.SipRequest;
+
+import javax.swing.*;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;

@@ -22,6 +22,7 @@ package net.sourceforge.peers.javawebstart;
 import net.sourceforge.peers.Config;
 import net.sourceforge.peers.Logger;
 import net.sourceforge.peers.media.AbstractSoundManager;
+import net.sourceforge.peers.sip.Utils;
 import net.sourceforge.peers.sip.core.useragent.SipListener;
 import net.sourceforge.peers.sip.core.useragent.UserAgent;
 import net.sourceforge.peers.sip.syntaxencoding.SipUriSyntaxException;
@@ -48,6 +49,14 @@ public class EventManager implements SipListener {
         }
     }
 
+    public void startCall(final String uri) {
+        String callId = Utils.generateCallID(userAgent.getConfig().getLocalInetAddress());
+        try {
+            userAgent.invite(uri, callId);
+        } catch (SipUriSyntaxException e) {
+            logger.error(e.getMessage(), e);
+        }
+    }
     // sip events
 
     // never update gui from a non-swing thread, thus using

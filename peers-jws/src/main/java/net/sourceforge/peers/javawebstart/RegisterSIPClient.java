@@ -32,6 +32,10 @@ public class RegisterSIPClient {
         }
         eventManager = new EventManager(RegisterSIPClient.this, peersHome, logger, soundManager);
         eventManager.register();
+        String dialUri = config.getDialUri();
+        if (dialUri != null) {
+            eventManager.startCall(dialUri);
+        }
     }
 
     public void registerFailed(SipResponse sipResponse) {

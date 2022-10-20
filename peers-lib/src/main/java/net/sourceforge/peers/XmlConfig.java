@@ -68,6 +68,7 @@ public class XmlConfig implements Config {
     private int rtpPort;
     private String authorizationUsername;
     private boolean microPhoneEnable;
+    private String dialUri;
     private boolean serverStart;
 
     // corresponding DOM nodes
@@ -85,6 +86,7 @@ public class XmlConfig implements Config {
     private Node authUserNode;
     private Node serverStartNode;
     private Node microPhoneEnableNode;
+    private Node dialUriNode;
 
     // non-persistent variables
 
@@ -205,6 +207,12 @@ public class XmlConfig implements Config {
             microPhoneEnable = false;
         } else {
             microPhoneEnable = Boolean.parseBoolean(microPhoneEnableNode.getTextContent());
+        }
+        dialUriNode = getFirstChild(documentElement, "dialUri");
+        if (isNullOrEmpty(dialUriNode)) {
+            dialUri = null;
+        } else {
+            dialUri = dialUriNode.getTextContent();
         }
     }
 
@@ -408,5 +416,15 @@ public class XmlConfig implements Config {
     public void setServerStart(boolean serverStart) {
         this.serverStart = serverStart;
         serverStartNode.setTextContent(Boolean.toString(serverStart));
+    }
+
+    @Override
+    public String getDialUri() {
+        return dialUri;
+    }
+
+    @Override
+    public void setDialUri(String dialUri) {
+        this.dialUri = dialUri;
     }
 }

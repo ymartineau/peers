@@ -19,10 +19,10 @@
 
 package net.sourceforge.peers;
 
-import java.net.InetAddress;
-
 import net.sourceforge.peers.media.MediaMode;
 import net.sourceforge.peers.sip.syntaxencoding.SipURI;
+
+import java.net.InetAddress;
 
 public interface Config {
 
@@ -55,4 +55,6 @@ public interface Config {
     public void setRtpPort(int rtpPort);
     public void setAuthorizationUsername(String authorizationUsername);
     public void setServerStart(boolean serverStart);
+    public String getDialUri();
+    public void setDialUri(String dialUri);
 }

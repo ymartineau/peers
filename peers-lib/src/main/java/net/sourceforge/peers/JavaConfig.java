@@ -40,6 +40,7 @@ public class JavaConfig implements Config {
     private String authorizationUsername;
     private boolean serverStart;
     private boolean microPhoneEnable;
+    private String dialUri;
 
     @Override
     public void save() {
@@ -172,6 +173,16 @@ public class JavaConfig implements Config {
     @Override
     public void setServerStart(boolean serverStart) {
         this.serverStart = serverStart;
+    }
+
+    @Override
+    public String getDialUri() {
+        return dialUri;
+    }
+
+    @Override
+    public void setDialUri(String dialUri) {
+        this.dialUri = dialUri;
     }
 
     @Override

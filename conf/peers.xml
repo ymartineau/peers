@@ -69,4 +69,5 @@
   <mediaFile></mediaFile>
   <startServer>false</startServer>
   <microPhoneEnable>false</microPhoneEnable>
+  <dialUri></dialUri>>
 </peers>
