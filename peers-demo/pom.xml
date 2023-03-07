@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>net.sourceforge.peers</groupId>
   <artifactId>peers-demo</artifactId>
-  <version>0.5.1-SNAPSHOT</version>
+  <version>0.5.2-SNAPSHOT</version>
   <name>peers-demo</name>
   <url>http://maven.apache.org</url>
   <properties>

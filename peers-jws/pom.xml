@@ -4,7 +4,7 @@
 
   <groupId>net.sourceforge.peers</groupId>
   <artifactId>peers-jws</artifactId>
-  <version>0.5.1-SNAPSHOT</version>
+  <version>0.5.2-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <properties>
