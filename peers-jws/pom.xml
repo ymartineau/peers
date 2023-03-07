@@ -9,6 +9,11 @@
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+    <!-- set the java compiler version -->
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+
     <keystore>target/compstore</keystore>
     <storepass>123abc</storepass>
     <keypass>abc123</keypass>
