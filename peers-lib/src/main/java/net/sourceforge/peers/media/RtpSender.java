@@ -100,8 +100,7 @@ public class RtpSender implements Runnable {
         long offset = 0;
         long lastSentTime = System.nanoTime();
         // indicate if its the first time that we send a packet (dont wait)
-        boolean firstTime = true;
-        
+        int firstTimes = 0;
         while (!isStopped) {
             numBytesRead = 0;
             try {
@@ -150,12 +149,13 @@ public class RtpSender implements Runnable {
                     timestamp += buf_size;
                 }
             rtpPacket.setTimestamp(timestamp);
-            if (firstTime) {
+            if (firstTimes < 15) {
                 rtpSession.send(rtpPacket);
                 lastSentTime = System.nanoTime();
-                firstTime = false;
+                firstTimes++;
                 continue;
             }
+            // todo改成config里取
             sleepTime = 19500000 - (System.nanoTime() - lastSentTime) + offset;
             if (sleepTime > 0) {
                 try {

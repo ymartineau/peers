@@ -52,12 +52,8 @@ public class XmlConfig implements Config {
     public final static int RTP_DEFAULT_PORT = 8000;
 
     private Logger logger;
-
     private File file;
     private Document document;
-
-    // persistent variables
-
     private InetAddress localInetAddress;
     private String userPart;
     private String domain;
@@ -363,6 +359,10 @@ public class XmlConfig implements Config {
     public void setAuthorizationUsername(String authorizationUsername) {
         this.authorizationUsername = authorizationUsername;
         authUserNode.setTextContent(authorizationUsername);
+    }
+
+    public long getRtpSendInterval() {
+        return 0;
     }
 
     @Override

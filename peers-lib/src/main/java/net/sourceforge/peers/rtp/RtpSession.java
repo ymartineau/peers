@@ -174,18 +174,9 @@ public class RtpSession {
     }
 
     class Receiver implements Runnable {
-
+        private final byte[] buf = new byte[512];
         @Override
         public void run() {
-            int receiveBufferSize;
-            try {
-                receiveBufferSize = datagramSocket.getReceiveBufferSize();
-            } catch (SocketException e) {
-                logger.error("cannot get datagram socket receive buffer size",
-                        e);
-                return;
-            }
-            byte[] buf = new byte[receiveBufferSize];
             final DatagramPacket datagramPacket = new DatagramPacket(buf,
                     buf.length);
             final int noException = 0;
