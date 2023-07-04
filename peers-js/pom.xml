@@ -4,11 +4,16 @@
 
   <groupId>net.sourceforge.peers</groupId>
   <artifactId>peers-js</artifactId>
-  <version>0.5.1-SNAPSHOT</version>
+  <version>0.5.2-SNAPSHOT</version>
   <packaging>jar</packaging>
 
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+
+    <!-- set the java compiler version -->
+    <maven.compiler.source>1.8</maven.compiler.source>
+    <maven.compiler.target>1.8</maven.compiler.target>
+
     <keystore>target/compstore</keystore>
     <storepass>123abc</storepass>
     <keypass>abc123</keypass>
@@ -26,10 +31,11 @@
     <dependency>
       <groupId>sun.plugin</groupId>
       <artifactId>plugin</artifactId>
-      <version>1.6</version>
+      <version>1.8.201</version>
       <scope>system</scope>
-      <systemPath>${java.home}/lib/plugin.jar</systemPath>
+      <systemPath>${project.basedir}/custom-libs/plugin.jar</systemPath>
     </dependency>
+
 
     <dependency>
       <groupId>${project.groupId}</groupId>
