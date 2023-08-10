@@ -1,0 +1,12 @@
+body {
+  font-family: sans-serif;
+  background-color: #eeeeee;
+}
+
+.book {
+  margin: 50px;
+  border-radius: 20px;
+  padding: 30px;
+  font: 15px "Helvetica Neue", Helvetica, Arial, sans-serif;
+  background-color: #ffffff;
+}

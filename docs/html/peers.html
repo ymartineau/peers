@@ -1,0 +1,1629 @@
+<html><head>
+      <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+   <title>Peers documentation</title><link rel="stylesheet" type="text/css" href="peers.css"><meta name="generator" content="DocBook XSL-NS Stylesheets V1.76.1"><meta name="description" content="Peers is a java SIP softphone. Peers documentation is divided into several chapters. The first chapter gives a reasonable background on voice over IP, especially on SIP. This chapter is accurate for beginners, if you feel comfortable with codecs, rtp, sip and sdp, you can skip this chapter. This chapter applies to any sip client. The second chapter gives an overview of peers project and its components. The third chapter shows how peers library can be used in a simple java project. This chapter will definitely be useful for developers coming to peers and wondering how to use the library in their own project. The fourth chapter gives more details about build system (maven) and modules packaging. This chapter is useful for integrators. You will also probably need to read this chapter if you want to use peers library or any of its demo projects. Finally, the fifth chapter provides a detailed analysis of each peers module. This part is for experienced sip and java developers."></head><body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="book" title="Peers documentation"><div class="titlepage"><div><div><h1 class="title"><a name="d0e1"></a>Peers documentation</h1></div><div><div class="author"><h3 class="author"><span class="firstname">Yohann</span> <span class="surname">Martineau</span></h3></div></div><div><p class="copyright">Copyright &copy; 2014 Yohann Martineau</p></div><div><div class="abstract" title="Abstract"><p class="title"><b>Abstract</b></p><p>
+        Peers is a java SIP softphone. Peers documentation is divided into
+        several chapters.
+      </p><p>
+        The first chapter gives a reasonable background on voice over
+        IP, especially on SIP. This chapter is accurate for beginners, if you
+        feel comfortable with codecs, rtp, sip and sdp, you can skip this
+        chapter. This chapter applies to any sip client.
+      </p><p>
+        The second chapter gives an overview of peers project and its
+        components.
+      </p><p>
+        The third chapter shows how peers library can be used in a simple java
+        project. This chapter will definitely be useful for developers coming
+        to peers and wondering how to use the library in their own project.
+      </p><p>
+        The fourth chapter gives more details about build system (maven) and
+        modules packaging. This chapter is useful for integrators. You will
+        also probably need to read this chapter if you want to use peers
+        library or any of its demo projects.
+      </p><p>
+        Finally, the fifth chapter provides a detailed analysis of each peers
+        module. This part is for experienced sip and java developers.
+      </p></div></div></div><hr></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="chapter"><a href="#d0e32">1. Technical background</a></span></dt><dd><dl><dt><span class="section"><a href="#d0e37">1.1. Why standards?</a></span></dt><dt><span class="section"><a href="#d0e62">1.2. Media management</a></span></dt><dd><dl><dt><span class="section"><a href="#d0e67">1.2.1. First, voice capture.</a></span></dt><dt><span class="section"><a href="#d0e115">1.2.2. Then, audio data encoding.</a></span></dt><dt><span class="section"><a href="#d0e130">1.2.3. Packetization</a></span></dt><dt><span class="section"><a href="#d0e137">1.2.4. Audio playback</a></span></dt></dl></dd><dt><span class="section"><a href="#d0e142">1.3. Session control</a></span></dt><dd><dl><dt><span class="section"><a href="#d0e147">1.3.1. Registration</a></span></dt><dt><span class="section"><a href="#d0e154">1.3.2. Codec negotiation</a></span></dt></dl></dd></dl></dd><dt><span class="chapter"><a href="#d0e166">2. Overview</a></span></dt><dt><span class="chapter"><a href="#peers-usage">3. Peers library usage</a></span></dt><dd><dl><dt><span class="section"><a href="#d0e255">3.1. Overview</a></span></dt><dt><span class="section"><a href="#d0e271">3.2. Example</a></span></dt></dl></dd><dt><span class="chapter"><a href="#d0e417">4. Build system</a></span></dt><dt><span class="chapter"><a href="#d0e454">5. Peers source</a></span></dt><dd><dl><dt><span class="section"><a href="#d0e457">5.1. Overview</a></span></dt><dt><span class="section"><a href="#d0e491">5.2. Architecture</a></span></dt><dt><span class="section"><a href="#d0e535">5.3. State machines</a></span></dt><dt><span class="section"><a href="#d0e553">5.4. Managers</a></span></dt><dt><span class="section"><a href="#d0e558">5.5. Package users</a></span></dt><dt><span class="section"><a href="#d0e568">5.6. Package details</a></span></dt><dd><dl><dt><span class="section"><a href="#d0e571">5.6.1. SIP</a></span></dt><dt><span class="section"><a href="#d0e879">5.6.2. SDP</a></span></dt><dt><span class="section"><a href="#d0e915">5.6.3. Media</a></span></dt><dt><span class="section"><a href="#d0e1019">5.6.4. RTP</a></span></dt><dt><span class="section"><a href="#d0e1039">5.6.5. GUI</a></span></dt></dl></dd></dl></dd></dl></div><div class="list-of-figures"><p><b>List of Figures</b></p><dl><dt>1.1. <a href="#d0e77">Analog to digital conversion</a></dt><dt>3.1. <a href="#d0e263">Peers API</a></dt><dt>3.2. <a href="#peers-demo">peers-demo application UML class diagram</a></dt><dt>4.1. <a href="#d0e424">Peers modules</a></dt><dt>5.1. <a href="#d0e462">Peers modules and java packages</a></dt><dt>5.2. <a href="#sip-stack">SIP stack</a></dt><dt>5.3. <a href="#d0e543">Abstract state for all state machines</a></dt><dt>5.4. <a href="#d0e608">SIP message and its components</a></dt><dt>5.5. <a href="#d0e625">SIP transport management</a></dt><dt>5.6. <a href="#d0e635">Sending and receiving keep-alive packets</a></dt><dt>5.7. <a href="#d0e710">SIP transactions class diagram</a></dt><dt>5.8. <a href="#d0e722">Invite client transaction state machine</a></dt><dt>5.9. <a href="#d0e730">Invite server transaction state machine</a></dt><dt>5.10. <a href="#d0e738">Non-invite client transaction state machine</a></dt><dt>5.11. <a href="#d0e746">Non-invite server transaction state machine</a></dt><dt>5.12. <a href="#d0e756">Transaction manager</a></dt><dt>5.13. <a href="#d0e771">Dialog state machine</a></dt><dt>5.14. <a href="#d0e811">Method handlers</a></dt><dt>5.15. <a href="#d0e823">Request managers</a></dt><dt>5.16. <a href="#d0e835">User-Agent</a></dt><dt>5.17. <a href="#d0e853">Registration example</a></dt><dt>5.18. <a href="#d0e866">Interaction between core and gui</a></dt><dt>5.19. <a href="#d0e902">SDP objects</a></dt><dt>5.20. <a href="#d0e922">Media pipes</a></dt><dt>5.21. <a href="#d0e998">Importing raw data in Audacity</a></dt><dt>5.22. <a href="#d0e1009">Codecs implementation</a></dt><dt>5.23. <a href="#d0e1024">RTP packet flow</a></dt><dt>5.24. <a href="#d0e1071">MainFrame in action</a></dt><dt>5.25. <a href="#d0e1080">GUI event manager</a></dt><dt>5.26. <a href="#d0e1095">CallFrame in action</a></dt><dt>5.27. <a href="#d0e1103">CallFrame state machine</a></dt><dt>5.28. <a href="#d0e1118">AccountFrame in action</a></dt><dt>5.29. <a href="#d0e1126">GUI Registration state machine</a></dt></dl></div><div class="list-of-examples"><p><b>List of Examples</b></p><dl><dt>3.1. <a href="#d0e328">CommandsReader</a></dt><dt>3.2. <a href="#d0e337">EventManager interfaces</a></dt><dt>3.3. <a href="#d0e346">Create a UserAgent in EventManager</a></dt><dt>3.4. <a href="#d0e357">CustomConfig</a></dt><dt>3.5. <a href="#d0e362">CustomConfig (cont.)</a></dt><dt>3.6. <a href="#d0e369">Invoke UserAgent peers API</a></dt><dt>3.7. <a href="#d0e378">Demo project main method</a></dt></dl></div><div class="chapter" title="Chapter&nbsp;1.&nbsp;Technical background"><div class="titlepage"><div><div><h2 class="title"><a name="d0e32"></a>Chapter&nbsp;1.&nbsp;Technical background</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="section"><a href="#d0e37">1.1. Why standards?</a></span></dt><dt><span class="section"><a href="#d0e62">1.2. Media management</a></span></dt><dd><dl><dt><span class="section"><a href="#d0e67">1.2.1. First, voice capture.</a></span></dt><dt><span class="section"><a href="#d0e115">1.2.2. Then, audio data encoding.</a></span></dt><dt><span class="section"><a href="#d0e130">1.2.3. Packetization</a></span></dt><dt><span class="section"><a href="#d0e137">1.2.4. Audio playback</a></span></dt></dl></dd><dt><span class="section"><a href="#d0e142">1.3. Session control</a></span></dt><dd><dl><dt><span class="section"><a href="#d0e147">1.3.1. Registration</a></span></dt><dt><span class="section"><a href="#d0e154">1.3.2. Codec negotiation</a></span></dt></dl></dd></dl></div><p>
+      Let's start with simple things. First, it may seem obvious, but we have
+      to answer the question: what is Peers? Peers is a lightweight java SIP
+      softphone, i.e. a software that enables its users to place calls on
+      internet.
+    </p><div class="section" title="1.1.&nbsp;Why standards?"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e37"></a>1.1.&nbsp;Why standards?</h2></div></div></div><p>
+        When you place calls over internet, your computer is doing many things:
+        capture microphone, play remote contact's voice, send and receive voice
+        over the network, etc. When we look at existing solutions, we see that
+        there are many ways to do this. I will not list all applications that
+        can be used to place calls over internet, but let's see main solutions:
+        skype, msn, gtalk, yahoo. Those solutions are all proprietary solutions,
+        i.e. big companies use their own way to communicate between their client
+        applications (that's what we call a protocol). The benefit of this
+        solution is that they control evolutions of their protocol.
+      </p><p>
+        Concerning microsoft, google or yahoo, we must not forget that those
+        companies take the opportunity of their visibility and their marketing
+        power to distribute their applications. They are not necessarily
+        telecommunications experts. This does not mean that they are providing
+        poor quality software, but what would you think if your car
+        manufacturer was to sell you an oven or washing machines? You would
+        probably (at least) hesitate. 
+      </p><p>
+        The problem of proprietary protocol is that a yahoo client cannot make
+        calls to msn or skype to gtalk, etc. Not directly. There are gateways
+        to place calls from one network to another, but they are error prone
+        and imply complicated translation mechanism. They do not necessarily
+        give exactly the same features, etc. This is the reason why standards
+        have been created. With a common specification, developers can write
+        various applications that communicate between each other. Internet is
+        based on standards: HTTP, HTML, etc. Those standards are the reason of
+        internet success. Everyone can reach everyone, because everyone is
+        using the same language. For web pages, HTTP and HTML are the standard.
+        For media sessions control (voice, video, games, etc.), SIP (Session
+        Initiation Protocol) is the standard. For media sending and reception,
+        RTP (Realtime Transport Protocol) is the standard. And for media
+        sessions description, SDP (Session Description Protocol) is the
+        standard. Those standards (apart HTML) are specified by an organization
+        called <a class="link" href="http://www.ietf.org/" target="_top">IETF</a> (Internet
+        Engineering Task Force). This organization writes its specifications
+        - standards - as plain text files called RFC (Request For Comments).
+        They have a number and a title, but engineers often refer to their
+        number... Thus SIP is specified in
+        <a class="link" href="http://tools.ietf.org/html/rfc3261" target="_top">RFC3261</a>. 
+      </p><p>
+        Let's take a deep breath and dive in technical details...
+      </p><p>
+        SIP is responsible for media sessions establishement, update and
+        teardown. If someone wants to talk with a friend, he or she will tell
+        the software : "I want to invite Bob for an audio session". Let's call
+        Alice the person who is calling Bob. When the conversation is
+        terminated, Alice or Bob will tell their client application : "I'm done
+        with he or she, I want to terminate the session". That's it. This is
+        SIP. SIP means Session Initiation Protocol, but SIP is not only
+        responsible for sessions initiation, but also updates and ending. Its
+        name is not perfect, but let's deal with it. 
+      </p><p>
+        Neither Alice nor Bob wants to make more complicated things for a
+        conversation. Thus, we can see SIP as the highest level protocol for
+        internet calls, the protocol that "interacts" with users. 
+      </p><p>
+        Let's make a pause, that was the first level of our technical diving.
+      </p><p>
+        Now that we see the aim of SIP, let's understand next steps.
+      </p></div><div class="section" title="1.2.&nbsp;Media management"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e62"></a>1.2.&nbsp;Media management</h2></div></div></div><p>
+        Let's start with media handling.
+      </p><div class="section" title="1.2.1.&nbsp;First, voice capture."><div class="titlepage"><div><div><h3 class="title"><a name="d0e67"></a>1.2.1.&nbsp;First, voice capture.</h3></div></div></div><p>
+          Just a glimpse of theory.
+        </p><div class="section" title="1.2.1.1.&nbsp;Sample frequency"><div class="titlepage"><div><div><h4 class="title"><a name="d0e72"></a>1.2.1.1.&nbsp;Sample frequency</h4></div></div></div><p>
+            Voice is captured using a microphone. Voice stream is an analog
+            signal (a wave). To convert this stream to a computer-usable stream,
+            it has to be converted to a digital signal (stairs). This digital
+            signal is then converted to bits (0, 1) that computer understands.
+            How is it done? A sample is taken in this analog wave at a regular
+            interval and we will consider that this sample is valid up to the
+            next sample. This is not really the case, this is an approximation.
+            And if we take enough samples, we can draw a curve that is very
+            similar to the original wave. The interval at which we take samples
+            is called the sample frequency of the sound. 
+          </p><div class="figure"><a name="d0e77"></a><p class="title"><b>Figure&nbsp;1.1.&nbsp;Analog to digital conversion</b></p><div class="figure-contents"><div class="mediaobject"><img src="analog_digital.png" alt="Analog to digital conversion"></div></div></div><br class="figure-break"></div><div class="section" title="1.2.1.2.&nbsp;Sample size"><div class="titlepage"><div><div><h4 class="title"><a name="d0e85"></a>1.2.1.2.&nbsp;Sample size</h4></div></div></div><p>
+            Another parameter will play an important role in sampling: sample
+            size. To convert our sample to a computer-usable data, we have to
+            define bounds for the integer that will be considered as the sample
+            value. This is the sample size. The more bits we use to store one
+            sample, the best the sound quality. 
+          </p></div><div class="section" title="1.2.1.3.&nbsp;Number of channels"><div class="titlepage"><div><div><h4 class="title"><a name="d0e90"></a>1.2.1.3.&nbsp;Number of channels</h4></div></div></div><p>
+            As we are diving into digital sound analysis, we should consider
+            the number of sources of sound that can be mixed up and heard by
+            human ears. This is the number of channels. For telephony
+            applications, the number of channels is generally one: one
+            microphone makes voice capture, and delivers one source of sound.
+            Even if voice applications generally consider only one source of
+            sound, it is important to understand this notion as many tools use
+            it to manage sound. 
+          </p></div><div class="section" title="1.2.1.4.&nbsp;Endianness"><div class="titlepage"><div><div><h4 class="title"><a name="d0e95"></a>1.2.1.4.&nbsp;Endianness</h4></div></div></div><p>
+            When we define a data format for integers on a computer, we have to
+            define entirely the way bits are converted to integer and vice
+            versa. Unfortunately, everybody did not use the same conventions to
+            store integers. When we convert a decimal number to binary, we
+            generally write binary numbers as hexadecimal numbers:
+          </p><div class="literallayout"><p><code class="literal">1000&nbsp;(decimal)&nbsp;=&nbsp;1111101000&nbsp;(binary)&nbsp;=&nbsp;3E8&nbsp;(hexadecimal)</code></p></div><p>
+            Binary data is generally sliced in groups of 8 bits, i.e. one byte,
+            eight times the value one or zero. To store one byte on a computer,
+            everybody agrees: let's take the first bit (highest power of two
+            within this byte) and put it first, then second, etc. But when our
+            number cannot fit into eight bits, how do we do? We split our
+            number in groups of eight bits:
+          </p><div class="literallayout"><p><code class="literal">1000&nbsp;(decimal)&nbsp;=&nbsp;03&nbsp;E8&nbsp;(hexadecimal)</code></p></div><p>
+            Here, I added a 0 in front of 3 to fit 3 on eight bits, that's what
+            we call zero-padding. Some people decided that 03 (the most
+            significant byte) would come first, followed by E8, the way we
+            write. And some people decided that they would store E8 first (the
+            least significant byte), followed by 03. The first solution is
+            called Big-Endian, and the second one is Little-Endian. 
+          </p></div><div class="section" title="1.2.1.5.&nbsp;Signed/unsigned"><div class="titlepage"><div><div><h4 class="title"><a name="d0e110"></a>1.2.1.5.&nbsp;Signed/unsigned</h4></div></div></div><p>
+            The last parameter that will play an important role in audio data
+            format is integer boundaries. Actually, some people decided they
+            needed an integer value that would vary between zero and a positive
+            value. And some people decided they needed a value that would be
+            positive or negative, with a sign in front of the previous absolute
+            number. The problem is that we still have a multiple of eight bits
+            to store our integer. The common solution is to drop the most
+            significant bit (not byte) and use its empty space to store the
+            sign of our integer. 
+          </p></div></div><div class="section" title="1.2.2.&nbsp;Then, audio data encoding."><div class="titlepage"><div><div><h3 class="title"><a name="d0e115"></a>1.2.2.&nbsp;Then, audio data encoding.</h3></div></div></div><p>
+          The samples we have for the moment are sometimes called raw data of
+          linear PCM (Pulse Code Modulation). To find the bandwidth that's
+          necessary to transfer audio data, the following formula can be
+          applied:
+        </p><div class="literallayout"><p><code class="literal">bandwidth&nbsp;=&nbsp;frequency&nbsp;*&nbsp;sample&nbsp;size&nbsp;*&nbsp;number&nbsp;of&nbsp;channels</code></p></div><p>
+          (signed/unsigned or endianness do not infer on
+          bandwidth as they keep the same storage space) If we consider that
+          16 bits samples are taken at 8 kHz with only one channel, 128000 bits
+          of data must be sent during one second to keep our voice quality.
+          Even if internet providers bandwidths are growing, such an upload
+          bandwidth is huge and generally not available on internet. 
+        </p><p>
+          To face this issue, smart optimisations are applied on audio data so
+          that they can fit on reasonable bandwidth, available on most networks
+          on internet. Those optimisations are called codecs (coder decoder).
+          They rely on voice and ear physical properties to avoid naive raw
+          data transfert. I will not give too much details on codecs in this
+          documentation. There are many audio codecs, but the first one that is
+          generally implemented by SIP clients is G711 mu-law. Please refer to
+          wikipedia
+          <a class="link" href="http://en.wikipedia.org/wiki/G.711" target="_top">article</a>
+          for more information. Once optimisations are done,
+          data is compressed and needs less space to transport the same voice
+          stream. 
+        </p></div><div class="section" title="1.2.3.&nbsp;Packetization"><div class="titlepage"><div><div><h3 class="title"><a name="d0e130"></a>1.2.3.&nbsp;Packetization</h3></div></div></div><p>
+          After data encoding, audio stream is packetized. It means that slices
+          of audio stream are extracted from the encoder output. But on a SIP
+          network, media data cannot be sent raw, as is. It must be sent using
+          RTP (Realtime Transport Protocol). RTP strives to solve realtime
+          media transport issues that can occur on IP networks. Thus, it
+          provides a header to include a timestamp. This timestamp gives a clue
+          about when the packet must be played by the receiver. It also
+          includes a sequence number that enables packets re-ordering. The fact
+          is that, on SIP networks, RTP is often transported over UDP, because
+          we can afford losing a few media packets and small disorder in
+          packets reception. UDP is appreciated for its speed over its
+          reliability, which is a big advantage in realtime environment.
+          RTP is a binary protocol which transports binary data. 
+        </p><p>
+          On the receiver side, RTP packets are parsed. RTP headers are dropped
+          and media data is extracted. 
+        </p></div><div class="section" title="1.2.4.&nbsp;Audio playback"><div class="titlepage"><div><div><h3 class="title"><a name="d0e137"></a>1.2.4.&nbsp;Audio playback</h3></div></div></div><p>
+          Once media data is extracted, still compressed, it is transmitted to
+          decoder that will generate raw uncompressed data samples. Those
+          playable samples are then transmitted to a player which will send
+          instructions to the sound card to play voice samples correctly. 
+        </p></div></div><div class="section" title="1.3.&nbsp;Session control"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e142"></a>1.3.&nbsp;Session control</h2></div></div></div><p>
+        Let's now understand how SIP makes people reachable on a network and talking the same codec.
+      </p><div class="section" title="1.3.1.&nbsp;Registration"><div class="titlepage"><div><div><h3 class="title"><a name="d0e147"></a>1.3.1.&nbsp;Registration</h3></div></div></div><p>
+          Let's come back to Alice and Bob. Alice and Bob both use an IP
+          network to reach each other. When Alice wants to call Bob, she knows
+          his SIP uri (sip:bob@biloxi.com), but her computer does not know
+          where Bob is, on which computer, on which IP address. Thus, Alice and
+          Bob's client application registers when their computer starts or when
+          they want to be reachable by SIP network to tell a central server:
+          hello, I'm here, my IP address is 1.2.3.4 and the port I'm using is
+          5060. Smart readers that you are know that there are NATs (Network
+          Address Translation) on internet but for the moment, I will consider
+          that a public IP address is used for Alice and Bob's client
+          application. 
+        </p><p>
+          As Bob's computer is registered on a central server (called
+          registrar), Alice's client application (User-Agent) sends its request
+          to Bob's registrar, who will then forward the request to Bob's IP
+          address and port. SIP considers that there may be several
+          domains/realm with a registrar for each domain (several providers).
+          Another important element on SIP networks is proxy. A proxy is an
+          element that receives requests from User-Agents (or other SIP nodes),
+          may modify those requests, ask authentication, computes routes, and
+          then, forwards those requests to other proxies, registrars or
+          User-Agents. It's a sort of relay. It may filter malformed requests,
+          etc. 
+        </p></div><div class="section" title="1.3.2.&nbsp;Codec negotiation"><div class="titlepage"><div><div><h3 class="title"><a name="d0e154"></a>1.3.2.&nbsp;Codec negotiation</h3></div></div></div><p>
+          Now that our User-Agents (client software) are talking the same
+          control protocol: SIP, they must establish a media session so that
+          Alice can hear Bob and Bob can hear Alice. SIP is a flexible
+          protocol. Thus, it states that User-Agents can support several codecs
+          to send or receive media packets. It specifies that G711 must be
+          supported at least. This is the reason why most SIP User-Agents
+          implement G711 first, and then add more complicated codecs. 
+        </p><p>
+          As several codecs can be supported, User-Agents use a common language
+          to describe their codecs in their SIP messages. This is SDP (Session
+          Description Protocol). When a User-Agent sends a request to create a
+          media session, it includes a description of its supported codecs. And
+          when a User-Agent answers a request that is willing to create a media
+          session, it also includes the set of supported codecs, even if there
+          is only one. This is codec negotiation. Each User-Agent takes the
+          remote party's codec list and takes the first one in this list that
+          matches a codec in its own codecs list. Thus both User-Agents use the
+          same way to encode and decode media data for Alice and Bob's voice.
+          Generally, User-Agents put their "worst" codec in last position in
+          their list so that best quality codecs are preferred. 
+        </p><p>
+          Actually, codec negotiation relies on offer/answer model for SDP.
+          This model is specified in
+          <a class="link" href="http://tools.ietf.org/html/rfc3264" target="_top">RFC3264</a>. Thus,
+          the request that wants to create a new media session may be empty,
+          without any offer. In this case, the User-Agent is telling: make me
+          an offer, and I'll give you my supported codecs appropriately. In
+          this case, the SDP offer is in SIP response (200 OK), and the SDP
+          answer is in ACK. 
+        </p></div></div></div><div class="chapter" title="Chapter&nbsp;2.&nbsp;Overview"><div class="titlepage"><div><div><h2 class="title"><a name="d0e166"></a>Chapter&nbsp;2.&nbsp;Overview</h2></div></div></div><p>
+      The following paragraphs apply to peers since version 0.5.
+    </p><p>
+      Peers is distributed several ways: either as a binary "desktop" zip file
+      which can be downloaded on sourceforge in peers project
+      <a class="link" href="http://sourceforge.net/projects/peers" target="_top">page</a>, or as a
+      git project hosted on
+      <a class="link" href="https://github.com/ymartineau/peers" target="_top">github</a> for
+      souce code. The binary zip file can be extracted on windows, linux or
+      mac and the .bat or .sh startup script can be used to start peers. To
+      download peers source code, a git client must be available on your
+      computer, then you have to run:
+    </p><div class="literallayout"><p><code class="literal">git&nbsp;clone&nbsp;https://github.com/ymartineau/peers.git<br>
+cd&nbsp;peers<br>
+git&nbsp;checkout&nbsp;0.5</code></p></div><p>
+      Checkout command will put you in 0.5 tag. Thus you use the validated
+      version and not latest source versions from master branch.
+    </p><p>
+      If you take a look at peers source code, you will see that peers is
+      actually a <a class="link" href="http://maven.apache.org/" target="_top">maven</a>
+      project containing several modules:
+    </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><p>peers-demo</p></li><li class="listitem"><p>peers-doc</p></li><li class="listitem"><p>peers-gui</p></li><li class="listitem"><p>peers-javaxsound</p></li><li class="listitem"><p>peers-js</p></li><li class="listitem"><p>peers-jws</p></li><li class="listitem"><p>peers-lib</p></li></ul></div><p>
+      Maven is a java build tool which is pretty useful to manage dependencies
+      amongst modules or on external libraries. You must download it, extract
+      it and setup your environment variables if you want to build peers from
+      source code. Maven uses files called pom.xml to define projects and
+      modules.
+    </p><p>
+      Peers-demo is a command line demo project to show peers library usage
+      with a simple example. See next chapter.
+    </p><p>
+      Peers-doc is a module which contains this documentation as docbook. It
+      generates an html file and a pdf file.
+    </p><p>
+      Only three modules are used to generate peers desktop binary zip file:
+      peers-gui, peers-lib and peers-javaxsound. Peers-gui is the graphical
+      user interface based on
+      <a class="link" href="http://docs.oracle.com/javase/tutorial/uiswing/" target="_top">swing</a>.
+      Peers-javaxsound contains the classes using
+      <a class="link" href="http://docs.oracle.com/javase/tutorial/sound/" target="_top">javax.sound</a>
+      java extension package for microphone capture and sound playback.
+      Peers-lib implements everything that is not related to graphical user
+      interface and sound capture/playback (network stacks, audio encoding, etc.).
+      It's actually the most important module in peers: it contains SIP, SDP
+      and RTP stacks.
+    </p><p>
+      Actually, peers binary zip file is built by peers-gui. Peers-gui has a
+      dependency on peers-lib and peers-javaxsound. Thus, peers-gui retrieves a
+      binary file from peers-lib and peers-javaxsound, adds its own directories
+      and files and packages the whole as a zip file.
+    </p><p>
+      In addition to peers-demo example, peers-jws and peers-js give two
+      demo applications to demonstrate how peers can be launched from browser
+      or used directly in browser. You should not use those
+      modules in a deployed application, they give examples to create new
+      applications based on peers-lib. You can consider those demo applications
+      as proofs of concept.
+    </p><p>
+      Peers-jws is a
+      <a class="link" href="http://docs.oracle.com/javase/tutorial/deployment/webstart/" target="_top">Java
+      Web Start</a>
+      application. A Java Web Start application is just a java application that
+      can be launched from a web browser with a simple click. Actually, you
+      generally need to grant system resources security access rights
+      (microphone, write to the disk, etc.) but it's running outside your
+      browser.
+   </p><p>
+      Peers-js is another demo application. Peers-js is a java applet running
+      in browser. When you run this demo application, the java applet is
+      not visible in browser, user interface is developed using html and javascript. In
+      this case, peers interface is javascript, hence its name: peers-js.
+    </p><p>
+      Take care though with this module: since java 1.7.0-21, applets not signed
+      by a java certificate provided
+      by a certification authority cannot be run. There is a workaround for
+      developers. In java config panel security panel, a trusted source website
+      can be defined. In addition to this restriction added in java 1.7.0-21,
+      firefox is now blocking java applets by default since firefox 26. You can
+      force java applets execution in firefox but they are blocked by default.
+    </p><p>
+      In addition to maven modules, peers root directory contains several
+      utility directories:
+    </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><p>conf</p></li><li class="listitem"><p>logs</p></li><li class="listitem"><p>media</p></li></ul></div><p>
+      Conf directory contains peers xml configuration file and its grammar.
+      This is the file where you provide your user account info: username
+      (userpart), password and server (domain).
+      Logs contains log files once you started peers in root directory and
+      media directory contains binary files with raw audio data generated when
+      media debug option is turned on.
+    </p></div><div class="chapter" title="Chapter&nbsp;3.&nbsp;Peers library usage"><div class="titlepage"><div><div><h2 class="title"><a name="peers-usage"></a>Chapter&nbsp;3.&nbsp;Peers library usage</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="section"><a href="#d0e255">3.1. Overview</a></span></dt><dt><span class="section"><a href="#d0e271">3.2. Example</a></span></dt></dl></div><div class="section" title="3.1.&nbsp;Overview"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e255"></a>3.1.&nbsp;Overview</h2></div></div></div><p>
+        Peers provides one class to use sip and media stacks (UserAgent) and
+        one interface to receive notifications from sip stack (SipListener).
+        The UserAgent constructor takes a few parameters: SipListener, Config,
+        Logger and AbstractSoundManager. SipListener parameter in UserAgent
+        constructor must be a class implementing the corresponding interface.
+        It can be the class that creates
+        UserAgent so that there is only <a class="link" href="#peers-demo" title="Figure&nbsp;3.2.&nbsp;peers-demo application UML class diagram">one
+        class</a> to communicate with peers
+        API. Config is an interface which must be implemented by your
+        application. This simple interface will provide configuration parameters
+        to sip stack such as username, password and domain name. If you want
+        to use an xml configuration file to store those parameters, an XmlConfig
+        class is available in peers-lib. Logger is also a simple interface to
+        log messages. You can use null in User-Agent constructor so that a
+        default logger is used. Default logger will output messages on standard
+        output.
+        The last parameter is AbstractSoundManager. Here you can provide your
+        own implementation of AbstractSoundManager or you can use JavaxSoundManager
+        from peers-javaxsound module. This AbstractSoundManager is a class
+        that defines the way to access low level API to write sound to speakers
+        and read sound from microphone.
+      </p><div class="figure"><a name="d0e263"></a><p class="title"><b>Figure&nbsp;3.1.&nbsp;Peers API</b></p><div class="figure-contents"><div class="mediaobject"><img src="api-usage.png" alt="Peers API"></div></div></div><br class="figure-break"></div><div class="section" title="3.2.&nbsp;Example"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e271"></a>3.2.&nbsp;Example</h2></div></div></div><p>
+        The simplest way to develop an application based on peers is using maven.
+      </p><p>
+        As peers is a maven project, you just have to add the right dependencies
+        to your application and you can easily integrate a sip phone in your own
+        application.
+      </p><p>
+        If you want or need to use peers from a non-maven project, you can just
+        retrieve the appropriate jar files in your maven repository once you
+        have built peers (using "mvn clean install" in peers root directory) or
+        you can download peers standard desktop version and retrieve peers.jar
+        once you extracted the archive. This peers.jar contains peers-lib,
+        peers-javaxsound and peers-gui classes.
+      </p><p>
+        The following example application will be a command line interface (cli)
+        phone based on peers. Let's call this application peers-demo. This
+        application will run from command line, notify user about events (remote
+        hangup, etc.) and take commands from console. Those commands
+        will be as simple as possible: call &lt;number&gt;, hangup.
+        This application will support only one simultaneous call. SIP
+        registration parameters will be provided using Config java interface.
+        This demo application will rely on peers-lib to manage network stacks
+        and on peers-javaxsound to manage microphone and speakers.
+      </p><p>
+        The final application code is available in peers-demo module in peers
+        <a class="link" href="https://github.com/ymartineau/peers/tree/master/peers-demo" target="_top">source code</a>.
+      </p><p>
+        Here is an example to create an empty maven application:
+      </p><div class="literallayout"><p><code class="literal">mvn&nbsp;archetype:generate<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-DarchetypeGroupId=org.apache.maven.archetypes<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-DgroupId=net.sourceforge.peers<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;-DartifactId=peers-demo</code></p></div><p>
+        It creates a nice empty maven project. Let's add peers-lib dependency to
+        this project. In pom.xml, add the following dependency:
+      </p><div class="literallayout"><p><code class="literal">&nbsp;&nbsp;&nbsp;&nbsp;&lt;dependency&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;groupId&gt;net.sourceforge.peers&lt;/groupId&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;artifactId&gt;peers-lib&lt;/artifactId&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;version&gt;0.5&lt;/version&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;scope&gt;compile&lt;/scope&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/dependency&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;dependency&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;groupId&gt;net.sourceforge.peers&lt;/groupId&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;artifactId&gt;peers-javaxsound&lt;/artifactId&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;version&gt;0.5&lt;/version&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;scope&gt;compile&lt;/scope&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/dependency&gt;</code></p></div><p>
+        Let's check that this project still builds from newly created project
+        directory:
+      </p><div class="literallayout"><p><code class="literal">mvn&nbsp;clean&nbsp;install<br>
+...<br>
+[INFO]&nbsp;BUILD&nbsp;SUCCESS<br>
+...</code></p></div><p>
+        Great, now let's start developing our real application. My IDE (Integrated
+        Development Environment) is <a class="link" href="https://www.eclipse.org/" target="_top">eclipse</a>.
+        To generate eclipse project files
+        easily, I use the following command line either in peers root directory
+        or in any maven module (let's do it in peers-demo new project):
+      </p><div class="literallayout"><p><code class="literal">mvn&nbsp;eclipse:eclipse</code></p></div><p>
+        Thanks to this command, you can import existing project in eclipse: File
+        &gt; Import &gt; Existing Projects into Workspace &gt; Select the root
+        directory from which you want to scan projects and browse to the place
+        where you created your new maven project &gt; Finish and that's it. You
+        can now open your project in eclipse. Maven already created a main class
+        for you called App. You can delete this class and the corresponding unit
+        test in src/test/java.
+      </p><p>
+        When you modify project library dependencies in pom.xml, don't forget to
+        run mvn eclipse:eclipse again and refresh project in eclipse. It
+        updates dependencies in eclipse project.
+      </p><p>
+        We create a new package to host classes for this application:
+        net.sourceforge.peers.demo. We will create a Thread to read commands from
+        console (CommandsReader) and a main object will receive events from
+        console and sip stack. Let's call this main object EventManager. It will
+        handle all events coming from sip stack and from CommandsReader and will
+        make decisions appropriately (display message on console, call peers API,
+        etc.). Actually, in a real application this central class is a
+        finite state machine.
+      </p><p>
+        This application will just behave as a client, it will not support
+        incoming calls. This is just to provide a very simple example.
+      </p><div class="figure"><a name="peers-demo"></a><p class="title"><b>Figure&nbsp;3.2.&nbsp;peers-demo application UML class diagram</b></p><div class="figure-contents"><div class="mediaobject"><img src="peers-demo.png" alt="peers-demo application UML class diagram"></div></div></div><br class="figure-break"><p>
+        Let's start with the class that will read commands from console:
+      </p><div class="example"><a name="d0e328"></a><p class="title"><b>Example&nbsp;3.1.&nbsp;CommandsReader</b></p><div class="example-contents"><pre class="programlisting">
+
+package net.sourceforge.peers.demo;
+[...]
+public class CommandsReader extends Thread {
+
+    [...]
+
+    @Override
+    public void run() {
+        InputStreamReader inputStreamReader = new InputStreamReader(System.in);
+        BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+        setRunning(true);
+        while (isRunning()) {
+            String command;
+            try {
+                command = bufferedReader.readLine();
+            } catch (IOException e) {
+                e.printStackTrace();
+                break;
+            }
+            command = command.trim();
+            if (command.startsWith(CALL)) {
+                String callee = command.substring(
+                        command.lastIndexOf(' ') + 1);
+                eventManager.call(callee);
+            } else if (command.startsWith(HANGUP)) {
+                eventManager.hangup();
+            } else {
+                System.out.println("unknown command " + command);
+            }
+        }
+    }
+
+        </pre></div></div><br class="example-break"><p>
+        This class has a reference to the central class EventManager, a getter
+        and a setter on an isRunning boolean. This variable will be used to stop
+        the thread. As you can see here, string commands are just read from
+        System.in using a BufferedReader to get one line at a time. Useless
+        spaces are trimmed and one argument is read for call command.
+      </p><p>
+        Here is the corresponding EventManager class, in its first version.
+      </p><div class="example"><a name="d0e337"></a><p class="title"><b>Example&nbsp;3.2.&nbsp;EventManager interfaces</b></p><div class="example-contents"><pre class="programlisting">
+
+public class EventManager implements SipListener {
+
+    // commands methods
+    public void call(String callee) { }
+    public void hangup() { }
+    
+    
+    // SipListener methods
+    
+    @Override
+    public void registering(SipRequest sipRequest) { }
+
+    @Override
+    public void registerSuccessful(SipResponse sipResponse) { }
+
+    @Override
+    public void registerFailed(SipResponse sipResponse) { }
+
+    @Override
+    public void incomingCall(SipRequest sipRequest, SipResponse provResponse) { }
+
+    @Override
+    public void remoteHangup(SipRequest sipRequest) { }
+
+    @Override
+    public void ringing(SipResponse sipResponse) { }
+
+    @Override
+    public void calleePickup(SipResponse sipResponse) { }
+
+    @Override
+    public void error(SipResponse sipResponse) { }
+
+}
+
+        </pre></div></div><br class="example-break"><p>
+        This EventManager class implements methods called from CommandsReader
+        and the SipListener interface from peers API to receive notifications
+        from peers-lib SIP stack (to notify our application that callee picked
+        up the call for example).
+      </p><p>
+        Now, let's add our utility classes to initialize UserAgent class
+        in our EventManager constructor:
+      </p><div class="example"><a name="d0e346"></a><p class="title"><b>Example&nbsp;3.3.&nbsp;Create a UserAgent in EventManager</b></p><div class="example-contents"><pre class="programlisting">
+
+    private UserAgent userAgent;
+    private CommandsReader commandsReader;
+    
+    public EventManager() throws SocketException {
+        Config config = new CustomConfig();
+        Logger logger = new FileLogger(null);
+        JavaxSoundManager javaxSoundManager = new JavaxSoundManager(false,
+            logger, null);
+        userAgent = new UserAgent(this, config, logger, javaxSoundManager);
+        new Thread() {
+            public void run() {
+                try {
+                    userAgent.register();
+                } catch (SipUriSyntaxException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.start();
+        commandsReader = new CommandsReader(this);
+        commandsReader.start();
+    }
+
+        </pre></div></div><br class="example-break"><p>
+        Here, we use a custom implementation of Config interface (CustomConfig)
+        to provide
+        hardcoded account parameters. The FileLogger(null) instance will
+        actually log messages to console on standard output. Its name is pretty
+        dumb, but don't mind. If you create a
+        logs dir in your project root directory (peers-demo), it would log
+        messages to two text files: logs/peers.log and logs/transport.log.
+        transport.log would give full traces of sip messages (outgoing and
+        incoming) and peers.log all traces about peers internal sip stack
+        (finite state machine transitions, important steps, etc.).
+        JavaxSoundManager provides the real access to microphone and speakers.
+        This class relies upon oracle java javax.sound extension.
+        Once those utility objects are available, peers UserAgent class can
+        be instantiated.
+      </p><p>
+        userAgent.register() will start event registration, we call this
+        method in a new thread to register user account in background.
+      </p><p>
+        Here is an example CustomConfig class:
+      </p><div class="example"><a name="d0e357"></a><p class="title"><b>Example&nbsp;3.4.&nbsp;CustomConfig</b></p><div class="example-contents"><pre class="programlisting">
+
+package net.sourceforge.peers.demo;
+
+[...]
+public class CustomConfig implements Config {
+
+    private InetAddress publicIpAddress;
+
+    @Override
+    public InetAddress getLocalInetAddress() {
+        InetAddress inetAddress;
+        try {
+            // if you have only one active network interface, getLocalHost()
+            // should be enough
+            //inetAddress = InetAddress.getLocalHost();
+            // if you have several network interfaces like I do,
+            // select the right one after running ipconfig or ifconfig
+            inetAddress = InetAddress.getByName("192.168.1.11");
+        } catch (UnknownHostException e) {
+            e.printStackTrace();
+            return null;
+        }
+        return inetAddress;
+    }
+
+    @Override
+    public InetAddress getPublicInetAddress() { return publicIpAddress; }
+    @Override public String getUserPart() { return "alice"; }
+    @Override public String getDomain() { return "atlanta.com"; }
+    @Override public String getPassword() { return "secret1234"; }
+    @Override  // use microphone and speakers to capture and playback sound
+    public MediaMode getMediaMode() { return MediaMode.captureAndPlayback; }
+
+    @Override
+    public void setPublicInetAddress(InetAddress inetAddress) {
+        publicIpAddress = inetAddress;
+    }
+    
+
+
+
+        </pre></div></div><br class="example-break"><div class="example"><a name="d0e362"></a><p class="title"><b>Example&nbsp;3.5.&nbsp;CustomConfig (cont.)</b></p><div class="example-contents"><pre class="programlisting">
+
+    @Override public SipURI getOutboundProxy() { return null; }
+    @Override public int getSipPort() { return 0; } // use default sip port 5060
+    @Override public boolean isMediaDebug() { return false; }
+    @Override public String getMediaFile() { return null; }
+    @Override public int getRtpPort() { return 0; } // use random rtp port
+    
+    // in this simple example, we don't need those modifiers, but they are
+    // required by the interface
+    @Override public void setLocalInetAddress(InetAddress inetAddress) { }
+    @Override public void setUserPart(String userPart) { }
+    @Override public void setDomain(String domain) { }
+    @Override public void setPassword(String password) { }
+    @Override public void setOutboundProxy(SipURI outboundProxy) { }
+    @Override public void setSipPort(int sipPort) { }
+    @Override public void setMediaMode(MediaMode mediaMode) { }
+    @Override public void setMediaDebug(boolean mediaDebug) { }
+    @Override public void setMediaFile(String mediaFile) { }
+    @Override public void setRtpPort(int rtpPort) { }
+    @Override public void save() { }
+    
+}
+
+        </pre></div></div><br class="example-break"><p>
+        Now, we need to invoke userAgent api when a command is invoked from
+        command line. In EventManager, we add a sipRequest to keep a reference
+        to the current call so that we can hangup when a call is established.
+      </p><div class="example"><a name="d0e369"></a><p class="title"><b>Example&nbsp;3.6.&nbsp;Invoke UserAgent peers API</b></p><div class="example-contents"><pre class="programlisting">
+
+public class EventManager implements SipListener {
+    [...]
+    private SipRequest sipRequest;
+    [...]
+    // commands methods
+    public void call(final String callee) {
+        new Thread() {
+            @Override
+            public void run() {
+                try {
+                    sipRequest = userAgent.invite(callee, null);
+                } catch (SipUriSyntaxException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.start();
+    }
+    
+    public void hangup() {
+        new Thread() {
+            @Override
+            public void run() {
+                userAgent.terminate(sipRequest);
+            }
+        }.start();
+    }
+    [...]
+
+        </pre></div></div><br class="example-break"><p>
+        Here we use a null second parameter to invite so that callId is
+        generated automatically by sip stack. A call id is just a unique call
+        identifier used in sip message. We also call userAgent methods
+        in new threads so that console does not stick on commands input.
+      </p><p>
+        Our demo project is almost done, we still need a main to instantiate
+        EventManager:
+      </p><div class="example"><a name="d0e378"></a><p class="title"><b>Example&nbsp;3.7.&nbsp;Demo project main method</b></p><div class="example-contents"><pre class="programlisting">
+
+    public static void main(String[] args) {
+        try {
+            new EventManager();
+        } catch (SocketException e) {
+            e.printStackTrace();
+        }
+    }
+
+        </pre></div></div><br class="example-break"><p>
+        Now run this demo project: in eclipse right-click EventManager and
+        Run As &gt; Java Application. You should see something like this
+        (credentials in traces don't match github sources code because
+        those traces corresponds to a real account):
+      </p><div class="literallayout"><p><code class="literal">logging&nbsp;to&nbsp;stdout<br>
+2014-03-22&nbsp;00:20:07,893&nbsp;INFO&nbsp;&nbsp;[main]&nbsp;starting&nbsp;user&nbsp;agent<br>
+&nbsp;&nbsp;&nbsp;&nbsp;[myAddress:&nbsp;192.168.1.11,&nbsp;sipPort:&nbsp;0,&nbsp;userpart:&nbsp;ymartineau,<br>
+&nbsp;&nbsp;&nbsp;&nbsp;domain:&nbsp;ippi.fr]<br>
+2014-03-22&nbsp;00:20:07,977&nbsp;DEBUG&nbsp;[main]&nbsp;new&nbsp;DatagramSocket(0,&nbsp;/192.168.1.11<br>
+2014-03-22&nbsp;00:20:07,985&nbsp;INFO&nbsp;&nbsp;[main]&nbsp;added&nbsp;datagram&nbsp;socket<br>
+&nbsp;&nbsp;&nbsp;&nbsp;192.168.1.11:60588/UDP<br>
+2014-03-22&nbsp;00:20:07,986&nbsp;INFO&nbsp;&nbsp;[main]&nbsp;added&nbsp;192.168.1.11:60588/UDP:<br>
+&nbsp;&nbsp;&nbsp;&nbsp;net.sourceforge.peers.sip.transport.UdpMessageReceiver@7436ef21&nbsp;to&nbsp;message<br>
+&nbsp;&nbsp;&nbsp;&nbsp;receivers<br>
+</code></p></div><p>
+        Then, you should see the sip REGISTER message sent and received:
+      </p><div class="literallayout"><p><code class="literal">2014-03-22&nbsp;00:20:08,103&nbsp;SENT&nbsp;to&nbsp;213.215.45.230/5060&nbsp;[Thread-2]<br>
+<br>
+2014-03-22&nbsp;00:20:08,234&nbsp;SENT&nbsp;to&nbsp;213.215.45.230/5060&nbsp;[TransportManager&nbsp;0]<br>
+<br>
+REGISTER&nbsp;sip:ippi.fr&nbsp;SIP/2.0<br>
+Via:&nbsp;SIP/2.0/UDP&nbsp;192.168.1.11:60588;rport;branch=z9hG4bKu62lFMeRS<br>
+Max-Forwards:&nbsp;70<br>
+To:&nbsp;&lt;sip:ymartineau@ippi.fr&gt;<br>
+From:&nbsp;&lt;sip:ymartineau@ippi.fr&gt;;tag=tPpKyeqA<br>
+Call-ID:&nbsp;F4vlP0Y4-1395444008026@192.168.1.11<br>
+CSeq:&nbsp;2&nbsp;REGISTER<br>
+Contact:&nbsp;&lt;sip:ymartineau@192.168.1.11:60588;transport=UDP&gt;<br>
+Authorization:&nbsp;Digest&nbsp;username="ymartineau",&nbsp;realm="ippi.fr",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;nonce="532cca45176760c845efda663182a5be2609f85c",&nbsp;uri="sip:ippi.fr",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;response="d44b8bd2a59f38b003628dc276c69ad7"<br>
+<br>
+<br>
+2014-03-22&nbsp;00:20:08,270&nbsp;RECEIVED&nbsp;from&nbsp;213.215.45.230/5060&nbsp;[TransportManager&nbsp;0]<br>
+<br>
+SIP/2.0&nbsp;200&nbsp;OK<br>
+Via:&nbsp;SIP/2.0/UDP&nbsp;192.168.1.11:60588;received=192.168.1.11;rport=60588;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;branch=z9hG4bKu62lFMeRS<br>
+To:&nbsp;&lt;sip:ymartineau@ippi.fr&gt;;tag=a910c8153188470b2841623c513a131f.db9b<br>
+From:&nbsp;&lt;sip:ymartineau@ippi.fr&gt;;tag=tPpKyeqA<br>
+Call-ID:&nbsp;F4vlP0Y4-1395444008026@192.168.1.11<br>
+CSeq:&nbsp;2&nbsp;REGISTER<br>
+Contact:&nbsp;&lt;sip:ymartineau@192.168.1.11:60588;transport=UDP&gt;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;expires=3600;received="sip:90.32.185.72:60588",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;sip:ymartineau@192.168.1.11:60587;transport=UDP&gt;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;expires=3559;received="sip:90.32.185.72:60587",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&lt;sip:ymartineau@192.168.1.11:61005;transport=UDP&gt;;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;expires=3388;received="sip:90.32.185.72:61005"<br>
+Server:&nbsp;OpenSIPS&nbsp;(1.8.2-tls&nbsp;(i386/linux))<br>
+Content-Length:&nbsp;0<br>
+</code></p></div><p>
+        You could also run this application from the command line in your OS
+        console using the right dependencies in your java classpath.
+      </p><p>
+        It may be tricky to write commands on console because of the
+        numerous messages displayed. If you have difficulties, write the command
+        in your preferred text editor first and then copy paste it in the console
+        (eclipse console or OS console) and hit return. Here is an example:
+      </p><div class="literallayout"><p><code class="literal">call&nbsp;sip:*1234@ippi.fr</code></p></div><p>
+        You should see something like:
+      </p><div class="literallayout"><p><code class="literal">2014-03-22&nbsp;00:20:34,965&nbsp;DEBUG&nbsp;[Thread-6]<br>
+&nbsp;&nbsp;&nbsp;&nbsp;SM&nbsp;z9hG4bKHnwoNi3EZ|INVITE&nbsp;[InviteClientTransactionStateInit&nbsp;-&gt;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;InviteClientTransactionStateCalling]&nbsp;setState<br>
+2014-03-22&nbsp;00:20:34,965&nbsp;DEBUG&nbsp;[Thread-6]&nbsp;UdpMessageSender.sendMessage<br>
+2014-03-22&nbsp;00:20:34,965&nbsp;DEBUG&nbsp;[Thread-6]&nbsp;UdpMessageSender.sendBytes<br>
+2014-03-22&nbsp;00:20:34,965&nbsp;DEBUG&nbsp;[Thread-6]&nbsp;UdpMessageSender.sendBytes&nbsp;577<br>
+&nbsp;&nbsp;&nbsp;&nbsp;ippi.fr/213.215.45.230:5060<br>
+2014-03-22&nbsp;00:20:34,965&nbsp;DEBUG&nbsp;[Thread-6]&nbsp;/192.168.1.11<br>
+2014-03-22&nbsp;00:20:34,965&nbsp;DEBUG&nbsp;[Thread-6]&nbsp;UdpMessageSender.sendBytes&nbsp;packet&nbsp;sent<br>
+2014-03-22&nbsp;00:20:34,965&nbsp;SENT&nbsp;to&nbsp;213.215.45.230/5060&nbsp;[Thread-6]<br>
+<br>
+INVITE&nbsp;sip:*1234@ippi.fr&nbsp;SIP/2.0<br>
+Via:&nbsp;SIP/2.0/UDP&nbsp;192.168.1.11:60588;rport;branch=z9hG4bKHnwoNi3EZ<br>
+Max-Forwards:&nbsp;70<br>
+To:&nbsp;&lt;sip:*1234@ippi.fr&gt;<br>
+From:&nbsp;&lt;sip:ymartineau@ippi.fr&gt;;tag=nImz7hym<br>
+Call-ID:&nbsp;kTw3F5Wk-1395444034935@192.168.1.11<br>
+CSeq:&nbsp;3&nbsp;INVITE<br>
+Content-Length:&nbsp;212<br>
+Content-Type:&nbsp;application/sdp<br>
+Contact:&nbsp;&lt;sip:ymartineau@192.168.1.11:60588;transport=UDP&gt;<br>
+<br>
+v=0<br>
+o=user1&nbsp;432074470&nbsp;1969904641&nbsp;IN&nbsp;IP4&nbsp;192.168.1.11<br>
+s=-<br>
+c=IN&nbsp;IP4&nbsp;192.168.1.11<br>
+t=0&nbsp;0<br>
+m=audio&nbsp;60590&nbsp;RTP/AVP&nbsp;0&nbsp;8&nbsp;101<br>
+a=rtpmap:0&nbsp;PCMU/8000<br>
+a=rtpmap:8&nbsp;PCMA/8000<br>
+a=rtpmap:101&nbsp;telephone-event/8000<br>
+a=sendrecv<br>
+<br>
+2014-03-22&nbsp;00:20:34,965&nbsp;DEBUG&nbsp;[Thread-6]&nbsp;InviteClientTransaction.start<br>
+2014-03-22&nbsp;00:20:34,996&nbsp;RECEIVED&nbsp;from&nbsp;213.215.45.230/5060&nbsp;[TransportManager&nbsp;0]<br>
+</code></p></div><p>
+        If the callee pick-ups you should now be able to talk with the callee
+        using your computer microphone and you can use the following command
+        to hangup:
+      </p><div class="literallayout"><p><code class="literal">hangup</code></p></div><p>
+        If hangup is successful, you should see something like:
+      </p><div class="literallayout"><p><code class="literal">2014-03-22&nbsp;00:20:42,286&nbsp;SENT&nbsp;to&nbsp;213.215.45.230/5060&nbsp;[Thread-8]<br>
+<br>
+BYE&nbsp;sip:411@213.215.45.231&nbsp;SIP/2.0<br>
+Via:&nbsp;SIP/2.0/UDP&nbsp;192.168.1.11:60588;rport;branch=z9hG4bKZechHp2Ua<br>
+To:&nbsp;&lt;sip:*1234@ippi.fr&gt;;tag=as4f8c117e<br>
+From:&nbsp;&lt;sip:ymartineau@ippi.fr&gt;;tag=nImz7hym<br>
+Call-ID:&nbsp;kTw3F5Wk-1395444034935@192.168.1.11<br>
+CSeq:&nbsp;6&nbsp;BYE<br>
+Route:&nbsp;&lt;sip:213.215.45.230;lr&gt;<br>
+Max-Forwards:&nbsp;70<br>
+Proxy-Authorization:&nbsp;Digest&nbsp;username="ymartineau",&nbsp;realm="ippi.fr",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;nonce="532cca60e3cd40a74c9e37655a0addccc6596e41",&nbsp;uri="sip:*1234@ippi.fr",<br>
+&nbsp;&nbsp;&nbsp;&nbsp;response="71f51c20a68e8aa86e3ff00c3a81b71a"<br>
+<br>
+<br>
+2014-03-22&nbsp;00:20:42,304&nbsp;DEBUG&nbsp;[Thread-8]&nbsp;closeLines<br>
+2014-03-22&nbsp;00:20:42,339&nbsp;RECEIVED&nbsp;from&nbsp;213.215.45.230/5060&nbsp;[TransportManager&nbsp;0]<br>
+<br>
+SIP/2.0&nbsp;200&nbsp;OK<br>
+Via:&nbsp;SIP/2.0/UDP&nbsp;192.168.1.11:60588;received=192.168.1.11;rport=60588;<br>
+&nbsp;&nbsp;&nbsp;&nbsp;branch=z9hG4bKZechHp2Ua<br>
+From:&nbsp;&lt;sip:ymartineau@ippi.fr&gt;;tag=nImz7hym<br>
+To:&nbsp;&lt;sip:*1234@ippi.fr&gt;;tag=as4f8c117e<br>
+Call-ID:&nbsp;kTw3F5Wk-1395444034935@192.168.1.11<br>
+CSeq:&nbsp;6&nbsp;BYE<br>
+User-Agent:&nbsp;Asterisk&nbsp;PBX<br>
+Allow:&nbsp;INVITE,&nbsp;ACK,&nbsp;CANCEL,&nbsp;OPTIONS,&nbsp;BYE,&nbsp;REFER,&nbsp;SUBSCRIBE,&nbsp;NOTIFY<br>
+Contact:&nbsp;&lt;sip:411@213.215.45.231&gt;<br>
+Content-Length:&nbsp;0<br>
+<br>
+</code></p></div><p>
+        As you can see, we built our first example in half an hour using maven,
+        eclipse and three java classes. You can now build more complex examples
+        using dtmf UserAgent method, or notify user when an incoming call is
+        reaching your application.
+      </p></div></div><div class="chapter" title="Chapter&nbsp;4.&nbsp;Build system"><div class="titlepage"><div><div><h2 class="title"><a name="d0e417"></a>Chapter&nbsp;4.&nbsp;Build system</h2></div></div></div><p>
+      Peers relies on maven to build all its modules, jar files and zip
+      files.
+    </p><p>
+      Here are dependencies amongst modules:
+    </p><div class="figure"><a name="d0e424"></a><p class="title"><b>Figure&nbsp;4.1.&nbsp;Peers modules</b></p><div class="figure-contents"><div class="mediaobject"><img src="modules.png" alt="Peers modules"></div></div></div><br class="figure-break"><p>
+      My advice is to use "mvn clean install" to build peers project or any
+      of its modules.
+      Generated files for all modules are in their target subdirectory. If you
+      run "mvn clean install" in peers source code root directory, the same
+      command will be run automatically in all modules declared in peers root
+      project pom.xml in &lt;modules&gt;. Actually, it's true for any maven
+      command that you invoke from root directory. If you take a look at
+      peers root pom.xml, you will see that most modules are "attached" to
+      peers parent project.
+    </p><p>
+      Peers-lib generates a simple jar file containing sip, rtp and sdp stacks.
+    </p><p>
+      Peers-javaxsound generates a simple jar file containing only
+      JavaxSoundManager class.
+    </p><p>
+      Peers-gui first generates a jar file containing all its dependencies
+      (peers-jws-with-dependencies.jar). Thus, this file includes classes from
+      peers-lib and peers-javaxsound jars combined in one jar. Then it creates
+      a zip file that can be extracted on standard pc to run peers. In this
+      archive, the previous peers-jws-with-dependencies.jar file is called
+      peers.jar. This archive also includes conf, media and logs directories
+      and two scripts files to start peers on linux or windows easily.
+    </p><p>
+      Peers-jws includes a demo web page. Peers-jws generates a zip file
+      including this web page and all dependencies. This zip file can be
+      extracted in web server directory. Then, you just have to browse the
+      corresponding url to test peers-jws.
+    </p><p>
+      Similarly, peers-js includes a demo web page and generates a zip file
+      that can be extracted on a web server. This module relies on a jar
+      provided only with sun or oracle java versions (provided in its Java
+      Runtime Environment install directory): ${java.home}/lib/plugin.jar. This
+      jar file contains a netscape.javascript package containing objects used
+      to invoke javascript functions from java classes. To build this module,
+      you must define a JAVA_HOME environment variable that points to your JRE.
+    </p><p>
+      Peers-demo generates a jar file containing only its classes, it is not
+      reused by another module.
+    </p><p>
+      All zip files built by peers modules rely on <a class="link" href="https://maven.apache.org/plugins/maven-assembly-plugin/" target="_top">maven
+      assembly</a> to define the content of the target zip file. This maven
+      <a class="link" href="https://maven.apache.org/plugins/" target="_top">plugin</a> is
+      explicitly invoked in the corresponding modules pom.xml. The archive is
+      defined in an xml file (often called bin.xml) in src/assembly
+      subdirectory.
+    </p></div><div class="chapter" title="Chapter&nbsp;5.&nbsp;Peers source"><div class="titlepage"><div><div><h2 class="title"><a name="d0e454"></a>Chapter&nbsp;5.&nbsp;Peers source</h2></div></div></div><div class="toc"><p><b>Table of Contents</b></p><dl><dt><span class="section"><a href="#d0e457">5.1. Overview</a></span></dt><dt><span class="section"><a href="#d0e491">5.2. Architecture</a></span></dt><dt><span class="section"><a href="#d0e535">5.3. State machines</a></span></dt><dt><span class="section"><a href="#d0e553">5.4. Managers</a></span></dt><dt><span class="section"><a href="#d0e558">5.5. Package users</a></span></dt><dt><span class="section"><a href="#d0e568">5.6. Package details</a></span></dt><dd><dl><dt><span class="section"><a href="#d0e571">5.6.1. SIP</a></span></dt><dt><span class="section"><a href="#d0e879">5.6.2. SDP</a></span></dt><dt><span class="section"><a href="#d0e915">5.6.3. Media</a></span></dt><dt><span class="section"><a href="#d0e1019">5.6.4. RTP</a></span></dt><dt><span class="section"><a href="#d0e1039">5.6.5. GUI</a></span></dt></dl></dd></dl></div><div class="section" title="5.1.&nbsp;Overview"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e457"></a>5.1.&nbsp;Overview</h2></div></div></div><p>
+        Here is an overview of peers maven modules and java packages:
+      </p><div class="figure"><a name="d0e462"></a><p class="title"><b>Figure&nbsp;5.1.&nbsp;Peers modules and java packages</b></p><div class="figure-contents"><div class="mediaobject"><img src="modules-packages.png" alt="Peers modules and java packages"></div></div></div><br class="figure-break"><p>
+        Peers-demo source code has already been covered in peers usage
+        <a class="link" href="#peers-usage" title="Chapter&nbsp;3.&nbsp;Peers library usage">chapter</a>.
+      </p><p>
+        Peers-doc contains this documentation as a
+        <a class="link" href="http://docbook.org/tdg/en/html/docbook.html" target="_top">docbook</a>
+        file: peers.xml. Source svg images are created using
+        <a class="link" href="http://www.inkscape.org/" target="_top">Inkscape</a>.
+      </p><p>
+        Peers-javaxsound has already been covered, it only opens and closes
+        javax.sound target and source data lines. javax.sound is also known as
+        javasound.
+      </p><p>
+        Peers-js contains an implementation of Applet class to define the java
+        applet.
+      </p><p>
+        Peers-jws just invokes the standard peers desktop version but from
+        java web start environment (less rights at the beginning). This is the
+        reason why it depends on peers-gui and not peers-lib and
+        peers-javaxsound directly.
+      </p><p>
+        Peers-lib and peers-gui are more complex. Peers-gui relies on swing.
+        Swing is the graphical user interface library provided by oracle to
+        build graphical applications.
+      </p></div><div class="section" title="5.2.&nbsp;Architecture"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e491"></a>5.2.&nbsp;Architecture</h2></div></div></div><p>
+          Peers has been developed in java, an object-oriented programming
+          language.
+          Peers relies on standard java specification API. If you are using a
+          standard java platform (openjdk or sun jdk), everything is already
+          included in your environment, you need no other library. Peers has no
+          external dependency. If you don't want to download sources and import
+          them in your preferred IDE, you can browse the source code online, on
+          <a class="link" href="https://github.com/ymartineau/peers" target="_top">github</a>.
+        </p><p>
+          For your information, nat package in peers-lib is not used for the
+          moment, it was an
+          experiment about Port Restricited Cone NAT traversal. media package is
+          responsible for sound encoding. SDP and SIP do not rely on any external
+          library. Of course, sdp and sip packages contains SDP related sources
+          and SIP stack implementation. rtp package contains peers rtp
+          implementation, which is used by media package. The only complicated
+          (but interesting) package is sip. Let's see what sip is made of:
+        </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><p>net.sourceforge.peers.sip.core</p></li><li class="listitem"><p>net.sourceforge.peers.sip.transactionuser</p></li><li class="listitem"><p>net.sourceforge.peers.sip.transaction</p></li><li class="listitem"><p>net.sourceforge.peers.sip.transport</p></li><li class="listitem"><p>net.sourceforge.peers.sip.syntaxencoding</p></li></ul></div><p>
+          As you probably remarked, it corresponds to
+          <a class="link" href="http://tools.ietf.org/html/rfc3261" target="_top">RFC3261</a> layers: 
+        </p><div class="figure"><a name="sip-stack"></a><p class="title"><b>Figure&nbsp;5.2.&nbsp;SIP stack</b></p><div class="figure-contents"><div class="mediaobject"><img src="sip_stack.png" alt="SIP stack"></div></div></div><br class="figure-break"><p>
+          The reader will probably need to keep RFC3261 open to 
+          understand thoroughly the following paragraphs. I did not reinvent the wheel. The
+          sip package has been implemented with simplicity and extensibility in
+          mind. This implementation should not be obscure to a java developer
+          that already knows SIP. The following paragraphs will contain
+          <a class="link" href="http://en.wikipedia.org/wiki/Unified_Modeling_Language" target="_top">UML</a>
+          diagrams. But before we explain the meaning of each package, let's see
+          some common techniques that have been used in several packages. 
+        </p></div><div class="section" title="5.3.&nbsp;State machines"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e535"></a>5.3.&nbsp;State machines</h2></div></div></div><p>
+          SIP defines several state machines, a
+          <a class="link" href="http://sourcemaking.com/design_patterns/state" target="_top">design
+          pattern</a> has been used for state machines. It consists of one
+          class for the object that handles its state, one parent class for all
+          states of this state machine and one class for each state. As there
+          were several state machines, and as it was useful to log state
+          transitions, a general abstract state class has been defined, it just
+          prints the old state, the new state and the transition. Then
+          each parent state class in state machines extends this abstract state
+          class: 
+        </p><div class="figure"><a name="d0e543"></a><p class="title"><b>Figure&nbsp;5.3.&nbsp;Abstract state for all state machines</b></p><div class="figure-contents"><div class="mediaobject"><img src="state-machines.png" alt="Abstract state for all state machines"></div></div></div><br class="figure-break"><p>
+          We won't give more details about the role of each state machine now, just keep in mind
+          the way they are managed and implemented, not what they are done for. 
+        </p></div><div class="section" title="5.4.&nbsp;Managers"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e553"></a>5.4.&nbsp;Managers</h2></div></div></div><p>
+          The second design pattern that has been used in Peers is "Factory". It
+          has been used in several packages. Actually, in Peers, factories are
+          called managers. Those classes are called xxxManager. Managers are
+          more than factories, because they are
+          employed to create object instances, but they are also used to store
+          all references to those objects. For example, TransactionManager
+          implements a method to create a new client transaction:
+          createClientTransaction, and a method to retrieve a client
+          transaction: getClientTransaction. Thus, when an external object
+          needs to access one of the objects created by a manager, it uses its
+          get method. In some cases, one manager can create several types of
+          objects. In the previous example, TransactionManager manages client
+          transactions and server transactions. In such cases, the appropriated
+          get method must be employed. All managers have been implemented the
+          same way. They contain hashtables for the object tables they manage.
+          For those reasons, and as they are used to delete references to those
+          objects, the word manager has been preferred to factory. 
+        </p></div><div class="section" title="5.5.&nbsp;Package users"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e558"></a>5.5.&nbsp;Package users</h2></div></div></div><p>
+          Interaction between packages is sometimes made using interfaces and
+          javabeans event pattern. Those interfaces defines objects users. Thus
+          when an object outside a package needs to get information from one
+          object, it implements its corresponding User interface. And then it
+          gets notified about events. Users interfaces are quite similar to
+          Listeners. But they are not called Listeners because they do not
+          necessarily apply to pure beans or POJOs (plain old java objects). 
+        </p><p>
+          In SIP <a class="link" href="#sip-stack" title="Figure&nbsp;5.2.&nbsp;SIP stack">theory</a>, only one layer relies on two
+          other layers: transaction
+          user on transaction and transport layers. In peers implementation,
+          you can find dependencies on several packages: syntaxencoding for
+          message access, media for sound management, etc. This does not break
+          this model. Most of those accesses are done to retrieve data from
+          other objects, not to perform an action on an event. 
+        </p></div><div class="section" title="5.6.&nbsp;Package details"><div class="titlepage"><div><div><h2 class="title" style="clear: both"><a name="d0e568"></a>5.6.&nbsp;Package details</h2></div></div></div><div class="section" title="5.6.1.&nbsp;SIP"><div class="titlepage"><div><div><h3 class="title"><a name="d0e571"></a>5.6.1.&nbsp;SIP</h3></div></div></div><p>
+          Let's start with sip-related packages. The best way to get in touch
+          with SIP is probably using wireshark network analyzer and its sip
+          filter, and trying to place calls. We have already seen that Peers
+          source code is made of several packages that correspond to SIP layers.
+          We will start with the lowest layer (syntax/encoding) with simple
+          message examples. Then we will climb up the layer stack. The next
+          step is transport management, i.e. the way messages travel over the
+          network. Next, we will see how those messages are grouped to make
+          transactions. Then, we will explain how those transactions are
+          grouped to manage dialogs. And last but not least, we will
+          understand how dialogs are managed by core layer. But before we
+          explain how those high-level layers are implemented in java, let's
+          discover SIP by its messages. 
+        </p><div class="section" title="5.6.1.1.&nbsp;Message anatomy"><div class="titlepage"><div><div><h4 class="title"><a name="d0e576"></a>5.6.1.1.&nbsp;Message anatomy</h4></div></div></div><p>
+            SIP uses two types of messages: requests and responses. Requests
+            contain a method (<span class="emphasis"><em>INVITE</em></span> in the following
+            example) that will give request aim and a request-uri
+            (<span class="emphasis"><em>sip:bob@biloxi.example.com</em></span>) for the
+            person/server we want to reach. Responses contain a status
+            code (an integer, <span class="emphasis"><em>200</em></span> in next example) that
+            gives response status: success, failure, etc. Each SIP message is
+            made of several headers and one body. A header has a name, and
+            generally one value but it may contain several values. A SIP
+            header can contain one or several parameters with the following
+            syntax:
+          </p><div class="literallayout"><p><code class="literal">header_name:&nbsp;header_value;param=param_value</code></p></div><p>
+            Here is an example message quoting
+            <a class="link" href="http://tools.ietf.org/html/rfc3665" target="_top">RFC3665</a>,
+            which gives simple call-flow examples.
+          </p><div class="literallayout"><p><code class="literal">INVITE&nbsp;sip:bob@biloxi.example.com&nbsp;SIP/2.0<br>
+Via:&nbsp;SIP/2.0/TCP&nbsp;client.atlanta.example.com:5060;branch=z9hG4bK74bf9<br>
+Max-Forwards:&nbsp;70<br>
+From:&nbsp;Alice&nbsp;&lt;sip:alice@atlanta.example.com&gt;;tag=9fxced76sl<br>
+To:&nbsp;Bob&nbsp;&lt;sip:bob@biloxi.example.com&gt;<br>
+Call-ID:&nbsp;3848276298220188511@atlanta.example.com<br>
+CSeq:&nbsp;1&nbsp;INVITE<br>
+Contact:&nbsp;&lt;sip:alice@client.atlanta.example.com;transport=tcp&gt;<br>
+Content-Type:&nbsp;application/sdp<br>
+Content-Length:&nbsp;151<br>
+<br>
+v=0<br>
+o=alice&nbsp;2890844526&nbsp;2890844526&nbsp;IN&nbsp;IP4&nbsp;client.atlanta.example.com<br>
+s=-<br>
+c=IN&nbsp;IP4&nbsp;192.0.2.101<br>
+t=0&nbsp;0<br>
+m=audio&nbsp;49172&nbsp;RTP/AVP&nbsp;0<br>
+a=rtpmap:0&nbsp;PCMU/8000</code></p></div><p>
+            This message is a request. Here, is an example response. Here
+            message bodies are plain text. Generally, SIP message body is
+            either empty, either text. But RFC3261 states that body can
+            contain any type of data, even binary data.
+          </p><div class="literallayout"><p><code class="literal">SIP/2.0&nbsp;200&nbsp;OK<br>
+Via:&nbsp;SIP/2.0/TCP&nbsp;client.atlanta.example.com:5060;branch=z9hG4bK74bf9<br>
+;received=192.0.2.101<br>
+From:&nbsp;Alice&nbsp;&lt;sip:alice@atlanta.example.com&gt;;tag=9fxced76sl<br>
+To:&nbsp;Bob&nbsp;&lt;sip:bob@biloxi.example.com&gt;;tag=8321234356<br>
+Call-ID:&nbsp;3848276298220188511@atlanta.example.com<br>
+CSeq:&nbsp;1&nbsp;INVITE<br>
+Contact:&nbsp;&lt;sip:bob@client.biloxi.example.com;transport=tcp&gt;<br>
+Content-Type:&nbsp;application/sdp<br>
+Content-Length:&nbsp;147<br>
+<br>
+v=0<br>
+o=bob&nbsp;2890844527&nbsp;2890844527&nbsp;IN&nbsp;IP4&nbsp;client.biloxi.example.com<br>
+s=-<br>
+c=IN&nbsp;IP4&nbsp;192.0.2.201<br>
+t=0&nbsp;0<br>
+m=audio&nbsp;3456&nbsp;RTP/AVP&nbsp;0<br>
+a=rtpmap:0&nbsp;PCMU/8000</code></p></div><p>
+            Thus, here is how those messages have been designed to enable message
+            content access in Peers. 
+          </p><div class="figure"><a name="d0e608"></a><p class="title"><b>Figure&nbsp;5.4.&nbsp;SIP message and its components</b></p><div class="figure-contents"><div class="mediaobject"><img src="sip_syntax_encoding.png" alt="SIP message and its components"></div></div></div><br class="figure-break"><p>
+            For the moment, don't mind body content, this is SDP
+            (starting with v=0...). We will explain this syntax later. Just
+            remember that this is not SIP but SDP, and thus, it's specified
+            in another RFC. 
+          </p></div><div class="section" title="5.6.1.2.&nbsp;Transport"><div class="titlepage"><div><div><h4 class="title"><a name="d0e618"></a>5.6.1.2.&nbsp;Transport</h4></div></div></div><p>
+            Now that we have seen SIP message bones, let's see how those
+            messages are transported over the network.
+          </p><p>
+            Transport package is quite simple: TransportManager creates
+            client transports and server transports. Those client transports
+            and server transports are called message senders and message
+            receivers. Actually, behind the stage, DatagramSockets are doing
+            the real job. It must be noted that TCP transport is not
+            supported in Peers. Most SIP stacks first support UDP, and then
+            TCP. Peers does not break the rules. That's why TCP does not
+            appear on the following class diagram. The transport layer is
+            almost always responsible for message retransmissions
+            (when first message sent has not been acknowledged). As SIP
+            works over UDP, those message retransmissions are very important
+            to avoid lost packets. 
+          </p><div class="figure"><a name="d0e625"></a><p class="title"><b>Figure&nbsp;5.5.&nbsp;SIP transport management</b></p><div class="figure-contents"><div class="mediaobject"><img src="sip_transport.png" alt="SIP transport management"></div></div></div><br class="figure-break"><p>
+            To enable simple NATs traversal, each message sender sends "empty" SIP
+            packets at scheduled interval (ping). Actually, those packets contain
+            four bytes: 0x0d 0x0a 0x0d 0x0a. Those bytes correspond to a
+            couple of carriage return / line feed ("\r\n" in java).
+            Furthermore, on packet reception, if the first line of this
+            packet does not contain "SIP/2.0", this packet is considered as a
+            keep-alive / ping packet. Thus, a pong is sent, i.e. the same
+            packet is sent back to the source of the previous packet. Sent
+            and received at fixed rate, those packets prevent NATs from
+            closing binding sessions between local and remote sip stacks.
+            Nevertheless, it doesn't work with symmetric NATs.
+          </p><div class="figure"><a name="d0e635"></a><p class="title"><b>Figure&nbsp;5.6.&nbsp;Sending and receiving keep-alive packets</b></p><div class="figure-contents"><div class="mediaobject"><img src="ping-pong.png" alt="Sending and receiving keep-alive packets"></div></div></div><br class="figure-break"><p>
+            For datagram sockets indexing (in transport manager hashtable),
+            it must be noted that keys are not strings nor integers, but
+            SipTransportConnection objects. Those objects contain local ip
+            address, remote ip address, local port, remote port and transport
+            protocol used to convey packets. Thus when it's necessary to
+            communicate with the same machine on the same port and using the
+            same transport protocol, the same object is used. 
+          </p><p>
+            Thread management is not the same for message sending and message
+            reception. MessageReceiver implements Runnable, thus it must be
+            started in its own Thread. It has been considered that was
+            necessary to perform message reception in one Thread, as it can
+            occur at any time. But message sending is not done in its own
+            Thread. It's done in caller's Thread. This is the reason why
+            applications relying on peers API must call UserAgent methods
+            in a background thread.
+          </p><p>
+            Transport management has been done in a very naive way. In
+            theory, UDP packets may contain several SIP messages, but this
+            feature is not implemented in Peers. Actually on client side,
+            this would probably be very odd to receive several SIP messages
+            in the same UDP packet. In day-to-day life, it never occurs.
+            Several multi-SIP messages UDP packets generally only occur
+            between high-loaded servers, not on User-Agents. In theory,
+            SIP messages bigger than MTU or 1300 bytes if <a class="link" href="http://en.wikipedia.org/wiki/Maximum_transmission_unit" target="_top">MTU</a>
+            is unknown are supposed to be sent on a reliable transport
+            protocol such as TCP. In peers, this feature is not implemented,
+            all packets are sent over UDP. 
+          </p><p>
+            We won't explain all SIP routing theory, but remember that
+            requests are routed using Route header if it's present, and
+            request-uri domain name or IP address if Route header is not in
+            message. Responses are routed using Via header. It generally
+            contains an IP address and a port on which the response must be
+            sent. 
+          </p></div><div class="section" title="5.6.1.3.&nbsp;Transaction"><div class="titlepage"><div><div><h4 class="title"><a name="d0e654"></a>5.6.1.3.&nbsp;Transaction</h4></div></div></div><p>
+            Those of you who are familiar with databases probably already
+            know transactions. We could also compare SIP transactions with
+            financial transactions. In each case, transaction aim is the
+            same: do something if each individual step is successful, otherwise
+            do nothing. It's exactly the same with SIP. If any error occurs
+            during transaction
+            management, abort modifications on transaction-related objects
+            (dialog state, etc.) and come back to the original
+            state, before transaction management. Actually, this is quite
+            dumb to start Peers transaction implementation description with
+            transaction-fallback mechanism because no "failover" technique
+            has been implemented in Peers... but at least, you are aware of
+            it. 
+          </p><p>
+            In SIP, a transaction is made of:
+          </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><p>exactly one request,</p></li><li class="listitem"><p>
+                eventually one or several provisional response(s) (status
+                code between 101 and 199),
+              </p></li><li class="listitem"><p>
+                exactly one final response (status code between 200 and 699).
+              </p></li></ul></div><p>
+            We forget forking, it's intended. Fork is not implemented in
+            Peers.
+          </p><p>
+            Transaction layer is probably the most complex layer in SIP
+            specification. There are several transaction families. To find
+            transaction family, you have to answer two questions:
+          </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><p>
+                Does this transaction receive or sent the request on the
+                network?
+              </p></li><li class="listitem"><p>Does this transaction create a Dialog?</p></li></ul></div><p>
+            Both questions have two mutually exclusive answers. Transactions that
+            receive requests are called server transactions and transactions
+            which send requests are called client transactions. Transactions
+            that create a dialog are called invite transactions as INVITE is
+            the only method that can create dialogs in RFC3261.
+            Transactions that will not create a dialog are called non-invite
+            transactions. Thus there are four transaction types:
+          </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><p>invite client transaction,</p></li><li class="listitem"><p>invite server transaction,</p></li><li class="listitem"><p>non-invite client transaction,</p></li><li class="listitem"><p>non-invite server transaction.</p></li></ul></div><p>
+            Transactions are uniquely identified using branch parameter in
+            header Via (<span class="emphasis"><em>z9hG4bK74bf9</em></span> in the following
+            example) and method name (<span class="emphasis"><em>INVITE</em></span>). As
+            requests and responses belong to a transaction, those parameters
+            are present in both request and response.
+          </p><div class="literallayout"><p><code class="literal">INVITE&nbsp;sip:bob@biloxi.example.com&nbsp;SIP/2.0<br>
+Via:&nbsp;SIP/2.0/TCP&nbsp;client.atlanta.example.com:5060;branch=z9hG4bK74bf9<br>
+Max-Forwards:&nbsp;70<br>
+[...]<br>
+SIP/2.0&nbsp;200&nbsp;OK<br>
+Via:&nbsp;SIP/2.0/TCP&nbsp;client.atlanta.example.com:5060;branch=z9hG4bK74bf9<br>
+;received=192.0.2.101<br>
+From:&nbsp;Alice&nbsp;&lt;sip:alice@atlanta.example.com&gt;;tag=9fxced76sl<br>
+To:&nbsp;Bob&nbsp;&lt;sip:bob@biloxi.example.com&gt;;tag=8321234356<br>
+Call-ID:&nbsp;3848276298220188511@atlanta.example.com<br>
+CSeq:&nbsp;1&nbsp;INVITE<br>
+Contact:&nbsp;&lt;sip:bob@client.biloxi.example.com;transport=tcp&gt;<br>
+[...]</code></p></div><p>
+            Server and client aspect of transactions has been implemented as
+            interfaces in Peers, and invite and non-invite property has been
+            implemented in abstract classes. Thus those four transactions
+            have been implemented in their own class in Peers, extending and
+            implementing the appropriate class and interface, as shown in the
+            following diagram: 
+          </p><div class="figure"><a name="d0e710"></a><p class="title"><b>Figure&nbsp;5.7.&nbsp;SIP transactions class diagram</b></p><div class="figure-contents"><div class="mediaobject"><img src="sip_transaction.png" alt="SIP transactions class diagram"></div></div></div><br class="figure-break"><p>
+            This class diagram also shows which classes are using transport
+            layer using their corresponding SipXxxTransportUser interface. 
+          </p><p>
+            There are many classes in peers transaction package because each
+            transaction type has its own state machine and each state machine
+            has one parent class and one class for each state.
+            Those state machines are provided in RFC3261 but
+            here is the corresponding class diagram for peers: 
+          </p><div class="figure"><a name="d0e722"></a><p class="title"><b>Figure&nbsp;5.8.&nbsp;Invite client transaction state machine</b></p><div class="figure-contents"><div class="mediaobject"><img src="invite_client_transaction.png" alt="Invite client transaction state machine"></div></div></div><br class="figure-break"><div class="figure"><a name="d0e730"></a><p class="title"><b>Figure&nbsp;5.9.&nbsp;Invite server transaction state machine</b></p><div class="figure-contents"><div class="mediaobject"><img src="invite_server_transaction.png" alt="Invite server transaction state machine"></div></div></div><br class="figure-break"><div class="figure"><a name="d0e738"></a><p class="title"><b>Figure&nbsp;5.10.&nbsp;Non-invite client transaction state machine</b></p><div class="figure-contents"><div class="mediaobject"><img src="non_invite_client_transaction.png" alt="Non-invite client transaction state machine"></div></div></div><br class="figure-break"><div class="figure"><a name="d0e746"></a><p class="title"><b>Figure&nbsp;5.11.&nbsp;Non-invite server transaction state machine</b></p><div class="figure-contents"><div class="mediaobject"><img src="non_invite_server_transaction.png" alt="Non-invite server transaction state machine"></div></div></div><br class="figure-break"><p>
+            Well, now that we know our transactions behavior, let's see their
+            manager. Transaction manager works with transactions using their
+            client/server property. Thus it uses ClientTransaction and
+            ServerTransaction interfaces to handle them. 
+          </p><div class="figure"><a name="d0e756"></a><p class="title"><b>Figure&nbsp;5.12.&nbsp;Transaction manager</b></p><div class="figure-contents"><div class="mediaobject"><img src="sip_transaction_manager.png" alt="Transaction manager"></div></div></div><br class="figure-break"></div><div class="section" title="5.6.1.4.&nbsp;Dialog"><div class="titlepage"><div><div><h4 class="title"><a name="d0e764"></a>5.6.1.4.&nbsp;Dialog</h4></div></div></div><p>
+            Actually, in SIP specification there's a sort of confusion
+            between transaction user and dialog layer. Several layers are
+            using transaction layer on the upper side: core and dialog. Core
+            is either User-Agent, Proxy, Registrar or Redirect Server; and
+            dialog is transaction user. 
+          </p><p>
+            Transaction user is probably the most simple layer in SIP. It
+            contains Dialogs. A dialog is the representation of a media
+            session on the control side. Remember there are two sides in SIP:
+            media and control. Dialog is on control side, and media session
+            is on media side. Media session is often the term employed in SDP
+            and RTP. One state machine is necessary for dialogs. Please refer
+            to RFC3261 for information about what must be inside a dialog.
+            Bird view: local and remote contact addresses, unique id, etc.
+            It's not a surprise, dialogs are managed using DialogManager. 
+          </p><div class="figure"><a name="d0e771"></a><p class="title"><b>Figure&nbsp;5.13.&nbsp;Dialog state machine</b></p><div class="figure-contents"><div class="mediaobject"><img src="dialog.png" alt="Dialog state machine"></div></div></div><br class="figure-break"><p>
+            Actually, Dialog is not really a group of transactions, but a
+            transaction can occur within a dialog or not. The parameter that
+            will determine if a transaction is performed within a dialog is
+            its Call-ID header. To be exhaustive, a dialog is identified by
+            its Call-ID, the tag parameter in header From and the tag parameter
+            in header To. This is what you will see in peers.log. Thus a
+            transaction which is performed within a dialog must use the same
+            Call-ID, the same local-tag and the same remote-tag. Local-tag
+            and remote-tag are To-tag and From-tag if the request is coming
+            from the UAC (User-Agent Client) but they may be switched if the
+            request is coming from the UAS (User-Agent Server), i.e. the one
+            who received the call. Here is an illustration of dialog
+            identifier components in request and response:
+          </p><div class="literallayout"><p><code class="literal">INVITE&nbsp;sip:bob@biloxi.example.com&nbsp;SIP/2.0<br>
+Via:&nbsp;SIP/2.0/TCP&nbsp;client.atlanta.example.com:5060;branch=z9hG4bK74bf9<br>
+Max-Forwards:&nbsp;70<br>
+From:&nbsp;Alice&nbsp;&lt;sip:alice@atlanta.example.com&gt;;tag=9fxced76sl<br>
+To:&nbsp;Bob&nbsp;&lt;sip:bob@biloxi.example.com&gt;<br>
+Call-ID:&nbsp;3848276298220188511@atlanta.example.com<br>
+[...]<br>
+SIP/2.0&nbsp;200&nbsp;OK<br>
+Via:&nbsp;SIP/2.0/TCP&nbsp;client.atlanta.example.com:5060;branch=z9hG4bK74bf9<br>
+;received=192.0.2.101<br>
+From:&nbsp;Alice&nbsp;&lt;sip:alice@atlanta.example.com&gt;;tag=9fxced76sl<br>
+To:&nbsp;Bob&nbsp;&lt;sip:bob@biloxi.example.com&gt;;tag=8321234356<br>
+Call-ID:&nbsp;3848276298220188511@atlanta.example.com<br>
+[...]</code></p></div><p>
+            In this example, the dialog id is the concatenation of
+            3848276298220188511@atlanta.example.com, 9fxced76sl and 8321234356.
+            The request does not contain a tag parameter in
+            header To. Actually, at this time, the dialog does not exist yet. 
+          </p></div><div class="section" title="5.6.1.5.&nbsp;User-Agent"><div class="titlepage"><div><div><h4 class="title"><a name="d0e786"></a>5.6.1.5.&nbsp;User-Agent</h4></div></div></div><p>
+            On top of transaction user <a class="link" href="#sip-stack" title="Figure&nbsp;5.2.&nbsp;SIP stack">layer</a>,
+            we find core layer. Core layer defines the SIP element role. On a
+            SIP network, we've already seen that there were serveral nodes
+            (roles):
+          </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><p>proxy,</p></li><li class="listitem"><p>registrar,</p></li><li class="listitem"><p>redirect server,</p></li><li class="listitem"><p>user-agent.</p></li></ul></div><p>
+            Peers is a user-agent. It's the software employed by users to
+            place or receive calls. Actually, a user-agent is just the SIP
+            part of this software. User-agent can be considered as the image
+            of the software in SIP stack. This is the reason why the
+            corresponding package name is:
+            net.sourceforge.peers.sip.core.useragent. Peers SIP core layer,
+            or core role is User-Agent. 
+          </p><p>
+            In SIP, the core layer is the brain. Depending on its role, it
+            can be more or less sophisticated, but it's the place where
+            general behavior is defined. Another property of SIP protocol is
+            that complex things are managed in client software applications.
+            Sometimes we hear that complexity is implemented on the edge of
+            the network in SIP protocol. To support this complexity, each
+            single feature has been implemented in a separate class in Peers.
+            There are two types of classes in core layer: request managers
+            and handlers. Handlers implement method-specific code. In basic
+            SIP specification, there are several methods: INVITE, BYE,
+            CANCEL, ACK, OPTIONS and REGISTER. Thus, each method has its own
+            handler. All methods are not dialog-related methods, those
+            methods are implemented in classes that inherit MethodHandler
+            directly. Dialog related methods classes have a common abstract
+            class called DialogMethodHandler. This class is reponsible for
+            dialog construction and updates, calling the appropriate methods
+            in dialog package. The following class diagram shows those
+            classes: 
+          </p><div class="figure"><a name="d0e811"></a><p class="title"><b>Figure&nbsp;5.14.&nbsp;Method handlers</b></p><div class="figure-contents"><div class="mediaobject"><img src="sip_core_method_handlers.png" alt="Method handlers"></div></div></div><br class="figure-break"><p>
+            Method names are generally quite explicit: INVITE is there to
+            create dialogs, CANCEL cancels dialogs in progress and BYE
+            terminates dialogs. But INVITE can also be used to update codec,
+            the IP address and port on which RTP packets can be sent. In this
+            case, they are called re-INVITEs, but the actual method that is
+            present in requests is INVITE. The trick to find if an INVITE is
+            an initial INVITE or a subsequent INVITE (re-INVITE) is to look
+            at To header tag parameter. If this parameter is defined, a
+            dialog has already been created and thus, the INVITE request is
+            within this dialog. REGISTER is used to register user-agent IP
+            address and port, so that it can receive SIP calls. And OPTIONS
+            is used to get information about what is supported in user-agent,
+            proxy, etc. Well, I did not mention ACK for the moment... ACK is
+            a very particular method. It does not generate any response. It's
+            just employed to acknowledge the creation of a dialog on the
+            client side. Thus the server side is notified of dialog creation. 
+          </p><p>
+            A user-agent always contains both a user-agent client and a
+            user-agent server. A user-agent client is responsible for
+            requests sending and a user-agent server is responsible for
+            incoming requests processing. In Peers, they are called UAC and
+            UAS. Sorry, I must insist on one thing. The most important aspect
+            of a request is whether this request occurs inside a dialog
+            (subsequent request) or outside any dialog (initial request).
+            This is really important because the processing in user-agent is
+            absolutely different. In one case, you may have to create a dialog,
+            in the other you may have to update this dialog. Some processing
+            is the same for all methods for initial requests and some
+            processing is the same for all subsequent requests. Request
+            creation is the typical example. All methods share some
+            processing in creation process. Thus, in Peers,
+            InitialRequestManager is responsible for initial requests
+            specific handling and MidDialogRequestManager is responsible for
+            the requests handling occurring in a dialog. 
+          </p><div class="figure"><a name="d0e823"></a><p class="title"><b>Figure&nbsp;5.15.&nbsp;Request managers</b></p><div class="figure-contents"><div class="mediaobject"><img src="sip_core_request_managers.png" alt="Request managers"></div></div></div><br class="figure-break"><p>
+            The RequestManager is the class that keeps a reference to all
+            Handlers. Even if it's an abstract class, it provides references
+            to each method handler in its subclasses: InitialRequestManager
+            and MidDialogRequestManager. Instances of those classes are
+            references in UAC and UAS. May Peers act as user-agent server or
+            user-agent client, it has to support intial requests sending,
+            subsequent requests sending, initial requests reception and
+            subsequent requests reception. 
+          </p><p>
+            Let's come to our main class: UserAgent. UserAgent keeps
+            references to many important objects: UAC, UAS, media related
+            objects (CaptureRtpSender and IncomingRtpReader), and managers
+            (ChallengeManager, DialogManager, TransactionManager and
+            TransportManager). Each layer manager is referenced here. 
+          </p><div class="figure"><a name="d0e835"></a><p class="title"><b>Figure&nbsp;5.16.&nbsp;User-Agent</b></p><div class="figure-contents"><div class="mediaobject"><img src="sip_core_user_layer.png" alt="User-Agent"></div></div></div><br class="figure-break"><p>
+            All core Handlers and Managers are instantiated within UserAgent
+            constructor. Thus, when you instantiate a new UserAgent, you
+            implicitly create its underlying layers objects. This is the
+            reason why it's really easy to use Peers in external
+            applications.
+          </p></div><div class="section" title="5.6.1.6.&nbsp;Challenge management"><div class="titlepage"><div><div><h4 class="title"><a name="d0e845"></a>5.6.1.6.&nbsp;Challenge management</h4></div></div></div><p>
+            There's another important manager, it's ChallengeManager. In a
+            SIP network, each element that receives a request can reject that
+            request, asking the sender a common secret, this is a Challenge.
+            ChallengeManager is responsible for Challenge management.
+            Challenges are specified in <a class="link" href="http://tools.ietf.org/html/rfc2617" target="_top">RFC2617</a>.
+            They provide a sort of authentication in SIP. Only two methods
+            support challenges in peers: INVITE and REGISTER. And the only
+            two response status codes supported by peers are 401 and 407. All
+            combinations of supported methods and response codes share the
+            same behavior for authentication. Thus this class handles them.
+            This RFC defines a framework for HTTP authentication, but the
+            same authentication framework is applied to SIP. Amongst the
+            amount of authentication schemes specified for SIP, MD5 is the
+            only authentication scheme supported in peers. AKA and other
+            authentication schemes are not supported. Inspite those
+            limitations, peers is able to authenticate on most standard SIP
+            servers. 
+          </p><div class="figure"><a name="d0e853"></a><p class="title"><b>Figure&nbsp;5.17.&nbsp;Registration example</b></p><div class="figure-contents"><div class="mediaobject"><img src="registration.png" alt="Registration example"></div></div></div><br class="figure-break"></div><div class="section" title="5.6.1.7.&nbsp;Communication with user interface"><div class="titlepage"><div><div><h4 class="title"><a name="d0e861"></a>5.6.1.7.&nbsp;Communication with user interface</h4></div></div></div><p>
+            Communication between core SIP layer (user-agent) and graphical
+            user interface is done using an interface called SipListener.
+            Thus, separation between SIP layers and user interface is clearly
+            identified. The communication is done with gui package, but this
+            graphical user interface can be replaced with another gui, a
+            web interface, or even a console interface thanks to this
+            generic way of communicating between sip core layer and upper
+            layer. 
+          </p><div class="figure"><a name="d0e866"></a><p class="title"><b>Figure&nbsp;5.18.&nbsp;Interaction between core and gui</b></p><div class="figure-contents"><div class="mediaobject"><img src="core-gui.png" alt="Interaction between core and gui"></div></div></div><br class="figure-break"><p>
+            As already <a class="link" href="#peers-usage" title="Chapter&nbsp;3.&nbsp;Peers library usage">seen</a>, a software
+            which needs to use peers SIP stack with another gui
+            can instantiate a UserAgent object and then use this user agent
+            instance to communicate with peers SIP stack. The SipListener
+            interface offers the user interface a way to be notified of SIP
+            incoming events: incoming call, callee pickup, remote hangup,
+            etc. and user actions are provided to sip core through UserAgent
+            methods:
+            invite(), register(), acceptCall(), rejectCall(), etc.
+            Incoming events correspond to methods in SipListener interface.
+            This interface is implemented by a main class in upper layer
+            (EventManager in gui package), the upper layer processes the
+            incoming events and eventually takes action on SIP core layer
+            depending on previous events and user actions. 
+          </p></div></div><div class="section" title="5.6.2.&nbsp;SDP"><div class="titlepage"><div><div><h3 class="title"><a name="d0e879"></a>5.6.2.&nbsp;SDP</h3></div></div></div><p>
+          SDP package is responsible for codec negotiation. SDP itself is the
+          way media sessions are described, it's specified in <a class="link" href="http://tools.ietf.org/html/rfc4566" target="_top">RFC4566</a>. This
+          codec negotiation is specified in <a class="link" href="http://tools.ietf.org/html/rfc3264" target="_top">RFC3264</a>. The
+          negotiation principle is quite simple. At any time, an entity
+          generates an offer, with all supported codecs. This offer is sent
+          to another entity. Later, the entity that received the offer parses
+          this offer, analyzes it, and generates an answer. There is always
+          one answer for one offer. The answer depends on offer, it's not
+          always the same.
+        </p><p>
+          In SIP theory, an offer can be present in either INVITE or 200
+          body. If the offer is in INVITE, the answer is in 200, and if the
+          offer is in 200, the answer is in ACK body and INVITE body is
+          empty. In practice, this former case is extremely rare. SDP
+          contains critical information about media streams. It provides the
+          IP address and the port on which the softphone wishes to receive RTP packets,
+          but it also describes the payload types that it supports. Remember,
+          SDP gives media description, not media content. The protocol that
+          transports media streams is RTP. This protocol transports encoded
+          media with a specific wrapping format, this is the payload type.
+          Here is an example SDP session description:
+        </p><div class="literallayout"><p><code class="literal">v=0<br>
+o=alice&nbsp;2890844526&nbsp;2890844526&nbsp;IN&nbsp;IP4&nbsp;client.atlanta.example.com<br>
+s=-<br>
+c=IN&nbsp;IP4&nbsp;192.0.2.101<br>
+t=0&nbsp;0<br>
+m=audio&nbsp;49172&nbsp;RTP/AVP&nbsp;0<br>
+a=rtpmap:0&nbsp;PCMU/8000</code></p></div><p>
+          Reading this SDP, we can conclude that this entity is listening on
+          IP address 192.0.2.101 on port 49172 for RTP PCMU packets (payload
+          type 0), sampled at 8000 Hz. Payload types and their corresponding
+          codec are given in <a class="link" href="http://tools.ietf.org/html/rfc3551" target="_top">RFC3551</a>. 
+        </p><p>
+          If we take a look at Peers source code, SDPManager is the place
+          where everything is done at SDP level. This class generates offers,
+          parses answers to extract useful information (IP address, port,
+          payload type), and generates answers based on incoming offers. The
+          object employed to describe an SDP body is SessionDescription. A
+          SessionDescription can contain several MediaDescriptions. A
+          MediaDescription typically corresponds to an audio stream or a
+          video stream (video is not supported in peers, but its sdp stack
+          could support it in theory). A MediaDescription can contain several Codecs. 
+        </p><div class="figure"><a name="d0e902"></a><p class="title"><b>Figure&nbsp;5.19.&nbsp;SDP objects</b></p><div class="figure-contents"><div class="mediaobject"><img src="sdp.png" alt="SDP objects"></div></div></div><br class="figure-break"><p>
+          The combination of IP address, port and Codec is grouped as a
+          MediaDestination. This class eases RTP targets description. The
+          content of those classes corresponds to <a class="link" href="http://tools.ietf.org/html/rfc4566" target="_top">RFC4566</a>
+          parameters description. 
+        </p></div><div class="section" title="5.6.3.&nbsp;Media"><div class="titlepage"><div><div><h3 class="title"><a name="d0e915"></a>5.6.3.&nbsp;Media</h3></div></div></div><p>
+          The main classes of this package are IncomingRtpReader and
+          CaptureRtpSender. Actually, IncomingRtpReader is responsible for
+          RTP header parsing, media decompression and media playback ; and
+          CaptureRtpReader is responsible for microphone capture, media
+          encoding and RTP header insertion. Thus, CaptureRtpSender has
+          references to Capture, Encoder and RtpSender instances. Each of
+          this class implements Runnable, and is running in a separate
+          Thread. Data is transmitted using pipes (PipedOutputStreams and
+          PipedInputStreams) amongst those media handling objects.
+          Nevertheless, IncomingRtpReader does not use separate threads for
+          parsing and media playback. 
+        </p><p>
+          The following figure illustrates pipes between Capture, xxxEncoder
+          and RtpSender which allow data transmission from microphone capture
+          to RTP packet sending. 
+        </p><div class="figure"><a name="d0e922"></a><p class="title"><b>Figure&nbsp;5.20.&nbsp;Media pipes</b></p><div class="figure-contents"><div class="mediaobject"><img src="pipes.png" alt="Media pipes"></div></div></div><br class="figure-break"><div class="section" title="5.6.3.1.&nbsp;Javaxsound"><div class="titlepage"><div><div><h4 class="title"><a name="d0e930"></a>5.6.3.1.&nbsp;Javaxsound</h4></div></div></div><p>
+            This module and its corresponding package relies on oracle javasound.
+            Javasound is standard sun javasound API. Thus you can use their
+            web pages for more information and <a class="link" href="http://download.oracle.com/javase/tutorial/sound/TOC.html" target="_top">tutorials</a>.
+            All interaction with javasound API is done in JavaxSoundManager.
+            Thus, if you want to use another sound API, you can implement
+            your own version of AbstractSoundManager, defined in peers-lib.
+            Peers-javaxsound defines SourceDataLines for
+            media playback and TargetDataLine for media capture. A global
+            AudioSystem class is there to retrieve all information about
+            sound card, etc. AudioDataFormats give description about codec
+            and audio bitstream format. The last important aspect of
+            javasound is Line. Lines are used for stream control:
+            start/stop, etc. Peers captures audio data at 8 kHz,
+            using 16 bits samples, one channel (mono), and signed
+            little-endian samples. 
+          </p><p>
+            The use of javasound for media capture and playback is critical.
+            Even if it's not the simplest java media API, it has the
+            advantage of being tested by sun on each supported platform
+            (windows, linux, mac, solaris, etc.). Peers has been tested
+            successfully on linux, windows and mac os 10.6. Javasound has
+            many drawbacks: few guaranteed features, no standard audio data
+            format (frequency, sample size, etc.). But it's already
+            integrated in java standard edition API, and it avoids
+            third-party libraries with native parts, etc.
+          </p><p>
+            AbstractSoundManager defines two methods to open and close lines on the
+            host sound card and one method to "write" data to speakers. To "read"
+            from microphone, the SoundSource interface has been defined. This
+            interface is implemented by AbstractSoundManager for standard usage
+            but also by FileReader to read raw media files and send them over
+            the network to the remote party. Check &lt;mediaFile&gt; in peers.xml
+            config file.
+          </p><p>
+            In peers-javaxsound, the line used to play sound
+            (SourceDataLine) and the line used to capture sound
+            (TargetDataLine) are opened one after another, not in parallel.
+            Tests proved that it is more secure to open one line after
+            another. Parallel lines opening can create JVM crashes. Once
+            opened, those line take and provide data.
+          </p></div><div class="section" title="5.6.3.2.&nbsp;Media debug"><div class="titlepage"><div><div><h4 class="title"><a name="d0e944"></a>5.6.3.2.&nbsp;Media debug</h4></div></div></div><p>
+            Peers provides an option in its configuration file called
+            &lt;mediaDebug&gt;. This parameter takes a boolean value. If true, almost
+            all media data will be written to several files in media/
+            directory corresponding to each step in both directions.
+          </p><p>
+            From peers user to remote contact:
+          </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><p>
+                data captured from javasound before encoding =&gt;
+                _PCM_SIGNED_8000.0_16_1_le_microphone.output
+              </p></li><li class="listitem"><p>encoder input =&gt; _g711_encoder.input</p></li><li class="listitem"><p>encoder output =&gt; _g711_encoder.output</p></li><li class="listitem"><p>rtp sender input =&gt; _rtp_sender.input</p></li><li class="listitem"><p>
+                rtp session output (including rtp header) =&gt;
+                _rtp_session.output
+              </p></li></ul></div><p>
+            From remote contact to peers user:
+          </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><p>
+                rtp session input (incoming rtp packets received, including
+                rtp header) =&gt; _rtp_session.input
+              </p></li><li class="listitem"><p>
+                data provided to javasound to really play sound =&gt;
+                _PCM_SIGNED_8000.0_16_1_le_speaker.input
+              </p></li></ul></div><p>
+            As you can see, decoder input and output are not written to their
+            file, this is because this step didn't required too much debug
+            during implementation.
+            All files start with date using the following format:
+            yyyy-MM-dd_HH-mm-ss. Remember that this parameter is only
+            useful for debug purpose, it slows down media streams very much
+            and it has not been extensively tested. It will probably work in
+            simple scenarios, but probably not in complex ones.
+          </p><p>
+            PCM_SIGNED_... give the format of raw data contained in this
+            file. Those files can be imported in <a class="link" href="http://audacity.sourceforge.net/" target="_top">Audacity</a> using
+            File &gt; Import &gt; Raw data and the following parameters:
+          </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><p>Signed 16 bit PCM</p></li><li class="listitem"><p>Little-endian</p></li><li class="listitem"><p>1 Canal</p></li><li class="listitem"><p>Sample Frequency: 8000 Hz</p></li></ul></div><p>
+            Thus you can see what is being provided to javasound. This may
+            help media debugging. 
+          </p><div class="figure"><a name="d0e998"></a><p class="title"><b>Figure&nbsp;5.21.&nbsp;Importing raw data in Audacity</b></p><div class="figure-contents"><div class="mediaobject"><img src="audacity.png" alt="Importing raw data in Audacity"></div></div></div><br class="figure-break"></div><div class="section" title="5.6.3.3.&nbsp;Codecs"><div class="titlepage"><div><div><h4 class="title"><a name="d0e1004"></a>5.6.3.3.&nbsp;Codecs</h4></div></div></div><p>
+            Peers codecs have been implemented the most generic way as
+            possible. Thus two abstract classes Encoder and Decoder have been
+            created. Encoder is a Runnable and Decoder is not. Those
+            abstract classes are overloaded by codecs. As PCMU and PCMA are
+            supported in peers, each one has it own Encoder and Decoder: 
+          </p><div class="figure"><a name="d0e1009"></a><p class="title"><b>Figure&nbsp;5.22.&nbsp;Codecs implementation</b></p><div class="figure-contents"><div class="mediaobject"><img src="media_classes.png" alt="Codecs implementation"></div></div></div><br class="figure-break"><p>
+            Encoder and Decoder classes only define a process(...) method
+            that will work on input to generate an output depending on codec
+            algorithm. Encoder is started at the beginning of a call and only
+            the codec-specific encoding is done in real codec class.
+          </p></div></div><div class="section" title="5.6.4.&nbsp;RTP"><div class="titlepage"><div><div><h3 class="title"><a name="d0e1019"></a>5.6.4.&nbsp;RTP</h3></div></div></div><p>
+          Peers RTP stack is very simple. The main class of this stack is
+          RtpSession. This class handles the packet sending and reception.
+          It relies on java 5 ExecutorService to receive packets.
+          Nevertheless it does not create a separate thread to send packets,
+          it simply sends them on demand using send(RtpPacket) method. As
+          other packets, RTP package provides a listener to notify the
+          reception of an RTP packet. When a packet is received, the raw data
+          is parsed using RtpParser class. Thus a new RtpPacket is created
+          and provided to the RtpListeners which subscribed to RTP packet
+          reception on RtpSession. 
+        </p><div class="figure"><a name="d0e1024"></a><p class="title"><b>Figure&nbsp;5.23.&nbsp;RTP packet flow</b></p><div class="figure-contents"><div class="mediaobject"><img src="rtp.png" alt="RTP packet flow"></div></div></div><br class="figure-break"><p>
+          An RtpPacket contains standard RTP headers and data (ssrc,
+          sequenceNumber, payloadType, etc.). Peers RTP stack is based on
+          <a class="link" href="http://tools.ietf.org/html/rfc3550" target="_top">RFC3550</a>.
+          Before it can be used, an RtpSession has to be started using
+          start() method. Later it can be stopped using stop() method. An
+          RtpSession uses an initial remote IP address and a port number to
+          send first RTP packets before any RTP packet has been received from
+          remote RTP party. Once a packet has been received, if the source IP
+          address or the port differs from the previous received packet, the
+          remote IP address and port are updated with
+          latest one. This enables NAT traversal in a few cases.
+          
+        </p></div><div class="section" title="5.6.5.&nbsp;GUI"><div class="titlepage"><div><div><h3 class="title"><a name="d0e1039"></a>5.6.5.&nbsp;GUI</h3></div></div></div><p>
+          Last but not least, graphical user interface. Peers is based on
+          swing for gui management. Once more, swing is already integrated in
+          oracle JRE. It's light, efficient and uses staight-forward development
+          methods. Peers uses OS native look and feel instead of sun's metal
+          look and feel. OS look and feel will probably be moving faster
+          than metal look and feel and OS integration is thus improved. 
+        </p><p>
+          GUI is based on a class which manages all events coming from SIP
+          layer and from user and dispatches events amongst GUI components.
+          This class is EventManager. This class receives invocations from
+          sip layer using its SipListener interface. It then dispatches
+          events to the appropriated frames. Several frames are implemented
+          in gui (from the most important one to the least important one):
+        </p><div class="itemizedlist"><ul class="itemizedlist" type="disc"><li class="listitem"><p>MainFrame</p></li><li class="listitem"><p>CallFrame</p></li><li class="listitem"><p>AccountFrame</p></li><li class="listitem"><p>AboutFrame</p></li></ul></div><p>
+          Some of those frames have been designed using <a class="link" href="http://netbeans.org/" target="_top">netbeans</a> with an empty
+          project and then integrated in peers main source code, implementing
+          only triggers on appropriated events (typically button clicks).
+          Thus, graphical design has not been too harsh. 
+        </p><div class="section" title="5.6.5.1.&nbsp;MainFrame"><div class="titlepage"><div><div><h4 class="title"><a name="d0e1064"></a>5.6.5.1.&nbsp;MainFrame</h4></div></div></div><p>
+            MainFrame is actually the class that contains the main() method
+            of peers, so this is the first class to be instantiated.
+            MainFrame creates and keeps a reference to EventManager. Then
+            EventManager creates and manages other frames and their
+            corresponding events. 
+          </p><p>
+            Here is a screenshot of MainFrame: 
+          </p><div class="figure"><a name="d0e1071"></a><p class="title"><b>Figure&nbsp;5.24.&nbsp;MainFrame in action</b></p><div class="figure-contents"><div class="mediaobject"><img src="main_frame_registered.png" alt="MainFrame in action"></div></div></div><br class="figure-break"></div><div class="section" title="5.6.5.2.&nbsp;EventManager"><div class="titlepage"><div><div><h4 class="title"><a name="d0e1077"></a>5.6.5.2.&nbsp;EventManager</h4></div></div></div><div class="figure"><a name="d0e1080"></a><p class="title"><b>Figure&nbsp;5.25.&nbsp;GUI event manager</b></p><div class="figure-contents"><div class="mediaobject"><img src="gui-eventmanager.png" alt="GUI event manager"></div></div></div><br class="figure-break"><p>
+            EventManager is listening to frames through listeners interfaces:
+            MainFrameListener, CallFrameListener. EventManager also
+            implements ActionListener to receive events from MainFrame
+            JMenu. Thus when user is clicking on Edit &gt; Account, the
+            corresponding event reaches EventManager and EventManager
+            eventually instantiates a new AccountFrame to enable user
+            configure sip account. 
+          </p></div><div class="section" title="5.6.5.3.&nbsp;CallFrame"><div class="titlepage"><div><div><h4 class="title"><a name="d0e1090"></a>5.6.5.3.&nbsp;CallFrame</h4></div></div></div><p>
+            When user places or receives a new call, a new CallFrame is
+            created and displayed to user. Here is an example after callee
+            pickup: 
+          </p><div class="figure"><a name="d0e1095"></a><p class="title"><b>Figure&nbsp;5.26.&nbsp;CallFrame in action</b></p><div class="figure-contents"><div class="mediaobject"><img src="call_frame.png" alt="CallFrame in action"></div></div></div><br class="figure-break"><p>
+            Peers defines a state machine to maintain the state of this
+            window. This state machine uses the standard model employed in
+            peers (one class per state and a parent class for all states).
+            The same state machine is employed for calls originating from
+            peers user and terminating towards peers user. Here is this state
+            machine: 
+          </p><div class="figure"><a name="d0e1103"></a><p class="title"><b>Figure&nbsp;5.27.&nbsp;CallFrame state machine</b></p><div class="figure-contents"><div class="mediaobject"><img src="call_frame_state_machine.png" alt="CallFrame state machine"></div></div></div><br class="figure-break"><p>
+            The keypad displayed in CallFrame has its own Keypad class to
+            improve CallFrame readability and share this simple component
+            from core CallFrame code. This Keypad component is visible in
+            previous CallFrame screenshot. 
+          </p></div><div class="section" title="5.6.5.4.&nbsp;AccountFrame"><div class="titlepage"><div><div><h4 class="title"><a name="d0e1113"></a>5.6.5.4.&nbsp;AccountFrame</h4></div></div></div><p>
+            This frame enables peers user to configure his or her sip account
+            with a minimal interface: 
+          </p><div class="figure"><a name="d0e1118"></a><p class="title"><b>Figure&nbsp;5.28.&nbsp;AccountFrame in action</b></p><div class="figure-contents"><div class="mediaobject"><img src="account_frame_registered.png" alt="AccountFrame in action"></div></div></div><br class="figure-break"><p>
+            This class also displays the registration state of the
+            corresponding account. Actually, this registration state is also
+            displayed in MainFrame to let user know that his or her account
+            is registered on regular peers startup. As this "registration
+            state" component had to be displayed on several frames, a
+            specific component has been written in Registration class. This
+            class also makes use of a state machine, because of asynchronous
+            registration events coming from sip stack. 
+          </p><div class="figure"><a name="d0e1126"></a><p class="title"><b>Figure&nbsp;5.29.&nbsp;GUI Registration state machine</b></p><div class="figure-contents"><div class="mediaobject"><img src="registration_state_machine.png" alt="GUI Registration state machine"></div></div></div><br class="figure-break"></div><div class="section" title="5.6.5.5.&nbsp;AboutFrame"><div class="titlepage"><div><div><h4 class="title"><a name="d0e1134"></a>5.6.5.5.&nbsp;AboutFrame</h4></div></div></div><p>
+            AboutFrame is not that interesting, it's just useful to display
+            license to user. 
+          </p></div></div></div></div></div></body></html>
