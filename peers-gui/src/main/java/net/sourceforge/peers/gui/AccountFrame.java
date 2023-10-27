@@ -244,7 +244,6 @@ public class AccountFrame extends javax.swing.JFrame {
 
     public synchronized void registerSuccess(SipResponse sipResponse) {
         if (unregistering) {
-        	userAgent.close();
             applyNewConfig();
         } else {
             registration.registerSuccessful();
@@ -253,7 +252,6 @@ public class AccountFrame extends javax.swing.JFrame {
 
     public void registerFailed(SipResponse sipResponse) {
         if (unregistering) {
-        	userAgent.close();
             applyNewConfig();
         } else {
             registration.registerFailed();
@@ -280,7 +278,6 @@ public class AccountFrame extends javax.swing.JFrame {
             runnable = new Runnable() {
                 @Override
                 public void run() {
-                    userAgent.close();
                     applyNewConfig();
                 }
             };
